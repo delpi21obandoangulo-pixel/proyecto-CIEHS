@@ -501,8 +501,6 @@
     margin-top:auto; padding-top:10px; border-top:1px dashed var(--line);
     font-family:"JetBrains Mono", monospace; font-size:11.5px; font-weight:600; color:var(--leaf-600);
   }
-  .qr-card.is-soon{ opacity:0.72; }
-  .qr-card.is-soon .qr-dest{ color:var(--ink-mute); font-weight:600; text-transform:uppercase; letter-spacing:0.04em; }
 
   /* ============ QR SECTION ============ */
   .qr-panel{
@@ -612,6 +610,60 @@
     background:var(--surface); color:var(--ink-mute); cursor:not-allowed;
   }
   .res-empty{ margin-top:30px; font-size:14px; color:var(--ink-mute); text-align:center; }
+
+  /* ============ EUREKA ============ */
+  .problem-block{
+    margin-top:8px; padding:28px 30px; background:var(--surface);
+    border-left:3px solid var(--sun-500); border-radius:var(--radius-m);
+  }
+  .problem-block h3{ font-size:17px; font-weight:600; }
+  .problem-block p{ margin-top:10px; font-size:15px; color:var(--ink-soft); line-height:1.75; }
+  .eureka-pillars{ margin-top:56px; }
+  .eureka-pillars > .eyebrow{ margin-bottom:10px; }
+
+  /* ============ MURAL ============ */
+  .mural-panel{
+    display:grid; grid-template-columns:1.2fr 1fr; gap:0;
+    margin-top:8px; border-radius:var(--radius-l); overflow:hidden;
+    background:var(--ocean-900); box-shadow:var(--shadow-card);
+  }
+  @media (max-width:900px){ .mural-panel{ grid-template-columns:1fr; } }
+  .mural-art{ position:relative; min-height:340px; background:linear-gradient(160deg, var(--ocean-800), var(--ocean-900)); }
+  .mural-art svg{ width:100%; height:100%; display:block; }
+  .hotspot{
+    position:absolute; width:36px; height:36px; border-radius:50%;
+    background:rgba(240,200,118,0.92); border:2px solid var(--sun-300);
+    color:var(--ocean-900); font-family:"JetBrains Mono", monospace; font-weight:700; font-size:13px;
+    display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0;
+    transform:translate(-50%,-50%); box-shadow:0 0 0 6px rgba(240,200,118,0.16);
+    animation:hotspot-pulse 2.6s ease-in-out infinite;
+  }
+  .hotspot:hover, .hotspot:focus-visible{ animation-play-state:paused; box-shadow:0 0 0 9px rgba(240,200,118,0.24); }
+  .hotspot.is-active{ background:#fff; border-color:#fff; box-shadow:0 0 0 9px rgba(255,255,255,0.22); animation:none; }
+  @keyframes hotspot-pulse{
+    0%,100%{ box-shadow:0 0 0 6px rgba(240,200,118,0.16); }
+    50%{ box-shadow:0 0 0 11px rgba(240,200,118,0.04); }
+  }
+  .mural-info{ padding:36px; color:var(--on-ocean); display:flex; flex-direction:column; }
+  .mural-info .eyebrow{ color:var(--sun-300); }
+  .mural-info .eyebrow::before{ background:var(--sun-300); }
+  .mural-info h3{ margin-top:12px; color:#fff; font-size:19px; }
+  .mural-info p{ margin-top:10px; font-size:14.5px; line-height:1.7; color:var(--on-ocean-soft); }
+  .ods17{ display:grid; grid-template-columns:repeat(6,1fr); gap:6px; margin-top:16px; }
+  @media (max-width:420px){ .ods17{ grid-template-columns:repeat(4,1fr); } }
+  .ods-tile{
+    aspect-ratio:1; border-radius:6px; display:flex; align-items:center; justify-content:center;
+    font-family:"JetBrains Mono", monospace; font-size:11px; font-weight:700;
+    background:rgba(242,239,225,0.08); color:var(--on-ocean-soft);
+  }
+  .ods-tile.is-focus{ background:var(--sun-500); color:var(--ocean-900); }
+  .mural-nav{ display:flex; gap:8px; flex-wrap:wrap; margin-top:auto; padding-top:22px; }
+  .mural-nav button{
+    font-family:"JetBrains Mono", monospace; font-size:11px; padding:7px 12px;
+    border-radius:100px; border:1px solid rgba(242,239,225,0.25); background:transparent;
+    color:var(--on-ocean-soft); cursor:pointer;
+  }
+  .mural-nav button.is-active{ background:rgba(242,239,225,0.16); color:#fff; border-color:rgba(242,239,225,0.4); }
 
   /* ============ DATA / DASHBOARD ============ */
   .stat-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-top:8px; }
@@ -754,7 +806,7 @@
       </svg>
       <span class="brand-text">
         <b>CIEHS</b>
-        <span>I.E. 80033 José Olaya · Huanchaco</span>
+        <span>I.E. N.° 80033 José Olaya Balandra · Huanchaco</span>
       </span>
     </button>
     <ul class="navlinks">
@@ -791,7 +843,7 @@
   <section id="inicio" class="hero" data-page="inicio" style="padding-top:64px;">
     <div class="wrap hero-grid">
       <div>
-        <p class="eyebrow" style="color:var(--sun-300);">I.E. 80033 José Olaya — Lema: "Dios, Patria y Cultura"</p>
+        <p class="eyebrow" style="color:var(--sun-300);">I.E. N.° 80033 José Olaya Balandra — Lema: "Dios, Patria y Cultura"</p>
         <h1 style="margin-top:18px; font-size:clamp(2rem, 3.6vw, 3.1rem); line-height:1.14;">Centro de Investigación Escolar Hidropónico Sostenible <em>(CIEHS)</em></h1>
         <p class="hero-sub">Innovación científica escolar, seguridad alimentaria y sostenibilidad desde Huanchaco para el Perú.</p>
         <div class="hero-kpis">
@@ -825,7 +877,7 @@
         <p class="eyebrow" style="justify-content:center;">Explora el CIEHS</p>
         <h2>Cada apartado, un espacio propio</h2>
       </div>
-      <p class="mission-lede">El CIEHS usa cultivos hidropónicos como fenómeno de estudio, no como fin en sí mismo. Recorre la metodología, las investigaciones activas, los equipos, los módulos, la trazabilidad, los datos, los retos de aprendizaje y los recursos docentes — cada uno con su propia información.</p>
+      <p class="mission-lede">El CIEHS usa cultivos hidropónicos como fenómeno de estudio, no como fin en sí mismo. Recorre la metodología, las investigaciones activas, los equipos, los módulos, la trazabilidad, los datos, los retos de aprendizaje, los recursos docentes, el mural interactivo y la ficha rumbo a Eureka — cada uno con su propia información.</p>
 
       <div class="hub-grid">
         <button type="button" class="hub-card" data-route="metodologia">
@@ -875,6 +927,18 @@
           <h3>Recursos para docentes</h3>
           <p>Fichas, guías, rúbricas e infografías filtrables por nivel y área.</p>
           <span class="stat">Repositorio <span class="arrow">→</span></span>
+        </button>
+        <button type="button" class="hub-card" data-route="mural">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 15l5-4 4 3 4-4 5 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="9" r="1.4" fill="currentColor"/></svg>
+          <h3>Nuestro Mural</h3>
+          <p>Espacio interactivo: agua, fitohormonas, los 17 ODS y nuestra identidad.</p>
+          <span class="stat">4 puntos <span class="arrow">→</span></span>
+        </button>
+        <button type="button" class="hub-card" data-route="eureka">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="12" r="3.4" stroke="currentColor" stroke-width="1.6"/></svg>
+          <h3>Rumbo a Eureka 2026</h3>
+          <p>Ficha técnica de divulgación científica para la feria escolar nacional.</p>
+          <span class="stat">Ver ficha <span class="arrow">→</span></span>
         </button>
         <button type="button" class="hub-card" data-route="contacto">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M4 7l8 6 8-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1009,7 +1073,7 @@
 
         <div class="card team-card">
           <div class="top-row"><h3>Equipo Agua Viva</h3><span class="grade">4.° A</span></div>
-          <p class="module mono">MOD-PET-03 · Lechuga mantecosa</p>
+          <p class="module mono">MOD-NFT-01 · Lechuga mantecosa</p>
           <ul class="roster">
             <li><span class="code">R.N.H.</span><span class="role">Coordinación</span></li>
             <li><span class="code">K.E.F.</span><span class="role">Medición hídrica</span></li>
@@ -1019,7 +1083,7 @@
 
         <div class="card team-card">
           <div class="top-row"><h3>Equipo Neblina Huanchaquera</h3><span class="grade">5.° C</span></div>
-          <p class="module mono">MOD-CAP-02 · Captación de niebla</p>
+          <p class="module mono">MOD-DWC-02 · Raíz flotante</p>
           <ul class="roster">
             <li><span class="code">P.O.L.</span><span class="role">Coordinación</span></li>
             <li><span class="code">S.T.M.</span><span class="role">Diseño experimental</span></li>
@@ -1030,7 +1094,7 @@
 
         <div class="card team-card">
           <div class="top-row"><h3>Equipo Sensores Olayinos</h3><span class="grade">4.° B</span></div>
-          <p class="module mono">MOD-NFT-02 · Acelga</p>
+          <p class="module mono">MOD-DWC-02 · Acelga</p>
           <ul class="roster">
             <li><span class="code">E.M.Q.</span><span class="role">Coordinación técnica</span></li>
             <li><span class="code">V.R.S.</span><span class="role">Sensores ESP32</span></li>
@@ -1040,7 +1104,7 @@
 
         <div class="card team-card">
           <div class="top-row"><h3>Equipo Brote Sur</h3><span class="grade">3.° A</span></div>
-          <p class="module mono">MOD-NFT-02 · Germinación</p>
+          <p class="module mono">MOD-SUS-03 · Germinación</p>
           <ul class="roster">
             <li><span class="code">Y.A.P.</span><span class="role">Coordinación</span></li>
             <li><span class="code">F.J.L.</span><span class="role">Cuidado del cultivo</span></li>
@@ -1050,7 +1114,7 @@
 
         <div class="card team-card">
           <div class="top-row"><h3>Equipo Cosecha Escolar</h3><span class="grade">5.° B</span></div>
-          <p class="module mono">MOD-PET-03 · Difusión</p>
+          <p class="module mono">MOD-VER-04 · Difusión</p>
           <ul class="roster">
             <li><span class="code">B.U.Z.</span><span class="role">Coordinación</span></li>
             <li><span class="code">T.W.M.</span><span class="role">Encuestas</span></li>
@@ -1156,12 +1220,12 @@
           <p>Acceso general al portal — entrada del CIEHS</p>
           <span class="qr-dest">→ Inicio</span>
         </button>
-        <div class="qr-card is-soon">
+        <button type="button" class="qr-card" data-route="mural">
           <span class="qr-num mono">QR · 02</span>
           <h4>QR Mural</h4>
           <p>Enlace al mural interactivo CIEHS — junto al mural físico</p>
-          <span class="qr-dest">Próximamente</span>
-        </div>
+          <span class="qr-dest">→ Nuestro Mural</span>
+        </button>
         <button type="button" class="qr-card" data-route="modulos">
           <span class="qr-num mono">QR · 03</span>
           <h4>QR Módulos</h4>
@@ -1186,12 +1250,12 @@
           <p>Repositorio pedagógico — sala docente / feria</p>
           <span class="qr-dest">→ Recursos docentes</span>
         </button>
-        <div class="qr-card is-soon">
+        <button type="button" class="qr-card" data-route="eureka">
           <span class="qr-num mono">QR · 07</span>
           <h4>QR Eureka</h4>
           <p>Presentación científica escolar — feria / presentación</p>
-          <span class="qr-dest">Próximamente</span>
-        </div>
+          <span class="qr-dest">→ Rumbo a Eureka 2026</span>
+        </button>
         <button type="button" class="qr-card" data-route="metodologia">
           <span class="qr-num mono">QR · 08</span>
           <h4>QR Acción por el Clima</h4>
@@ -1681,6 +1745,137 @@
     </div>
   </section>
 
+  <!-- ============ RUMBO A EUREKA 2026 ============ -->
+  <section id="page-eureka" data-page="eureka" hidden>
+    <div class="wrap">
+      <button type="button" class="breadcrumb" data-route="inicio">← Inicio</button>
+      <div class="section-head">
+        <p class="eyebrow">Rumbo a Eureka 2026</p>
+        <h2>Ficha técnica de divulgación científica</h2>
+        <p>El CIEHS presenta su proceso de indagación científica escolar rumbo a la Feria Escolar Nacional de Ciencia y Tecnología <b>Eureka 2026</b>, con evidencia trazable desde la pregunta hasta los resultados.</p>
+      </div>
+
+      <div class="problem-block">
+        <h3>El problema, desde Huanchaco</h3>
+        <p>Huanchaco es un distrito costero de clima árido en la región La Libertad, donde la disponibilidad de agua dulce es limitada, los suelos cercanos al litoral tienden a la salinización y la seguridad alimentaria escolar depende en parte del acceso a alimentos frescos y nutritivos. El CIEHS nace para estudiar, con método científico, cómo un sistema hidropónico escolar puede reducir el consumo de agua, producir hortalizas en espacios reducidos y fortalecer la seguridad alimentaria de la comunidad educativa — conectando ese problema local con el <b>ODS 13</b> (Acción por el Clima), el <b>ODS 6</b> (Agua limpia y saneamiento) y el <b>ODS 2</b> (Hambre cero).</p>
+      </div>
+
+      <div class="contact-card" style="margin-top:36px;">
+        <p class="eyebrow" style="color:var(--ink-mute);">Ficha técnica</p>
+        <dl>
+          <div><dt>Institución</dt><dd>I.E. N.° 80033 "José Olaya Balandra" — Huanchaco, La Libertad, Perú</dd></div>
+          <div><dt>Proyecto</dt><dd>CIEHS — Centro de Investigación Escolar Hidropónico Sostenible</dd></div>
+          <div><dt>Feria</dt><dd>Eureka 2026 — Feria Escolar Nacional de Ciencia y Tecnología</dd></div>
+          <div><dt>Eje central</dt><dd>Acción por el Clima (ODS 13)</dd></div>
+          <div><dt>Investigaciones presentadas</dt><dd>INV-2026-01 · Concentración de nutrientes en lechuga — INV-2026-02 · Bioestimulante de germinado de lenteja</dd></div>
+          <div><dt>Módulos utilizados</dt><dd class="mono">MOD-NFT-01 · MOD-DWC-02 · MOD-SUS-03 · MOD-VER-04</dd></div>
+          <div><dt>Enfoque metodológico</dt><dd>Ruta pedagógica Descubre → Explora → Pregunta → Investiga → Analiza → Juega → Crea → Actúa → Comparte · diseño experimental DBCA</dd></div>
+        </dl>
+      </div>
+
+      <div class="eureka-pillars">
+        <p class="eyebrow">Rigor experimental</p>
+        <h3 style="margin-top:10px; font-size:19px;">Cuatro pilares de la indagación científica escolar</h3>
+        <div class="hub-grid" style="margin-top:28px;">
+          <button type="button" class="hub-card" data-route="metodologia">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.7-5.7M20 12a8 8 0 0 1-13.7 5.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M17 3v4h-4M7 21v-4h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <h3>Método científico escolar</h3>
+            <p>Ruta pedagógica de 9 pasos, de Descubre a Comparte, aplicada por cada equipo.</p>
+            <span class="stat">Ver metodología <span class="arrow">→</span></span>
+          </button>
+          <button type="button" class="hub-card" data-route="trazabilidad">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="14" width="3" height="3" fill="currentColor"/><rect x="18" y="18" width="3" height="3" fill="currentColor"/></svg>
+            <h3>Cuaderno de campo digital</h3>
+            <p>Bitácora de cada lote — siembra, insumos, mediciones y cosecha — con código QR.</p>
+            <span class="stat">Ver trazabilidad <span class="arrow">→</span></span>
+          </button>
+          <button type="button" class="hub-card" data-route="datos">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20V10M11 20V4M18 20v-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <h3>Evidencias biométricas</h3>
+            <p>Paneles de pH, conductividad eléctrica (CE) y biomasa por módulo.</p>
+            <span class="stat">Ver datos <span class="arrow">→</span></span>
+          </button>
+          <button type="button" class="hub-card" data-route="investigaciones">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M15 15l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <h3>Rigor experimental</h3>
+            <p>Diseño en bloques completamente al azar (DBCA), tratamientos y réplicas en cada investigación.</p>
+            <span class="stat">Ver investigaciones <span class="arrow">→</span></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NUESTRO MURAL ============ -->
+  <section id="page-mural" class="alt" data-page="mural" hidden>
+    <div class="wrap">
+      <button type="button" class="breadcrumb" data-route="inicio">← Inicio</button>
+      <div class="section-head">
+        <p class="eyebrow">Nuestro Mural</p>
+        <h2>Cultivamos Ciencia, Cosechamos Futuro</h2>
+        <p>Un espacio visual interactivo que conecta el mural físico del CIEHS con su versión digital. Toca cada punto para explorar.</p>
+      </div>
+
+      <div class="mural-panel">
+        <div class="mural-art">
+          <svg viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <defs>
+              <radialGradient id="muralSun" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="var(--sun-300)" stop-opacity="0.9"/>
+                <stop offset="100%" stop-color="var(--sun-300)" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <circle cx="90" cy="80" r="70" fill="url(#muralSun)"/>
+            <path d="M20 70c15-12 35-12 50 0M30 90c12-9 28-9 40 0" stroke="var(--sun-300)" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
+            <path d="M470 60c14 6 24 18 24 32 0 16-13 28-30 28M494 92c10 4 16 12 16 20" stroke="var(--on-ocean-soft)" stroke-width="2.4" fill="none" stroke-linecap="round" opacity="0.7"/>
+            <circle cx="464" cy="58" r="4" fill="var(--on-ocean-soft)" opacity="0.7"/>
+            <g opacity="0.9">
+              <path d="M300 340c-6-70 10-120 10-150" stroke="var(--leaf-500)" stroke-width="4" fill="none" stroke-linecap="round"/>
+              <path d="M310 200c-30-6-46-30-46-30s34-8 54 12c10 10 12 24-8 18Z" fill="var(--leaf-500)"/>
+              <path d="M310 230c30-10 42-34 42-34s-34-10-56 8c-12 10-14 26 14 26Z" fill="var(--leaf-300)"/>
+              <path d="M310 260c-26 0-40-20-40-20s30-14 50 0c10 8 10 20-10 20Z" fill="var(--leaf-500)"/>
+            </g>
+            <g stroke="var(--on-ocean-soft)" stroke-width="1.4" opacity="0.55">
+              <circle cx="120" cy="330" r="46" fill="none"/>
+              <circle cx="128" cy="322" r="4" fill="var(--sun-500)" opacity="0.9"/>
+              <circle cx="150" cy="304" r="3.2" fill="var(--leaf-300)" opacity="0.9"/>
+              <circle cx="160" cy="330" r="3.2" fill="var(--series-1)" opacity="0.9"/>
+              <circle cx="150" cy="356" r="3.2" fill="var(--sun-300)" opacity="0.9"/>
+              <circle cx="120" cy="368" r="3.2" fill="var(--leaf-500)" opacity="0.9"/>
+              <circle cx="90" cy="356" r="3.2" fill="var(--series-2)" opacity="0.9"/>
+              <circle cx="80" cy="330" r="3.2" fill="var(--leaf-300)" opacity="0.9"/>
+              <circle cx="90" cy="304" r="3.2" fill="var(--sun-500)" opacity="0.9"/>
+            </g>
+            <g stroke="var(--sun-500)" stroke-width="1.6" opacity="0.8">
+              <circle cx="500" cy="330" r="42" fill="none"/>
+              <path d="M478 330a22 22 0 1 1 44 0 22 22 0 0 1-44 0Z" fill="none" stroke-dasharray="4 4"/>
+            </g>
+            <text x="500" y="335" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="var(--sun-300)" font-weight="700">80033</text>
+          </svg>
+
+          <button type="button" class="hotspot is-active" style="left:16%; top:82%;" data-hotspot="agua" aria-label="El ciclo del agua en hidroponía">1</button>
+          <button type="button" class="hotspot" style="left:78%; top:20%;" data-hotspot="fito">2</button>
+          <button type="button" class="hotspot" style="left:20%; top:38%;" data-hotspot="ods">3</button>
+          <button type="button" class="hotspot" style="left:83%; top:82%;" data-hotspot="identidad">4</button>
+        </div>
+
+        <div class="mural-info">
+          <p class="eyebrow" id="muralEyebrow">1 · Ciclo del agua</p>
+          <h3 id="muralTitle">El ciclo del agua en hidroponía</h3>
+          <div id="muralBody">
+            <p>En cada módulo, la solución nutritiva recircula por el sistema en lugar de perderse en el suelo: se bombea, riega las raíces y regresa al depósito para volver a usarse. Así es como el CIEHS logra cerca del <b>90&nbsp;% de ahorro hídrico</b> frente al cultivo tradicional en suelo.</p>
+          </div>
+          <div class="mural-nav">
+            <button type="button" class="is-active" data-hotspot="agua">1 · Ciclo del agua</button>
+            <button type="button" data-hotspot="fito">2 · Fitohormonas</button>
+            <button type="button" data-hotspot="ods">3 · Los 17 ODS</button>
+            <button type="button" data-hotspot="identidad">4 · Nuestra identidad</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ CONTACTO ============ -->
   <section id="contacto" class="alt" data-page="contacto" hidden>
     <div class="wrap">
@@ -1695,7 +1890,7 @@
       <div class="contact-card">
         <p class="eyebrow" style="color:var(--ink-mute);">Información de contacto</p>
         <dl>
-          <div><dt>Institución</dt><dd>I.E. 80033 José Olaya — Distrito de Huanchaco, La Libertad, Perú</dd></div>
+          <div><dt>Institución</dt><dd>I.E. N.° 80033 José Olaya Balandra — Distrito de Huanchaco, La Libertad, Perú</dd></div>
           <div><dt>Correo del CIEHS</dt><dd class="mono">ciehs.olaya@gmail.com</dd></div>
           <div><dt>Coordinación</dt><dd>Coordinación de Ciencia y Tecnología (Área CyT)</dd></div>
           <div><dt>Horario de atención</dt><dd>Lunes a viernes, 8:00 a. m. – 1:00 p. m.</dd></div>
@@ -1742,7 +1937,7 @@
           <circle cx="50" cy="50" r="47" fill="var(--ocean-700)"/>
           <path d="M50 24c11 8 17 18 17 28 0 10-8 17-17 17s-17-7-17-17c0-10 6-20 17-28Z" fill="var(--leaf-500)"/>
         </svg>
-        <b>CIEHS · I.E. 80033 José Olaya, Huanchaco</b>
+        <b>CIEHS · I.E. N.° 80033 José Olaya Balandra, Huanchaco</b>
       </div>
       <ul class="flinks">
         <li><button type="button" data-route="investigaciones">Investigaciones</button></li>
@@ -1758,7 +1953,7 @@
     </div>
 
     <p class="small">Investigaciones, equipos, módulos y datos aún incluyen contenido de ejemplo pendiente de reemplazo por información real del CIEHS. La insignia mostrada es un marcador de posición: usar el escudo institucional oficial sin modificarlo.</p>
-    <p class="copyright">© 2026 CIEHS - I.E. 80033 José Olaya. Todos los derechos reservados.</p>
+    <p class="copyright">© 2026 CIEHS - I.E. N.° 80033 José Olaya Balandra. Todos los derechos reservados.</p>
   </div>
 </footer>
 
@@ -1768,11 +1963,12 @@
   // Deliberately does NOT touch location.hash or use <a href> navigation —
   // this page is meant to run embedded, where link-style navigation can get
   // intercepted by the host. All routing is plain in-memory + click handlers.
-  var ROUTES = ['inicio','metodologia','investigaciones','equipos','modulos','trazabilidad','datos','juega','docentes','contacto'];
+  var ROUTES = ['inicio','metodologia','investigaciones','equipos','modulos','trazabilidad','datos','juega','docentes','mural','eureka','contacto'];
   var ROUTE_LABELS = {
     metodologia:'Metodología', investigaciones:'Investigaciones', equipos:'Equipos',
     modulos:'Módulos', trazabilidad:'Trazabilidad', datos:'Datos',
-    juega:'Juega y aprende', docentes:'Recursos para docentes', contacto:'Contacto'
+    juega:'Juega y aprende', docentes:'Recursos para docentes',
+    mural:'Nuestro Mural', eureka:'Rumbo a Eureka 2026', contacto:'Contacto'
   };
   var pageEls = document.querySelectorAll('[data-page]');
   var routeEls = document.querySelectorAll('[data-route]');
@@ -2007,5 +2203,67 @@
   }
 
   applyFilters();
+})();
+</script>
+
+<!-- ============ MURAL: hotspots interactivos ============ -->
+<script>
+(function(){
+  var hotspots = document.querySelectorAll('.hotspot');
+  if(!hotspots.length) return; // page not present
+
+  var navBtns = document.querySelectorAll('.mural-nav button');
+  var eyebrowEl = document.getElementById('muralEyebrow');
+  var titleEl = document.getElementById('muralTitle');
+  var bodyEl = document.getElementById('muralBody');
+
+  var CONTENT = {
+    agua: {
+      label: '1 · Ciclo del agua',
+      title: 'El ciclo del agua en hidroponía',
+      html: '<p>En cada módulo, la solución nutritiva recircula por el sistema en lugar de perderse en el suelo: se bombea, riega las raíces y regresa al depósito para volver a usarse. Así es como el CIEHS logra cerca del <b>90&nbsp;% de ahorro hídrico</b> frente al cultivo tradicional en suelo.</p>'
+    },
+    fito: {
+      label: '2 · Fitohormonas',
+      title: 'Fitohormonas y bioestimulantes',
+      html: '<p>Las fitohormonas son sustancias naturales de las plantas —como las auxinas— que regulan su crecimiento y enraizamiento. INV-2026-02 estudia un <b>bioestimulante orgánico a base de germinados de lenteja</b>, rico en auxinas naturales, para favorecer el enraizamiento de plántulas hidropónicas.</p>'
+    },
+    ods: {
+      label: '3 · Los 17 ODS',
+      title: 'Los 17 Objetivos de Desarrollo Sostenible',
+      html: '<p>La Agenda 2030 de Naciones Unidas define 17 ODS. El CIEHS se conecta especialmente con los ODS 2, 3, 4, 6, 12, 13 y 15 — con el <b>ODS 13 (Acción por el Clima)</b> como eje central de su indagación.</p>',
+      showOds: true
+    },
+    identidad: {
+      label: '4 · Nuestra identidad',
+      title: 'I.E. N.° 80033 "José Olaya Balandra"',
+      html: '<p>El CIEHS es el laboratorio de investigación escolar de la I.E. N.° 80033 <b>"José Olaya Balandra"</b>, en Huanchaco, La Libertad — con el lema <i>"Cultivamos Ciencia, Cosechamos Futuro"</i>.</p>'
+    }
+  };
+
+  function buildOdsGrid(){
+    var html = '<div class="ods17">';
+    for(var i = 1; i <= 17; i++){
+      html += '<div class="ods-tile' + (i === 13 ? ' is-focus' : '') + '">' + i + '</div>';
+    }
+    return html + '</div>';
+  }
+
+  function activate(key){
+    var data = CONTENT[key];
+    if(!data) return;
+    hotspots.forEach(function(h){ h.classList.toggle('is-active', h.getAttribute('data-hotspot') === key); });
+    navBtns.forEach(function(b){ b.classList.toggle('is-active', b.getAttribute('data-hotspot') === key); });
+    if(eyebrowEl) eyebrowEl.textContent = data.label;
+    if(titleEl) titleEl.textContent = data.title;
+    if(bodyEl) bodyEl.innerHTML = data.html + (data.showOds ? buildOdsGrid() : '');
+  }
+
+  hotspots.forEach(function(h){
+    h.addEventListener('click', function(){ activate(h.getAttribute('data-hotspot')); });
+  });
+  navBtns.forEach(function(b){
+    b.addEventListener('click', function(){ activate(b.getAttribute('data-hotspot')); });
+  });
 })();
 </script>
