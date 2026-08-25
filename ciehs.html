@@ -1,0 +1,1447 @@
+<title>CIEHS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* ============ TOKENS ============ */
+  :root{
+    color-scheme: light;
+    /* neutrals — warm paper with a green-teal bias */
+    --paper:      #f6f4ea;
+    --surface:    #eeead9;
+    --surface-2:  #e4e0cc;
+    --ink:        #10241f;
+    --ink-soft:   #3d5750;
+    --ink-mute:   #6d8079;
+    --line:       #d9d4bd;
+    --line-strong:#c3bea3;
+
+    /* brand */
+    --ocean-900:  #072826;
+    --ocean-800:  #0a3a35;
+    --ocean-700:  #0e4b44;
+    --ocean-600:  #14615a;
+    --leaf-600:   #3f7d21;
+    --leaf-500:   #4f9130;
+    --leaf-300:   #9dcb75;
+    --leaf-100:   #e2eed3;
+    --sun-500:    #d99a2b;
+    --sun-300:    #f0c876;
+
+    /* on dark brand surfaces */
+    --on-ocean:       #f2efe1;
+    --on-ocean-soft:  #bcd2cb;
+
+    /* status (fixed, not themed) */
+    --status-good: #0ca30c;
+    --status-info: #1a6fb0;
+
+    /* chart chrome */
+    --chart-surface: #fcfbf5;
+    --chart-grid:    #ded9c4;
+    --chart-axis:    #b9b39a;
+    --chart-ink:     #10241f;
+    --chart-ink-2:   #5c6b64;
+
+    /* chart categorical (validated: dataviz default slots 1–3, all-pairs safe) */
+    --series-1: #2a78d6; /* NFT-01 */
+    --series-2: #eb6834; /* PET-03 */
+    --series-3: #1baf7a; /* NFT-02 */
+
+    --radius-s: 3px;
+    --radius-m: 10px;
+    --radius-l: 22px;
+    --shadow-card: 0 1px 0 var(--line), 0 8px 24px -18px rgba(7,40,38,0.35);
+    --max: 1120px;
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --paper:      #0a1917;
+      --surface:    #0f231f;
+      --surface-2:  #142e28;
+      --ink:        #eef3ee;
+      --ink-soft:   #b9ccc4;
+      --ink-mute:   #85988f;
+      --line:       #1e3a33;
+      --line-strong:#2c4a41;
+
+      --ocean-900:  #051917;
+      --ocean-800:  #072826;
+      --ocean-700:  #0a3a35;
+      --ocean-600:  #14615a;
+      --leaf-600:   #7cc154;
+      --leaf-500:   #8fd166;
+      --leaf-300:   #a9dd85;
+      --leaf-100:   #16301f;
+      --sun-500:    #e3b354;
+      --sun-300:    #f0c876;
+
+      --on-ocean:      #f2efe1;
+      --on-ocean-soft: #a9c4bc;
+
+      --status-good: #4bcf4b;
+      --status-info: #5aa9e6;
+
+      --chart-surface: #0f2320;
+      --chart-grid:    #203c35;
+      --chart-axis:    #3c5a51;
+      --chart-ink:     #eef3ee;
+      --chart-ink-2:   #93a89f;
+
+      --series-1: #3987e5;
+      --series-2: #d95926;
+      --series-3: #199e70;
+
+      --shadow-card: 0 1px 0 var(--line), 0 10px 28px -18px rgba(0,0,0,0.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --paper:      #0a1917;
+    --surface:    #0f231f;
+    --surface-2:  #142e28;
+    --ink:        #eef3ee;
+    --ink-soft:   #b9ccc4;
+    --ink-mute:   #85988f;
+    --line:       #1e3a33;
+    --line-strong:#2c4a41;
+
+    --ocean-900:  #051917;
+    --ocean-800:  #072826;
+    --ocean-700:  #0a3a35;
+    --ocean-600:  #14615a;
+    --leaf-600:   #7cc154;
+    --leaf-500:   #8fd166;
+    --leaf-300:   #a9dd85;
+    --leaf-100:   #16301f;
+    --sun-500:    #e3b354;
+    --sun-300:    #f0c876;
+
+    --on-ocean:      #f2efe1;
+    --on-ocean-soft: #a9c4bc;
+
+    --status-good: #4bcf4b;
+    --status-info: #5aa9e6;
+
+    --chart-surface: #0f2320;
+    --chart-grid:    #203c35;
+    --chart-axis:    #3c5a51;
+    --chart-ink:     #eef3ee;
+    --chart-ink-2:   #93a89f;
+
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+
+    --shadow-card: 0 1px 0 var(--line), 0 10px 28px -18px rgba(0,0,0,0.6);
+  }
+
+  /* ============ RESET / BASE ============ */
+  *,*::before,*::after{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *,*::before,*::after{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; }
+  }
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{
+    font-family:"Fraunces", Georgia, "Times New Roman", serif;
+    font-weight:600;
+    text-wrap:balance;
+    color:var(--ink);
+    margin:0;
+  }
+  p{ margin:0; }
+  a{ color:inherit; }
+  button{
+    font-family:inherit; font-size:inherit; color:inherit;
+    background:none; border:none; padding:0; margin:0;
+    cursor:pointer; text-align:inherit; -webkit-appearance:none; appearance:none;
+  }
+  img,svg{ max-width:100%; display:block; }
+  .mono{ font-family:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace; }
+  .tabular{ font-variant-numeric:tabular-nums; }
+
+  a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-visible{
+    outline:2.5px solid var(--sun-500);
+    outline-offset:3px;
+    border-radius:4px;
+  }
+
+  .wrap{ max-width:var(--max); margin:0 auto; padding:0 24px; }
+  .scrollx{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+
+  .eyebrow{
+    font-family:"JetBrains Mono", monospace;
+    font-size:12.5px;
+    letter-spacing:0.11em;
+    text-transform:uppercase;
+    color:var(--leaf-600);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:600;
+  }
+  .eyebrow::before{
+    content:"";
+    width:22px; height:1px;
+    background:var(--leaf-600);
+    display:inline-block;
+  }
+
+  .chip{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:"JetBrains Mono", monospace;
+    font-size:11.5px; letter-spacing:0.04em;
+    padding:3px 9px;
+    border-radius:100px;
+    border:1px solid var(--line-strong);
+    color:var(--ink-soft);
+    background:var(--surface);
+    white-space:nowrap;
+  }
+  .chip.example{ color:var(--sun-500); border-color:currentColor; background:transparent; }
+  .chip.status-activo{ color:var(--status-good); border-color:currentColor; }
+  .chip.status-curso{ color:var(--status-info); border-color:currentColor; }
+  .chip.status-plan{ color:var(--ink-mute); border-color:var(--line-strong); }
+
+  .btn{
+    display:inline-flex; align-items:center; gap:9px;
+    font-family:"Public Sans", sans-serif;
+    font-weight:600; font-size:15px;
+    padding:12px 20px;
+    border-radius:100px;
+    border:1.5px solid transparent;
+    cursor:pointer;
+    text-decoration:none;
+    transition:transform .15s ease, background .15s ease, border-color .15s ease;
+  }
+  .btn:hover{ transform:translateY(-1px); }
+  .btn-primary{ background:var(--leaf-500); color:#08210f; }
+  .btn-primary:hover{ background:var(--leaf-300); }
+  .btn-ghost{ background:transparent; color:var(--on-ocean); border-color:rgba(242,239,225,0.4); }
+  .btn-ghost:hover{ border-color:var(--on-ocean); }
+
+  /* ============ HEADER ============ */
+  header.site{
+    position:sticky; top:0; z-index:40;
+    background:color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px;
+    gap:20px;
+  }
+  .brand{ display:flex; align-items:center; gap:12px; text-decoration:none; cursor:pointer; }
+  .brand-badge{ width:38px; height:38px; flex:none; }
+  .brand-text{ line-height:1.15; }
+  .brand-text b{ display:block; font-family:"Fraunces", serif; font-weight:600; font-size:17px; letter-spacing:0.01em; }
+  .brand-text span{ display:block; font-family:"JetBrains Mono", monospace; font-size:10.5px; color:var(--ink-mute); letter-spacing:0.04em; }
+
+  .navlinks{ display:flex; align-items:center; gap:26px; list-style:none; margin:0; padding:0; }
+  .navlinks button{
+    text-decoration:none; font-size:14.5px; font-weight:600; color:var(--ink-soft);
+    padding:4px 2px; border-bottom:2px solid transparent; cursor:pointer;
+  }
+  .navlinks button:hover{ color:var(--ink); border-color:var(--leaf-500); }
+  .navtoggle{ display:none; }
+
+  @media (max-width: 880px){
+    .navlinks{ display:none; }
+    .navtoggle{
+      display:inline-flex; align-items:center; justify-content:center;
+      width:38px; height:38px; border-radius:8px; border:1px solid var(--line-strong);
+      background:transparent; color:var(--ink);
+    }
+  }
+
+  /* ============ ROUTER / PAGES ============ */
+  [hidden]{ display:none !important; }
+  .breadcrumb{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:"JetBrains Mono", monospace; font-size:12px; color:var(--ink-mute);
+    text-decoration:none; margin-bottom:22px;
+  }
+  .breadcrumb:hover{ color:var(--leaf-600); }
+  .navlinks button.is-active{ color:var(--ink); border-color:var(--leaf-500); }
+  #mobileNav button{
+    display:block; width:100%; text-align:left;
+    font-size:16px; font-weight:600; color:var(--ink); padding:2px 0;
+  }
+  #mobileNav button.is-active{ color:var(--leaf-600); }
+
+  /* ============ HOME HUB ============ */
+  .mission-lede{ max-width:64ch; margin:22px auto 0; text-align:center; font-size:17px; color:var(--ink-soft); line-height:1.7; }
+  .hub-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:18px; margin-top:44px; }
+  .hub-card{
+    display:flex; flex-direction:column; gap:12px; padding:24px;
+    width:100%; text-align:left; text-decoration:none;
+    background:var(--paper); border:1px solid var(--line);
+    border-radius:var(--radius-m); box-shadow:var(--shadow-card);
+    transition:transform .15s ease, border-color .15s ease;
+  }
+  .hub-card:hover{ transform:translateY(-3px); border-color:var(--leaf-500); }
+  .hub-card .icon{ width:26px; height:26px; color:var(--leaf-600); }
+  .hub-card h3{ font-size:16.5px; font-weight:600; }
+  .hub-card p{ font-size:13.5px; color:var(--ink-soft); line-height:1.55; }
+  .hub-card .stat{
+    margin-top:auto; padding-top:12px; border-top:1px dashed var(--line);
+    font-family:"JetBrains Mono", monospace; font-size:11.5px; color:var(--leaf-600); font-weight:600;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .hub-card .stat .arrow{ color:var(--ink-mute); font-size:14px; }
+
+  /* ============ HERO ============ */
+  .hero{
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(143,209,102,0.16), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 0%, rgba(217,154,43,0.14), transparent 55%),
+      linear-gradient(180deg, var(--ocean-900), var(--ocean-800) 60%, var(--ocean-800));
+    color:var(--on-ocean);
+    padding:76px 0 88px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::after{
+    content:"";
+    position:absolute; inset:auto 0 0 0; height:70px;
+    background:linear-gradient(180deg, transparent, var(--paper));
+  }
+  .hero-grid{
+    display:grid; grid-template-columns:1.35fr 0.85fr; gap:56px; align-items:center;
+    position:relative; z-index:1;
+  }
+  @media (max-width: 900px){ .hero-grid{ grid-template-columns:1fr; gap:40px; } }
+
+  .hero h1{
+    font-size:clamp(2.6rem, 5.4vw, 4.3rem);
+    line-height:1.03;
+    color:#fff;
+    letter-spacing:-0.01em;
+  }
+  .hero h1 em{
+    font-style:italic; font-weight:500; color:var(--leaf-300);
+  }
+  .hero-sub{
+    margin-top:22px; max-width:56ch;
+    font-size:18px; color:var(--on-ocean-soft); line-height:1.65;
+  }
+  .hero-actions{ display:flex; gap:14px; margin-top:34px; flex-wrap:wrap; }
+
+  .hero-kpis{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:14px;
+    margin-top:36px; max-width:640px;
+  }
+  @media (max-width:900px){ .hero-kpis{ grid-template-columns:repeat(2,1fr); max-width:480px; } }
+  @media (max-width:480px){ .hero-kpis{ grid-template-columns:1fr; max-width:320px; } }
+  .hero-kpi{
+    background:rgba(242,239,225,0.06);
+    border:1px solid rgba(242,239,225,0.16);
+    border-radius:var(--radius-m);
+    padding:16px 16px 14px;
+  }
+  .hero-kpi .n{ font-family:"Public Sans", sans-serif; font-weight:700; font-size:28px; color:#fff; }
+  .hero-kpi .n small{ font-size:15px; font-weight:600; color:var(--sun-300); }
+  .hero-kpi .l{ margin-top:6px; font-size:12px; line-height:1.4; color:var(--on-ocean-soft); }
+
+  .hero-badge-card{
+    background:rgba(242,239,225,0.06);
+    border:1px solid rgba(242,239,225,0.16);
+    border-radius:var(--radius-l);
+    padding:28px;
+    text-align:center;
+  }
+  .hero-badge-card svg{ width:132px; height:132px; margin:0 auto; }
+  .hero-badge-card .cap{
+    margin-top:16px; font-family:"JetBrains Mono", monospace; font-size:11px;
+    color:var(--on-ocean-soft); letter-spacing:0.03em; line-height:1.5;
+  }
+  .hero-badge-card .lema{
+    margin-top:14px; font-family:"Fraunces", serif; font-style:italic; font-weight:500;
+    font-size:15px; color:var(--sun-300);
+  }
+
+  /* ============ SECTION SCAFFOLD ============ */
+  section{ padding:88px 0; }
+  section.alt{ background:var(--surface); }
+  .section-head{ max-width:68ch; margin-bottom:46px; }
+  .section-head h2{ font-size:clamp(1.7rem, 3vw, 2.35rem); margin-top:14px; letter-spacing:-0.01em; }
+  .section-head p{ margin-top:16px; font-size:16.5px; color:var(--ink-soft); line-height:1.7; }
+
+  /* ============ MISSION STRIP ============ */
+  .not-only{
+    display:grid; grid-template-columns:1fr 1fr; gap:36px; margin-top:40px;
+  }
+  @media (max-width:760px){ .not-only{ grid-template-columns:1fr; } }
+  .not-only .card{
+    background:var(--paper); border:1px solid var(--line); border-radius:var(--radius-m);
+    padding:26px 28px;
+  }
+  .not-only .card h3{ font-size:18px; font-weight:600; }
+  .not-only .card p{ margin-top:10px; color:var(--ink-soft); font-size:15px; line-height:1.65; }
+  .not-only .card.no{ border-left:3px solid var(--line-strong); }
+  .not-only .card.yes{ border-left:3px solid var(--leaf-500); }
+
+  /* research cycle */
+  .cycle{
+    margin-top:52px;
+    display:flex; gap:0; overflow-x:auto; padding-bottom:14px;
+    scrollbar-width:thin;
+  }
+  .cycle-step{
+    flex:0 0 200px; position:relative; padding:0 22px 0 0;
+  }
+  .cycle-step:not(:last-child)::after{
+    content:""; position:absolute; top:19px; left:38px; right:0; height:1px;
+    background:repeating-linear-gradient(90deg, var(--line-strong) 0 6px, transparent 6px 11px);
+  }
+  .cycle-num{
+    width:38px; height:38px; border-radius:50%;
+    background:var(--ocean-700); color:var(--on-ocean);
+    display:flex; align-items:center; justify-content:center;
+    font-family:"JetBrains Mono", monospace; font-weight:600; font-size:14px;
+    flex:none; position:relative; z-index:1;
+  }
+  .cycle-step h4{ margin-top:14px; font-size:15px; font-weight:600; line-height:1.35; }
+  .cycle-step p{ margin-top:6px; font-size:13.5px; color:var(--ink-mute); line-height:1.5; }
+
+  /* climate / ODS block */
+  .climate-block{
+    margin-top:64px; padding:32px 34px;
+    background:var(--ocean-800); color:var(--on-ocean);
+    border-radius:var(--radius-l);
+  }
+  .climate-block .eyebrow{ color:var(--sun-300); }
+  .climate-block .eyebrow::before{ background:var(--sun-300); }
+  .climate-block h3{ margin-top:12px; font-size:1.5rem; color:#fff; }
+  .climate-block > p{ margin-top:14px; max-width:74ch; font-size:15.5px; line-height:1.7; color:var(--on-ocean-soft); }
+  .ods-row{ display:flex; flex-wrap:wrap; gap:9px; margin-top:22px; }
+  .climate-block .chip{ border-color:rgba(242,239,225,0.28); color:var(--on-ocean-soft); background:rgba(242,239,225,0.05); }
+  .climate-block .chip.ods-13{ color:var(--sun-300); border-color:currentColor; background:rgba(240,200,118,0.1); font-weight:600; }
+  .eds-note{ margin-top:24px; padding-top:20px; border-top:1px solid rgba(242,239,225,0.16); font-size:13px; color:var(--on-ocean-soft); opacity:0.85; line-height:1.6; max-width:74ch; }
+
+  /* ============ CARD GRIDS ============ */
+  .grid{ display:grid; gap:22px; margin-top:8px; }
+  .grid.cols-2{ grid-template-columns:repeat(2, 1fr); }
+  .grid.cols-3{ grid-template-columns:repeat(3, 1fr); }
+  .grid.cols-4{ grid-template-columns:repeat(4, 1fr); }
+  @media (max-width:980px){ .grid.cols-3, .grid.cols-4{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:860px){ .grid.cols-2{ grid-template-columns:1fr; } }
+  @media (max-width:620px){ .grid.cols-3, .grid.cols-4{ grid-template-columns:1fr; } }
+
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius-m);
+    box-shadow:var(--shadow-card);
+    overflow:hidden;
+  }
+  section.alt .card{ background:var(--paper); }
+
+  .research-card{ padding:24px; display:flex; flex-direction:column; gap:14px; }
+  .research-card .top-row{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+  .research-card .code{ font-family:"JetBrains Mono", monospace; font-size:11.5px; color:var(--ink-mute); }
+  .research-card h3{ font-size:17.5px; line-height:1.35; font-weight:600; }
+  .research-card .hyp{ font-size:14px; color:var(--ink-soft); line-height:1.6; }
+  .research-card .hyp b{ color:var(--ink); font-weight:600; }
+  .research-card .var-list{ display:flex; flex-direction:column; gap:10px; margin:2px 0; padding:14px 16px; background:var(--surface); border-radius:var(--radius-s); }
+  .research-card .var-list dt{ font-family:"JetBrains Mono", monospace; font-size:10.5px; color:var(--ink-mute); text-transform:uppercase; letter-spacing:0.05em; }
+  .research-card .var-list dd{ margin:2px 0 0; font-size:13.5px; color:var(--ink-soft); line-height:1.5; }
+  .research-card .meta{ display:flex; flex-wrap:wrap; gap:8px; margin-top:auto; padding-top:10px; border-top:1px dashed var(--line); }
+
+  .team-card{ padding:22px; }
+  .team-card .top-row{ display:flex; justify-content:space-between; align-items:center; }
+  .team-card h3{ font-size:16.5px; }
+  .team-card .grade{ font-family:"JetBrains Mono", monospace; font-size:11.5px; color:var(--leaf-600); font-weight:600; }
+  .team-card .module{ margin-top:4px; font-size:13px; color:var(--ink-mute); }
+  .roster{ list-style:none; margin:16px 0 0; padding:0; display:flex; flex-direction:column; gap:8px; }
+  .roster li{ display:flex; justify-content:space-between; gap:10px; font-size:13.5px; border-top:1px solid var(--line); padding-top:8px; }
+  .roster li:first-child{ border-top:none; padding-top:0; }
+  .roster .code{ font-family:"JetBrains Mono", monospace; font-weight:600; }
+  .roster .role{ color:var(--ink-mute); }
+
+  .module-card{ padding:22px; }
+  .module-card .icon{ width:34px; height:34px; color:var(--leaf-600); }
+  .module-card h3{ font-size:16.5px; margin-top:14px; }
+  .module-card .id{ font-family:"JetBrains Mono", monospace; font-size:11.5px; color:var(--ink-mute); }
+  .module-card .module-desc{ margin-top:12px; font-size:13px; color:var(--ink-soft); line-height:1.55; }
+  .module-card dl{ margin:16px 0 0; display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:13.5px; }
+  .module-card dt{ color:var(--ink-mute); }
+  .module-card dd{ margin:0; font-weight:600; text-align:right; }
+
+  /* ============ QR HUB (8 access points) ============ */
+  .qr-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin-top:8px; }
+  @media (max-width:980px){ .qr-grid{ grid-template-columns:repeat(2, 1fr); } }
+  @media (max-width:520px){ .qr-grid{ grid-template-columns:1fr; } }
+  .qr-card{
+    display:flex; flex-direction:column; gap:8px; text-align:left;
+    padding:20px; background:var(--paper); border:1px solid var(--line);
+    border-radius:var(--radius-m); box-shadow:var(--shadow-card);
+    transition:transform .15s ease, border-color .15s ease;
+  }
+  button.qr-card{ cursor:pointer; }
+  button.qr-card:hover{ transform:translateY(-3px); border-color:var(--leaf-500); }
+  .qr-card .qr-num{ font-size:11px; color:var(--ink-mute); }
+  .qr-card h4{ font-size:15px; font-weight:600; }
+  .qr-card p{ font-size:12.5px; color:var(--ink-soft); line-height:1.5; }
+  .qr-card .qr-dest{
+    margin-top:auto; padding-top:10px; border-top:1px dashed var(--line);
+    font-family:"JetBrains Mono", monospace; font-size:11.5px; font-weight:600; color:var(--leaf-600);
+  }
+  .qr-card.is-soon{ opacity:0.72; }
+  .qr-card.is-soon .qr-dest{ color:var(--ink-mute); font-weight:600; text-transform:uppercase; letter-spacing:0.04em; }
+
+  /* ============ QR SECTION ============ */
+  .qr-panel{
+    margin-top:44px;
+    display:grid; grid-template-columns:0.85fr 1.15fr; gap:0;
+    background:var(--ocean-900); color:var(--on-ocean);
+    border-radius:var(--radius-l); overflow:hidden;
+  }
+  @media (max-width:820px){ .qr-panel{ grid-template-columns:1fr; } }
+  .qr-visual{
+    padding:44px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
+    background:rgba(242,239,225,0.04);
+    border-right:1px solid rgba(242,239,225,0.12);
+  }
+  @media (max-width:820px){ .qr-visual{ border-right:none; border-bottom:1px solid rgba(242,239,225,0.12); } }
+  .qr-visual svg{ width:150px; height:150px; }
+  .qr-visual .label{ font-family:"JetBrains Mono", monospace; font-size:12px; color:var(--sun-300); text-align:center; }
+  .qr-body{ padding:44px; }
+  .qr-body h3{ color:#fff; font-size:22px; }
+  .qr-body p{ margin-top:12px; color:var(--on-ocean-soft); font-size:15px; line-height:1.7; max-width:56ch; }
+  .qr-trace{ margin-top:24px; display:flex; flex-direction:column; gap:0; }
+  .qr-trace .step{ display:flex; gap:14px; padding:12px 0; border-top:1px solid rgba(242,239,225,0.14); }
+  .qr-trace .step:first-child{ border-top:none; }
+  .qr-trace .dot{ width:7px; height:7px; border-radius:50%; background:var(--leaf-300); margin-top:7px; flex:none; }
+  .qr-trace .step div b{ display:block; font-size:14px; color:#fff; }
+  .qr-trace .step div span{ font-size:13px; color:var(--on-ocean-soft); }
+
+  /* ============ DATA / DASHBOARD ============ */
+  .stat-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-top:8px; }
+  @media (max-width:900px){ .stat-row{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:520px){ .stat-row{ grid-template-columns:1fr; } }
+  .stat-tile{
+    background:var(--chart-surface); border:1px solid var(--line); border-radius:var(--radius-m);
+    padding:20px 22px;
+  }
+  .stat-tile .label{ font-size:13px; color:var(--chart-ink-2); }
+  .stat-tile .value{ margin-top:8px; font-family:"Public Sans", sans-serif; font-weight:700; font-size:32px; color:var(--chart-ink); }
+  .stat-tile .value small{ font-size:16px; font-weight:600; color:var(--chart-ink-2); }
+  .stat-tile .spark{ margin-top:10px; width:100%; height:28px; }
+
+  .viz-grid{ display:grid; grid-template-columns:1.4fr 1fr; gap:22px; margin-top:26px; }
+  @media (max-width:980px){ .viz-grid{ grid-template-columns:1fr; } }
+  .viz-card{
+    background:var(--chart-surface); border:1px solid var(--line); border-radius:var(--radius-m);
+    padding:26px;
+  }
+  .viz-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:6px; }
+  .viz-head h3{ font-size:16px; font-family:"Public Sans", sans-serif; font-weight:700; color:var(--chart-ink); }
+  .viz-head p{ font-size:12.5px; color:var(--chart-ink-2); margin-top:3px; }
+  .legend{ display:flex; gap:14px; flex-wrap:wrap; margin-top:14px; }
+  .legend .item{ display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--chart-ink-2); }
+  .legend .sw{ width:10px; height:10px; border-radius:2px; }
+
+  .range-chart{ display:flex; flex-direction:column; gap:10px; margin-top:12px; }
+  .range-row{ display:grid; grid-template-columns:88px 1fr 68px; align-items:center; gap:10px; }
+  .range-label{ font-size:11px; color:var(--chart-ink-2); }
+  .range-track{ position:relative; height:10px; background:var(--chart-grid); border-radius:6px; overflow:hidden; }
+  .range-fill{ position:absolute; top:0; bottom:0; background:var(--leaf-500); border-radius:6px; }
+  .range-track.ce .range-fill{ background:var(--series-1); }
+  .range-value{ font-size:11px; color:var(--chart-ink); text-align:right; }
+  .range-axis{
+    display:flex; justify-content:space-between; margin-top:4px;
+    padding-left:98px; padding-right:68px;
+    font-size:10px; color:var(--chart-axis); font-family:"JetBrains Mono", monospace;
+  }
+
+  .chart-wrap{ position:relative; }
+  .tooltip{
+    position:absolute; pointer-events:none; opacity:0; transform:translate(-50%,-6px);
+    background:var(--ocean-900); color:var(--on-ocean); border-radius:8px; padding:9px 12px;
+    font-size:12.5px; line-height:1.5; box-shadow:0 8px 20px -8px rgba(0,0,0,0.5);
+    transition:opacity .1s ease; white-space:nowrap; z-index:5;
+  }
+  .tooltip.show{ opacity:1; }
+  .tooltip b{ display:block; font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--sun-300); margin-bottom:3px; }
+  .tooltip .row{ display:flex; align-items:center; gap:6px; }
+  .tooltip .row .sw{ width:8px; height:8px; border-radius:2px; }
+
+  .table-toggle{
+    margin-top:16px; font-size:12.5px; color:var(--chart-ink-2); cursor:pointer;
+    background:none; border:none; text-decoration:underline; padding:0; font-family:inherit;
+  }
+  table.data-table{
+    width:100%; border-collapse:collapse; margin-top:12px; font-size:13px;
+  }
+  table.data-table caption{ text-align:left; font-size:12px; color:var(--chart-ink-2); margin-bottom:6px; }
+  table.data-table th, table.data-table td{ text-align:right; padding:6px 10px; border-bottom:1px solid var(--line); }
+  table.data-table th:first-child, table.data-table td:first-child{ text-align:left; }
+  table.data-table thead th{ color:var(--chart-ink-2); font-weight:600; font-size:12px; }
+
+  /* ============ GALLERY ============ */
+  .gallery{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:8px; }
+  @media (max-width:900px){ .gallery{ grid-template-columns:repeat(2,1fr); } }
+  .gal-item{
+    aspect-ratio:4/5; border-radius:var(--radius-m); border:1px dashed var(--line-strong);
+    display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px;
+    background:
+      repeating-linear-gradient(135deg, var(--surface-2) 0 2px, transparent 2px 14px),
+      var(--surface);
+    color:var(--ink-mute); text-align:center; padding:16px;
+  }
+  .gal-item svg{ width:30px; height:30px; opacity:0.6; }
+  .gal-item span{ font-size:12px; font-family:"JetBrains Mono", monospace; }
+
+  /* ============ CURRICULUM STRIP ============ */
+  .framework-row{ display:flex; flex-wrap:wrap; gap:12px; margin-top:22px; }
+  .framework-row .chip{ font-size:12.5px; padding:7px 14px; }
+
+  /* ============ CONTACT / FOOTER ============ */
+  .contact-grid{ display:grid; grid-template-columns:1fr 1fr; gap:44px; }
+  @media (max-width:820px){ .contact-grid{ grid-template-columns:1fr; } }
+  .contact-card{ background:var(--paper); border:1px solid var(--line); border-radius:var(--radius-m); padding:28px; }
+  .contact-card dl{ margin:18px 0 0; display:flex; flex-direction:column; gap:12px; }
+  .contact-card dt{ font-family:"JetBrains Mono", monospace; font-size:11px; color:var(--ink-mute); text-transform:uppercase; letter-spacing:0.05em; }
+  .contact-card dd{ margin:2px 0 0; font-size:15px; }
+
+  .contact-form{
+    max-width:640px; margin:56px auto 0;
+    background:var(--paper); border:1px solid var(--line); border-radius:var(--radius-m);
+    padding:32px;
+  }
+  .contact-form h3{ margin-top:10px; font-size:1.3rem; }
+  .contact-form .form-hint{ margin-top:8px; font-size:13.5px; color:var(--ink-soft); line-height:1.6; }
+  .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:22px; }
+  @media (max-width:560px){ .form-grid{ grid-template-columns:1fr; } }
+  .form-field{ display:flex; flex-direction:column; gap:6px; font-size:13px; margin-top:16px; }
+  .form-grid .form-field{ margin-top:0; }
+  .form-field span{ font-family:"JetBrains Mono", monospace; font-size:11px; color:var(--ink-mute); text-transform:uppercase; letter-spacing:0.05em; }
+  .form-field input, .form-field textarea{
+    font:inherit; font-size:14.5px; padding:10px 12px; border-radius:var(--radius-s);
+    border:1px solid var(--line-strong); background:var(--surface); color:var(--ink);
+    resize:vertical;
+  }
+  .form-field input:focus, .form-field textarea:focus{ outline:2px solid var(--leaf-500); outline-offset:1px; border-color:var(--leaf-500); }
+  .contact-form .btn{ margin-top:22px; }
+  .form-status{ margin-top:12px; font-size:13px; color:var(--leaf-600); min-height:18px; }
+  .form-status.error{ color:#b3261e; }
+
+  footer{ background:var(--ocean-900); color:var(--on-ocean-soft); padding:44px 0 30px; }
+  .footer-row{ display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap; }
+  footer .fbrand{ display:flex; align-items:center; gap:12px; }
+  footer .fbrand svg{ width:30px; height:30px; }
+  footer .fbrand b{ display:block; color:#fff; font-family:"Fraunces", serif; font-size:15px; }
+  footer p.small{ font-size:12.5px; margin-top:18px; color:var(--on-ocean-soft); opacity:0.8; }
+  footer .flinks{ display:flex; gap:20px; list-style:none; padding:0; margin:0; font-size:13.5px; }
+  footer .flinks button{ text-decoration:none; color:var(--on-ocean-soft); cursor:pointer; }
+  footer .flinks button:hover{ color:#fff; }
+  footer .fcontact{
+    display:flex; flex-wrap:wrap; gap:8px 22px; margin-top:22px; padding-top:22px;
+    border-top:1px solid rgba(242,239,225,0.14);
+    font-family:"JetBrains Mono", monospace; font-size:12.5px; color:var(--on-ocean-soft);
+  }
+  footer .fcontact span{ display:inline-flex; align-items:center; gap:7px; }
+  footer .fcontact svg{ width:13px; height:13px; flex:none; opacity:0.75; }
+  footer p.copyright{ font-size:12px; margin-top:14px; color:var(--on-ocean-soft); opacity:0.65; }
+</style>
+
+<header class="site">
+  <nav class="nav wrap">
+    <button type="button" class="brand" data-route="inicio">
+      <svg class="brand-badge" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+        <circle cx="50" cy="50" r="47" fill="var(--ocean-700)"/>
+        <circle cx="50" cy="50" r="47" stroke="var(--sun-500)" stroke-width="2"/>
+        <path d="M50 24c11 8 17 18 17 28 0 10-8 17-17 17s-17-7-17-17c0-10 6-20 17-28Z" fill="var(--leaf-500)"/>
+        <path d="M50 41v28" stroke="var(--ocean-900)" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span class="brand-text">
+        <b>CIEHS</b>
+        <span>I.E. 80033 José Olaya · Huanchaco</span>
+      </span>
+    </button>
+    <ul class="navlinks">
+      <li><button type="button" data-route="metodologia">Metodología</button></li>
+      <li><button type="button" data-route="investigaciones">Investigaciones</button></li>
+      <li><button type="button" data-route="equipos">Equipos</button></li>
+      <li><button type="button" data-route="modulos">Módulos</button></li>
+      <li><button type="button" data-route="trazabilidad">Trazabilidad</button></li>
+      <li><button type="button" data-route="datos">Datos</button></li>
+      <li><button type="button" data-route="contacto">Contacto</button></li>
+    </ul>
+    <button class="navtoggle" id="navToggle" aria-expanded="false" aria-controls="mobileNav" aria-label="Abrir menú">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 5h14M2 9h14M2 13h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </nav>
+  <ul id="mobileNav" class="wrap" style="display:none; list-style:none; padding:0 0 18px; margin:0; flex-direction:column; gap:14px;">
+    <li><button type="button" data-route="metodologia">Metodología</button></li>
+    <li><button type="button" data-route="investigaciones">Investigaciones</button></li>
+    <li><button type="button" data-route="equipos">Equipos</button></li>
+    <li><button type="button" data-route="modulos">Módulos</button></li>
+    <li><button type="button" data-route="trazabilidad">Trazabilidad</button></li>
+    <li><button type="button" data-route="datos">Datos</button></li>
+    <li><button type="button" data-route="contacto">Contacto</button></li>
+  </ul>
+</header>
+
+<main>
+
+  <!-- ============ HERO ============ -->
+  <section id="inicio" class="hero" data-page="inicio" style="padding-top:64px;">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow" style="color:var(--sun-300);">I.E. 80033 José Olaya — Lema: "Dios, Patria y Cultura"</p>
+        <h1 style="margin-top:18px; font-size:clamp(2rem, 3.6vw, 3.1rem); line-height:1.14;">Centro de Investigación Escolar Hidropónico Sostenible <em>(CIEHS)</em></h1>
+        <p class="hero-sub">Innovación científica escolar, seguridad alimentaria y sostenibilidad desde Huanchaco para el Perú.</p>
+        <div class="hero-kpis">
+          <div class="hero-kpi"><p class="n tabular">120</p><p class="l">Estudiantes Investigadores<br>3.° a 5.° Secundaria</p></div>
+          <div class="hero-kpi"><p class="n tabular">6</p><p class="l">Equipos de Indagación Científica</p></div>
+          <div class="hero-kpi"><p class="n tabular">4</p><p class="l">Módulos Hidropónicos Activos</p></div>
+          <div class="hero-kpi"><p class="n tabular">90<small>%</small></p><p class="l">Ahorro Hídrico vs. Agricultura Tradicional</p></div>
+        </div>
+        <div class="hero-actions">
+          <button type="button" class="btn btn-primary" data-route="investigaciones">Ver investigaciones</button>
+          <button type="button" class="btn btn-ghost" data-route="metodologia">Cómo funciona</button>
+        </div>
+      </div>
+      <div class="hero-badge-card">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <circle cx="60" cy="60" r="56" fill="none" stroke="var(--sun-300)" stroke-width="1.4" stroke-dasharray="3 5"/>
+          <circle cx="60" cy="60" r="46" fill="rgba(242,239,225,0.05)"/>
+          <path d="M60 30c13 9 20 21 20 32 0 12-9 21-20 21s-20-9-20-21c0-11 7-23 20-32Z" fill="var(--leaf-300)" opacity="0.85"/>
+          <text x="60" y="100" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="var(--sun-300)">I.E. 80033 · JOSÉ OLAYA</text>
+        </svg>
+        <p class="cap">INSIGNIA OFICIAL — MARCADOR DE POSICIÓN<br>reemplazar por el escudo institucional real (sin modificar su diseño)</p>
+        <p class="lema">"Dios, Patria y Cultura"</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ INICIO: HUB DE APARTADOS ============ -->
+  <section data-page="inicio">
+    <div class="wrap" style="text-align:center;">
+      <div class="section-head" style="max-width:100%; text-align:center; margin-left:auto; margin-right:auto;">
+        <p class="eyebrow" style="justify-content:center;">Explora el CIEHS</p>
+        <h2>Cada apartado, un espacio propio</h2>
+      </div>
+      <p class="mission-lede">El CIEHS usa cultivos hidropónicos como fenómeno de estudio, no como fin en sí mismo. Recorre la metodología, las investigaciones activas, los equipos, los módulos, la trazabilidad y los datos — cada uno con su propia información.</p>
+
+      <div class="hub-grid">
+        <button type="button" class="hub-card" data-route="metodologia">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.7-5.7M20 12a8 8 0 0 1-13.7 5.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M17 3v4h-4M7 21v-4h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h3>Metodología</h3>
+          <p>El ciclo de indagación científica que sigue cada equipo, de observar a comunicar.</p>
+          <span class="stat">8 etapas <span class="arrow">→</span></span>
+        </button>
+        <button type="button" class="hub-card" data-route="investigaciones">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M15 15l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <h3>Investigaciones</h3>
+          <p>Preguntas, hipótesis y experimentos activos de cada equipo.</p>
+          <span class="stat">6 activas <span class="arrow">→</span></span>
+        </button>
+        <button type="button" class="hub-card" data-route="equipos">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="9" r="2.4" stroke="currentColor" stroke-width="1.6"/><path d="M3 20c0-3.5 2.5-6 5.5-6s5.5 2.5 5.5 6M14.5 20c0-2.8 1.8-5 4-5.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <h3>Equipos</h3>
+          <p>150 estudiantes organizados por grado, equipo y módulo asignado.</p>
+          <span class="stat">6 equipos <span class="arrow">→</span></span>
+        </button>
+        <button type="button" class="hub-card" data-route="modulos">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3c4 3 6 6.5 6 10a6 6 0 1 1-12 0c0-3.5 2-7 6-10Z" stroke="currentColor" stroke-width="1.6"/></svg>
+          <h3>Módulos</h3>
+          <p>La infraestructura hidropónica: NFT, PET reciclado y captación de neblina.</p>
+          <span class="stat">4 módulos <span class="arrow">→</span></span>
+        </button>
+        <button type="button" class="hub-card" data-route="trazabilidad">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="14" width="3" height="3" fill="currentColor"/><rect x="18" y="18" width="3" height="3" fill="currentColor"/></svg>
+          <h3>Trazabilidad</h3>
+          <p>Cada lote con su historial: siembra, insumos, mediciones y cosecha.</p>
+          <span class="stat">Código QR <span class="arrow">→</span></span>
+        </button>
+        <button type="button" class="hub-card" data-route="datos">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20V10M11 20V4M18 20v-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <h3>Datos</h3>
+          <p>Paneles y gráficos con lo que miden los equipos en cada módulo.</p>
+          <span class="stat">2 paneles <span class="arrow">→</span></span>
+        </button>
+        <button type="button" class="hub-card" data-route="contacto">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M4 7l8 6 8-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h3>Contacto</h3>
+          <p>Escribe al equipo coordinador del CIEHS para proponer o visitar.</p>
+          <span class="stat">Escríbenos <span class="arrow">→</span></span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ METODOLOGÍA ============ -->
+  <section id="page-metodologia" data-page="metodologia" hidden>
+    <div class="wrap">
+      <button type="button" class="breadcrumb" data-route="inicio">← Inicio</button>
+      <div class="section-head">
+        <p class="eyebrow">Metodología</p>
+        <h2>No es un huerto. Es un laboratorio.</h2>
+        <p>El CIEHS usa cultivos hidropónicos como fenómeno de estudio, no como fin en sí mismo. Su ruta pedagógica oficial —<b>Descubre → Explora → Pregunta → Investiga → Analiza → Juega → Crea → Actúa → Comparte</b>— guía a cada equipo desde la curiosidad hasta la acción concreta frente al cambio climático.</p>
+      </div>
+
+      <div class="not-only">
+        <div class="card no">
+          <h3>Lo que el CIEHS no es</h3>
+          <p>Una página institucional estática. Una feria de ciencias de una sola vez. Un huerto decorativo sin registro ni análisis.</p>
+        </div>
+        <div class="card yes">
+          <h3>Lo que el CIEHS es</h3>
+          <p>Un ecosistema digital que acumula investigaciones, equipos, módulos y resultados a lo largo de varios años escolares — creciendo cada bimestre.</p>
+        </div>
+      </div>
+
+      <div class="cycle scrollx">
+        <div class="cycle-step"><div class="cycle-num">1</div><h4>Descubre</h4><p>Conoce la institución, el CIEHS y el reto Acción por el Clima.</p></div>
+        <div class="cycle-step"><div class="cycle-num">2</div><h4>Explora</h4><p>Recorre la hidroponía, sus componentes y el laboratorio físico.</p></div>
+        <div class="cycle-step"><div class="cycle-num">3</div><h4>Pregunta</h4><p>Formula el problema y la pregunta de investigación.</p></div>
+        <div class="cycle-step"><div class="cycle-num">4</div><h4>Investiga</h4><p>Plantea hipótesis, variables y diseña el experimento.</p></div>
+        <div class="cycle-step"><div class="cycle-num">5</div><h4>Analiza</h4><p>Registra datos, construye tablas y gráficos, interpreta resultados.</p></div>
+        <div class="cycle-step"><div class="cycle-num">6</div><h4>Juega</h4><p>Refuerza lo aprendido con retos, preguntas y gamificación.</p></div>
+        <div class="cycle-step"><div class="cycle-num">7</div><h4>Crea</h4><p>Propone soluciones, campañas y productos con propósito.</p></div>
+        <div class="cycle-step"><div class="cycle-num">8</div><h4>Actúa</h4><p>Ejecuta acciones concretas frente al cambio climático en su entorno.</p></div>
+        <div class="cycle-step"><div class="cycle-num">9</div><h4>Comparte</h4><p>Comunica hallazgos a la comunidad educativa y proyecta el trabajo rumbo a Eureka.</p></div>
+      </div>
+
+      <div class="climate-block">
+        <p class="eyebrow">Eje movilizador</p>
+        <h3>Reto: Acción por el Clima</h3>
+        <p>CIEHS se orienta al reto <b>Acción por el Clima</b> y conecta su propuesta educativa con los Objetivos de Desarrollo Sostenible (ODS) de la Agenda 2030 de Naciones Unidas. El <b>ODS 13</b> plantea adoptar medidas urgentes para combatir el cambio climático y sus efectos, y es el eje central de la indagación e investigación del CIEHS.</p>
+        <div class="ods-row">
+          <span class="chip ods-13">ODS 13 · Acción por el clima</span>
+          <span class="chip">ODS 2 · Hambre cero</span>
+          <span class="chip">ODS 3 · Salud y bienestar</span>
+          <span class="chip">ODS 4 · Educación de calidad</span>
+          <span class="chip">ODS 6 · Agua limpia y saneamiento</span>
+          <span class="chip">ODS 12 · Producción y consumo responsables</span>
+          <span class="chip">ODS 15 · Vida de ecosistemas terrestres</span>
+        </div>
+        <p class="eds-note">La plataforma también se inspira en los enfoques de <b>Educación para el Desarrollo Sostenible (EDS)</b> impulsados por la UNESCO, que promueven conocimientos, valores y capacidad de acción frente al cambio climático, la pérdida de biodiversidad y el uso excesivo de recursos. CIEHS comunica alineación e inspiración en los ODS de Naciones Unidas y en la EDS de la UNESCO — no es un programa oficial de la UNESCO ni cuenta con una certificación de dicho organismo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ INVESTIGACIONES ============ -->
+  <section id="investigaciones" class="alt" data-page="investigaciones" hidden>
+    <div class="wrap">
+      <button type="button" class="breadcrumb" data-route="inicio">← Inicio</button>
+      <div class="section-head">
+        <p class="eyebrow">Investigaciones</p>
+        <h2>Proyectos de investigación Eureka 2026</h2>
+        <p>Las dos investigaciones oficiales que abre el CIEHS este año, con su pregunta, hipótesis, variables y metodología. Cada equipo suma resultados y evidencias a medida que avanza el proceso.</p>
+      </div>
+
+      <div class="grid cols-2">
+        <article class="research-card">
+          <div class="top-row"><span class="code mono">INV-2026-01</span><span class="chip status-curso">Proyecto Eureka 2026</span></div>
+          <h3>Evaluación del efecto de diferentes concentraciones de solución nutritiva en la biomasa de <i>Lactuca sativa</i> (lechuga) en sistema hidropónico</h3>
+          <p class="hyp"><b>Pregunta:</b> ¿de qué manera influyen las variaciones en la concentración de la solución nutritiva hidropónica (50 %, 100 %, 150 %) en la ganancia de biomasa foliar de la lechuga?</p>
+          <p class="hyp"><b>Hipótesis:</b> a una concentración óptima estándar (100 %), la tasa de crecimiento y acumulación de biomasa foliar será significativamente mayor frente a dosis deficitarias (50 %) o saturadas (150 %).</p>
+          <dl class="var-list">
+            <div><dt>Variable independiente</dt><dd>Concentración de solución nutritiva — T1 = 50 %, T2 = 100 %, T3 = 150 %</dd></div>
+            <div><dt>Variable dependiente</dt><dd>Biomasa fresca (g), altura de planta (cm) y número de hojas emitidas</dd></div>
+            <div><dt>Variables de control</dt><dd>Fotoperiodo diario, pH de la solución (5.8–6.2), temperatura ambiental y volumen de recirculación</dd></div>
+          </dl>
+          <p class="hyp"><b>Metodología:</b> diseño en bloques completamente al azar (DBCA), 3 tratamientos y 4 réplicas por grupo.</p>
+          <div class="meta">
+            <span class="chip">Lechuga · Lactuca sativa</span>
+            <span class="chip mono">Módulo relacionado: NFT</span>
+          </div>
+        </article>
+
+        <article class="research-card">
+          <div class="top-row"><span class="code mono">INV-2026-02</span><span class="chip status-curso">Proyecto Eureka 2026</span></div>
+          <h3>Efecto de la aplicación de bioestimulante orgánico a base de germinados de lenteja (<i>Lens culinaris</i>) en el enraizamiento y desarrollo vegetativo escolar</h3>
+          <p class="hyp"><b>Pregunta:</b> ¿en qué medida la aplicación foliar y radicular de extracto de germinado de lenteja favorece la tasa de enraizamiento en plántulas hidropónicas?</p>
+          <p class="hyp"><b>Hipótesis:</b> el extracto acuoso rico en fitohormonas naturales (auxinas) incrementa significativamente la longitud y volumen radicular respecto al grupo control sin aplicación.</p>
+          <dl class="var-list">
+            <div><dt>Variable independiente</dt><dd>Dosis de bioestimulante orgánico — 0 ml/L, 10 ml/L, 20 ml/L</dd></div>
+            <div><dt>Variable dependiente</dt><dd>Longitud de raíz principal (cm), volumen radicular y porcentaje de sobrevivencia en trasplante</dd></div>
+            <div><dt>Variables de control</dt><dd>Sustrato inerte base, frecuencia de riego y humedad relativa</dd></div>
+          </dl>
+          <p class="hyp"><b>Metodología:</b> aplicación semanal controlada en almácigos, con medición biométrica cada 5 días.</p>
+          <div class="meta">
+            <span class="chip">Lenteja · Lens culinaris</span>
+            <span class="chip mono">Fase: almácigo / pre-trasplante</span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EQUIPOS ============ -->
+  <section id="equipos" data-page="equipos" hidden>
+    <div class="wrap">
+      <button type="button" class="breadcrumb" data-route="inicio">← Inicio</button>
+      <div class="section-head">
+        <p class="eyebrow">Equipos y estudiantes</p>
+        <h2>Organizados por grado, equipo y módulo</h2>
+        <p>Por protección de datos, la vista pública solo muestra iniciales, código interno, equipo y grado — nunca nombres completos ni datos de contacto. El administrador decide qué información adicional se hace pública.</p>
+      </div>
+
+      <div class="grid cols-3">
+        <div class="card team-card">
+          <div class="top-row"><h3>Equipo Raíz Alfa</h3><span class="grade">3.° B</span></div>
+          <p class="module mono">MOD-NFT-01 · Lechuga crespa</p>
+          <ul class="roster">
+            <li><span class="code">J.C.R.</span><span class="role">Coordinación</span></li>
+            <li><span class="code">M.A.T.</span><span class="role">Registro de datos</span></li>
+            <li><span class="code">L.P.V.</span><span class="role">Cuidado del cultivo</span></li>
+            <li><span class="code">D.S.Q.</span><span class="role">Comunicación</span></li>
+          </ul>
+        </div>
+
+        <div class="card team-card">
+          <div class="top-row"><h3>Equipo Agua Viva</h3><span class="grade">4.° A</span></div>
+          <p class="module mono">MOD-PET-03 · Lechuga mantecosa</p>
+          <ul class="roster">
+            <li><span class="code">R.N.H.</span><span class="role">Coordinación</span></li>
+            <li><span class="code">K.E.F.</span><span class="role">Medición hídrica</span></li>
+            <li><span class="code">A.V.B.</span><span class="role">Registro de datos</span></li>
+          </ul>
+        </div>
+
+        <div class="card team-card">
+          <div class="top-row"><h3>Equipo Neblina Huanchaquera</h3><span class="grade">5.° C</span></div>
+          <p class="module mono">MOD-CAP-02 · Captación de niebla</p>
+          <ul class="roster">
+            <li><span class="code">P.O.L.</span><span class="role">Coordinación</span></li>
+            <li><span class="code">S.T.M.</span><span class="role">Diseño experimental</span></li>
+            <li><span class="code">G.I.C.</span><span class="role">Registro de datos</span></li>
+            <li><span class="code">N.B.A.</span><span class="role">Comunicación</span></li>
+          </ul>
+        </div>
+
+        <div class="card team-card">
+          <div class="top-row"><h3>Equipo Sensores Olayinos</h3><span class="grade">4.° B</span></div>
+          <p class="module mono">MOD-NFT-02 · Acelga</p>
+          <ul class="roster">
+            <li><span class="code">E.M.Q.</span><span class="role">Coordinación técnica</span></li>
+            <li><span class="code">V.R.S.</span><span class="role">Sensores ESP32</span></li>
+            <li><span class="code">C.D.O.</span><span class="role">Registro de datos</span></li>
+          </ul>
+        </div>
+
+        <div class="card team-card">
+          <div class="top-row"><h3>Equipo Brote Sur</h3><span class="grade">3.° A</span></div>
+          <p class="module mono">MOD-NFT-02 · Germinación</p>
+          <ul class="roster">
+            <li><span class="code">Y.A.P.</span><span class="role">Coordinación</span></li>
+            <li><span class="code">F.J.L.</span><span class="role">Cuidado del cultivo</span></li>
+            <li><span class="code">I.H.C.</span><span class="role">Registro de datos</span></li>
+          </ul>
+        </div>
+
+        <div class="card team-card">
+          <div class="top-row"><h3>Equipo Cosecha Escolar</h3><span class="grade">5.° B</span></div>
+          <p class="module mono">MOD-PET-03 · Difusión</p>
+          <ul class="roster">
+            <li><span class="code">B.U.Z.</span><span class="role">Coordinación</span></li>
+            <li><span class="code">T.W.M.</span><span class="role">Encuestas</span></li>
+            <li><span class="code">O.K.R.</span><span class="role">Comunicación</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MÓDULOS ============ -->
+  <section id="modulos" class="alt" data-page="modulos" hidden>
+    <div class="wrap">
+      <button type="button" class="breadcrumb" data-route="inicio">← Inicio</button>
+      <div class="section-head">
+        <p class="eyebrow">Módulos hidropónicos</p>
+        <h2>La infraestructura del laboratorio</h2>
+        <p>Cuatro sistemas hidropónicos oficiales del CIEHS, cada uno con su rango de pH, conductividad eléctrica (CE) y cuidados específicos.</p>
+      </div>
+
+      <div class="grid cols-4">
+        <div class="card module-card">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3c4 3 6 6.5 6 10a6 6 0 1 1-12 0c0-3.5 2-7 6-10Z" stroke="currentColor" stroke-width="1.6"/></svg>
+          <h3>Sistema NFT</h3>
+          <p class="id mono">MOD-NFT-01</p>
+          <p class="module-desc">Nutrient Film Technique. Tuberías de PVC con flujo laminar continuo de solución nutritiva recirculante. Ideal para hortalizas de hoja (lechuga, espinaca).</p>
+          <dl>
+            <dt>pH</dt><dd>5.5 – 6.5</dd>
+            <dt>CE</dt><dd>1.2 – 1.8 mS/cm</dd>
+            <dt>Estado</dt><dd style="color:var(--status-good)">Activo</dd>
+          </dl>
+        </div>
+        <div class="card module-card">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 15c0-2 6-2 6 0s6 2 6 0 6-2 6 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="9" r="1.2" fill="currentColor"/><circle cx="13" cy="6" r="1" fill="currentColor"/><circle cx="17" cy="10" r="1.3" fill="currentColor"/></svg>
+          <h3>Raíz Flotante (DWC)</h3>
+          <p class="id mono">MOD-DWC-02</p>
+          <p class="module-desc">Deep Water Culture. Balsa de soporte sobre contenedor con aireación forzada constante mediante bomba de aire. Alta resistencia a cortes de energía breves.</p>
+          <dl>
+            <dt>pH</dt><dd>5.8 – 6.5</dd>
+            <dt>CE</dt><dd>1.4 – 2.0 mS/cm</dd>
+            <dt>Estado</dt><dd style="color:var(--status-good)">Activo</dd>
+          </dl>
+        </div>
+        <div class="card module-card">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3c-3 4-6 8-6 11a6 6 0 0 0 12 0c0-3-3-7-6-11Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <h3>Sustrato Inerte</h3>
+          <p class="id mono">MOD-SUS-03</p>
+          <p class="module-desc">Riego por goteo localizado con mezclas locales de perlita, arena y fibra. Recomendado para plantas de fruto o mayor porte.</p>
+          <dl>
+            <dt>pH</dt><dd>6.0 – 6.8</dd>
+            <dt>CE</dt><dd>1.8 – 2.4 mS/cm</dd>
+            <dt>Estado</dt><dd style="color:var(--status-good)">Activo</dd>
+          </dl>
+        </div>
+        <div class="card module-card">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="4" width="4" height="16" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="10" y="4" width="4" height="16" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="16" y="4" width="4" height="16" rx="1.5" stroke="currentColor" stroke-width="1.6"/></svg>
+          <h3>Sistema Vertical</h3>
+          <p class="id mono">MOD-VER-04</p>
+          <p class="module-desc">Columnas de cultivo vertical para optimizar el área escolar y la ventilación.</p>
+          <dl>
+            <dt>pH</dt><dd>5.8 – 6.5</dd>
+            <dt>CE</dt><dd>1.2 – 1.6 mS/cm</dd>
+            <dt>Estado</dt><dd style="color:var(--status-good)">Activo</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="framework-row">
+        <span class="chip">MINEDU</span>
+        <span class="chip">CNEB</span>
+        <span class="chip">DUA</span>
+        <span class="chip">PRAE</span>
+      </div>
+
+      <div style="margin-top:64px;">
+        <p class="eyebrow">Galería</p>
+        <h3 style="margin-top:10px; font-size:19px;">Registro visual del laboratorio</h3>
+        <p style="margin-top:8px; font-size:14.5px; color:var(--ink-soft); max-width:60ch;">Espacios reservados para fotografías reales de los módulos, siembras y equipos en campo.</p>
+        <div class="gallery" style="margin-top:24px;">
+          <div class="gal-item"><svg viewBox="0 0 24 24" fill="none"><path d="M4 16l5-5 4 4 3-3 4 4" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8" r="1.6" fill="currentColor"/><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.4"/></svg><span>MOD-NFT-01</span></div>
+          <div class="gal-item"><svg viewBox="0 0 24 24" fill="none"><path d="M4 16l5-5 4 4 3-3 4 4" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8" r="1.6" fill="currentColor"/><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.4"/></svg><span>Siembra INV-01</span></div>
+          <div class="gal-item"><svg viewBox="0 0 24 24" fill="none"><path d="M4 16l5-5 4 4 3-3 4 4" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8" r="1.6" fill="currentColor"/><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.4"/></svg><span>Equipo en campo</span></div>
+          <div class="gal-item"><svg viewBox="0 0 24 24" fill="none"><path d="M4 16l5-5 4 4 3-3 4 4" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8" r="1.6" fill="currentColor"/><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.4"/></svg><span>Cosecha</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TRAZABILIDAD QR ============ -->
+  <section id="trazabilidad" data-page="trazabilidad" hidden>
+    <div class="wrap">
+      <button type="button" class="breadcrumb" data-route="inicio">← Inicio</button>
+      <div class="section-head">
+        <p class="eyebrow">Trazabilidad</p>
+        <h2>Puertas de acceso entre el CIEHS físico y el digital</h2>
+        <p>Ocho códigos QR conectan el espacio físico del laboratorio con el portal — cada uno apunta a una sección específica y su destino puede actualizarse desde administración. Además, cada lote de cultivo tiene su propia bitácora: siembra, insumos, mediciones y cosecha.</p>
+      </div>
+
+      <div class="qr-grid">
+        <button type="button" class="qr-card" data-route="inicio">
+          <span class="qr-num mono">QR · 01</span>
+          <h4>QR Principal</h4>
+          <p>Acceso general al portal — entrada del CIEHS</p>
+          <span class="qr-dest">→ Inicio</span>
+        </button>
+        <div class="qr-card is-soon">
+          <span class="qr-num mono">QR · 02</span>
+          <h4>QR Mural</h4>
+          <p>Enlace al mural interactivo CIEHS — junto al mural físico</p>
+          <span class="qr-dest">Próximamente</span>
+        </div>
+        <button type="button" class="qr-card" data-route="modulos">
+          <span class="qr-num mono">QR · 03</span>
+          <h4>QR Módulos</h4>
+          <p>Estado técnico y funcionamiento hidropónico — cerca del sistema</p>
+          <span class="qr-dest">→ Módulos</span>
+        </button>
+        <button type="button" class="qr-card" data-route="investigaciones">
+          <span class="qr-num mono">QR · 04</span>
+          <h4>QR Investigaciones</h4>
+          <p>Fichas de proyectos Eureka 2026 — paneles informativos</p>
+          <span class="qr-dest">→ Investigaciones</span>
+        </button>
+        <div class="qr-card is-soon">
+          <span class="qr-num mono">QR · 05</span>
+          <h4>QR Juegos</h4>
+          <p>Retos y gamificación de aprendizaje — actividades estudiantiles</p>
+          <span class="qr-dest">Próximamente</span>
+        </div>
+        <div class="qr-card is-soon">
+          <span class="qr-num mono">QR · 06</span>
+          <h4>QR Docentes</h4>
+          <p>Repositorio pedagógico — sala docente / feria</p>
+          <span class="qr-dest">Próximamente</span>
+        </div>
+        <div class="qr-card is-soon">
+          <span class="qr-num mono">QR · 07</span>
+          <h4>QR Eureka</h4>
+          <p>Presentación científica escolar — feria / presentación</p>
+          <span class="qr-dest">Próximamente</span>
+        </div>
+        <button type="button" class="qr-card" data-route="metodologia">
+          <span class="qr-num mono">QR · 08</span>
+          <h4>QR Acción por el Clima</h4>
+          <p>ODS 13 y metas ambientales — campañas ambientales</p>
+          <span class="qr-dest">→ Metodología</span>
+        </button>
+      </div>
+
+      <div class="qr-panel" style="margin-top:64px;">
+        <div class="qr-visual">
+          <svg viewBox="0 0 90 90" aria-hidden="true">
+            <rect width="90" height="90" fill="none"/>
+            <g fill="var(--on-ocean)">
+              <rect x="4" y="4" width="22" height="22" fill="none" stroke="var(--on-ocean)" stroke-width="4"/>
+              <rect x="11" y="11" width="8" height="8"/>
+              <rect x="64" y="4" width="22" height="22" fill="none" stroke="var(--on-ocean)" stroke-width="4"/>
+              <rect x="71" y="11" width="8" height="8"/>
+              <rect x="4" y="64" width="22" height="22" fill="none" stroke="var(--on-ocean)" stroke-width="4"/>
+              <rect x="11" y="71" width="8" height="8"/>
+              <rect x="34" y="4" width="6" height="6"/><rect x="46" y="4" width="6" height="6"/>
+              <rect x="34" y="14" width="6" height="6"/><rect x="52" y="14" width="6" height="6"/>
+              <rect x="40" y="24" width="6" height="6"/><rect x="52" y="24" width="6" height="6"/>
+              <rect x="34" y="34" width="6" height="6"/><rect x="46" y="34" width="6" height="6"/><rect x="58" y="34" width="6" height="6"/>
+              <rect x="64" y="34" width="6" height="6"/><rect x="76" y="34" width="6" height="6"/>
+              <rect x="34" y="46" width="6" height="6"/><rect x="70" y="46" width="6" height="6"/><rect x="82" y="46" width="6" height="6"/>
+              <rect x="40" y="52" width="6" height="6"/><rect x="52" y="52" width="6" height="6"/><rect x="64" y="52" width="6" height="6"/>
+              <rect x="34" y="58" width="6" height="6"/><rect x="58" y="58" width="6" height="6"/><rect x="76" y="58" width="6" height="6"/>
+              <rect x="40" y="70" width="6" height="6"/><rect x="52" y="70" width="6" height="6"/><rect x="64" y="70" width="6" height="6"/><rect x="76" y="70" width="6" height="6"/>
+              <rect x="34" y="82" width="6" height="6"/><rect x="46" y="82" width="6" height="6"/><rect x="70" y="82" width="6" height="6"/>
+            </g>
+          </svg>
+          <p class="label mono">LOTE L-2026-01<br>MOD-NFT-01 · Lactuca sativa</p>
+        </div>
+        <div class="qr-body">
+          <h3>De la semilla al registro público</h3>
+          <p>Al escanear el QR de un módulo o lote, cualquier visitante de la feria o la comunidad educativa accede a su bitácora de investigación, sin exponer datos personales de los estudiantes.</p>
+          <div class="qr-trace">
+            <div class="step"><span class="dot"></span><div><b>Siembra — 04/08/2026</b><span>Lote L-2026-01 · MOD-NFT-01 · Lactuca sativa (lechuga)</span></div></div>
+            <div class="step"><span class="dot"></span><div><b>Insumos registrados</b><span>Solución nutritiva T2 (100 %) · pH inicial 6.0 · CE 1.5 mS/cm</span></div></div>
+            <div class="step"><span class="dot"></span><div><b>Fase actual — semana 3</b><span>Crecimiento vegetativo · monitoreo de pH y CE cada 5 días</span></div></div>
+            <div class="step"><span class="dot"></span><div><b>Cosecha estimada — semana 6</b><span>Balance de biomasa publicado junto a los resultados de INV-2026-01</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DATOS ============ -->
+  <section id="datos" class="alt" data-page="datos" hidden>
+    <div class="wrap">
+      <button type="button" class="breadcrumb" data-route="inicio">← Inicio</button>
+      <div class="section-head">
+        <p class="eyebrow">CIEHS Data</p>
+        <h2>Métricas e indicadores del laboratorio</h2>
+        <p>Indicadores de los cuatro módulos hidropónicos activos — <b class="mono">MOD-NFT-01</b>, <b class="mono">MOD-DWC-02</b>, <b class="mono">MOD-SUS-03</b> y <b class="mono">MOD-VER-04</b> — y del ahorro hídrico frente al cultivo tradicional en suelo.</p>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-tile">
+          <p class="label">Estudiantes en el CIEHS</p>
+          <p class="value tabular">120</p>
+        </div>
+        <div class="stat-tile">
+          <p class="label">Investigaciones activas</p>
+          <p class="value tabular">2</p>
+        </div>
+        <div class="stat-tile">
+          <p class="label">Módulos hidropónicos</p>
+          <p class="value tabular">4</p>
+        </div>
+        <div class="stat-tile">
+          <p class="label">Consumo de agua comparativo</p>
+          <p class="value tabular">-90<small>%</small></p>
+          <svg class="spark" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true">
+            <polyline points="0,22 15,19 30,20 45,14 60,12 75,7 100,5" fill="none" stroke="var(--leaf-500)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="viz-grid">
+        <div class="viz-card">
+          <div class="viz-head">
+            <div>
+              <h3>pH y conductividad eléctrica (CE) por módulo</h3>
+              <p>Rangos operativos oficiales · monitoreo en tiempo real</p>
+            </div>
+          </div>
+
+          <p style="margin-top:6px; font-size:11.5px; color:var(--chart-ink-2); text-transform:uppercase; letter-spacing:0.05em;">pH (5.5 – 6.5 general)</p>
+          <div class="range-chart">
+            <div class="range-row">
+              <span class="range-label mono">MOD-NFT-01</span>
+              <div class="range-track"><div class="range-fill" style="left:25%; width:50%;"></div></div>
+              <span class="range-value mono">5.5–6.5</span>
+            </div>
+            <div class="range-row">
+              <span class="range-label mono">MOD-DWC-02</span>
+              <div class="range-track"><div class="range-fill" style="left:40%; width:35%;"></div></div>
+              <span class="range-value mono">5.8–6.5</span>
+            </div>
+            <div class="range-row">
+              <span class="range-label mono">MOD-SUS-03</span>
+              <div class="range-track"><div class="range-fill" style="left:50%; width:40%;"></div></div>
+              <span class="range-value mono">6.0–6.8</span>
+            </div>
+            <div class="range-row">
+              <span class="range-label mono">MOD-VER-04</span>
+              <div class="range-track"><div class="range-fill" style="left:40%; width:35%;"></div></div>
+              <span class="range-value mono">5.8–6.5</span>
+            </div>
+          </div>
+          <div class="range-axis"><span>5.0</span><span>5.5</span><span>6.0</span><span>6.5</span><span>7.0</span></div>
+
+          <p style="margin-top:22px; font-size:11.5px; color:var(--chart-ink-2); text-transform:uppercase; letter-spacing:0.05em;">Conductividad eléctrica — CE (mS/cm)</p>
+          <div class="range-chart">
+            <div class="range-row">
+              <span class="range-label mono">MOD-NFT-01</span>
+              <div class="range-track ce"><div class="range-fill" style="left:13.3%; width:40%;"></div></div>
+              <span class="range-value mono">1.2–1.8</span>
+            </div>
+            <div class="range-row">
+              <span class="range-label mono">MOD-DWC-02</span>
+              <div class="range-track ce"><div class="range-fill" style="left:26.7%; width:40%;"></div></div>
+              <span class="range-value mono">1.4–2.0</span>
+            </div>
+            <div class="range-row">
+              <span class="range-label mono">MOD-SUS-03</span>
+              <div class="range-track ce"><div class="range-fill" style="left:53.3%; width:40%;"></div></div>
+              <span class="range-value mono">1.8–2.4</span>
+            </div>
+            <div class="range-row">
+              <span class="range-label mono">MOD-VER-04</span>
+              <div class="range-track ce"><div class="range-fill" style="left:13.3%; width:26.7%;"></div></div>
+              <span class="range-value mono">1.2–1.6</span>
+            </div>
+          </div>
+          <div class="range-axis"><span>1.0</span><span>1.5</span><span>2.0</span><span>2.5</span></div>
+        </div>
+
+        <div class="viz-card">
+          <div class="viz-head">
+            <div>
+              <h3>Agua por kilogramo cosechado</h3>
+              <p>Litros / kg · comparación ilustrativa</p>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <svg viewBox="0 0 260 220" role="img" aria-label="Gráfico de barras comparando litros de agua por kilogramo entre hidroponía CIEHS y cultivo tradicional">
+              <line x1="50" y1="20" x2="50" y2="180" stroke="var(--chart-axis)" stroke-width="1"/>
+              <line x1="50" y1="180" x2="240" y2="180" stroke="var(--chart-axis)" stroke-width="1"/>
+              <line x1="50" y1="140" x2="240" y2="140" stroke="var(--chart-grid)" stroke-width="1"/>
+              <line x1="50" y1="100" x2="240" y2="100" stroke="var(--chart-grid)" stroke-width="1"/>
+              <line x1="50" y1="60" x2="240" y2="60" stroke="var(--chart-grid)" stroke-width="1"/>
+              <text x="44" y="184" text-anchor="end" font-size="10" fill="var(--chart-ink-2)" font-family="JetBrains Mono, monospace">0</text>
+              <text x="44" y="144" text-anchor="end" font-size="10" fill="var(--chart-ink-2)" font-family="JetBrains Mono, monospace">50</text>
+              <text x="44" y="104" text-anchor="end" font-size="10" fill="var(--chart-ink-2)" font-family="JetBrains Mono, monospace">100</text>
+              <text x="44" y="64" text-anchor="end" font-size="10" fill="var(--chart-ink-2)" font-family="JetBrains Mono, monospace">150</text>
+
+              <rect x="88" y="166.8" width="24" height="13.2" rx="4" fill="var(--leaf-500)"><title>Hidroponía CIEHS: 15 L/kg</title></rect>
+              <text x="100" y="161" text-anchor="middle" font-size="11" font-weight="600" fill="var(--chart-ink)" font-family="Public Sans, sans-serif">15</text>
+              <text x="100" y="198" text-anchor="middle" font-size="10.5" fill="var(--chart-ink-2)" font-family="Public Sans, sans-serif">Hidroponía</text>
+
+              <rect x="168" y="60" width="24" height="120" rx="4" fill="var(--chart-axis)"><title>Cultivo tradicional: 150 L/kg</title></rect>
+              <text x="180" y="54" text-anchor="middle" font-size="11" font-weight="600" fill="var(--chart-ink)" font-family="Public Sans, sans-serif">150</text>
+              <text x="180" y="198" text-anchor="middle" font-size="10.5" fill="var(--chart-ink-2)" font-family="Public Sans, sans-serif">Tradicional</text>
+            </svg>
+          </div>
+          <p style="font-size:12px; color:var(--chart-ink-2); margin-top:10px;">Comparación ilustrativa, consistente con el ~90&nbsp;% de ahorro hídrico estimado del sistema hidropónico del CIEHS frente al cultivo tradicional en suelo.</p>
+        </div>
+
+        <div class="viz-card" style="grid-column:1/-1;">
+          <div class="viz-head">
+            <div>
+              <h3>Biomasa estimada por ciclo</h3>
+              <p>Biomasa fresca (g) por planta · ciclo de 6 semanas</p>
+            </div>
+            <span class="chip status-curso">En proceso</span>
+          </div>
+          <p style="margin-top:14px; font-size:13.5px; color:var(--chart-ink-2); line-height:1.65; max-width:74ch;">La biomasa por ciclo es la variable dependiente central de <b>INV-2026-01</b> (concentración de nutrientes en lechuga). Los valores por tratamiento — T1&nbsp;=&nbsp;50&nbsp;%, T2&nbsp;=&nbsp;100&nbsp;%, T3&nbsp;=&nbsp;150&nbsp;% — se publicarán aquí al concluir la primera cosecha, estimada para la semana&nbsp;6 del ciclo en el módulo MOD-NFT-01.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONTACTO ============ -->
+  <section id="contacto" class="alt" data-page="contacto" hidden>
+    <div class="wrap">
+      <button type="button" class="breadcrumb" data-route="inicio">← Inicio</button>
+    </div>
+    <div class="wrap contact-grid">
+      <div>
+        <p class="eyebrow">Contacto</p>
+        <h2 style="margin-top:14px; font-size:1.9rem;">Hablemos de investigación</h2>
+        <p style="margin-top:14px; color:var(--ink-soft); font-size:15.5px; line-height:1.7;">Docentes, estudiantes y aliados de la comunidad educativa pueden escribir al equipo coordinador del CIEHS para proponer investigaciones o visitar el laboratorio.</p>
+      </div>
+      <div class="contact-card">
+        <p class="eyebrow" style="color:var(--ink-mute);">Información de contacto</p>
+        <dl>
+          <div><dt>Institución</dt><dd>I.E. 80033 José Olaya — Distrito de Huanchaco, La Libertad, Perú</dd></div>
+          <div><dt>Correo del CIEHS</dt><dd class="mono">ciehs.olaya@gmail.com</dd></div>
+          <div><dt>Coordinación</dt><dd>Coordinación de Ciencia y Tecnología (Área CyT)</dd></div>
+          <div><dt>Horario de atención</dt><dd>Lunes a viernes, 8:00 a. m. – 1:00 p. m.</dd></div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <form class="contact-form" id="contactForm" novalidate>
+        <p class="eyebrow">Escríbenos</p>
+        <h3>Envíanos un mensaje</h3>
+        <p class="form-hint">Completa el formulario y se abrirá tu cliente de correo con el mensaje listo para enviar a <span class="mono">ciehs.olaya@gmail.com</span>.</p>
+        <div class="form-grid">
+          <label class="form-field">
+            <span>Nombre</span>
+            <input type="text" id="cf-nombre" name="nombre" autocomplete="name" placeholder="Tu nombre completo" required>
+          </label>
+          <label class="form-field">
+            <span>Correo</span>
+            <input type="email" id="cf-correo" name="correo" autocomplete="email" placeholder="tucorreo@ejemplo.com" required>
+          </label>
+        </div>
+        <label class="form-field">
+          <span>Asunto</span>
+          <input type="text" id="cf-asunto" name="asunto" placeholder="Motivo de tu mensaje" required>
+        </label>
+        <label class="form-field">
+          <span>Mensaje</span>
+          <textarea id="cf-mensaje" name="mensaje" rows="5" placeholder="Escribe tu mensaje" required></textarea>
+        </label>
+        <button type="submit" class="btn btn-primary">Enviar mensaje</button>
+        <p class="form-status" id="cf-status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-row">
+      <div class="fbrand">
+        <svg viewBox="0 0 100 100" fill="none" aria-hidden="true">
+          <circle cx="50" cy="50" r="47" fill="var(--ocean-700)"/>
+          <path d="M50 24c11 8 17 18 17 28 0 10-8 17-17 17s-17-7-17-17c0-10 6-20 17-28Z" fill="var(--leaf-500)"/>
+        </svg>
+        <b>CIEHS · I.E. 80033 José Olaya, Huanchaco</b>
+      </div>
+      <ul class="flinks">
+        <li><button type="button" data-route="investigaciones">Investigaciones</button></li>
+        <li><button type="button" data-route="modulos">Módulos</button></li>
+        <li><button type="button" data-route="contacto">Contacto</button></li>
+      </ul>
+    </div>
+
+    <div class="fcontact">
+      <span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M4 7l8 6 8-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>ciehs.olaya@gmail.com</span>
+      <span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Lunes a viernes, 8:00 a. m. – 1:00 p. m.</span>
+      <span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.5 7-11.5A7 7 0 0 0 5 9.5C5 14.5 12 21 12 21Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg>Huanchaco, La Libertad, Perú</span>
+    </div>
+
+    <p class="small">Investigaciones, equipos, módulos y datos aún incluyen contenido de ejemplo pendiente de reemplazo por información real del CIEHS. La insignia mostrada es un marcador de posición: usar el escudo institucional oficial sin modificarlo.</p>
+    <p class="copyright">© 2026 CIEHS - I.E. 80033 José Olaya. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // ===== router: each nav item is an independent page, switched in place =====
+  // Deliberately does NOT touch location.hash or use <a href> navigation —
+  // this page is meant to run embedded, where link-style navigation can get
+  // intercepted by the host. All routing is plain in-memory + click handlers.
+  var ROUTES = ['inicio','metodologia','investigaciones','equipos','modulos','trazabilidad','datos','contacto'];
+  var ROUTE_LABELS = {
+    metodologia:'Metodología', investigaciones:'Investigaciones', equipos:'Equipos',
+    modulos:'Módulos', trazabilidad:'Trazabilidad', datos:'Datos', contacto:'Contacto'
+  };
+  var pageEls = document.querySelectorAll('[data-page]');
+  var routeEls = document.querySelectorAll('[data-route]');
+
+  function goTo(route, isInitial){
+    if(ROUTES.indexOf(route) === -1) route = 'inicio';
+    pageEls.forEach(function(el){ el.hidden = el.getAttribute('data-page') !== route; });
+    routeEls.forEach(function(el){
+      var active = el.getAttribute('data-route') === route;
+      el.classList.toggle('is-active', active);
+      if(active){ el.setAttribute('aria-current','page'); } else { el.removeAttribute('aria-current'); }
+    });
+    document.title = route === 'inicio' ? 'CIEHS' : 'CIEHS · ' + ROUTE_LABELS[route];
+    if(!isInitial){
+      window.scrollTo(0,0);
+      var heading = document.querySelector('[data-page="'+route+'"] h1, [data-page="'+route+'"] h2');
+      if(heading){
+        heading.setAttribute('tabindex','-1');
+        heading.focus({ preventScroll:true });
+      }
+    }
+  }
+  routeEls.forEach(function(el){
+    el.addEventListener('click', function(){ goTo(el.getAttribute('data-route'), false); });
+  });
+  goTo('inicio', true);
+
+  // mobile nav
+  var toggle = document.getElementById('navToggle');
+  var mobileNav = document.getElementById('mobileNav');
+  if(toggle && mobileNav){
+    toggle.addEventListener('click', function(){
+      var open = mobileNav.style.display === 'flex';
+      mobileNav.style.display = open ? 'none' : 'flex';
+      toggle.setAttribute('aria-expanded', String(!open));
+    });
+    mobileNav.querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click', function(){ mobileNav.style.display = 'none'; toggle.setAttribute('aria-expanded','false'); });
+    });
+  }
+
+  // contact form -> opens the visitor's mail client with the message prefilled
+  // (no backend, no stored/demo state — plain local handler)
+  var contactForm = document.getElementById('contactForm');
+  if(contactForm){
+    contactForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      var statusEl = document.getElementById('cf-status');
+      if(!contactForm.checkValidity()){
+        contactForm.reportValidity();
+        if(statusEl){ statusEl.classList.add('error'); statusEl.textContent = 'Completa todos los campos antes de enviar.'; }
+        return;
+      }
+      var nombre = document.getElementById('cf-nombre').value.trim();
+      var correo = document.getElementById('cf-correo').value.trim();
+      var asunto = document.getElementById('cf-asunto').value.trim();
+      var mensaje = document.getElementById('cf-mensaje').value.trim();
+      var subject = encodeURIComponent('[CIEHS] ' + asunto);
+      var body = encodeURIComponent('Nombre: ' + nombre + '\nCorreo: ' + correo + '\n\n' + mensaje);
+      if(statusEl){ statusEl.classList.remove('error'); statusEl.textContent = 'Abriendo tu cliente de correo…'; }
+      window.location.href = 'mailto:ciehs.olaya@gmail.com?subject=' + subject + '&body=' + body;
+    });
+  }
+
+  // table toggles
+  document.querySelectorAll('.table-toggle').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var el = document.getElementById(btn.getAttribute('data-toggle'));
+      if(!el) return;
+      var showing = el.style.display !== 'none';
+      el.style.display = showing ? 'none' : 'block';
+      btn.textContent = showing ? 'Ver como tabla' : 'Ocultar tabla';
+    });
+  });
+
+})();
+</script>
