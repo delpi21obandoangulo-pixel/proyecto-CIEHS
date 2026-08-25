@@ -342,10 +342,10 @@
   .hero-actions{ display:flex; gap:14px; margin-top:34px; flex-wrap:wrap; }
 
   .hero-kpis{
-    display:grid; grid-template-columns:repeat(4,1fr); gap:14px;
-    margin-top:36px; max-width:640px;
+    display:grid; grid-template-columns:repeat(5,1fr); gap:14px;
+    margin-top:36px; max-width:800px;
   }
-  @media (max-width:900px){ .hero-kpis{ grid-template-columns:repeat(2,1fr); max-width:480px; } }
+  @media (max-width:900px){ .hero-kpis{ grid-template-columns:repeat(3,1fr); max-width:560px; } }
   @media (max-width:480px){ .hero-kpis{ grid-template-columns:1fr; max-width:320px; } }
   .hero-kpi{
     background:rgba(242,239,225,0.06);
@@ -531,12 +531,12 @@
   /* ============ JUEGA (RETOS + PASAPORTE) ============ */
   .quiz-toolbar{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-top:8px; margin-bottom:36px; }
   .quiz-levels{ display:flex; gap:8px; flex-wrap:wrap; }
-  .level-tab{
+  .level-tab, .nivel-tab{
     font-family:"JetBrains Mono", monospace; font-size:12.5px; font-weight:600;
     padding:8px 16px; border-radius:100px; border:1px solid var(--line-strong);
     background:var(--paper); color:var(--ink-soft); cursor:pointer;
   }
-  .level-tab.is-active{ background:var(--ocean-700); border-color:var(--ocean-700); color:#fff; }
+  .level-tab.is-active, .nivel-tab.is-active{ background:var(--ocean-700); border-color:var(--ocean-700); color:#fff; }
   .quiz-score{ display:flex; align-items:center; gap:14px; font-size:13.5px; color:var(--ink-soft); flex-wrap:wrap; }
   .quiz-score b{ color:var(--ink); }
   .btn-reset{
@@ -566,8 +566,9 @@
   .quiz-feedback{ margin-top:12px; font-size:13px; line-height:1.55; color:var(--ink-soft); padding-top:12px; border-top:1px dashed var(--line); }
   .quiz-feedback.is-correct{ color:var(--leaf-600); }
 
-  .passport{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:24px; }
-  @media (max-width:760px){ .passport{ grid-template-columns:1fr; } }
+  .passport{ display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-top:24px; }
+  @media (max-width:900px){ .passport{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:480px){ .passport{ grid-template-columns:1fr; } }
   .badge-card{
     padding:22px; text-align:center; background:var(--paper); border:1px solid var(--line);
     border-radius:var(--radius-m); opacity:0.55; transition:opacity .2s ease, border-color .2s ease;
@@ -693,7 +694,7 @@
 
   .range-chart{ display:flex; flex-direction:column; gap:10px; margin-top:12px; }
   .range-row{ display:grid; grid-template-columns:88px 1fr 68px; align-items:center; gap:10px; }
-  .range-label{ font-size:11px; color:var(--chart-ink-2); }
+  .range-label{ font-size:11px; color:var(--chart-ink-2); word-break:break-word; }
   .range-track{ position:relative; height:10px; background:var(--chart-grid); border-radius:6px; overflow:hidden; }
   .range-fill{ position:absolute; top:0; bottom:0; background:var(--leaf-500); border-radius:6px; }
   .range-track.ce .range-fill{ background:var(--series-1); }
@@ -793,9 +794,87 @@
   footer .fcontact span{ display:inline-flex; align-items:center; gap:7px; }
   footer .fcontact svg{ width:13px; height:13px; flex:none; opacity:0.75; }
   footer p.copyright{ font-size:12px; margin-top:14px; color:var(--on-ocean-soft); opacity:0.65; }
+
+  /* ============ AVISO BANNER ============ */
+  .aviso-banner{ background:var(--sun-500); color:var(--ocean-900); }
+  .aviso-inner{ display:flex; align-items:center; gap:12px; padding:9px 24px; font-size:13.5px; }
+  .aviso-inner .aviso-icon{ flex:none; font-size:15px; }
+  .aviso-inner p{ flex:1; font-weight:600; line-height:1.4; }
+  .aviso-inner button{ flex:none; font-size:19px; line-height:1; color:var(--ocean-900); opacity:0.65; padding:2px; }
+  .aviso-inner button:hover{ opacity:1; }
+
+  /* ============ ADMIN FAB + MODAL ============ */
+  .admin-fab{
+    position:fixed; right:20px; bottom:20px; z-index:60;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:12px 18px; border-radius:100px;
+    background:var(--ocean-800); color:var(--on-ocean);
+    border:1px solid rgba(242,239,225,0.25);
+    font-family:"JetBrains Mono", monospace; font-size:12px; font-weight:600;
+    box-shadow:0 8px 24px -10px rgba(7,40,38,0.55);
+  }
+  .admin-fab:hover{ background:var(--ocean-700); }
+  .admin-fab svg{ width:15px; height:15px; }
+  .admin-modal{ position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; padding:20px; }
+  .admin-modal-backdrop{ position:absolute; inset:0; background:rgba(5,25,23,0.62); backdrop-filter:blur(2px); }
+  .admin-modal-panel{
+    position:relative; width:100%; max-width:480px; max-height:88vh; overflow-y:auto;
+    background:var(--paper); border-radius:var(--radius-l); border:1px solid var(--line);
+    box-shadow:var(--shadow-card); padding:34px 32px 28px;
+  }
+  .admin-close{
+    position:absolute; top:16px; right:16px; width:32px; height:32px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-size:19px; line-height:1;
+    color:var(--ink-mute); background:var(--surface);
+  }
+  .admin-close:hover{ color:var(--ink); }
+  #adminPinInput{
+    margin-top:18px; width:100%; font:inherit; font-size:22px; letter-spacing:0.35em; text-align:center;
+    padding:12px; border-radius:var(--radius-s); border:1px solid var(--line-strong); background:var(--surface); color:var(--ink);
+  }
+  #adminPinInput:focus{ outline:2px solid var(--leaf-500); outline-offset:1px; border-color:var(--leaf-500); }
+  .admin-field-group{ display:flex; flex-direction:column; gap:16px; margin-top:20px; }
+  .admin-checkbox-row{ display:flex; align-items:center; gap:8px; font-size:13.5px; color:var(--ink-soft); }
+  .admin-checkbox-row input{ width:16px; height:16px; accent-color:var(--leaf-500); }
+  .admin-hint{ margin-top:6px; font-size:12px; color:var(--ink-mute); line-height:1.5; }
+
+  .form-field select{
+    font:inherit; font-size:14.5px; padding:10px 12px; border-radius:var(--radius-s);
+    border:1px solid var(--line-strong); background:var(--surface); color:var(--ink);
+  }
+  .form-field select:focus{ outline:2px solid var(--leaf-500); outline-offset:1px; border-color:var(--leaf-500); }
+
+  /* ============ TRAZABILIDAD: selector de cultivo ============ */
+  .trace-select-row{ margin-top:22px; display:flex; flex-direction:column; gap:6px; max-width:340px; }
+  .trace-select-row label{ font-family:"JetBrains Mono", monospace; font-size:11px; color:var(--sun-300); text-transform:uppercase; letter-spacing:0.05em; }
+  .trace-select{
+    font:inherit; font-size:14px; padding:10px 12px; border-radius:var(--radius-s);
+    border:1px solid rgba(242,239,225,0.3); background:rgba(242,239,225,0.07); color:#fff;
+  }
+  .trace-select option{ color:#000; }
+  .trace-select:focus{ outline:2px solid var(--sun-300); outline-offset:1px; }
+
+  /* ============ RUTAS DE APRENDIZAJE (docentes) ============ */
+  .rutas-block{ margin-bottom:60px; }
+
+  /* ============ JUEGA: simulador + calculadora ============ */
+  .sim-controls{ display:flex; flex-direction:column; gap:16px; margin-top:20px; }
+  .sim-control{ display:flex; flex-direction:column; gap:7px; font-size:13px; }
+  .sim-control span{ display:flex; justify-content:space-between; font-family:"JetBrains Mono", monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-mute); }
+  .sim-control input[type="range"]{ width:100%; accent-color:var(--leaf-500); }
+  .sim-result, .calc-result{ margin-top:16px; padding-top:14px; border-top:1px dashed var(--line); font-size:13.5px; line-height:1.6; color:var(--ink-soft); min-height:20px; }
+  .sim-result.is-success, .calc-result.is-success{ color:var(--leaf-600); font-weight:600; }
+  .sim-result.is-fail{ color:#b3261e; font-weight:600; }
 </style>
 
 <header class="site">
+  <div id="avisoBanner" class="aviso-banner" hidden role="status">
+    <div class="wrap aviso-inner">
+      <span class="aviso-icon" aria-hidden="true">📣</span>
+      <p id="avisoBannerText"></p>
+      <button type="button" id="avisoCloseBtn" aria-label="Cerrar aviso">×</button>
+    </div>
+  </div>
   <nav class="nav wrap">
     <button type="button" class="brand" data-route="inicio">
       <svg class="brand-badge" viewBox="0 0 100 100" fill="none" aria-hidden="true">
@@ -844,13 +923,14 @@
     <div class="wrap hero-grid">
       <div>
         <p class="eyebrow" style="color:var(--sun-300);">I.E. N.° 80033 José Olaya Balandra — Lema: "Dios, Patria y Cultura"</p>
-        <h1 style="margin-top:18px; font-size:clamp(2rem, 3.6vw, 3.1rem); line-height:1.14;">Centro de Investigación Escolar Hidropónico Sostenible <em>(CIEHS)</em></h1>
-        <p class="hero-sub">Innovación científica escolar, seguridad alimentaria y sostenibilidad desde Huanchaco para el Perú.</p>
+        <h1 style="margin-top:18px; font-size:clamp(2rem, 3.6vw, 3.1rem); line-height:1.14;"><span id="heroTitleMain">Centro de Investigación Escolar Hidropónico Sostenible</span> <em>(CIEHS)</em></h1>
+        <p class="hero-sub" id="heroSub">Innovación científica escolar, seguridad alimentaria y sostenibilidad desde Huanchaco para el Perú.</p>
         <div class="hero-kpis">
           <div class="hero-kpi"><p class="n tabular">120</p><p class="l">Estudiantes Investigadores<br>3.° a 5.° Secundaria</p></div>
           <div class="hero-kpi"><p class="n tabular">6</p><p class="l">Equipos de Indagación Científica</p></div>
           <div class="hero-kpi"><p class="n tabular">4</p><p class="l">Módulos Hidropónicos Activos</p></div>
-          <div class="hero-kpi"><p class="n tabular">90<small>%</small></p><p class="l">Ahorro Hídrico vs. Agricultura Tradicional</p></div>
+          <div class="hero-kpi"><p class="n tabular js-kpi-ahorro">90<small>%</small></p><p class="l">Ahorro Hídrico vs. Agricultura Tradicional</p></div>
+          <div class="hero-kpi"><p class="n tabular js-kpi-cosecha">18<small>&nbsp;kg</small></p><p class="l">Cosecha Total Acumulada</p></div>
         </div>
         <div class="hero-actions">
           <button type="button" class="btn btn-primary" data-route="investigaciones">Ver investigaciones</button>
@@ -1190,6 +1270,58 @@
       </div>
 
       <div style="margin-top:64px;">
+        <p class="eyebrow">Diversificación de cultivos</p>
+        <h3 style="margin-top:10px; font-size:19px;">Cultivos activos por especie</h3>
+        <p style="margin-top:8px; font-size:14.5px; color:var(--ink-soft); max-width:64ch;">Cada especie tiene su propio rango de pH y conductividad eléctrica (CE), y se asigna al módulo hidropónico más adecuado según su hábito de crecimiento.</p>
+        <div class="grid cols-4" style="margin-top:24px;">
+          <div class="card module-card">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3c4 3 6 6.5 6 10a6 6 0 1 1-12 0c0-3.5 2-7 6-10Z" stroke="currentColor" stroke-width="1.6"/></svg>
+            <h3>Lechuga Crespa</h3>
+            <p class="id mono">Lactuca sativa</p>
+            <p class="module-desc">Hortaliza de hoja de ciclo corto, cultivada en el sistema NFT con flujo continuo de solución nutritiva. Base de la investigación INV-2026-01.</p>
+            <dl>
+              <dt>pH</dt><dd>5.5 – 6.5</dd>
+              <dt>CE</dt><dd>1.2 – 1.8 mS/cm</dd>
+              <dt>Módulo</dt><dd class="mono">NFT-01</dd>
+            </dl>
+          </div>
+          <div class="card module-card">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3c-3 4-6 8-6 11a6 6 0 0 0 12 0c0-3-3-7-6-11Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            <h3>Espinaca</h3>
+            <p class="id mono">Spinacia oleracea</p>
+            <p class="module-desc">Hoja de rápido crecimiento y alto contenido de hierro, en raíz flotante con aireación constante para evitar asfixia radicular.</p>
+            <dl>
+              <dt>pH</dt><dd>6.0 – 6.8</dd>
+              <dt>CE</dt><dd>1.8 – 2.3 mS/cm</dd>
+              <dt>Módulo</dt><dd class="mono">DWC-02</dd>
+            </dl>
+          </div>
+          <div class="card module-card">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v16M8 8c0 6 4 8 4 8s4-2 4-8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <h3>Cebollita / Cebolla verde</h3>
+            <p class="id mono">Allium fistulosum</p>
+            <p class="module-desc">Ciclo más largo y raíz fina, en sustrato inerte con riego por goteo localizado que favorece un enraizamiento estable.</p>
+            <dl>
+              <dt>pH</dt><dd>6.0 – 7.0</dd>
+              <dt>CE</dt><dd>1.4 – 1.8 mS/cm</dd>
+              <dt>Módulo</dt><dd class="mono">SUS-03</dd>
+            </dl>
+          </div>
+          <div class="card module-card">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="4" width="4" height="16" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="10" y="4" width="4" height="16" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="16" y="4" width="4" height="16" rx="1.5" stroke="currentColor" stroke-width="1.6"/></svg>
+            <h3>Aromáticas y Acelga</h3>
+            <p class="id mono">Ocimum basilicum · Beta vulgaris</p>
+            <p class="module-desc">Aromáticas en columnas del módulo vertical y acelga en sustrato inerte, aprovechando el área escolar y mezclas locales de perlita y fibra.</p>
+            <dl>
+              <dt>pH</dt><dd>5.8 – 6.5</dd>
+              <dt>CE</dt><dd>1.4 – 2.0 mS/cm</dd>
+              <dt>Módulo</dt><dd class="mono">VER-04 / SUS-03</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:64px;">
         <p class="eyebrow">Galería</p>
         <h3 style="margin-top:10px; font-size:19px;">Registro visual del laboratorio</h3>
         <p style="margin-top:8px; font-size:14.5px; color:var(--ink-soft); max-width:60ch;">Espacios reservados para fotografías reales de los módulos, siembras y equipos en campo.</p>
@@ -1287,12 +1419,21 @@
               <rect x="34" y="82" width="6" height="6"/><rect x="46" y="82" width="6" height="6"/><rect x="70" y="82" width="6" height="6"/>
             </g>
           </svg>
-          <p class="label mono">LOTE L-2026-01<br>MOD-NFT-01 · Lactuca sativa</p>
+          <p class="label mono" id="traceQrLabel">LOTE L-2026-01<br>MOD-NFT-01 · Lactuca sativa</p>
         </div>
         <div class="qr-body">
           <h3>De la semilla al registro público</h3>
           <p>Al escanear el QR de un módulo o lote, cualquier visitante de la feria o la comunidad educativa accede a su bitácora de investigación, sin exponer datos personales de los estudiantes.</p>
-          <div class="qr-trace">
+          <div class="trace-select-row">
+            <label for="traceCropSelect">Filtrar bitácora por cultivo</label>
+            <select id="traceCropSelect" class="trace-select">
+              <option value="lechuga">Lechuga Crespa · Lactuca sativa</option>
+              <option value="espinaca">Espinaca · Spinacia oleracea</option>
+              <option value="cebollita">Cebollita · Allium fistulosum</option>
+              <option value="aromaticas">Aromáticas / Acelga</option>
+            </select>
+          </div>
+          <div class="qr-trace" id="qrTraceSteps">
             <div class="step"><span class="dot"></span><div><b>Siembra — 04/08/2026</b><span>Lote L-2026-01 · MOD-NFT-01 · Lactuca sativa (lechuga)</span></div></div>
             <div class="step"><span class="dot"></span><div><b>Insumos registrados</b><span>Solución nutritiva T2 (100 %) · pH inicial 6.0 · CE 1.5 mS/cm</span></div></div>
             <div class="step"><span class="dot"></span><div><b>Fase actual — semana 3</b><span>Crecimiento vegetativo · monitoreo de pH y CE cada 5 días</span></div></div>
@@ -1328,10 +1469,14 @@
         </div>
         <div class="stat-tile">
           <p class="label">Consumo de agua comparativo</p>
-          <p class="value tabular">-90<small>%</small></p>
+          <p class="value tabular js-kpi-ahorro-neg">-90<small>%</small></p>
           <svg class="spark" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true">
             <polyline points="0,22 15,19 30,20 45,14 60,12 75,7 100,5" fill="none" stroke="var(--leaf-500)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
+        </div>
+        <div class="stat-tile">
+          <p class="label">Cosecha total acumulada</p>
+          <p class="value tabular js-kpi-cosecha">18<small>&nbsp;kg</small></p>
         </div>
       </div>
 
@@ -1436,6 +1581,65 @@
           </div>
           <p style="margin-top:14px; font-size:13.5px; color:var(--chart-ink-2); line-height:1.65; max-width:74ch;">La biomasa por ciclo es la variable dependiente central de <b>INV-2026-01</b> (concentración de nutrientes en lechuga). Los valores por tratamiento — T1&nbsp;=&nbsp;50&nbsp;%, T2&nbsp;=&nbsp;100&nbsp;%, T3&nbsp;=&nbsp;150&nbsp;% — se publicarán aquí al concluir la primera cosecha, estimada para la semana&nbsp;6 del ciclo en el módulo MOD-NFT-01.</p>
         </div>
+
+        <div class="viz-card" style="grid-column:1/-1;">
+          <div class="viz-head">
+            <div>
+              <h3>pH y CE por cultivo</h3>
+              <p>Rango óptimo por especie · referencia para cada equipo</p>
+            </div>
+          </div>
+
+          <p style="margin-top:6px; font-size:11.5px; color:var(--chart-ink-2); text-transform:uppercase; letter-spacing:0.05em;">pH</p>
+          <div class="range-chart">
+            <div class="range-row">
+              <span class="range-label mono">Lechuga Crespa</span>
+              <div class="range-track"><div class="range-fill" style="left:25%; width:50%;"></div></div>
+              <span class="range-value mono">5.5–6.5</span>
+            </div>
+            <div class="range-row">
+              <span class="range-label mono">Espinaca</span>
+              <div class="range-track"><div class="range-fill" style="left:50%; width:40%;"></div></div>
+              <span class="range-value mono">6.0–6.8</span>
+            </div>
+            <div class="range-row">
+              <span class="range-label mono">Cebollita</span>
+              <div class="range-track"><div class="range-fill" style="left:50%; width:50%;"></div></div>
+              <span class="range-value mono">6.0–7.0</span>
+            </div>
+            <div class="range-row">
+              <span class="range-label mono">Aromáticas / Acelga</span>
+              <div class="range-track"><div class="range-fill" style="left:40%; width:35%;"></div></div>
+              <span class="range-value mono">5.8–6.5</span>
+            </div>
+          </div>
+          <div class="range-axis"><span>5.0</span><span>5.5</span><span>6.0</span><span>6.5</span><span>7.0</span></div>
+
+          <p style="margin-top:22px; font-size:11.5px; color:var(--chart-ink-2); text-transform:uppercase; letter-spacing:0.05em;">Conductividad eléctrica — CE (mS/cm)</p>
+          <div class="range-chart">
+            <div class="range-row">
+              <span class="range-label mono">Lechuga Crespa</span>
+              <div class="range-track ce"><div class="range-fill" style="left:13.3%; width:40%;"></div></div>
+              <span class="range-value mono">1.2–1.8</span>
+            </div>
+            <div class="range-row">
+              <span class="range-label mono">Espinaca</span>
+              <div class="range-track ce"><div class="range-fill" style="left:53.3%; width:33.3%;"></div></div>
+              <span class="range-value mono">1.8–2.3</span>
+            </div>
+            <div class="range-row">
+              <span class="range-label mono">Cebollita</span>
+              <div class="range-track ce"><div class="range-fill" style="left:26.7%; width:26.7%;"></div></div>
+              <span class="range-value mono">1.4–1.8</span>
+            </div>
+            <div class="range-row">
+              <span class="range-label mono">Aromáticas / Acelga</span>
+              <div class="range-track ce"><div class="range-fill" style="left:26.7%; width:40%;"></div></div>
+              <span class="range-value mono">1.4–2.0</span>
+            </div>
+          </div>
+          <div class="range-axis"><span>1.0</span><span>1.5</span><span>2.0</span><span>2.5</span></div>
+        </div>
       </div>
     </div>
   </section>
@@ -1457,7 +1661,7 @@
           <button type="button" class="level-tab" data-level="secundaria">Secundaria</button>
         </div>
         <div class="quiz-score">
-          <span>Retos superados: <b id="quizScore" class="tabular">0 / 12</b></span>
+          <span>Retos superados: <b id="quizScore" class="tabular">0 / 15</b></span>
           <button type="button" class="btn-reset" id="quizReset">Reiniciar</button>
         </div>
       </div>
@@ -1496,6 +1700,15 @@
             <button type="button" class="quiz-opt" data-correct="true">Observar y preguntar</button>
             <button type="button" class="quiz-opt" data-correct="false">Escribir la conclusión</button>
             <button type="button" class="quiz-opt" data-correct="false">Cosechar</button>
+          </div>
+          <p class="quiz-feedback" hidden></p>
+        </div>
+        <div class="quiz-q" data-qid="inicial-5" data-category="cultivo" data-explain="En el CIEHS también cultivamos espinaca, cebollita y plantas aromáticas, además de la lechuga.">
+          <p class="quiz-q-text">¿Cuál de estas verduras también se cultiva en el CIEHS, además de la lechuga?</p>
+          <div class="quiz-opts">
+            <button type="button" class="quiz-opt" data-correct="true">Espinaca</button>
+            <button type="button" class="quiz-opt" data-correct="false">Una piedra</button>
+            <button type="button" class="quiz-opt" data-correct="false">Un juguete</button>
           </div>
           <p class="quiz-feedback" hidden></p>
         </div>
@@ -1538,6 +1751,15 @@
           </div>
           <p class="quiz-feedback" hidden></p>
         </div>
+        <div class="quiz-q" data-qid="primaria-5" data-category="cultivo" data-explain="La espinaca (Spinacia oleracea) requiere un pH de 6.0 a 6.8 y una CE de 1.8 a 2.3 mS/cm.">
+          <p class="quiz-q-text">¿Qué rango de pH necesita la espinaca (<i>Spinacia oleracea</i>) en el CIEHS?</p>
+          <div class="quiz-opts">
+            <button type="button" class="quiz-opt" data-correct="true">6.0 – 6.8</button>
+            <button type="button" class="quiz-opt" data-correct="false">2.0 – 3.0</button>
+            <button type="button" class="quiz-opt" data-correct="false">9.0 – 10.0</button>
+          </div>
+          <p class="quiz-feedback" hidden></p>
+        </div>
       </div>
 
       <div class="quiz-set" data-level-set="secundaria" hidden>
@@ -1577,6 +1799,57 @@
           </div>
           <p class="quiz-feedback" hidden></p>
         </div>
+        <div class="quiz-q" data-qid="secundaria-5" data-category="cultivo" data-explain="Las aromáticas crecen en el módulo vertical (MOD-VER-04) y la acelga en sustrato inerte (MOD-SUS-03).">
+          <p class="quiz-q-text">¿En qué módulos se cultivan las aromáticas y la acelga en el CIEHS?</p>
+          <div class="quiz-opts">
+            <button type="button" class="quiz-opt" data-correct="true">Sistema Vertical y Sustrato Inerte</button>
+            <button type="button" class="quiz-opt" data-correct="false">Solo en agua de mar</button>
+            <button type="button" class="quiz-opt" data-correct="false">En macetas de tierra sin control</button>
+          </div>
+          <p class="quiz-feedback" hidden></p>
+        </div>
+      </div>
+
+      <div style="margin-top:64px;">
+        <p class="eyebrow">Centro de juegos · Reto Acción por el Clima</p>
+        <h3 style="margin-top:10px; font-size:19px;">Simulador de Cultivo y Calculadora de Ahorro de Agua</h3>
+        <p style="margin-top:8px; font-size:14.5px; color:var(--ink-soft); max-width:64ch;">Dos herramientas interactivas para experimentar con las variables del cultivo hidropónico y calcular el impacto ambiental de la cosecha.</p>
+
+        <div class="grid cols-2" style="margin-top:24px; align-items:start;">
+          <div class="card" style="padding:26px;">
+            <p class="eyebrow">Mini-juego</p>
+            <h4 style="margin-top:8px; font-size:16.5px; font-family:'Fraunces',serif; font-weight:600;">Simulador de Cultivo</h4>
+            <p style="margin-top:8px; font-size:13.5px; color:var(--ink-soft); line-height:1.6;">Equilibra el agua, el pH y la luz. Si te alejas de los rangos óptimos del módulo NFT, la cosecha se verá afectada.</p>
+            <div class="sim-controls">
+              <label class="sim-control">
+                <span>Agua <b id="simAguaVal" class="mono">70</b>%</span>
+                <input type="range" id="simAgua" min="0" max="100" value="70">
+              </label>
+              <label class="sim-control">
+                <span>pH <b id="simPhVal" class="mono">6.0</b></span>
+                <input type="range" id="simPh" min="40" max="90" value="60">
+              </label>
+              <label class="sim-control">
+                <span>Luz <b id="simLuzVal" class="mono">14</b> h/día</span>
+                <input type="range" id="simLuz" min="0" max="24" value="14">
+              </label>
+            </div>
+            <button type="button" class="btn btn-primary" id="simCultivarBtn" style="margin-top:18px;">Cultivar</button>
+            <div class="sim-result" id="simResult" aria-live="polite"></div>
+          </div>
+
+          <div class="card" style="padding:26px;">
+            <p class="eyebrow">Calculadora ambiental</p>
+            <h4 style="margin-top:8px; font-size:16.5px; font-family:'Fraunces',serif; font-weight:600;">Calculadora de Ahorro de Agua</h4>
+            <p style="margin-top:8px; font-size:13.5px; color:var(--ink-soft); line-height:1.6;">Ingresa cuántos kilogramos de hortalizas cosechó tu equipo y descubre cuántos litros de agua potable se ahorraron en Huanchaco frente al cultivo tradicional en suelo.</p>
+            <label class="form-field" style="max-width:220px; margin-top:18px;">
+              <span>Kg cosechados</span>
+              <input type="number" id="calcKg" min="0" step="0.1" placeholder="Ej. 5">
+            </label>
+            <button type="button" class="btn btn-primary" id="calcBtn" style="margin-top:14px;">Calcular ahorro</button>
+            <div class="calc-result" id="calcResult" aria-live="polite"></div>
+          </div>
+        </div>
       </div>
 
       <div style="margin-top:64px;">
@@ -1602,6 +1875,12 @@
             <p>Supera al menos un reto en cada nivel: Inicial, Primaria y Secundaria.</p>
             <span class="badge-state">Bloqueada</span>
           </div>
+          <div class="badge-card" data-badge="cultivo">
+            <svg class="badge-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3c-3 4-6 8-6 11a6 6 0 0 0 12 0c0-3-3-7-6-11Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            <h4>Guardián del Cultivo</h4>
+            <p>Responde correctamente un reto sobre las especies cultivadas en el CIEHS.</p>
+            <span class="badge-state">Bloqueada</span>
+          </div>
         </div>
       </div>
     </div>
@@ -1615,6 +1894,72 @@
         <p class="eyebrow">Recursos para docentes</p>
         <h2>Repositorio curricular del CIEHS</h2>
         <p>Fichas, guías, rúbricas, listas de cotejo e infografías organizadas por nivel, área curricular y tipo de recurso. Los filtros ya son funcionales; los archivos se habilitan desde el panel de administración a medida que el equipo docente los publica.</p>
+      </div>
+
+      <div class="rutas-block">
+        <p class="eyebrow">Rutas de Aprendizaje</p>
+        <h3 style="margin-top:10px; font-size:19px;">Actividades por nivel educativo</h3>
+        <p style="margin-top:8px; font-size:14.5px; color:var(--ink-soft); max-width:64ch;">Cada nivel cuenta con su propia ruta de actividades, alineada al ciclo de indagación del CIEHS — de lo sensorial en Inicial al análisis experimental en Secundaria.</p>
+
+        <div class="quiz-levels" style="margin-top:24px;">
+          <button type="button" class="nivel-tab is-active" data-nivel-tab="inicial">Nivel Inicial</button>
+          <button type="button" class="nivel-tab" data-nivel-tab="primaria">Nivel Primaria</button>
+          <button type="button" class="nivel-tab" data-nivel-tab="secundaria">Nivel Secundaria</button>
+        </div>
+
+        <div class="grid cols-3" data-nivel-panel="inicial" style="margin-top:24px;">
+          <article class="card res-card">
+            <div class="top-row"><span class="chip">Actividad sensorial</span></div>
+            <h3>Toca, huele y observa</h3>
+            <p>Los niños exploran hojas, raíces y semillas con los sentidos, describiendo texturas, olores y colores antes de sembrar.</p>
+          </article>
+          <article class="card res-card">
+            <div class="top-row"><span class="chip">Infografía</span></div>
+            <h3>Las partes de la planta</h3>
+            <p>Lámina ilustrada de raíz, tallo, hoja, flor y fruto, para colorear y nombrar en el aula.</p>
+          </article>
+          <article class="card res-card">
+            <div class="top-row"><span class="chip">Audiocuento</span></div>
+            <h3>El viaje de una gota de agua</h3>
+            <p>Relato sonoro sobre el recorrido del agua en el sistema hidropónico, del depósito a la raíz y de vuelta.</p>
+          </article>
+        </div>
+
+        <div class="grid cols-3" data-nivel-panel="primaria" hidden style="margin-top:24px;">
+          <article class="card res-card">
+            <div class="top-row"><span class="chip">Ficha de medición</span></div>
+            <h3>Mido mi planta cada semana</h3>
+            <p>Registro de altura y número de hojas con regla y bitácora, para observar el crecimiento en el tiempo.</p>
+          </article>
+          <article class="card res-card">
+            <div class="top-row"><span class="chip">Gráfico de barras</span></div>
+            <h3>Graficamos el crecimiento</h3>
+            <p>Plantilla para transformar las mediciones semanales en un gráfico de barras sencillo.</p>
+          </article>
+          <article class="card res-card">
+            <div class="top-row"><span class="chip">Experimento</span></div>
+            <h3>Germinación comparada</h3>
+            <p>Comparar la germinación de semillas en algodón húmedo y en sustrato inerte.</p>
+          </article>
+        </div>
+
+        <div class="grid cols-3" data-nivel-panel="secundaria" hidden style="margin-top:24px;">
+          <article class="card res-card">
+            <div class="top-row"><span class="chip">Cuaderno de campo</span></div>
+            <h3>Bitácora rumbo a Eureka</h3>
+            <p>Registro estructurado de pregunta, hipótesis, variables, mediciones y evidencia fotográfica.</p>
+          </article>
+          <article class="card res-card">
+            <div class="top-row"><span class="chip">Procedimiento</span></div>
+            <h3>Estandarización de soluciones nutritivas</h3>
+            <p>Cálculo de concentraciones al 50 %, 100 % y 150 % para preparar los tratamientos de INV-2026-01.</p>
+          </article>
+          <article class="card res-card">
+            <div class="top-row"><span class="chip">Análisis de datos</span></div>
+            <h3>Biomasa e hipótesis</h3>
+            <p>Cálculo de biomasa fresca por tratamiento y formulación de hipótesis con base en los resultados.</p>
+          </article>
+        </div>
       </div>
 
       <div class="res-filters">
@@ -1929,6 +2274,62 @@
 
 </main>
 
+<!-- ============ PANEL DE ADMINISTRACIÓN (CMS localStorage) ============ -->
+<button type="button" class="admin-fab" id="adminOpenBtn">
+  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" stroke="currentColor" stroke-width="1.6"/><path d="M4 12h1.5M18.5 12H20M12 4v1.5M12 18.5V20M6.5 6.5l1 1M16.5 16.5l1 1M17.5 6.5l-1 1M7.5 16.5l-1 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+  Administración
+</button>
+
+<div id="adminModal" class="admin-modal" hidden>
+  <div class="admin-modal-backdrop" id="adminBackdrop"></div>
+  <div class="admin-modal-panel" role="dialog" aria-modal="true" aria-labelledby="adminModalTitle">
+    <button type="button" class="admin-close" id="adminCloseBtn" aria-label="Cerrar panel">×</button>
+
+    <div id="adminPinStep">
+      <p class="eyebrow">Panel administrativo</p>
+      <h3 id="adminModalTitle" style="margin-top:10px; font-size:20px;">Acceso restringido</h3>
+      <p style="margin-top:10px; font-size:14px; color:var(--ink-soft);">Ingresa el PIN de administración del CIEHS para editar la portada, los indicadores y publicar un aviso.</p>
+      <input type="password" id="adminPinInput" inputmode="numeric" maxlength="8" placeholder="PIN" autocomplete="off">
+      <button type="button" class="btn btn-primary" id="adminPinSubmit" style="margin-top:16px; width:100%; justify-content:center;">Ingresar</button>
+      <p id="adminPinError" class="form-status error" hidden>PIN incorrecto. Inténtalo de nuevo.</p>
+    </div>
+
+    <div id="adminFormStep" hidden>
+      <p class="eyebrow">Panel administrativo</p>
+      <h3 style="margin-top:10px; font-size:20px;">Editar el portal</h3>
+      <div class="admin-field-group">
+        <label class="form-field">
+          <span>Titular de impacto (portada)</span>
+          <input type="text" id="adminHeroTitle" maxlength="120">
+        </label>
+        <label class="form-field">
+          <span>Bajada / mensaje de impacto</span>
+          <textarea id="adminHeroSub" rows="2" maxlength="220"></textarea>
+        </label>
+        <label class="form-field">
+          <span>Cosecha total acumulada (kg)</span>
+          <input type="number" id="adminKpiCosecha" min="0" step="0.1">
+        </label>
+        <label class="form-field">
+          <span>Ahorro de agua (%)</span>
+          <input type="number" id="adminKpiAhorro" min="0" max="100" step="1">
+        </label>
+        <label class="form-field">
+          <span>Aviso urgente para estudiantes/familias</span>
+          <textarea id="adminAviso" rows="2" maxlength="220" placeholder="Ej. Mañana no habrá riego manual por mantenimiento del módulo NFT."></textarea>
+        </label>
+        <label class="admin-checkbox-row">
+          <input type="checkbox" id="adminAvisoActive">
+          Publicar este aviso en el portal
+        </label>
+      </div>
+      <p class="admin-hint">Los cambios se guardan en este navegador (localStorage) y se reflejan de inmediato en la web.</p>
+      <button type="button" class="btn btn-primary" id="adminSaveBtn" style="margin-top:20px; width:100%; justify-content:center;">Guardar y publicar cambios</button>
+      <p class="form-status" id="adminSaveStatus" role="status" aria-live="polite"></p>
+    </div>
+  </div>
+</div>
+
 <footer>
   <div class="wrap">
     <div class="footer-row">
@@ -2057,8 +2458,9 @@
     if(saved && saved.correct && saved.badges){ state = saved; }
   }catch(e){}
 
-  var levelTabs = document.querySelectorAll('.level-tab');
-  var levelSets = document.querySelectorAll('.quiz-set');
+  var juegaPage = document.getElementById('page-juega');
+  var levelTabs = juegaPage ? juegaPage.querySelectorAll('.level-tab') : [];
+  var levelSets = juegaPage ? juegaPage.querySelectorAll('.quiz-set') : [];
   if(!levelTabs.length) return; // page not present
 
   levelTabs.forEach(function(tab){
@@ -2118,6 +2520,7 @@
       var cat = q.getAttribute('data-category');
       if(cat === 'agua') state.badges.agua = true;
       if(cat === 'clima') state.badges.clima = true;
+      if(cat === 'cultivo') state.badges.cultivo = true;
       state.badges.ciencia = computeCienciaBadge();
     }
     persist(); updateScore(); updateBadges();
@@ -2168,7 +2571,8 @@
 <script>
 (function(){
   var groups = document.querySelectorAll('.res-filter-chips');
-  var cards = document.querySelectorAll('.res-card');
+  var resGrid = document.getElementById('resGrid');
+  var cards = resGrid ? resGrid.querySelectorAll('.res-card') : [];
   if(!groups.length || !cards.length) return;
 
   var countEl = document.getElementById('resCount');
@@ -2265,5 +2669,280 @@
   navBtns.forEach(function(b){
     b.addEventListener('click', function(){ activate(b.getAttribute('data-hotspot')); });
   });
+})();
+</script>
+
+<!-- ============ PANEL DE ADMINISTRACIÓN: PIN + CMS en localStorage ============ -->
+<script>
+(function(){
+  var ADMIN_KEY = 'ciehs_admin_v1';
+  var ADMIN_PIN = '2026';
+  var DEFAULTS = { heroTitle:'', heroSub:'', kpiCosechaKg:'', kpiAhorroPct:'', aviso:'', avisoActive:false };
+
+  function loadAdminData(){
+    try{
+      var saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || 'null');
+      if(saved && typeof saved === 'object'){
+        var merged = {}; for(var k in DEFAULTS){ merged[k] = (k in saved) ? saved[k] : DEFAULTS[k]; }
+        return merged;
+      }
+    }catch(e){}
+    return Object.assign({}, DEFAULTS);
+  }
+  function saveAdminData(data){ try{ localStorage.setItem(ADMIN_KEY, JSON.stringify(data)); }catch(e){} }
+
+  function avisoDismissed(){
+    try{ return sessionStorage.getItem('ciehs_aviso_dismissed') === '1'; }catch(e){ return false; }
+  }
+
+  function applyAdminData(data){
+    var titleEl = document.getElementById('heroTitleMain');
+    if(titleEl && data.heroTitle) titleEl.textContent = data.heroTitle;
+    var subEl = document.getElementById('heroSub');
+    if(subEl && data.heroSub) subEl.textContent = data.heroSub;
+
+    if(data.kpiAhorroPct !== '' && data.kpiAhorroPct !== null && data.kpiAhorroPct !== undefined){
+      document.querySelectorAll('.js-kpi-ahorro').forEach(function(el){ el.innerHTML = data.kpiAhorroPct + '<small>%</small>'; });
+      document.querySelectorAll('.js-kpi-ahorro-neg').forEach(function(el){ el.innerHTML = '-' + data.kpiAhorroPct + '<small>%</small>'; });
+    }
+    if(data.kpiCosechaKg !== '' && data.kpiCosechaKg !== null && data.kpiCosechaKg !== undefined){
+      document.querySelectorAll('.js-kpi-cosecha').forEach(function(el){ el.innerHTML = data.kpiCosechaKg + '<small>&nbsp;kg</small>'; });
+    }
+
+    var avisoEl = document.getElementById('avisoBanner');
+    var avisoTextEl = document.getElementById('avisoBannerText');
+    if(avisoEl && avisoTextEl){
+      if(data.avisoActive && data.aviso && data.aviso.trim() && !avisoDismissed()){
+        avisoTextEl.textContent = data.aviso.trim();
+        avisoEl.hidden = false;
+      } else {
+        avisoEl.hidden = true;
+      }
+    }
+  }
+
+  var adminData = loadAdminData();
+  applyAdminData(adminData);
+
+  var avisoCloseBtn = document.getElementById('avisoCloseBtn');
+  if(avisoCloseBtn){
+    avisoCloseBtn.addEventListener('click', function(){
+      var el = document.getElementById('avisoBanner');
+      if(el) el.hidden = true;
+      try{ sessionStorage.setItem('ciehs_aviso_dismissed', '1'); }catch(e){}
+    });
+  }
+
+  var adminFab = document.getElementById('adminOpenBtn');
+  var adminModal = document.getElementById('adminModal');
+  if(!adminFab || !adminModal) return; // admin UI not present
+
+  var adminBackdrop = document.getElementById('adminBackdrop');
+  var adminCloseBtn = document.getElementById('adminCloseBtn');
+  var adminPinStep = document.getElementById('adminPinStep');
+  var adminFormStep = document.getElementById('adminFormStep');
+  var adminPinInput = document.getElementById('adminPinInput');
+  var adminPinSubmit = document.getElementById('adminPinSubmit');
+  var adminPinError = document.getElementById('adminPinError');
+  var adminSaveBtn = document.getElementById('adminSaveBtn');
+  var adminSaveStatus = document.getElementById('adminSaveStatus');
+
+  function openAdminModal(){
+    adminModal.hidden = false;
+    adminPinStep.hidden = false;
+    adminFormStep.hidden = true;
+    adminPinInput.value = '';
+    adminPinError.hidden = true;
+    if(adminSaveStatus) adminSaveStatus.textContent = '';
+    adminPinInput.focus();
+  }
+  function closeAdminModal(){ adminModal.hidden = true; }
+
+  adminFab.addEventListener('click', openAdminModal);
+  if(adminBackdrop) adminBackdrop.addEventListener('click', closeAdminModal);
+  if(adminCloseBtn) adminCloseBtn.addEventListener('click', closeAdminModal);
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && !adminModal.hidden) closeAdminModal();
+  });
+
+  function fillAdminForm(){
+    var titleEl = document.getElementById('heroTitleMain');
+    var subEl = document.getElementById('heroSub');
+    document.getElementById('adminHeroTitle').value = adminData.heroTitle || (titleEl ? titleEl.textContent.trim() : '');
+    document.getElementById('adminHeroSub').value = adminData.heroSub || (subEl ? subEl.textContent.trim() : '');
+    document.getElementById('adminKpiCosecha').value = adminData.kpiCosechaKg !== '' ? adminData.kpiCosechaKg : 18;
+    document.getElementById('adminKpiAhorro').value = adminData.kpiAhorroPct !== '' ? adminData.kpiAhorroPct : 90;
+    document.getElementById('adminAviso').value = adminData.aviso || '';
+    document.getElementById('adminAvisoActive').checked = !!adminData.avisoActive;
+  }
+
+  function checkPin(){
+    if(adminPinInput.value.trim() === ADMIN_PIN){
+      adminPinStep.hidden = true;
+      adminFormStep.hidden = false;
+      fillAdminForm();
+    } else {
+      adminPinError.hidden = false;
+    }
+  }
+  if(adminPinSubmit) adminPinSubmit.addEventListener('click', checkPin);
+  if(adminPinInput) adminPinInput.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ e.preventDefault(); checkPin(); }
+  });
+
+  if(adminSaveBtn){
+    adminSaveBtn.addEventListener('click', function(){
+      adminData = {
+        heroTitle: document.getElementById('adminHeroTitle').value.trim(),
+        heroSub: document.getElementById('adminHeroSub').value.trim(),
+        kpiCosechaKg: document.getElementById('adminKpiCosecha').value.trim(),
+        kpiAhorroPct: document.getElementById('adminKpiAhorro').value.trim(),
+        aviso: document.getElementById('adminAviso').value.trim(),
+        avisoActive: document.getElementById('adminAvisoActive').checked
+      };
+      saveAdminData(adminData);
+      try{ sessionStorage.removeItem('ciehs_aviso_dismissed'); }catch(e){}
+      applyAdminData(adminData);
+      adminSaveStatus.classList.remove('error');
+      adminSaveStatus.textContent = 'Cambios guardados y publicados en el portal.';
+      setTimeout(function(){ closeAdminModal(); }, 1100);
+    });
+  }
+})();
+</script>
+
+<!-- ============ TRAZABILIDAD: bitácora dinámica por cultivo ============ -->
+<script>
+(function(){
+  var select = document.getElementById('traceCropSelect');
+  var stepsEl = document.getElementById('qrTraceSteps');
+  var labelEl = document.getElementById('traceQrLabel');
+  if(!select || !stepsEl) return; // page not present
+
+  var LOTES = {
+    lechuga: {
+      lote:'L-2026-01', modulo:'MOD-NFT-01', especie:'Lactuca sativa',
+      siembra:'Siembra — 04/08/2026', siembraDesc:'Lote L-2026-01 · MOD-NFT-01 · Lactuca sativa (lechuga crespa)',
+      insumos:'Solución nutritiva T2 (100 %) · pH inicial 6.0 · CE 1.5 mS/cm',
+      fase:'Fase actual — semana 3', faseDesc:'Crecimiento vegetativo · monitoreo de pH y CE cada 5 días',
+      cosecha:'Cosecha estimada — semana 6', cosechaDesc:'Balance de biomasa publicado junto a los resultados de INV-2026-01'
+    },
+    espinaca: {
+      lote:'L-2026-02', modulo:'MOD-DWC-02', especie:'Spinacia oleracea',
+      siembra:'Siembra — 11/08/2026', siembraDesc:'Lote L-2026-02 · MOD-DWC-02 · Spinacia oleracea (espinaca)',
+      insumos:'Solución nutritiva estándar · pH inicial 6.4 · CE 2.0 mS/cm',
+      fase:'Fase actual — semana 2', faseDesc:'Crecimiento foliar · aireación forzada constante en balsa flotante',
+      cosecha:'Cosecha estimada — semana 5', cosechaDesc:'Comparación de biomasa foliar frente al lote de lechuga en el mismo periodo'
+    },
+    cebollita: {
+      lote:'L-2026-03', modulo:'MOD-SUS-03', especie:'Allium fistulosum',
+      siembra:'Siembra — 18/08/2026', siembraDesc:'Lote L-2026-03 · MOD-SUS-03 · Allium fistulosum (cebollita / cebolla verde)',
+      insumos:'Solución nutritiva estándar · pH inicial 6.5 · CE 1.6 mS/cm',
+      fase:'Fase actual — semana 1', faseDesc:'Enraizamiento en sustrato de perlita, arena y fibra · riego por goteo',
+      cosecha:'Cosecha estimada — semana 8', cosechaDesc:'Ciclo más largo por su hábito de crecimiento en penca'
+    },
+    aromaticas: {
+      lote:'L-2026-04', modulo:'MOD-VER-04 / MOD-SUS-03', especie:'Ocimum basilicum · Beta vulgaris',
+      siembra:'Siembra — 14/08/2026', siembraDesc:'Lote L-2026-04 · MOD-VER-04 y MOD-SUS-03 · aromáticas y acelga',
+      insumos:'Solución nutritiva estándar · pH inicial 6.0 · CE 1.7 mS/cm',
+      fase:'Fase actual — semana 2', faseDesc:'Aromáticas en columnas verticales · acelga en sustrato inerte',
+      cosecha:'Cosecha estimada — semana 6', cosechaDesc:'Uso previsto en actividades de difusión y ferias del CIEHS'
+    }
+  };
+
+  function renderTrace(key){
+    var d = LOTES[key];
+    if(!d) return;
+    if(labelEl) labelEl.innerHTML = 'LOTE ' + d.lote + '<br>' + d.modulo + ' · ' + d.especie;
+    stepsEl.innerHTML =
+      '<div class="step"><span class="dot"></span><div><b>' + d.siembra + '</b><span>' + d.siembraDesc + '</span></div></div>' +
+      '<div class="step"><span class="dot"></span><div><b>Insumos registrados</b><span>' + d.insumos + '</span></div></div>' +
+      '<div class="step"><span class="dot"></span><div><b>' + d.fase + '</b><span>' + d.faseDesc + '</span></div></div>' +
+      '<div class="step"><span class="dot"></span><div><b>' + d.cosecha + '</b><span>' + d.cosechaDesc + '</span></div></div>';
+  }
+
+  select.addEventListener('change', function(){ renderTrace(select.value); });
+  renderTrace(select.value);
+})();
+</script>
+
+<!-- ============ DOCENTES: rutas de aprendizaje por nivel ============ -->
+<script>
+(function(){
+  var tabs = document.querySelectorAll('.nivel-tab');
+  var panels = document.querySelectorAll('[data-nivel-panel]');
+  if(!tabs.length) return; // page not present
+
+  tabs.forEach(function(tab){
+    tab.addEventListener('click', function(){
+      tabs.forEach(function(t){ t.classList.toggle('is-active', t === tab); });
+      var lvl = tab.getAttribute('data-nivel-tab');
+      panels.forEach(function(p){ p.hidden = p.getAttribute('data-nivel-panel') !== lvl; });
+    });
+  });
+})();
+</script>
+
+<!-- ============ JUEGA: Simulador de Cultivo + Calculadora de Ahorro de Agua ============ -->
+<script>
+(function(){
+  var simAgua = document.getElementById('simAgua');
+  var simPh = document.getElementById('simPh');
+  var simLuz = document.getElementById('simLuz');
+  var simAguaVal = document.getElementById('simAguaVal');
+  var simPhVal = document.getElementById('simPhVal');
+  var simLuzVal = document.getElementById('simLuzVal');
+  var simBtn = document.getElementById('simCultivarBtn');
+  var simResult = document.getElementById('simResult');
+
+  function fmtPh(v){ return (Number(v) / 10).toFixed(1); }
+
+  if(simAgua && simAguaVal) simAgua.addEventListener('input', function(){ simAguaVal.textContent = simAgua.value; });
+  if(simPh && simPhVal) simPh.addEventListener('input', function(){ simPhVal.textContent = fmtPh(simPh.value); });
+  if(simLuz && simLuzVal) simLuz.addEventListener('input', function(){ simLuzVal.textContent = simLuz.value; });
+
+  if(simBtn && simAgua && simPh && simLuz && simResult){
+    simBtn.addEventListener('click', function(){
+      var agua = Number(simAgua.value);
+      var ph = Number(simPh.value) / 10;
+      var luz = Number(simLuz.value);
+      var okAgua = agua >= 60 && agua <= 85;
+      var okPh = ph >= 5.5 && ph <= 6.8;
+      var okLuz = luz >= 12 && luz <= 16;
+      var score = [okAgua, okPh, okLuz].filter(Boolean).length;
+      var msg, cls;
+      if(score === 3){
+        msg = '🥬 ¡Cosecha exitosa! El agua, el pH y la luz estuvieron dentro del rango óptimo del módulo NFT.';
+        cls = 'is-success';
+      } else if(score === 2){
+        msg = '🌱 Cultivo aceptable, pero puedes mejorar: revisa el parámetro que quedó fuera de rango.';
+        cls = '';
+      } else {
+        msg = '🥀 El cultivo se estresó. Ajusta agua (60–85 %), pH (5.5–6.8) y luz (12–16 h/día) y vuelve a intentar.';
+        cls = 'is-fail';
+      }
+      simResult.textContent = msg;
+      simResult.className = 'sim-result' + (cls ? ' ' + cls : '');
+    });
+  }
+
+  var calcKg = document.getElementById('calcKg');
+  var calcBtn = document.getElementById('calcBtn');
+  var calcResult = document.getElementById('calcResult');
+  var L_HIDROPONIA = 15, L_TRADICIONAL = 150;
+
+  if(calcBtn && calcKg && calcResult){
+    calcBtn.addEventListener('click', function(){
+      var kg = Number(calcKg.value);
+      if(!kg || kg <= 0){
+        calcResult.textContent = 'Ingresa una cantidad de kilogramos mayor a 0.';
+        calcResult.className = 'calc-result';
+        return;
+      }
+      var ahorro = Math.round(kg * (L_TRADICIONAL - L_HIDROPONIA));
+      calcResult.innerHTML = 'Con <b>' + kg + ' kg</b> cosechados en el CIEHS, tu equipo ahorró aproximadamente <b>' + ahorro.toLocaleString('es-PE') + ' litros</b> de agua potable frente al cultivo tradicional en suelo, en Huanchaco.';
+      calcResult.className = 'calc-result is-success';
+    });
+  }
 })();
 </script>
