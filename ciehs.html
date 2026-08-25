@@ -530,6 +530,89 @@
   .qr-trace .step div b{ display:block; font-size:14px; color:#fff; }
   .qr-trace .step div span{ font-size:13px; color:var(--on-ocean-soft); }
 
+  /* ============ JUEGA (RETOS + PASAPORTE) ============ */
+  .quiz-toolbar{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-top:8px; margin-bottom:36px; }
+  .quiz-levels{ display:flex; gap:8px; flex-wrap:wrap; }
+  .level-tab{
+    font-family:"JetBrains Mono", monospace; font-size:12.5px; font-weight:600;
+    padding:8px 16px; border-radius:100px; border:1px solid var(--line-strong);
+    background:var(--paper); color:var(--ink-soft); cursor:pointer;
+  }
+  .level-tab.is-active{ background:var(--ocean-700); border-color:var(--ocean-700); color:#fff; }
+  .quiz-score{ display:flex; align-items:center; gap:14px; font-size:13.5px; color:var(--ink-soft); flex-wrap:wrap; }
+  .quiz-score b{ color:var(--ink); }
+  .btn-reset{
+    font-family:"JetBrains Mono", monospace; font-size:11.5px; padding:6px 12px;
+    border-radius:100px; border:1px solid var(--line-strong); background:transparent; color:var(--ink-mute); cursor:pointer;
+  }
+  .btn-reset:hover{ border-color:var(--leaf-500); color:var(--leaf-600); }
+
+  .quiz-set{ display:grid; grid-template-columns:repeat(2,1fr); gap:18px; }
+  @media (max-width:760px){ .quiz-set{ grid-template-columns:1fr; } }
+
+  .quiz-q{
+    background:var(--paper); border:1px solid var(--line); border-radius:var(--radius-m);
+    padding:22px; box-shadow:var(--shadow-card);
+  }
+  .quiz-q-text{ font-size:15px; font-weight:600; line-height:1.45; }
+  .quiz-opts{ display:flex; flex-direction:column; gap:8px; margin-top:14px; }
+  .quiz-opt{
+    text-align:left; padding:10px 14px; border-radius:var(--radius-s);
+    border:1px solid var(--line-strong); background:var(--surface); color:var(--ink);
+    font:inherit; font-size:13.5px; cursor:pointer;
+  }
+  .quiz-opt:hover:not(:disabled){ border-color:var(--leaf-500); }
+  .quiz-opt:disabled{ cursor:default; }
+  .quiz-opt.correct{ border-color:var(--status-good); background:var(--leaf-100); color:var(--ink); font-weight:600; }
+  .quiz-opt.incorrect{ border-color:#b3261e; background:rgba(179,38,30,0.08); }
+  .quiz-feedback{ margin-top:12px; font-size:13px; line-height:1.55; color:var(--ink-soft); padding-top:12px; border-top:1px dashed var(--line); }
+  .quiz-feedback.is-correct{ color:var(--leaf-600); }
+
+  .passport{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:24px; }
+  @media (max-width:760px){ .passport{ grid-template-columns:1fr; } }
+  .badge-card{
+    padding:22px; text-align:center; background:var(--paper); border:1px solid var(--line);
+    border-radius:var(--radius-m); opacity:0.55; transition:opacity .2s ease, border-color .2s ease;
+  }
+  .badge-card.is-unlocked{ opacity:1; border-color:var(--sun-500); }
+  .badge-card .badge-icon{ width:34px; height:34px; margin:0 auto; color:var(--ink-mute); display:block; }
+  .badge-card.is-unlocked .badge-icon{ color:var(--sun-500); }
+  .badge-card h4{ margin-top:12px; font-size:15px; font-weight:600; }
+  .badge-card p{ margin-top:6px; font-size:12.5px; color:var(--ink-soft); line-height:1.5; }
+  .badge-card .badge-state{
+    display:inline-block; margin-top:12px; font-family:"JetBrains Mono", monospace; font-size:10.5px;
+    text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-mute);
+  }
+  .badge-card.is-unlocked .badge-state{ color:var(--sun-500); font-weight:600; }
+
+  /* ============ RECURSOS DOCENTES ============ */
+  .res-filters{ display:flex; flex-direction:column; gap:18px; margin-top:8px; margin-bottom:10px; }
+  .res-filter-group{ display:flex; flex-direction:column; gap:8px; }
+  .res-filter-label{
+    font-family:"JetBrains Mono", monospace; font-size:11px; color:var(--ink-mute);
+    text-transform:uppercase; letter-spacing:0.05em;
+  }
+  .res-filter-chips{ display:flex; flex-wrap:wrap; gap:8px; }
+  .res-chip{
+    font-family:"JetBrains Mono", monospace; font-size:12px; padding:6px 13px;
+    border-radius:100px; border:1px solid var(--line-strong); background:var(--paper);
+    color:var(--ink-soft); cursor:pointer;
+  }
+  .res-chip.is-active{ background:var(--leaf-600); border-color:var(--leaf-600); color:#fff; }
+  .res-count{ margin-top:26px; font-size:12.5px; color:var(--ink-mute); }
+
+  .res-card{ padding:22px; display:flex; flex-direction:column; gap:10px; }
+  .res-card h3{ font-size:15.5px; font-weight:600; line-height:1.4; }
+  .res-card p{ font-size:13px; color:var(--ink-soft); line-height:1.55; }
+  .res-card .meta{ display:flex; flex-wrap:wrap; gap:6px; margin-top:2px; }
+  .res-btn{
+    margin-top:auto; align-self:flex-start;
+    font-family:"JetBrains Mono", monospace; font-size:12px; font-weight:600;
+    padding:8px 16px; border-radius:100px; border:1px solid var(--line-strong);
+    background:var(--surface); color:var(--ink-mute); cursor:not-allowed;
+  }
+  .res-empty{ margin-top:30px; font-size:14px; color:var(--ink-mute); text-align:center; }
+
   /* ============ DATA / DASHBOARD ============ */
   .stat-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-top:8px; }
   @media (max-width:900px){ .stat-row{ grid-template-columns:repeat(2,1fr); } }
@@ -681,6 +764,8 @@
       <li><button type="button" data-route="modulos">Módulos</button></li>
       <li><button type="button" data-route="trazabilidad">Trazabilidad</button></li>
       <li><button type="button" data-route="datos">Datos</button></li>
+      <li><button type="button" data-route="juega">Juega</button></li>
+      <li><button type="button" data-route="docentes">Docentes</button></li>
       <li><button type="button" data-route="contacto">Contacto</button></li>
     </ul>
     <button class="navtoggle" id="navToggle" aria-expanded="false" aria-controls="mobileNav" aria-label="Abrir menú">
@@ -694,6 +779,8 @@
     <li><button type="button" data-route="modulos">Módulos</button></li>
     <li><button type="button" data-route="trazabilidad">Trazabilidad</button></li>
     <li><button type="button" data-route="datos">Datos</button></li>
+    <li><button type="button" data-route="juega">Juega y aprende</button></li>
+    <li><button type="button" data-route="docentes">Recursos para docentes</button></li>
     <li><button type="button" data-route="contacto">Contacto</button></li>
   </ul>
 </header>
@@ -738,7 +825,7 @@
         <p class="eyebrow" style="justify-content:center;">Explora el CIEHS</p>
         <h2>Cada apartado, un espacio propio</h2>
       </div>
-      <p class="mission-lede">El CIEHS usa cultivos hidropónicos como fenómeno de estudio, no como fin en sí mismo. Recorre la metodología, las investigaciones activas, los equipos, los módulos, la trazabilidad y los datos — cada uno con su propia información.</p>
+      <p class="mission-lede">El CIEHS usa cultivos hidropónicos como fenómeno de estudio, no como fin en sí mismo. Recorre la metodología, las investigaciones activas, los equipos, los módulos, la trazabilidad, los datos, los retos de aprendizaje y los recursos docentes — cada uno con su propia información.</p>
 
       <div class="hub-grid">
         <button type="button" class="hub-card" data-route="metodologia">
@@ -762,7 +849,7 @@
         <button type="button" class="hub-card" data-route="modulos">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3c4 3 6 6.5 6 10a6 6 0 1 1-12 0c0-3.5 2-7 6-10Z" stroke="currentColor" stroke-width="1.6"/></svg>
           <h3>Módulos</h3>
-          <p>La infraestructura hidropónica: NFT, PET reciclado y captación de neblina.</p>
+          <p>La infraestructura hidropónica: NFT, Raíz Flotante, Sustrato y Vertical.</p>
           <span class="stat">4 módulos <span class="arrow">→</span></span>
         </button>
         <button type="button" class="hub-card" data-route="trazabilidad">
@@ -776,6 +863,18 @@
           <h3>Datos</h3>
           <p>Paneles y gráficos con lo que miden los equipos en cada módulo.</p>
           <span class="stat">2 paneles <span class="arrow">→</span></span>
+        </button>
+        <button type="button" class="hub-card" data-route="juega">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 10l2 2-2 2M13 14h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h3>Juega y aprende</h3>
+          <p>Retos, retroalimentación inmediata y el Pasaporte CIEHS con insignias.</p>
+          <span class="stat">3 niveles <span class="arrow">→</span></span>
+        </button>
+        <button type="button" class="hub-card" data-route="docentes">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4h12l4 4v12H4V4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M16 4v4h4" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <h3>Recursos para docentes</h3>
+          <p>Fichas, guías, rúbricas e infografías filtrables por nivel y área.</p>
+          <span class="stat">Repositorio <span class="arrow">→</span></span>
         </button>
         <button type="button" class="hub-card" data-route="contacto">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M4 7l8 6 8-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -849,7 +948,7 @@
       </div>
 
       <div class="grid cols-2">
-        <article class="research-card">
+        <article class="card research-card">
           <div class="top-row"><span class="code mono">INV-2026-01</span><span class="chip status-curso">Proyecto Eureka 2026</span></div>
           <h3>Evaluación del efecto de diferentes concentraciones de solución nutritiva en la biomasa de <i>Lactuca sativa</i> (lechuga) en sistema hidropónico</h3>
           <p class="hyp"><b>Pregunta:</b> ¿de qué manera influyen las variaciones en la concentración de la solución nutritiva hidropónica (50 %, 100 %, 150 %) en la ganancia de biomasa foliar de la lechuga?</p>
@@ -866,7 +965,7 @@
           </div>
         </article>
 
-        <article class="research-card">
+        <article class="card research-card">
           <div class="top-row"><span class="code mono">INV-2026-02</span><span class="chip status-curso">Proyecto Eureka 2026</span></div>
           <h3>Efecto de la aplicación de bioestimulante orgánico a base de germinados de lenteja (<i>Lens culinaris</i>) en el enraizamiento y desarrollo vegetativo escolar</h3>
           <p class="hyp"><b>Pregunta:</b> ¿en qué medida la aplicación foliar y radicular de extracto de germinado de lenteja favorece la tasa de enraizamiento en plántulas hidropónicas?</p>
@@ -1075,18 +1174,18 @@
           <p>Fichas de proyectos Eureka 2026 — paneles informativos</p>
           <span class="qr-dest">→ Investigaciones</span>
         </button>
-        <div class="qr-card is-soon">
+        <button type="button" class="qr-card" data-route="juega">
           <span class="qr-num mono">QR · 05</span>
           <h4>QR Juegos</h4>
           <p>Retos y gamificación de aprendizaje — actividades estudiantiles</p>
-          <span class="qr-dest">Próximamente</span>
-        </div>
-        <div class="qr-card is-soon">
+          <span class="qr-dest">→ Juega y aprende</span>
+        </button>
+        <button type="button" class="qr-card" data-route="docentes">
           <span class="qr-num mono">QR · 06</span>
           <h4>QR Docentes</h4>
           <p>Repositorio pedagógico — sala docente / feria</p>
-          <span class="qr-dest">Próximamente</span>
-        </div>
+          <span class="qr-dest">→ Recursos docentes</span>
+        </button>
         <div class="qr-card is-soon">
           <span class="qr-num mono">QR · 07</span>
           <h4>QR Eureka</h4>
@@ -1277,6 +1376,311 @@
     </div>
   </section>
 
+  <!-- ============ JUEGA Y APRENDE ============ -->
+  <section id="page-juega" data-page="juega" hidden>
+    <div class="wrap">
+      <button type="button" class="breadcrumb" data-route="inicio">← Inicio</button>
+      <div class="section-head">
+        <p class="eyebrow">Juega y aprende</p>
+        <h2>Centro de retos CIEHS</h2>
+        <p>Responde retos sobre hidroponía, Acción por el Clima y parámetros de cultivo (pH, CE, ahorro hídrico), y desbloquea las insignias de tu Pasaporte CIEHS. Elige tu nivel para empezar.</p>
+      </div>
+
+      <div class="quiz-toolbar">
+        <div class="quiz-levels">
+          <button type="button" class="level-tab is-active" data-level="inicial">Inicial</button>
+          <button type="button" class="level-tab" data-level="primaria">Primaria</button>
+          <button type="button" class="level-tab" data-level="secundaria">Secundaria</button>
+        </div>
+        <div class="quiz-score">
+          <span>Retos superados: <b id="quizScore" class="tabular">0 / 12</b></span>
+          <button type="button" class="btn-reset" id="quizReset">Reiniciar</button>
+        </div>
+      </div>
+
+      <div class="quiz-set" data-level-set="inicial">
+        <div class="quiz-q" data-qid="inicial-1" data-category="ciencia" data-explain="CIEHS significa Centro de Investigación Escolar Hidropónico Sostenible.">
+          <p class="quiz-q-text">¿Cómo se llama el laboratorio de plantas de nuestro colegio?</p>
+          <div class="quiz-opts">
+            <button type="button" class="quiz-opt" data-correct="true">CIEHS</button>
+            <button type="button" class="quiz-opt" data-correct="false">El patio</button>
+            <button type="button" class="quiz-opt" data-correct="false">La biblioteca</button>
+          </div>
+          <p class="quiz-feedback" hidden></p>
+        </div>
+        <div class="quiz-q" data-qid="inicial-2" data-category="agua" data-explain="En hidroponía, las raíces reciben agua con nutrientes disueltos, sin necesitar tierra.">
+          <p class="quiz-q-text">¿En qué crecen las plantas del CIEHS?</p>
+          <div class="quiz-opts">
+            <button type="button" class="quiz-opt" data-correct="true">En agua con nutrientes</button>
+            <button type="button" class="quiz-opt" data-correct="false">Solo en tierra</button>
+            <button type="button" class="quiz-opt" data-correct="false">En arena seca</button>
+          </div>
+          <p class="quiz-feedback" hidden></p>
+        </div>
+        <div class="quiz-q" data-qid="inicial-3" data-category="clima" data-explain="Cuidar el agua y las plantas es parte de la Acción por el Clima, que cuida todo el planeta.">
+          <p class="quiz-q-text">Cuidar el agua y las plantas ayuda a cuidar…</p>
+          <div class="quiz-opts">
+            <button type="button" class="quiz-opt" data-correct="true">El planeta</button>
+            <button type="button" class="quiz-opt" data-correct="false">Nada en especial</button>
+            <button type="button" class="quiz-opt" data-correct="false">Solo el colegio</button>
+          </div>
+          <p class="quiz-feedback" hidden></p>
+        </div>
+        <div class="quiz-q" data-qid="inicial-4" data-category="ciencia" data-explain="La ruta del CIEHS empieza en Descubre y Pregunta, antes de investigar.">
+          <p class="quiz-q-text">Antes de investigar algo, ¿qué hacemos primero?</p>
+          <div class="quiz-opts">
+            <button type="button" class="quiz-opt" data-correct="true">Observar y preguntar</button>
+            <button type="button" class="quiz-opt" data-correct="false">Escribir la conclusión</button>
+            <button type="button" class="quiz-opt" data-correct="false">Cosechar</button>
+          </div>
+          <p class="quiz-feedback" hidden></p>
+        </div>
+      </div>
+
+      <div class="quiz-set" data-level-set="primaria" hidden>
+        <div class="quiz-q" data-qid="primaria-1" data-category="ciencia" data-explain="NFT (Nutrient Film Technique) es un sistema de película de nutrientes que recircula la solución por tubos de PVC.">
+          <p class="quiz-q-text">¿Qué significa la sigla NFT, uno de los módulos del CIEHS?</p>
+          <div class="quiz-opts">
+            <button type="button" class="quiz-opt" data-correct="true">Nutrient Film Technique</button>
+            <button type="button" class="quiz-opt" data-correct="false">Nueva Fórmula de Tierra</button>
+            <button type="button" class="quiz-opt" data-correct="false">Nivel Full de Temperatura</button>
+          </div>
+          <p class="quiz-feedback" hidden></p>
+        </div>
+        <div class="quiz-q" data-qid="primaria-2" data-category="agua" data-explain="El sistema hidropónico del CIEHS ahorra cerca del 90 % del agua frente al cultivo tradicional en suelo.">
+          <p class="quiz-q-text">¿Cuánta agua ahorra aproximadamente la hidroponía del CIEHS frente al cultivo tradicional?</p>
+          <div class="quiz-opts">
+            <button type="button" class="quiz-opt" data-correct="true">Alrededor del 90 %</button>
+            <button type="button" class="quiz-opt" data-correct="false">Alrededor del 10 %</button>
+            <button type="button" class="quiz-opt" data-correct="false">No hay diferencia</button>
+          </div>
+          <p class="quiz-feedback" hidden></p>
+        </div>
+        <div class="quiz-q" data-qid="primaria-3" data-category="clima" data-explain="El ODS 13 (Acción por el Clima) es el eje movilizador del CIEHS.">
+          <p class="quiz-q-text">¿A qué Objetivo de Desarrollo Sostenible (ODS) se dedica principalmente el CIEHS?</p>
+          <div class="quiz-opts">
+            <button type="button" class="quiz-opt" data-correct="true">ODS 13 — Acción por el Clima</button>
+            <button type="button" class="quiz-opt" data-correct="false">ODS 1 — Fin de la pobreza</button>
+            <button type="button" class="quiz-opt" data-correct="false">ODS 17 — Alianzas</button>
+          </div>
+          <p class="quiz-feedback" hidden></p>
+        </div>
+        <div class="quiz-q" data-qid="primaria-4" data-category="ciencia" data-explain="La ruta oficial es Descubre → Explora → Pregunta → Investiga → Analiza → Juega → Crea → Actúa → Comparte.">
+          <p class="quiz-q-text">En la ruta del CIEHS, ¿qué paso viene justo después de Pregunta?</p>
+          <div class="quiz-opts">
+            <button type="button" class="quiz-opt" data-correct="true">Investiga</button>
+            <button type="button" class="quiz-opt" data-correct="false">Juega</button>
+            <button type="button" class="quiz-opt" data-correct="false">Comparte</button>
+          </div>
+          <p class="quiz-feedback" hidden></p>
+        </div>
+      </div>
+
+      <div class="quiz-set" data-level-set="secundaria" hidden>
+        <div class="quiz-q" data-qid="secundaria-1" data-category="agua" data-explain="El módulo NFT opera con un pH de 5.5 a 6.5 para una absorción óptima de nutrientes.">
+          <p class="quiz-q-text">¿Cuál es el rango de pH recomendado para el módulo MOD-NFT-01?</p>
+          <div class="quiz-opts">
+            <button type="button" class="quiz-opt" data-correct="true">5.5 – 6.5</button>
+            <button type="button" class="quiz-opt" data-correct="false">7.5 – 8.5</button>
+            <button type="button" class="quiz-opt" data-correct="false">3.0 – 4.0</button>
+          </div>
+          <p class="quiz-feedback" hidden></p>
+        </div>
+        <div class="quiz-q" data-qid="secundaria-2" data-category="agua" data-explain="La CE indica cuántos nutrientes minerales están disueltos en la solución; se mide en mS/cm.">
+          <p class="quiz-q-text">¿Qué mide la conductividad eléctrica (CE) de una solución nutritiva?</p>
+          <div class="quiz-opts">
+            <button type="button" class="quiz-opt" data-correct="true">La concentración de sales y nutrientes disueltos</button>
+            <button type="button" class="quiz-opt" data-correct="false">La temperatura del agua</button>
+            <button type="button" class="quiz-opt" data-correct="false">La cantidad de luz solar</button>
+          </div>
+          <p class="quiz-feedback" hidden></p>
+        </div>
+        <div class="quiz-q" data-qid="secundaria-3" data-category="clima" data-explain="El ODS 13 plantea adoptar medidas urgentes para combatir el cambio climático y sus efectos.">
+          <p class="quiz-q-text">Según la Agenda 2030 de Naciones Unidas, ¿qué plantea el ODS 13?</p>
+          <div class="quiz-opts">
+            <button type="button" class="quiz-opt" data-correct="true">Adoptar medidas urgentes contra el cambio climático y sus efectos</button>
+            <button type="button" class="quiz-opt" data-correct="false">Eliminar el analfabetismo digital</button>
+            <button type="button" class="quiz-opt" data-correct="false">Reducir el precio del agua potable</button>
+          </div>
+          <p class="quiz-feedback" hidden></p>
+        </div>
+        <div class="quiz-q" data-qid="secundaria-4" data-category="ciencia" data-explain="INV-2026-01 manipula la concentración de solución nutritiva; la altura y el número de hojas son variables dependientes.">
+          <p class="quiz-q-text">En la investigación INV-2026-01, ¿cuál es la variable independiente?</p>
+          <div class="quiz-opts">
+            <button type="button" class="quiz-opt" data-correct="true">La concentración de solución nutritiva (50 %, 100 %, 150 %)</button>
+            <button type="button" class="quiz-opt" data-correct="false">La altura de la planta</button>
+            <button type="button" class="quiz-opt" data-correct="false">El número de hojas</button>
+          </div>
+          <p class="quiz-feedback" hidden></p>
+        </div>
+      </div>
+
+      <div style="margin-top:64px;">
+        <p class="eyebrow">Pasaporte CIEHS</p>
+        <h3 style="margin-top:10px; font-size:19px;">Tus insignias</h3>
+        <p style="margin-top:8px; font-size:14.5px; color:var(--ink-soft); max-width:64ch;">Cada insignia se desbloquea al superar retos de una categoría. En la versión completa del portal, tu Pasaporte se guardará en tu cuenta CIEHS; por ahora se guarda en este navegador.</p>
+        <div class="passport">
+          <div class="badge-card" data-badge="agua">
+            <svg class="badge-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3c-3 4-6 8-6 11a6 6 0 0 0 12 0c0-3-3-7-6-11Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            <h4>Guardián del Agua</h4>
+            <p>Responde correctamente un reto sobre agua, pH o CE.</p>
+            <span class="badge-state">Bloqueada</span>
+          </div>
+          <div class="badge-card" data-badge="clima">
+            <svg class="badge-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M3.8 12h16.4M12 3.5c2.6 2.4 4 5.4 4 8.5s-1.4 6.1-4 8.5c-2.6-2.4-4-5.4-4-8.5s1.4-6.1 4-8.5Z" stroke="currentColor" stroke-width="1.6"/></svg>
+            <h4>Embajador Climático</h4>
+            <p>Responde correctamente un reto sobre ODS 13 y Acción por el Clima.</p>
+            <span class="badge-state">Bloqueada</span>
+          </div>
+          <div class="badge-card" data-badge="ciencia">
+            <svg class="badge-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 3h6M10 3v5l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            <h4>Científico Escolar</h4>
+            <p>Supera al menos un reto en cada nivel: Inicial, Primaria y Secundaria.</p>
+            <span class="badge-state">Bloqueada</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RECURSOS PARA DOCENTES ============ -->
+  <section id="page-docentes" class="alt" data-page="docentes" hidden>
+    <div class="wrap">
+      <button type="button" class="breadcrumb" data-route="inicio">← Inicio</button>
+      <div class="section-head">
+        <p class="eyebrow">Recursos para docentes</p>
+        <h2>Repositorio curricular del CIEHS</h2>
+        <p>Fichas, guías, rúbricas, listas de cotejo e infografías organizadas por nivel, área curricular y tipo de recurso. Los filtros ya son funcionales; los archivos se habilitan desde el panel de administración a medida que el equipo docente los publica.</p>
+      </div>
+
+      <div class="res-filters">
+        <div class="res-filter-group">
+          <span class="res-filter-label">Nivel</span>
+          <div class="res-filter-chips" data-filter="nivel">
+            <button type="button" class="res-chip is-active" data-value="todos">Todos</button>
+            <button type="button" class="res-chip" data-value="inicial">Inicial</button>
+            <button type="button" class="res-chip" data-value="primaria">Primaria</button>
+            <button type="button" class="res-chip" data-value="secundaria">Secundaria</button>
+          </div>
+        </div>
+        <div class="res-filter-group">
+          <span class="res-filter-label">Área curricular</span>
+          <div class="res-filter-chips" data-filter="area">
+            <button type="button" class="res-chip is-active" data-value="todos">Todas</button>
+            <button type="button" class="res-chip" data-value="cyt">Ciencia y Tecnología</button>
+            <button type="button" class="res-chip" data-value="mate">Matemática</button>
+            <button type="button" class="res-chip" data-value="comu">Comunicación</button>
+            <button type="button" class="res-chip" data-value="cs">Ciencias Sociales</button>
+            <button type="button" class="res-chip" data-value="arte">Arte y Cultura</button>
+            <button type="button" class="res-chip" data-value="ept">Educación para el Trabajo</button>
+            <button type="button" class="res-chip" data-value="digital">Competencias Digitales</button>
+          </div>
+        </div>
+        <div class="res-filter-group">
+          <span class="res-filter-label">Tipo de recurso</span>
+          <div class="res-filter-chips" data-filter="tipo">
+            <button type="button" class="res-chip is-active" data-value="todos">Todos</button>
+            <button type="button" class="res-chip" data-value="ficha">Ficha de indagación</button>
+            <button type="button" class="res-chip" data-value="guia">Guía de laboratorio</button>
+            <button type="button" class="res-chip" data-value="rubrica">Rúbrica de evaluación</button>
+            <button type="button" class="res-chip" data-value="cotejo">Lista de cotejo</button>
+            <button type="button" class="res-chip" data-value="infografia">Infografía</button>
+          </div>
+        </div>
+      </div>
+
+      <p class="res-count" id="resCount">12 recursos</p>
+
+      <div class="grid cols-3" id="resGrid">
+        <article class="card res-card" data-nivel="inicial" data-area="cyt" data-tipo="ficha">
+          <div class="top-row"><span class="chip">Ficha de indagación</span></div>
+          <h3>¿Qué es la hidroponía?</h3>
+          <p>Introducción visual al cultivo sin tierra, para observar y preguntar en el nivel Inicial.</p>
+          <div class="meta"><span class="chip">Inicial</span><span class="chip">Ciencia y Tecnología</span></div>
+          <button type="button" class="res-btn" disabled title="Disponible cuando el administrador cargue el archivo">Ver / Descargar</button>
+        </article>
+        <article class="card res-card" data-nivel="secundaria" data-area="cyt" data-tipo="guia">
+          <div class="top-row"><span class="chip">Guía de laboratorio</span></div>
+          <h3>Medición de pH y CE en el módulo NFT</h3>
+          <p>Procedimiento paso a paso para medir y registrar pH y conductividad eléctrica en MOD-NFT-01.</p>
+          <div class="meta"><span class="chip">Secundaria</span><span class="chip">Ciencia y Tecnología</span></div>
+          <button type="button" class="res-btn" disabled title="Disponible cuando el administrador cargue el archivo">Ver / Descargar</button>
+        </article>
+        <article class="card res-card" data-nivel="secundaria" data-area="cyt" data-tipo="rubrica">
+          <div class="top-row"><span class="chip">Rúbrica de evaluación</span></div>
+          <h3>Proyecto de investigación Eureka</h3>
+          <p>Criterios para evaluar pregunta, hipótesis, variables, procedimiento y conclusiones.</p>
+          <div class="meta"><span class="chip">Secundaria</span><span class="chip">Ciencia y Tecnología</span></div>
+          <button type="button" class="res-btn" disabled title="Disponible cuando el administrador cargue el archivo">Ver / Descargar</button>
+        </article>
+        <article class="card res-card" data-nivel="primaria" data-area="cyt" data-tipo="cotejo">
+          <div class="top-row"><span class="chip">Lista de cotejo</span></div>
+          <h3>Bitácora de siembra y cosecha</h3>
+          <p>Checklist para registrar siembra, insumos, mediciones y cosecha de un lote.</p>
+          <div class="meta"><span class="chip">Primaria</span><span class="chip">Ciencia y Tecnología</span></div>
+          <button type="button" class="res-btn" disabled title="Disponible cuando el administrador cargue el archivo">Ver / Descargar</button>
+        </article>
+        <article class="card res-card" data-nivel="primaria" data-area="comu" data-tipo="infografia">
+          <div class="top-row"><span class="chip">Infografía</span></div>
+          <h3>La ruta pedagógica del CIEHS</h3>
+          <p>Los 9 pasos —Descubre a Comparte— en un afiche listo para imprimir en el aula.</p>
+          <div class="meta"><span class="chip">Primaria</span><span class="chip">Comunicación</span></div>
+          <button type="button" class="res-btn" disabled title="Disponible cuando el administrador cargue el archivo">Ver / Descargar</button>
+        </article>
+        <article class="card res-card" data-nivel="primaria" data-area="mate" data-tipo="ficha">
+          <div class="top-row"><span class="chip">Ficha de indagación</span></div>
+          <h3>Mediciones y promedios en el cultivo</h3>
+          <p>Ejercicios de medición, tablas y promedios usando datos reales de los módulos.</p>
+          <div class="meta"><span class="chip">Primaria</span><span class="chip">Matemática</span></div>
+          <button type="button" class="res-btn" disabled title="Disponible cuando el administrador cargue el archivo">Ver / Descargar</button>
+        </article>
+        <article class="card res-card" data-nivel="secundaria" data-area="mate" data-tipo="guia">
+          <div class="top-row"><span class="chip">Guía de laboratorio</span></div>
+          <h3>Diseño experimental (DBCA) para investigaciones escolares</h3>
+          <p>Cómo organizar tratamientos y réplicas siguiendo el diseño de INV-2026-01.</p>
+          <div class="meta"><span class="chip">Secundaria</span><span class="chip">Matemática</span></div>
+          <button type="button" class="res-btn" disabled title="Disponible cuando el administrador cargue el archivo">Ver / Descargar</button>
+        </article>
+        <article class="card res-card" data-nivel="inicial" data-area="cs" data-tipo="infografia">
+          <div class="top-row"><span class="chip">Infografía</span></div>
+          <h3>ODS 13 y Acción por el Clima en la escuela</h3>
+          <p>Qué es el cambio climático y cómo cuidamos el planeta desde el CIEHS.</p>
+          <div class="meta"><span class="chip">Inicial</span><span class="chip">Ciencias Sociales</span></div>
+          <button type="button" class="res-btn" disabled title="Disponible cuando el administrador cargue el archivo">Ver / Descargar</button>
+        </article>
+        <article class="card res-card" data-nivel="primaria" data-area="arte" data-tipo="ficha">
+          <div class="top-row"><span class="chip">Ficha de indagación</span></div>
+          <h3>Mural CIEHS: identidad visual</h3>
+          <p>Actividad para diseñar elementos gráficos del mural interactivo del laboratorio.</p>
+          <div class="meta"><span class="chip">Primaria</span><span class="chip">Arte y Cultura</span></div>
+          <button type="button" class="res-btn" disabled title="Disponible cuando el administrador cargue el archivo">Ver / Descargar</button>
+        </article>
+        <article class="card res-card" data-nivel="secundaria" data-area="digital" data-tipo="guia">
+          <div class="top-row"><span class="chip">Guía de laboratorio</span></div>
+          <h3>Búsqueda y organización de información científica</h3>
+          <p>Cómo buscar, filtrar y citar fuentes confiables para un informe de investigación.</p>
+          <div class="meta"><span class="chip">Secundaria</span><span class="chip">Competencias Digitales</span></div>
+          <button type="button" class="res-btn" disabled title="Disponible cuando el administrador cargue el archivo">Ver / Descargar</button>
+        </article>
+        <article class="card res-card" data-nivel="secundaria" data-area="comu" data-tipo="rubrica">
+          <div class="top-row"><span class="chip">Rúbrica de evaluación</span></div>
+          <h3>Informe de indagación científica</h3>
+          <p>Criterios de claridad, argumentación y uso de evidencia para el informe escrito.</p>
+          <div class="meta"><span class="chip">Secundaria</span><span class="chip">Comunicación</span></div>
+          <button type="button" class="res-btn" disabled title="Disponible cuando el administrador cargue el archivo">Ver / Descargar</button>
+        </article>
+        <article class="card res-card" data-nivel="secundaria" data-area="ept" data-tipo="ficha">
+          <div class="top-row"><span class="chip">Ficha de indagación</span></div>
+          <h3>Soluciones sostenibles con materiales reciclados</h3>
+          <p>Diseño de prototipos de bajo costo aplicando principios de sostenibilidad.</p>
+          <div class="meta"><span class="chip">Secundaria</span><span class="chip">Educación para el Trabajo</span></div>
+          <button type="button" class="res-btn" disabled title="Disponible cuando el administrador cargue el archivo">Ver / Descargar</button>
+        </article>
+      </div>
+      <p id="resEmpty" class="res-empty" hidden>No hay recursos con esta combinación de filtros todavía.</p>
+    </div>
+  </section>
+
   <!-- ============ CONTACTO ============ -->
   <section id="contacto" class="alt" data-page="contacto" hidden>
     <div class="wrap">
@@ -1364,10 +1768,11 @@
   // Deliberately does NOT touch location.hash or use <a href> navigation —
   // this page is meant to run embedded, where link-style navigation can get
   // intercepted by the host. All routing is plain in-memory + click handlers.
-  var ROUTES = ['inicio','metodologia','investigaciones','equipos','modulos','trazabilidad','datos','contacto'];
+  var ROUTES = ['inicio','metodologia','investigaciones','equipos','modulos','trazabilidad','datos','juega','docentes','contacto'];
   var ROUTE_LABELS = {
     metodologia:'Metodología', investigaciones:'Investigaciones', equipos:'Equipos',
-    modulos:'Módulos', trazabilidad:'Trazabilidad', datos:'Datos', contacto:'Contacto'
+    modulos:'Módulos', trazabilidad:'Trazabilidad', datos:'Datos',
+    juega:'Juega y aprende', docentes:'Recursos para docentes', contacto:'Contacto'
   };
   var pageEls = document.querySelectorAll('[data-page]');
   var routeEls = document.querySelectorAll('[data-route]');
@@ -1443,5 +1848,164 @@
     });
   });
 
+})();
+</script>
+
+<!-- ============ JUEGA: retos + Pasaporte CIEHS ============ -->
+<script>
+(function(){
+  var STORAGE_KEY = 'ciehs_pasaporte_v1';
+  var state = { correct:{}, badges:{} };
+  try{
+    var saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+    if(saved && saved.correct && saved.badges){ state = saved; }
+  }catch(e){}
+
+  var levelTabs = document.querySelectorAll('.level-tab');
+  var levelSets = document.querySelectorAll('.quiz-set');
+  if(!levelTabs.length) return; // page not present
+
+  levelTabs.forEach(function(tab){
+    tab.addEventListener('click', function(){
+      levelTabs.forEach(function(t){ t.classList.toggle('is-active', t === tab); });
+      var lvl = tab.getAttribute('data-level');
+      levelSets.forEach(function(set){ set.hidden = set.getAttribute('data-level-set') !== lvl; });
+    });
+  });
+
+  var questions = document.querySelectorAll('.quiz-q');
+  var scoreEl = document.getElementById('quizScore');
+  var totalQ = questions.length;
+
+  function persist(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){} }
+
+  function updateScore(){
+    if(scoreEl) scoreEl.textContent = Object.keys(state.correct).length + ' / ' + totalQ;
+  }
+
+  function computeCienciaBadge(){
+    var hasInicial=false, hasPrimaria=false, hasSecundaria=false;
+    Object.keys(state.correct).forEach(function(qid){
+      if(qid.indexOf('inicial-') === 0) hasInicial = true;
+      if(qid.indexOf('primaria-') === 0) hasPrimaria = true;
+      if(qid.indexOf('secundaria-') === 0) hasSecundaria = true;
+    });
+    return hasInicial && hasPrimaria && hasSecundaria;
+  }
+
+  function updateBadges(){
+    document.querySelectorAll('.badge-card').forEach(function(card){
+      var key = card.getAttribute('data-badge');
+      var unlocked = !!state.badges[key];
+      card.classList.toggle('is-unlocked', unlocked);
+      var stateEl = card.querySelector('.badge-state');
+      if(stateEl) stateEl.textContent = unlocked ? 'Desbloqueada' : 'Bloqueada';
+    });
+  }
+
+  function markAnswered(q, opts, chosen, feedback){
+    q.classList.add('is-answered');
+    var isCorrect = chosen.getAttribute('data-correct') === 'true';
+    opts.forEach(function(o){
+      if(o.getAttribute('data-correct') === 'true') o.classList.add('correct');
+      else if(o === chosen) o.classList.add('incorrect');
+      o.disabled = true;
+    });
+    if(feedback){
+      feedback.hidden = false;
+      feedback.textContent = (isCorrect ? '✓ ' : '✗ ') + q.getAttribute('data-explain');
+      feedback.classList.toggle('is-correct', isCorrect);
+    }
+    if(isCorrect){
+      var qid = q.getAttribute('data-qid');
+      state.correct[qid] = true;
+      var cat = q.getAttribute('data-category');
+      if(cat === 'agua') state.badges.agua = true;
+      if(cat === 'clima') state.badges.clima = true;
+      state.badges.ciencia = computeCienciaBadge();
+    }
+    persist(); updateScore(); updateBadges();
+  }
+
+  questions.forEach(function(q){
+    var qid = q.getAttribute('data-qid');
+    var opts = q.querySelectorAll('.quiz-opt');
+    var feedback = q.querySelector('.quiz-feedback');
+    if(state.correct[qid]){
+      // restore answered state on reload
+      var correctOpt = q.querySelector('.quiz-opt[data-correct="true"]');
+      if(correctOpt){ markAnswered(q, opts, correctOpt, feedback); }
+    }
+    opts.forEach(function(opt){
+      opt.addEventListener('click', function(){
+        if(q.classList.contains('is-answered')) return;
+        markAnswered(q, opts, opt, feedback);
+      });
+    });
+  });
+
+  updateScore();
+  updateBadges();
+
+  var resetBtn = document.getElementById('quizReset');
+  if(resetBtn){
+    resetBtn.addEventListener('click', function(){
+      state = { correct:{}, badges:{} };
+      persist();
+      questions.forEach(function(q){
+        q.classList.remove('is-answered');
+        q.querySelectorAll('.quiz-opt').forEach(function(o){
+          o.classList.remove('correct','incorrect');
+          o.disabled = false;
+        });
+        var fb = q.querySelector('.quiz-feedback');
+        if(fb){ fb.hidden = true; }
+      });
+      updateScore();
+      updateBadges();
+    });
+  }
+})();
+</script>
+
+<!-- ============ RECURSOS DOCENTES: filtros ============ -->
+<script>
+(function(){
+  var groups = document.querySelectorAll('.res-filter-chips');
+  var cards = document.querySelectorAll('.res-card');
+  if(!groups.length || !cards.length) return;
+
+  var countEl = document.getElementById('resCount');
+  var emptyEl = document.getElementById('resEmpty');
+  var active = { nivel:'todos', area:'todos', tipo:'todos' };
+
+  groups.forEach(function(group){
+    var key = group.getAttribute('data-filter');
+    var chips = group.querySelectorAll('.res-chip');
+    chips.forEach(function(chip){
+      chip.addEventListener('click', function(){
+        chips.forEach(function(c){ c.classList.remove('is-active'); });
+        chip.classList.add('is-active');
+        active[key] = chip.getAttribute('data-value');
+        applyFilters();
+      });
+    });
+  });
+
+  function applyFilters(){
+    var visible = 0;
+    cards.forEach(function(card){
+      var matches =
+        (active.nivel === 'todos' || card.getAttribute('data-nivel') === active.nivel) &&
+        (active.area === 'todos' || card.getAttribute('data-area') === active.area) &&
+        (active.tipo === 'todos' || card.getAttribute('data-tipo') === active.tipo);
+      card.hidden = !matches;
+      if(matches) visible++;
+    });
+    if(countEl) countEl.textContent = visible + (visible === 1 ? ' recurso' : ' recursos');
+    if(emptyEl) emptyEl.hidden = visible !== 0;
+  }
+
+  applyFilters();
 })();
 </script>
