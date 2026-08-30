@@ -1060,8 +1060,8 @@
         <button type="button" class="hub-card" data-route="juega">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 10l2 2-2 2M13 14h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <h3>Juega y aprende</h3>
-          <p>Retos, retroalimentación inmediata y el Pasaporte CIEHS con insignias.</p>
-          <span class="stat">3 niveles <span class="arrow">→</span></span>
+          <p>Retos por nivel, mini-juegos de residuos y solución nutritiva, y el Pasaporte CIEHS con insignias.</p>
+          <span class="stat">3 niveles · 3 juegos <span class="arrow">→</span></span>
         </button>
         <button type="button" class="hub-card" data-route="docentes">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4h12l4 4v12H4V4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M16 4v4h4" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
@@ -1712,7 +1712,7 @@
       <div class="section-head">
         <p class="eyebrow">Juega y aprende</p>
         <h2>Centro de retos CIEHS</h2>
-        <p>Responde retos sobre hidroponía, Acción por el Clima y parámetros de cultivo (pH, CE, ahorro hídrico), y desbloquea las insignias de tu Pasaporte CIEHS. Elige tu nivel para empezar.</p>
+        <p>Responde retos sobre hidroponía, Acción por el Clima y parámetros de cultivo (pH, CE, ahorro hídrico), juega a clasificar los residuos de la escuela y a calibrar la solución nutritiva, y desbloquea las insignias de tu Pasaporte CIEHS. Elige tu nivel para empezar.</p>
       </div>
 
       <div class="quiz-toolbar">
@@ -1913,6 +1913,95 @@
         </div>
       </div>
 
+      <style>
+        /* ===== Mini-juegos CIEHS — Misión Residuos + Laboratorio de solución ===== */
+        .mj-block{ margin-top:64px; }
+        .mj-game{ padding:26px; }
+        .mj-stage{ margin-top:20px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:6px; padding:26px; border:1px solid var(--line); border-radius:var(--radius-m); background:var(--glass); }
+        .mj-stage .mj-emoji{ font-size:52px; line-height:1; }
+        .mj-stage .mj-item-name{ font-size:16px; font-weight:600; color:#fff; }
+        .mj-stage .mj-item-hint{ font-size:11px; color:var(--ink-mute); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.06em; }
+        .mj-cats{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:16px; }
+        @media (min-width:560px){ .mj-cats{ grid-template-columns:repeat(4,1fr); } }
+        .mj-cat{ padding:12px 10px; border:1px solid var(--line-strong); border-radius:var(--radius-s); background:var(--surface-2); font-size:12.5px; font-weight:600; color:var(--ink-soft); display:flex; flex-direction:column; align-items:center; gap:6px; transition:border-color .15s, background .15s, transform .15s; }
+        .mj-cat .mj-cat-emoji{ font-size:22px; }
+        .mj-cat:hover:not(:disabled){ border-color:var(--leaf-300); color:#fff; transform:translateY(-2px); }
+        .mj-cat:disabled{ cursor:default; opacity:.6; }
+        .mj-cat.correct{ border-color:var(--status-good); background:rgba(52,211,153,0.14); color:#fff; }
+        .mj-cat.incorrect{ border-color:var(--status-danger); background:rgba(248,113,113,0.12); color:#fff; }
+        .mj-bar{ display:flex; justify-content:space-between; align-items:center; font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-mute); }
+        .mj-feedback{ margin-top:14px; font-size:13px; line-height:1.6; color:var(--ink-soft); padding-top:12px; border-top:1px dashed var(--line); min-height:20px; }
+        .mj-feedback.is-correct{ color:var(--leaf-300); }
+        .mj-feedback.is-wrong{ color:var(--status-danger); }
+        .mj-lab-crops{ display:flex; flex-wrap:wrap; gap:8px; }
+        .mj-crop{ padding:8px 14px; border:1px solid var(--line-strong); border-radius:999px; font-size:12.5px; font-weight:600; color:var(--ink-soft); transition:background .15s, border-color .15s, color .15s; }
+        .mj-crop:hover{ border-color:var(--leaf-300); color:#fff; }
+        .mj-crop.is-active{ background:linear-gradient(135deg,var(--leaf-500),var(--azure-500)); border-color:transparent; color:#04140f; }
+        .mj-target{ margin-top:14px; font-family:var(--font-mono); font-size:11.5px; color:var(--sun-300); letter-spacing:.04em; }
+        .mj-badges{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:20px; }
+        @media (max-width:720px){ .mj-badges{ grid-template-columns:1fr; } }
+        .mj-badge{ text-align:center; padding:22px 16px; border:1px solid var(--line); border-radius:var(--radius-m); background:var(--glass); opacity:.55; transition:opacity .2s, border-color .2s, box-shadow .2s, transform .2s; }
+        .mj-badge:hover{ transform:translateY(-4px); }
+        .mj-badge.is-unlocked{ opacity:1; border-color:var(--sun-500); box-shadow:0 22px 48px -26px rgba(240,200,118,0.4); }
+        .mj-badge .mj-badge-emoji{ font-size:30px; line-height:1; }
+        .mj-badge h4{ margin-top:10px; font-size:15px; font-weight:600; color:#fff; }
+        .mj-badge p{ margin-top:6px; font-size:12.5px; color:var(--ink-soft); line-height:1.5; }
+        .mj-badge .mj-badge-state{ display:inline-block; margin-top:10px; font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-mute); }
+        .mj-badge.is-unlocked .mj-badge-state{ color:var(--sun-300); font-weight:600; }
+      </style>
+
+      <div class="mj-block">
+        <p class="eyebrow">Mini-juego · Residuos y economía circular</p>
+        <h3 style="margin-top:10px; font-size:19px;">Misión Residuos</h3>
+        <p style="margin-top:8px; font-size:14.5px; color:var(--ink-soft); max-width:64ch;">Clasifica los residuos de la escuela en el contenedor correcto. Cada botella de plástico que rescatamos se convierte en una maceta para germinar plántulas del CIEHS.</p>
+        <div class="card mj-game" id="mjResiduos">
+          <div class="mj-bar">
+            <span>Residuo <b id="mjResIndex" class="tabular">1</b> / 8</span>
+            <span>Aciertos: <b id="mjResScore" class="tabular">0</b></span>
+          </div>
+          <div class="mj-stage">
+            <span class="mj-emoji" id="mjResEmoji">🥤</span>
+            <span class="mj-item-name" id="mjResName">Botella de plástico PET</span>
+            <span class="mj-item-hint">¿A qué contenedor va?</span>
+          </div>
+          <div class="mj-cats" id="mjResCats">
+            <button type="button" class="mj-cat" data-cat="organico"><span class="mj-cat-emoji">🍎</span>Orgánico</button>
+            <button type="button" class="mj-cat" data-cat="reciclable"><span class="mj-cat-emoji">♻️</span>Reciclable</button>
+            <button type="button" class="mj-cat" data-cat="reutilizable"><span class="mj-cat-emoji">🔁</span>Reutilizable</button>
+            <button type="button" class="mj-cat" data-cat="no"><span class="mj-cat-emoji">🚫</span>No reciclable</button>
+          </div>
+          <p class="mj-feedback" id="mjResFeedback" aria-live="polite"></p>
+          <button type="button" class="btn btn-primary" id="mjResNext" style="margin-top:16px;" hidden>Siguiente residuo</button>
+          <button type="button" class="btn-reset" id="mjResReset" style="margin-top:16px;" hidden>Jugar de nuevo</button>
+        </div>
+      </div>
+
+      <div class="mj-block">
+        <p class="eyebrow">Mini-juego · Química de la solución nutritiva</p>
+        <h3 style="margin-top:10px; font-size:19px;">Laboratorio de solución nutritiva</h3>
+        <p style="margin-top:8px; font-size:14.5px; color:var(--ink-soft); max-width:64ch;">Elige un cultivo y calibra el pH y la conductividad eléctrica (CE) de la solución. Pulsa <b>Medir solución</b> para comparar tus valores con el rango óptimo de ese cultivo.</p>
+        <div class="card mj-game" id="mjLab">
+          <div class="mj-lab-crops" id="mjLabCrops">
+            <button type="button" class="mj-crop is-active" data-crop="lechuga">🥬 Lechuga</button>
+            <button type="button" class="mj-crop" data-crop="albahaca">🌿 Albahaca</button>
+            <button type="button" class="mj-crop" data-crop="espinaca">🍃 Espinaca</button>
+          </div>
+          <p class="mj-target" id="mjLabTarget">Objetivo lechuga — pH 5.5–6.5 · CE 1.2–1.8 mS/cm</p>
+          <div class="sim-controls">
+            <label class="sim-control">
+              <span>pH <b id="mjLabPhVal" class="mono">6.0</b></span>
+              <input type="range" id="mjLabPh" min="40" max="80" value="60">
+            </label>
+            <label class="sim-control">
+              <span>CE <b id="mjLabCeVal" class="mono">1.5</b> mS/cm</span>
+              <input type="range" id="mjLabCe" min="5" max="35" value="15">
+            </label>
+          </div>
+          <button type="button" class="btn btn-primary" id="mjLabBtn" style="margin-top:18px;">Medir solución</button>
+          <div class="sim-result" id="mjLabResult" aria-live="polite"></div>
+        </div>
+      </div>
+
       <div style="margin-top:64px;">
         <p class="eyebrow">Pasaporte CIEHS</p>
         <h3 style="margin-top:10px; font-size:19px;">Tus insignias</h3>
@@ -1941,6 +2030,28 @@
             <h4>Guardián del Cultivo</h4>
             <p>Responde correctamente un reto sobre las especies cultivadas en el CIEHS.</p>
             <span class="badge-state">Bloqueada</span>
+          </div>
+        </div>
+
+        <p class="eyebrow" style="margin-top:34px;">Insignias de mini-juegos</p>
+        <div class="mj-badges">
+          <div class="mj-badge" data-mj="residuos">
+            <div class="mj-badge-emoji">🌱</div>
+            <h4>Semilla curiosa</h4>
+            <p>Completa la Misión Residuos con 6 o más aciertos de 8.</p>
+            <span class="mj-badge-state">Bloqueada</span>
+          </div>
+          <div class="mj-badge" data-mj="solucion">
+            <div class="mj-badge-emoji">⚗️</div>
+            <h4>Química de la Raíz</h4>
+            <p>Calibra el pH y la CE de un cultivo dentro de su rango óptimo.</p>
+            <span class="mj-badge-state">Bloqueada</span>
+          </div>
+          <div class="mj-badge" data-mj="maestro">
+            <div class="mj-badge-emoji">🏅</div>
+            <h4>Maestro del CIEHS</h4>
+            <p>Desbloquea las dos insignias de mini-juegos.</p>
+            <span class="mj-badge-state">Bloqueada</span>
           </div>
         </div>
       </div>
@@ -2628,6 +2739,155 @@
 })();
 </script>
 
+<!-- ============ JUEGA: Misión Residuos + Laboratorio de solución nutritiva ============ -->
+<script>
+(function(){
+  var resGame = document.getElementById('mjResiduos');
+  var lab = document.getElementById('mjLab');
+  if(!resGame && !lab) return;
+
+  var KEY = 'ciehs_minijuegos_v1';
+  var mstate = { residuos:false, solucion:false };
+  try{
+    var s = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if(s){ mstate.residuos = !!s.residuos; mstate.solucion = !!s.solucion; }
+  }catch(e){}
+
+  function persist(){ try{ localStorage.setItem(KEY, JSON.stringify(mstate)); }catch(e){} }
+  function renderBadges(){
+    var map = { residuos:mstate.residuos, solucion:mstate.solucion, maestro:(mstate.residuos && mstate.solucion) };
+    document.querySelectorAll('.mj-badge').forEach(function(card){
+      var on = !!map[card.getAttribute('data-mj')];
+      card.classList.toggle('is-unlocked', on);
+      var st = card.querySelector('.mj-badge-state');
+      if(st) st.textContent = on ? 'Desbloqueada' : 'Bloqueada';
+    });
+  }
+  renderBadges();
+
+  /* ---------- Misión Residuos ---------- */
+  if(resGame){
+    var ITEMS = [
+      { emoji:'🥤', name:'Botella de plástico PET', cat:'reutilizable', txt:'La lavamos, la cortamos y se convierte en maceta hidropónica para germinar plántulas.' },
+      { emoji:'🍌', name:'Cáscara de plátano', cat:'organico', txt:'Va a la compostera de la escuela; en semanas se transforma en abono para el módulo de sustrato.' },
+      { emoji:'🥫', name:'Lata de gaseosa', cat:'reciclable', txt:'El aluminio se recicla una y otra vez sin perder calidad. Al contenedor de reciclables.' },
+      { emoji:'🛍️', name:'Bolsa plástica con restos de comida', cat:'no', txt:'Contaminada con grasa y comida ya no se puede reciclar. Lo mejor es no usar bolsas de un solo uso.' },
+      { emoji:'📄', name:'Hoja usada por un solo lado', cat:'reutilizable', txt:'La usamos como borrador en la bitácora de campo antes de mandarla a reciclar.' },
+      { emoji:'🍽️', name:'Envase de tecnopor (poliestireno)', cat:'no', txt:'En Huanchaco no hay planta que lo recicle. Evitar comprarlo es la mejor decisión.' },
+      { emoji:'📰', name:'Periódico viejo', cat:'reciclable', txt:'El papel de periódico limpio y seco se recicla para fabricar cartón nuevo.' },
+      { emoji:'🥬', name:'Restos de poda de lechuga', cat:'organico', txt:'Vuelven a la compostera y cierran el ciclo de nutrientes del CIEHS.' }
+    ];
+    var LABELS = { organico:'Orgánico', reciclable:'Reciclable', reutilizable:'Reutilizable', no:'No reciclable' };
+    var idx = 0, score = 0, answered = false;
+    var emojiEl = document.getElementById('mjResEmoji');
+    var nameEl = document.getElementById('mjResName');
+    var idxEl = document.getElementById('mjResIndex');
+    var scoreEl = document.getElementById('mjResScore');
+    var fbEl = document.getElementById('mjResFeedback');
+    var cats = resGame.querySelectorAll('.mj-cat');
+    var nextBtn = document.getElementById('mjResNext');
+    var resetBtn = document.getElementById('mjResReset');
+
+    function loadItem(){
+      answered = false;
+      var it = ITEMS[idx];
+      emojiEl.textContent = it.emoji;
+      nameEl.textContent = it.name;
+      idxEl.textContent = idx + 1;
+      fbEl.textContent = ''; fbEl.className = 'mj-feedback';
+      nextBtn.hidden = true;
+      cats.forEach(function(c){ c.disabled = false; c.classList.remove('correct','incorrect'); });
+    }
+    function finish(){
+      cats.forEach(function(c){ c.disabled = true; });
+      nextBtn.hidden = true;
+      resetBtn.hidden = false;
+      var ok = score >= 6;
+      fbEl.className = 'mj-feedback ' + (ok ? 'is-correct' : 'is-wrong');
+      fbEl.textContent = 'Terminaste con ' + score + ' / 8 aciertos. ' +
+        (ok ? '¡Insignia "Semilla curiosa" desbloqueada! Cada residuo bien clasificado protege el mar de Huanchaco.'
+            : 'Necesitas 6 aciertos para la insignia. Repasa los contenedores y vuelve a intentarlo.');
+      if(ok && !mstate.residuos){ mstate.residuos = true; persist(); renderBadges(); }
+    }
+    cats.forEach(function(cat){
+      cat.addEventListener('click', function(){
+        if(answered) return;
+        answered = true;
+        var it = ITEMS[idx];
+        var correct = cat.getAttribute('data-cat') === it.cat;
+        if(correct) score++;
+        scoreEl.textContent = score;
+        cats.forEach(function(c){
+          c.disabled = true;
+          if(c.getAttribute('data-cat') === it.cat) c.classList.add('correct');
+          else if(c === cat) c.classList.add('incorrect');
+        });
+        fbEl.className = 'mj-feedback ' + (correct ? 'is-correct' : 'is-wrong');
+        fbEl.textContent = (correct ? '✓ ¡Correcto! ' : '✗ Va en "' + LABELS[it.cat] + '". ') + it.txt;
+        if(idx < ITEMS.length - 1){ nextBtn.hidden = false; } else { finish(); }
+      });
+    });
+    nextBtn.addEventListener('click', function(){ if(idx < ITEMS.length - 1){ idx++; loadItem(); } });
+    resetBtn.addEventListener('click', function(){ idx = 0; score = 0; scoreEl.textContent = '0'; resetBtn.hidden = true; loadItem(); });
+    loadItem();
+  }
+
+  /* ---------- Laboratorio de solución nutritiva ---------- */
+  if(lab){
+    var CROPS = {
+      lechuga:  { name:'lechuga',  ph:[5.5,6.5], ce:[1.2,1.8] },
+      albahaca: { name:'albahaca', ph:[5.5,6.5], ce:[1.6,2.2] },
+      espinaca: { name:'espinaca', ph:[6.0,6.8], ce:[1.8,2.3] }
+    };
+    var current = 'lechuga';
+    var phEl = document.getElementById('mjLabPh');
+    var ceEl = document.getElementById('mjLabCe');
+    var phVal = document.getElementById('mjLabPhVal');
+    var ceVal = document.getElementById('mjLabCeVal');
+    var targetEl = document.getElementById('mjLabTarget');
+    var btn = document.getElementById('mjLabBtn');
+    var resEl = document.getElementById('mjLabResult');
+    var cropBtns = lab.querySelectorAll('.mj-crop');
+
+    function ph(){ return Number(phEl.value) / 10; }
+    function ce(){ return Number(ceEl.value) / 10; }
+    function fmt(r){ return r[0].toFixed(1) + '–' + r[1].toFixed(1); }
+    function renderTarget(){
+      var c = CROPS[current];
+      targetEl.textContent = 'Objetivo ' + c.name + ' — pH ' + fmt(c.ph) + ' · CE ' + fmt(c.ce) + ' mS/cm';
+    }
+    phEl.addEventListener('input', function(){ phVal.textContent = ph().toFixed(1); });
+    ceEl.addEventListener('input', function(){ ceVal.textContent = ce().toFixed(1); });
+    cropBtns.forEach(function(b){
+      b.addEventListener('click', function(){
+        cropBtns.forEach(function(x){ x.classList.toggle('is-active', x === b); });
+        current = b.getAttribute('data-crop');
+        renderTarget();
+        resEl.textContent = ''; resEl.className = 'sim-result';
+      });
+    });
+    btn.addEventListener('click', function(){
+      var c = CROPS[current];
+      var okPh = ph() >= c.ph[0] && ph() <= c.ph[1];
+      var okCe = ce() >= c.ce[0] && ce() <= c.ce[1];
+      if(okPh && okCe){
+        resEl.className = 'sim-result is-success';
+        resEl.textContent = '⚗️ Solución calibrada para ' + c.name + '. El pH y la CE están en el rango óptimo: las raíces absorben los nutrientes sin estrés. ¡Insignia "Química de la Raíz" desbloqueada!';
+        if(!mstate.solucion){ mstate.solucion = true; persist(); renderBadges(); }
+      } else {
+        resEl.className = 'sim-result is-fail';
+        resEl.textContent = '⚠️ Ajusta ' +
+          (!okPh ? 'el pH (objetivo ' + fmt(c.ph) + ')' : '') +
+          (!okPh && !okCe ? ' y ' : '') +
+          (!okCe ? 'la CE (objetivo ' + fmt(c.ce) + ' mS/cm)' : '') +
+          '. Un valor fuera de rango bloquea la absorción de nutrientes.';
+      }
+    });
+    renderTarget();
+  }
+})();
+</script>
+
 <!-- ============ RECURSOS DOCENTES: filtros ============ -->
 <script>
 (function(){
@@ -3016,7 +3276,7 @@
   // ---- scroll reveal: fade-up al entrar en viewport (IntersectionObserver) ----
   var revealSelectors = [
     '.section-head', '.hub-card', '.card', '.qr-card', '.hero-kpi',
-    '.stat-tile', '.viz-card', '.badge-card', '.not-only .card',
+    '.stat-tile', '.viz-card', '.badge-card', '.mj-game', '.mj-badge', '.not-only .card',
     '.climate-block', '.mural-panel', '.qr-panel', '.cycle-step',
     '.contact-card', '.contact-form', '.problem-block'
   ];
