@@ -537,6 +537,65 @@
     margin-top:auto; padding-top:10px; border-top:1px dashed var(--line);
     font-family:var(--font-mono); font-size:11.5px; font-weight:600; color:var(--azure-300);
   }
+  /* El codigo va siempre negro sobre blanco, aunque el portal sea oscuro:
+     es la combinacion que los lectores de QR reconocen con mas fiabilidad y
+     la unica que se imprime bien. */
+  .qr-thumb{
+    align-self:center; width:100%; max-width:138px;
+    background:#fff; border-radius:10px; padding:9px;
+    box-shadow:0 10px 26px -14px rgba(0,0,0,0.9);
+  }
+  .qr-thumb svg{ display:block; width:100%; height:auto; }
+  .qr-thumb.is-error{
+    display:flex; align-items:center; justify-content:center; min-height:110px;
+    background:var(--surface-2); color:var(--ink-mute);
+    font-family:var(--font-mono); font-size:11px; text-align:center; padding:14px;
+  }
+  .qr-card .qr-url{
+    font-family:var(--font-mono); font-size:10.5px; line-height:1.5;
+    color:var(--ink-mute); word-break:break-all;
+  }
+  .qr-actions{
+    margin-top:auto; padding-top:12px; border-top:1px dashed var(--line);
+    display:flex; gap:8px; flex-wrap:wrap;
+  }
+  .qr-actions button{
+    cursor:pointer; font-family:var(--font-mono); font-size:11px; font-weight:600;
+    padding:7px 11px; border-radius:8px;
+    border:1px solid var(--line-strong); background:transparent; color:var(--azure-300);
+    transition:border-color .25s ease, color .25s ease, background .25s ease;
+  }
+  .qr-actions button:hover{ border-color:var(--azure-500); color:#fff; background:rgba(14,165,233,0.12); }
+  .qr-actions .qr-dl{ color:var(--ink-soft); }
+  .qr-actions .qr-dl:hover{ border-color:var(--leaf-500); color:#fff; background:rgba(16,185,129,0.12); }
+  .qr-toolbar{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top:24px; }
+  .qr-toolbar .qr-hint{ font-size:12.5px; color:var(--ink-mute); font-family:var(--font-mono); }
+  .qr-print-head{ display:none; }
+
+  /* ============ HOJA IMPRIMIBLE DE CODIGOS ============ */
+  @media print{
+    :root{ color-scheme:light; }
+    body{ background:#fff !important; color:#000 !important; }
+    .mesh-aura, header.site, footer, .admin-fab, .admin-modal,
+    .aviso-banner, .breadcrumb, .qr-panel, .qr-actions, .qr-toolbar{ display:none !important; }
+    section{ padding:0 !important; }
+    .qr-print-head{
+      display:block !important; margin-bottom:18px;
+      border-bottom:2px solid #000; padding-bottom:10px;
+    }
+    .qr-print-head b{ font-size:15px; color:#000; display:block; }
+    .qr-print-head span{ font-size:11px; color:#333; font-family:var(--font-mono); }
+    .section-head{ display:none !important; }
+    .qr-grid{ grid-template-columns:repeat(2,1fr) !important; gap:14px !important; }
+    .qr-card{
+      background:#fff !important; border:1px solid #888 !important;
+      box-shadow:none !important; backdrop-filter:none !important;
+      break-inside:avoid; page-break-inside:avoid; padding:14px !important;
+    }
+    .qr-card h4{ color:#000 !important; }
+    .qr-card p, .qr-card .qr-num, .qr-card .qr-url{ color:#222 !important; }
+    .qr-thumb{ box-shadow:none !important; max-width:118px; padding:0 !important; }
+  }
 
   /* ============ QR SECTION ============ */
   .qr-panel{
@@ -1436,80 +1495,110 @@
         <p>Ocho códigos QR conectan el espacio físico del laboratorio con el portal — cada uno apunta a una sección específica y su destino puede actualizarse desde administración. Además, cada lote de cultivo tiene su propia bitácora: siembra, insumos, mediciones y cosecha.</p>
       </div>
 
+      <div class="qr-print-head">
+        <b>CIEHS · I.E. N.° 80033 “José Olaya Balandra” — Huanchaco</b>
+        <span>Hoja de códigos QR del laboratorio hidropónico · recortar por el borde de cada ficha</span>
+      </div>
+
+      <div class="qr-toolbar">
+        <button type="button" class="btn btn-ghost" id="qrPrintBtn">Imprimir hoja de los 8 códigos</button>
+        <span class="qr-hint">Corrección de errores nivel Q (25 %): siguen leyéndose con el código parcialmente sucio o mojado.</span>
+      </div>
+
       <div class="qr-grid">
-        <button type="button" class="qr-card" data-route="inicio">
+        <article class="qr-card" data-qr-card="inicio">
           <span class="qr-num mono">QR · 01</span>
+          <div class="qr-thumb" data-qr-slot="inicio" data-qr-label="Código QR 01 — QR Principal"></div>
           <h4>QR Principal</h4>
           <p>Acceso general al portal — entrada del CIEHS</p>
-          <span class="qr-dest">→ Inicio</span>
-        </button>
-        <button type="button" class="qr-card" data-route="mural">
+          <code class="qr-url" data-qr-url="inicio"></code>
+          <div class="qr-actions">
+            <button type="button" data-route="inicio">Abrir → Inicio</button>
+            <button type="button" class="qr-dl" data-qr-download="inicio" data-qr-file="ciehs-qr-01-inicio.svg">Descargar SVG</button>
+          </div>
+        </article>
+        <article class="qr-card" data-qr-card="mural">
           <span class="qr-num mono">QR · 02</span>
+          <div class="qr-thumb" data-qr-slot="mural" data-qr-label="Código QR 02 — QR Mural"></div>
           <h4>QR Mural</h4>
           <p>Enlace al mural interactivo CIEHS — junto al mural físico</p>
-          <span class="qr-dest">→ Nuestro Mural</span>
-        </button>
-        <button type="button" class="qr-card" data-route="modulos">
+          <code class="qr-url" data-qr-url="mural"></code>
+          <div class="qr-actions">
+            <button type="button" data-route="mural">Abrir → Nuestro Mural</button>
+            <button type="button" class="qr-dl" data-qr-download="mural" data-qr-file="ciehs-qr-02-mural.svg">Descargar SVG</button>
+          </div>
+        </article>
+        <article class="qr-card" data-qr-card="modulos">
           <span class="qr-num mono">QR · 03</span>
+          <div class="qr-thumb" data-qr-slot="modulos" data-qr-label="Código QR 03 — QR Módulos"></div>
           <h4>QR Módulos</h4>
           <p>Estado técnico y funcionamiento hidropónico — cerca del sistema</p>
-          <span class="qr-dest">→ Módulos</span>
-        </button>
-        <button type="button" class="qr-card" data-route="investigaciones">
+          <code class="qr-url" data-qr-url="modulos"></code>
+          <div class="qr-actions">
+            <button type="button" data-route="modulos">Abrir → Módulos</button>
+            <button type="button" class="qr-dl" data-qr-download="modulos" data-qr-file="ciehs-qr-03-modulos.svg">Descargar SVG</button>
+          </div>
+        </article>
+        <article class="qr-card" data-qr-card="investigaciones">
           <span class="qr-num mono">QR · 04</span>
+          <div class="qr-thumb" data-qr-slot="investigaciones" data-qr-label="Código QR 04 — QR Investigaciones"></div>
           <h4>QR Investigaciones</h4>
           <p>Fichas de proyectos Eureka 2026 — paneles informativos</p>
-          <span class="qr-dest">→ Investigaciones</span>
-        </button>
-        <button type="button" class="qr-card" data-route="juega">
+          <code class="qr-url" data-qr-url="investigaciones"></code>
+          <div class="qr-actions">
+            <button type="button" data-route="investigaciones">Abrir → Investigaciones</button>
+            <button type="button" class="qr-dl" data-qr-download="investigaciones" data-qr-file="ciehs-qr-04-investigaciones.svg">Descargar SVG</button>
+          </div>
+        </article>
+        <article class="qr-card" data-qr-card="juega">
           <span class="qr-num mono">QR · 05</span>
+          <div class="qr-thumb" data-qr-slot="juega" data-qr-label="Código QR 05 — QR Juegos"></div>
           <h4>QR Juegos</h4>
           <p>Retos y gamificación de aprendizaje — actividades estudiantiles</p>
-          <span class="qr-dest">→ Juega y aprende</span>
-        </button>
-        <button type="button" class="qr-card" data-route="docentes">
+          <code class="qr-url" data-qr-url="juega"></code>
+          <div class="qr-actions">
+            <button type="button" data-route="juega">Abrir → Juega y aprende</button>
+            <button type="button" class="qr-dl" data-qr-download="juega" data-qr-file="ciehs-qr-05-juega.svg">Descargar SVG</button>
+          </div>
+        </article>
+        <article class="qr-card" data-qr-card="docentes">
           <span class="qr-num mono">QR · 06</span>
+          <div class="qr-thumb" data-qr-slot="docentes" data-qr-label="Código QR 06 — QR Docentes"></div>
           <h4>QR Docentes</h4>
           <p>Repositorio pedagógico — sala docente / feria</p>
-          <span class="qr-dest">→ Recursos docentes</span>
-        </button>
-        <button type="button" class="qr-card" data-route="eureka">
+          <code class="qr-url" data-qr-url="docentes"></code>
+          <div class="qr-actions">
+            <button type="button" data-route="docentes">Abrir → Recursos docentes</button>
+            <button type="button" class="qr-dl" data-qr-download="docentes" data-qr-file="ciehs-qr-06-docentes.svg">Descargar SVG</button>
+          </div>
+        </article>
+        <article class="qr-card" data-qr-card="eureka">
           <span class="qr-num mono">QR · 07</span>
+          <div class="qr-thumb" data-qr-slot="eureka" data-qr-label="Código QR 07 — QR Eureka"></div>
           <h4>QR Eureka</h4>
           <p>Presentación científica escolar — feria / presentación</p>
-          <span class="qr-dest">→ Rumbo a Eureka 2026</span>
-        </button>
-        <button type="button" class="qr-card" data-route="metodologia">
+          <code class="qr-url" data-qr-url="eureka"></code>
+          <div class="qr-actions">
+            <button type="button" data-route="eureka">Abrir → Rumbo a Eureka 2026</button>
+            <button type="button" class="qr-dl" data-qr-download="eureka" data-qr-file="ciehs-qr-07-eureka.svg">Descargar SVG</button>
+          </div>
+        </article>
+        <article class="qr-card" data-qr-card="metodologia">
           <span class="qr-num mono">QR · 08</span>
+          <div class="qr-thumb" data-qr-slot="metodologia" data-qr-label="Código QR 08 — QR Acción por el Clima"></div>
           <h4>QR Acción por el Clima</h4>
           <p>ODS 13 y metas ambientales — campañas ambientales</p>
-          <span class="qr-dest">→ Metodología</span>
-        </button>
+          <code class="qr-url" data-qr-url="metodologia"></code>
+          <div class="qr-actions">
+            <button type="button" data-route="metodologia">Abrir → Metodología</button>
+            <button type="button" class="qr-dl" data-qr-download="metodologia" data-qr-file="ciehs-qr-08-metodologia.svg">Descargar SVG</button>
+          </div>
+        </article>
       </div>
 
       <div class="qr-panel" style="margin-top:64px;">
         <div class="qr-visual">
-          <svg viewBox="0 0 90 90" aria-hidden="true">
-            <rect width="90" height="90" fill="none"/>
-            <g fill="var(--on-ocean)">
-              <rect x="4" y="4" width="22" height="22" fill="none" stroke="var(--on-ocean)" stroke-width="4"/>
-              <rect x="11" y="11" width="8" height="8"/>
-              <rect x="64" y="4" width="22" height="22" fill="none" stroke="var(--on-ocean)" stroke-width="4"/>
-              <rect x="71" y="11" width="8" height="8"/>
-              <rect x="4" y="64" width="22" height="22" fill="none" stroke="var(--on-ocean)" stroke-width="4"/>
-              <rect x="11" y="71" width="8" height="8"/>
-              <rect x="34" y="4" width="6" height="6"/><rect x="46" y="4" width="6" height="6"/>
-              <rect x="34" y="14" width="6" height="6"/><rect x="52" y="14" width="6" height="6"/>
-              <rect x="40" y="24" width="6" height="6"/><rect x="52" y="24" width="6" height="6"/>
-              <rect x="34" y="34" width="6" height="6"/><rect x="46" y="34" width="6" height="6"/><rect x="58" y="34" width="6" height="6"/>
-              <rect x="64" y="34" width="6" height="6"/><rect x="76" y="34" width="6" height="6"/>
-              <rect x="34" y="46" width="6" height="6"/><rect x="70" y="46" width="6" height="6"/><rect x="82" y="46" width="6" height="6"/>
-              <rect x="40" y="52" width="6" height="6"/><rect x="52" y="52" width="6" height="6"/><rect x="64" y="52" width="6" height="6"/>
-              <rect x="34" y="58" width="6" height="6"/><rect x="58" y="58" width="6" height="6"/><rect x="76" y="58" width="6" height="6"/>
-              <rect x="40" y="70" width="6" height="6"/><rect x="52" y="70" width="6" height="6"/><rect x="64" y="70" width="6" height="6"/><rect x="76" y="70" width="6" height="6"/>
-              <rect x="34" y="82" width="6" height="6"/><rect x="46" y="82" width="6" height="6"/><rect x="70" y="82" width="6" height="6"/>
-            </g>
-          </svg>
+          <div class="qr-thumb" data-qr-slot="trazabilidad" data-qr-label="Código QR de la bitácora de trazabilidad" style="max-width:150px;"></div>
           <p class="label mono" id="traceQrLabel">LOTE L-2026-01<br>MOD-NFT-01 · Lactuca sativa</p>
         </div>
         <div class="qr-body">
@@ -2560,6 +2649,7 @@
   </div>
 </footer>
 
+<script src="/assets/js/qrcode.js"></script>
 <script>
 (function(){
   // ===== router: una URL por sección, historial real y enlaces compartibles =====
@@ -2619,7 +2709,13 @@
     routeEls.forEach(function(el){
       var active = el.getAttribute('data-route') === route;
       el.classList.toggle('is-active', active);
-      if(active){ el.setAttribute('aria-current','page'); } else { el.removeAttribute('aria-current'); }
+      // aria-current="page" solo tiene sentido en la navegacion principal.
+      // Antes lo recibian los 13 elementos que apuntan a inicio (la marca mas
+      // un breadcrumb "<- Inicio" por seccion) y un lector de pantalla
+      // anunciaba trece veces "pagina actual".
+      var isNav = el.closest('.nav, #mobileNav');
+      if(active && isNav){ el.setAttribute('aria-current','page'); }
+      else { el.removeAttribute('aria-current'); }
     });
     document.title = route === 'inicio' ? 'CIEHS' : 'CIEHS · ' + ROUTE_LABELS[route];
     if(opts.moveFocus){
@@ -3446,6 +3542,108 @@
       }
     });
   }
+})();
+</script>
+
+<!-- ============ TRAZABILIDAD: generacion real de codigos QR ============ -->
+<script>
+(function(){
+  if(typeof qrcode !== 'function'){
+    document.querySelectorAll('[data-qr-slot]').forEach(function(el){
+      el.classList.add('is-error');
+      el.textContent = 'No se pudo cargar el generador de códigos QR.';
+    });
+    return;
+  }
+
+  // Zona tranquila de 4 módulos: el estándar la exige para que el lector
+  // encuentre los patrones de posición. Sin ella muchos móviles fallan.
+  var QUIET = 4;
+  // Nivel Q = 25 % de redundancia. Estos códigos van pegados junto a módulos
+  // hidropónicos, con humedad y salpicaduras, así que conviene el margen.
+  var EC = 'Q';
+
+  function esc(t){
+    return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function svgFor(text, label){
+    var q = qrcode(0, EC);          // tipo 0 = versión mínima que quepa
+    q.addData(text);
+    q.make();
+    var n = q.getModuleCount();
+    var size = n + QUIET * 2;
+    var d = '';
+    for(var r = 0; r < n; r++){
+      for(var c = 0; c < n; c++){
+        if(q.isDark(r, c)) d += 'M' + (c + QUIET) + ' ' + (r + QUIET) + 'h1v1h-1z';
+      }
+    }
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + size + ' ' + size + '"'
+         + ' shape-rendering="crispEdges" role="img" aria-label="' + esc(label) + '">'
+         + '<title>' + esc(label) + '</title>'
+         + '<rect width="' + size + '" height="' + size + '" fill="#ffffff"/>'
+         + '<path d="' + d + '" fill="#000000"/></svg>';
+  }
+
+  function urlFor(route){
+    if(window.CIEHS && typeof window.CIEHS.urlFor === 'function') return window.CIEHS.urlFor(route);
+    return window.location.origin + window.location.pathname + '#/' + route;
+  }
+
+  var svgCache = {};
+
+  document.querySelectorAll('[data-qr-slot]').forEach(function(slot){
+    var route = slot.getAttribute('data-qr-slot');
+    var label = slot.getAttribute('data-qr-label') || ('Código QR hacia ' + route);
+    var url = urlFor(route);
+    try{
+      var svg = svgFor(url, label + ' — ' + url);
+      svgCache[route] = svg;
+      slot.innerHTML = svg;
+    }catch(e){
+      slot.classList.add('is-error');
+      slot.textContent = 'No se pudo generar este código.';
+    }
+  });
+
+  // La URL bajo cada código es deliberada: quien no pueda escanear todavía
+  // puede teclearla, y quien imprima la hoja se lleva la dirección legible.
+  document.querySelectorAll('[data-qr-url]').forEach(function(el){
+    var route = el.getAttribute('data-qr-url');
+    el.textContent = urlFor(route).replace(/^https?:\/\//, '');
+  });
+
+  document.querySelectorAll('[data-qr-download]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var route = btn.getAttribute('data-qr-download');
+      var svg = svgCache[route];
+      if(!svg) return;
+      // SVG y no PNG a propósito: es vectorial, así que el mismo archivo
+      // sirve para una etiqueta de 5 cm y para un panel de feria de 1 m.
+      var blob = new Blob([svg], { type:'image/svg+xml;charset=utf-8' });
+      var href = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = href;
+      a.download = btn.getAttribute('data-qr-file') || ('ciehs-qr-' + route + '.svg');
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(href); }, 1000);
+      var prev = btn.textContent;
+      btn.textContent = 'Descargado ✓';
+      setTimeout(function(){ btn.textContent = prev; }, 1800);
+    });
+  });
+
+  var printBtn = document.getElementById('qrPrintBtn');
+  if(printBtn) printBtn.addEventListener('click', function(){ window.print(); });
+
+  // Para poder comprobar los códigos desde la consola durante el montaje.
+  window.CIEHS = window.CIEHS || {};
+  window.CIEHS.qrSvg = function(route){ return svgCache[route]; };
+  window.CIEHS.qrRoutes = Object.keys(svgCache);
 })();
 </script>
 
