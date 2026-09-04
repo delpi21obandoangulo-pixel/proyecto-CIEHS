@@ -4,7 +4,62 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0a0f0d">
-<title>CIEHS</title>
+
+<title>CIEHS · Centro de Investigación Escolar Hidropónico Sostenible</title>
+<meta name="description" content="Portal del laboratorio de hidroponía escolar de la I.E. N.° 80033 “José Olaya Balandra”, Huanchaco: investigaciones, módulos, datos y recursos para docentes.">
+<link rel="canonical" href="https://ciehs.vercel.app/">
+<meta name="author" content="I.E. N.° 80033 José Olaya Balandra — Huanchaco, La Libertad, Perú">
+<meta name="robots" content="index, follow, max-image-preview:large">
+
+<!-- Iconos. La marca es el marcador de posición del portal: sustituir por el
+     escudo institucional oficial cuando esté disponible, sin modificar su diseño. -->
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/img/icon-180.png">
+<link rel="mask-icon" href="/assets/img/favicon.svg" color="#10b981">
+
+<!-- Tarjeta al compartir por WhatsApp, Facebook y X, que es como circula
+     realmente el enlace en la comunidad educativa. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="CIEHS">
+<meta property="og:locale" content="es_PE">
+<meta property="og:url" content="https://ciehs.vercel.app/">
+<meta property="og:title" content="CIEHS · Centro de Investigación Escolar Hidropónico Sostenible">
+<meta property="og:description" content="Portal del laboratorio de hidroponía escolar de la I.E. N.° 80033 “José Olaya Balandra”, Huanchaco: investigaciones, módulos, datos y recursos para docentes.">
+<meta property="og:image" content="https://ciehs.vercel.app/assets/img/ciehs-og.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="CIEHS — Cultivamos ciencia, cosechamos futuro. Laboratorio de hidroponía escolar de la I.E. N.° 80033 José Olaya Balandra, Huanchaco.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="CIEHS · Centro de Investigación Escolar Hidropónico Sostenible">
+<meta name="twitter:description" content="Portal del laboratorio de hidroponía escolar de la I.E. N.° 80033 “José Olaya Balandra”, Huanchaco: investigaciones, módulos, datos y recursos para docentes.">
+<meta name="twitter:image" content="https://ciehs.vercel.app/assets/img/ciehs-og.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "EducationalOrganization",
+  "name": "CIEHS — Centro de Investigación Escolar Hidropónico Sostenible",
+  "alternateName": "CIEHS",
+  "parentOrganization": {
+    "@type": "School",
+    "name": "I.E. N.° 80033 José Olaya Balandra"
+  },
+  "url": "https://ciehs.vercel.app/",
+  "logo": "https://ciehs.vercel.app/assets/img/icon-512.png",
+  "image": "https://ciehs.vercel.app/assets/img/ciehs-og.png",
+  "description": "Portal del laboratorio de hidroponía escolar de la I.E. N.° 80033 “José Olaya Balandra”, Huanchaco: investigaciones, módulos, datos y recursos para docentes.",
+  "email": "ciehs.olaya@gmail.com",
+  "slogan": "Cultivamos Ciencia, Cosechamos Futuro",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Huanchaco",
+    "addressRegion": "La Libertad",
+    "addressCountry": "PE"
+  },
+  "knowsAbout": ["Hidroponía escolar", "Indagación científica", "ODS 13 Acción por el Clima", "Seguridad alimentaria"]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Cinzel:wght@500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -571,6 +626,11 @@
   .qr-toolbar{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top:24px; }
   .qr-toolbar .qr-hint{ font-size:12.5px; color:var(--ink-mute); font-family:var(--font-mono); }
   .qr-print-head{ display:none; }
+  .viz-note{
+    margin-top:20px; padding-top:14px; border-top:1px dashed var(--chart-grid);
+    font-size:12.5px; line-height:1.65; color:var(--chart-ink-2); max-width:76ch;
+  }
+  .viz-note b{ color:var(--ink-soft); font-weight:600; }
 
   /* ============ HOJA IMPRIMIBLE DE CODIGOS ============ */
   @media print{
@@ -1665,7 +1725,7 @@
           <div class="viz-head">
             <div>
               <h3>pH y conductividad eléctrica (CE) por módulo</h3>
-              <p>Rangos operativos oficiales · monitoreo en tiempo real</p>
+              <p>Rangos operativos de referencia · <span id="datosSyncLabel">Última sincronización local: —</span></p>
             </div>
           </div>
 
@@ -1819,6 +1879,11 @@
             </div>
           </div>
           <div class="range-axis"><span>1.0</span><span>1.5</span><span>2.0</span><span>2.5</span></div>
+
+          <p class="viz-note">Estos son los <b>rangos objetivo</b> fijados por el equipo del CIEHS para cada
+          cultivo, no lecturas de sensores en línea. El pH y la CE se miden a mano cada 5 días y se registran
+          en la bitácora del módulo; los valores publicados aquí se actualizan desde el panel de administración
+          y quedan guardados en este navegador.</p>
         </div>
       </div>
     </div>
@@ -2717,7 +2782,9 @@
       if(active && isNav){ el.setAttribute('aria-current','page'); }
       else { el.removeAttribute('aria-current'); }
     });
-    document.title = route === 'inicio' ? 'CIEHS' : 'CIEHS · ' + ROUTE_LABELS[route];
+    document.title = route === 'inicio'
+      ? 'CIEHS · Centro de Investigación Escolar Hidropónico Sostenible'
+      : ROUTE_LABELS[route] + ' · CIEHS — I.E. 80033 José Olaya Balandra';
     if(opts.moveFocus){
       window.scrollTo(0,0);
       var heading = document.querySelector('[data-page="'+route+'"] h1, [data-page="'+route+'"] h2');
@@ -3196,7 +3263,29 @@
 <script>
 (function(){
   var ADMIN_KEY = 'ciehs_admin_v1';
-  var ADMIN_PIN = '2026';
+
+  // El PIN ya no aparece escrito en el codigo: se guarda su huella SHA-256 con
+  // un prefijo fijo. Esto es FRICCION DELIBERADA, NO SEGURIDAD: quien abra las
+  // herramientas del navegador puede saltarse la comprobacion igual que antes,
+  // porque toda validacion hecha en el cliente es evitable por definicion.
+  // Lo unico que evita es que la clave quede legible a simple vista en el
+  // codigo fuente publico. La proteccion real llega al conectar un backend con
+  // autenticacion y politicas de acceso; hasta entonces, el panel no debe
+  // usarse para nada sensible.
+  var ADMIN_PIN_SALT = 'ciehs:';
+  var ADMIN_PIN_SHA256 = '79a13377c4fb43d0f18c681cf98299ee557805ee634a6f0ffa16482f0fb99060';
+
+  function sha256Hex(text){
+    var subtle = (window.crypto && window.crypto.subtle) || null;
+    if(!subtle || !window.TextEncoder){
+      return Promise.reject(new Error('sin-webcrypto'));
+    }
+    return subtle.digest('SHA-256', new TextEncoder().encode(text)).then(function(buf){
+      var out = '';
+      new Uint8Array(buf).forEach(function(b){ out += b.toString(16).padStart(2, '0'); });
+      return out;
+    });
+  }
   var DEFAULTS = { heroTitle:'', heroSub:'', kpiCosechaKg:'', kpiAhorroPct:'', aviso:'', avisoActive:false };
 
   function loadAdminData(){
@@ -3242,7 +3331,29 @@
   }
 
   var adminData = loadAdminData();
+  // "Última sincronización local" y no "tiempo real": lo único que puede haber
+  // cambiado son los valores que alguien guardó desde el panel, y viven solo en
+  // el localStorage de este navegador.
+  function renderSyncLabel(data){
+    var el = document.getElementById('datosSyncLabel');
+    if(!el) return;
+    if(!data || !data.savedAt){
+      el.textContent = 'Sin sincronización local · valores de referencia publicados';
+      return;
+    }
+    var d = new Date(data.savedAt);
+    if(isNaN(d.getTime())){
+      el.textContent = 'Sin sincronización local · valores de referencia publicados';
+      return;
+    }
+    var f = d.toLocaleString('es-PE', {
+      day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'
+    });
+    el.textContent = 'Última sincronización local: ' + f;
+  }
+
   applyAdminData(adminData);
+  renderSyncLabel(adminData);
 
   var avisoCloseBtn = document.getElementById('avisoCloseBtn');
   if(avisoCloseBtn){
@@ -3297,13 +3408,24 @@
   }
 
   function checkPin(){
-    if(adminPinInput.value.trim() === ADMIN_PIN){
-      adminPinStep.hidden = true;
-      adminFormStep.hidden = false;
-      fillAdminForm();
-    } else {
+    var entered = adminPinInput.value.trim();
+    if(!entered){ adminPinError.hidden = false; return; }
+    // Web Crypto exige contexto seguro (https o localhost). Si no esta
+    // disponible se dice por que, en vez de dejar el boton sin responder.
+    sha256Hex(ADMIN_PIN_SALT + entered).then(function(hex){
+      if(hex === ADMIN_PIN_SHA256){
+        adminPinError.hidden = true;
+        adminPinStep.hidden = true;
+        adminFormStep.hidden = false;
+        fillAdminForm();
+      } else {
+        adminPinError.textContent = 'PIN incorrecto. Inténtalo de nuevo.';
+        adminPinError.hidden = false;
+      }
+    }).catch(function(){
+      adminPinError.textContent = 'El panel necesita abrirse por https (o en localhost) para verificar el acceso.';
       adminPinError.hidden = false;
-    }
+    });
   }
   if(adminPinSubmit) adminPinSubmit.addEventListener('click', checkPin);
   if(adminPinInput) adminPinInput.addEventListener('keydown', function(e){
@@ -3313,6 +3435,7 @@
   if(adminSaveBtn){
     adminSaveBtn.addEventListener('click', function(){
       adminData = {
+        savedAt: new Date().toISOString(),
         heroTitle: document.getElementById('adminHeroTitle').value.trim(),
         heroSub: document.getElementById('adminHeroSub').value.trim(),
         kpiCosechaKg: document.getElementById('adminKpiCosecha').value.trim(),
@@ -3323,8 +3446,9 @@
       saveAdminData(adminData);
       try{ sessionStorage.removeItem('ciehs_aviso_dismissed'); }catch(e){}
       applyAdminData(adminData);
+      renderSyncLabel(adminData);
       adminSaveStatus.classList.remove('error');
-      adminSaveStatus.textContent = 'Cambios guardados y publicados en el portal.';
+      adminSaveStatus.textContent = 'Cambios guardados en este navegador.';
       setTimeout(function(){ closeAdminModal(); }, 1100);
     });
   }

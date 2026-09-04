@@ -2,3 +2,8 @@
 Informe_Empresarial_Portal_Educativo_Digital_CIEHS.docx
 README.md
 CNAME
+
+# Secretos y estado local (Vercel ya los excluye; explicito por defensa en profundidad)
+.env
+.env.*
+.vercel

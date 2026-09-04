@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  El portal es una SPA con enrutado por fragmento (#/ruta). Los buscadores no
+  tratan un fragmento como URL propia, asi que aqui solo figura la direccion
+  canonica. Para que cada seccion se indexe por separado haria falta migrar a
+  rutas reales (/modulos, /datos...) con una entrada HTML por seccion.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://ciehs.vercel.app/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>

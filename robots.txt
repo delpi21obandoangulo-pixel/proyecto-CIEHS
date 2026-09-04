@@ -1,0 +1,5 @@
+# CIEHS — I.E. N.° 80033 "José Olaya Balandra", Huanchaco
+User-agent: *
+Allow: /
+
+Sitemap: https://ciehs.vercel.app/sitemap.xml

@@ -9,13 +9,13 @@
 
 [![ODS 13](https://img.shields.io/badge/ODS-13%20Acci%C3%B3n%20por%20el%20Clima-2E7D32?style=for-the-badge&logo=leaflet&logoColor=white)](https://www.un.org/sustainabledevelopment/es/climate-change/)
 [![Eureka 2026](https://img.shields.io/badge/Eureka-2026-F59E0B?style=for-the-badge&logo=starship&logoColor=white)](#)
-[![Surge Status](https://img.shields.io/website?url=https%3A%2F%2Fciehs-olaya.surge.sh&up_message=en%20l%C3%ADnea&down_message=fuera%20de%20l%C3%ADnea&style=for-the-badge&label=surge)](https://ciehs-olaya.surge.sh)
+[![Estado del sitio](https://img.shields.io/website?url=https%3A%2F%2Fciehs.vercel.app&up_message=en%20l%C3%ADnea&down_message=fuera%20de%20l%C3%ADnea&style=for-the-badge&label=vercel)](https://ciehs.vercel.app)
 [![Licencia MIT](https://img.shields.io/badge/Licencia-MIT-0EA5E9?style=for-the-badge)](#-licencia)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](#)
 [![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)](#)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](#)
 
-**[🔗 Ver sitio en vivo](https://ciehs-olaya.surge.sh)**
+**[🔗 Ver sitio en vivo](https://ciehs.vercel.app)**
 
 </div>
 
@@ -69,17 +69,23 @@ El laboratorio hidropónico opera con **4 módulos** físicos, cada uno document
 ### 🛠️ Herramientas del portal
 
 - **🧪 Simulador hidropónico** — modela el comportamiento de los sistemas NFT, DWC, sustrato y vertical de forma interactiva.
-- **📱 Trazabilidad QR** — cada cultivo puede rastrearse desde la siembra hasta la cosecha mediante códigos QR de acceso.
+- **📱 Trazabilidad QR** — ocho códigos QR reales, generados en el navegador, que enlazan cada punto del laboratorio físico con su sección del portal. Descargables en SVG e imprimibles en hoja.
 - **💧 Calculadora hídrica** — estima el consumo y ahorro de agua frente al cultivo convencional en suelo.
-- **🔐 Panel CMS (administración)** — panel de administración protegido por PIN para editar portada, indicadores y avisos institucionales.
-  > PIN de acceso: `2026`
+- **🔐 Panel CMS (administración)** — permite editar portada, indicadores y avisos institucionales.
+  > **Acceso:** solicitar las credenciales al coordinador del CIEHS. No se publican en este repositorio.
+  >
+  > ⚠️ **Limitación conocida.** El panel valida el acceso en el navegador y guarda en `localStorage`, así que
+  > los cambios **solo son visibles en el equipo donde se editan** y el control de acceso no es una barrera
+  > real. Ambas cosas se resuelven al conectar un backend con autenticación; hasta entonces, no debe tratarse
+  > como un CMS publicado ni usarse para información sensible.
 
 ### Stack
 
 ```
 HTML5  +  CSS3  +  JavaScript (vanilla)
+Generación de códigos QR: qrcode-generator (MIT), servida desde el propio dominio
 Persistencia local vía localStorage (panel CMS)
-Despliegue estático vía Surge.sh
+Despliegue estático en Vercel, con cabeceras de seguridad en vercel.json
 ```
 
 ---
@@ -88,7 +94,7 @@ Despliegue estático vía Surge.sh
 
 ### 🌐 Sitio en vivo
 
-**[https://ciehs-olaya.surge.sh](https://ciehs-olaya.surge.sh)**
+**[https://ciehs.vercel.app](https://ciehs.vercel.app)**
 
 ### 💻 Ejecutar en local
 
@@ -118,12 +124,18 @@ python -m http.server 8080
 
 Luego visita `http://localhost:8080`.
 
-### ☁️ Redesplegar en Surge
+### ☁️ Redesplegar en Vercel
+
+El proyecto vive en su propio proyecto de Vercel, aislado de cualquier otro.
 
 ```bash
-npm install -g surge
-surge . ciehs-olaya.surge.sh
+npm install -g vercel
+vercel deploy --prod
 ```
+
+Las cabeceras de seguridad (CSP, HSTS, `X-Frame-Options`, `X-Content-Type-Options`,
+`Referrer-Policy` y `Permissions-Policy`) se definen en `vercel.json` y se aplican
+en cada despliegue.
 
 ---
 
