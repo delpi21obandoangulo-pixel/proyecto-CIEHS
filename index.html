@@ -862,6 +862,66 @@
   .admin-grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
   @media (max-width:480px){ .admin-grid-2{ grid-template-columns:1fr; } }
 
+  /* ---- pestañas del panel ----
+     El panel crecio a tres areas y en un modal de 88vh el desplazamiento
+     vertical hacia que se perdiera el hilo. Con pestañas cada tarea cabe
+     entera en pantalla. */
+  .admin-tabs{
+    display:flex; gap:4px; margin-top:18px; padding-bottom:2px;
+    border-bottom:1px solid var(--line);
+  }
+  .admin-tabs button{
+    flex:1; cursor:pointer; padding:9px 8px; border:none; background:none;
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.05em;
+    color:var(--ink-mute); border-bottom:2px solid transparent;
+    transition:color .2s ease, border-color .2s ease;
+  }
+  .admin-tabs button:hover{ color:var(--ink-soft); }
+  .admin-tabs button.is-active{ color:var(--leaf-300); border-bottom-color:var(--leaf-500); }
+  [data-tabpanel]{ margin-top:18px; }
+
+  /* ---- editor de investigaciones ---- */
+  .inv-lista-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .inv-nueva{
+    cursor:pointer; font-family:var(--font-mono); font-size:11px; font-weight:600;
+    padding:6px 12px; border-radius:100px; border:1px solid var(--line-strong);
+    background:transparent; color:var(--leaf-300); flex:none;
+    transition:border-color .25s ease, background .25s ease, color .25s ease;
+  }
+  .inv-nueva:hover{ border-color:var(--leaf-500); background:rgba(16,185,129,0.12); color:#fff; }
+  .inv-admin-lista{ margin-top:14px; display:flex; flex-direction:column; }
+  .inv-item{
+    display:flex; align-items:center; gap:12px; padding:12px 0;
+    border-top:1px solid var(--line); text-align:left;
+  }
+  .inv-item:first-child{ border-top:none; }
+  .inv-item .txt{ flex:1; min-width:0; }
+  .inv-item .cod{ font-family:var(--font-mono); font-size:11px; color:var(--ink-mute); }
+  .inv-item .tit{
+    display:block; font-size:13.5px; color:var(--ink); line-height:1.45; margin-top:3px;
+    overflow:hidden; text-overflow:ellipsis; display:-webkit-box;
+    -webkit-line-clamp:2; -webkit-box-orient:vertical;
+  }
+  .inv-item .estado{
+    flex:none; font-family:var(--font-mono); font-size:10px; letter-spacing:.06em;
+    text-transform:uppercase; padding:3px 8px; border-radius:100px; border:1px solid currentColor;
+  }
+  .inv-item .estado.pub{ color:var(--status-good); }
+  .inv-item .estado.bor{ color:var(--ink-mute); }
+  .inv-item .editar{
+    flex:none; cursor:pointer; background:none; border:none; padding:4px;
+    color:var(--azure-300); font-family:var(--font-mono); font-size:11px; text-decoration:underline;
+  }
+  .inv-vacia{ font-size:13px; color:var(--ink-mute); padding:16px 0; line-height:1.6; }
+  .inv-form-acciones{ display:flex; gap:10px; align-items:center; margin-top:18px; flex-wrap:wrap; }
+  .inv-form-acciones .btn{ flex:1; justify-content:center; min-width:120px; }
+  .inv-borrar{
+    cursor:pointer; background:none; border:none; padding:8px 4px;
+    color:var(--status-danger); font-family:var(--font-mono); font-size:11px;
+    text-decoration:underline; flex:none;
+  }
+  .inv-confirmar{ color:#fff !important; font-weight:600; }
+
   /* ============ HOJA IMPRIMIBLE DE CODIGOS ============ */
   @media print{
     :root{ color-scheme:light; }
@@ -3136,6 +3196,14 @@
     <div id="adminFormStep" hidden>
       <p class="eyebrow">Panel administrativo</p>
       <h3 style="margin-top:10px; font-size:20px;">Editar el portal</h3>
+
+      <div class="admin-tabs" role="tablist" aria-label="Secciones del panel">
+        <button type="button" role="tab" class="is-active" data-tab="portada" aria-selected="true" aria-controls="tab-portada">Portada</button>
+        <button type="button" role="tab" data-tab="lecturas" aria-selected="false" aria-controls="tab-lecturas">Lecturas</button>
+        <button type="button" role="tab" data-tab="investigaciones" aria-selected="false" aria-controls="tab-investigaciones">Investigaciones</button>
+      </div>
+
+      <div id="tab-portada" role="tabpanel" data-tabpanel="portada">
       <div class="admin-field-group">
         <label class="form-field">
           <span>Titular de impacto (portada)</span>
@@ -3165,8 +3233,10 @@
       <p class="admin-hint">Los cambios se guardan en la base de datos del CIEHS y quedan visibles para todo el que abra el portal.</p>
       <button type="button" class="btn btn-primary" id="adminSaveBtn" style="margin-top:20px; width:100%; justify-content:center;">Guardar y publicar cambios</button>
       <p class="form-status" id="adminSaveStatus" role="status" aria-live="polite"></p>
+      </div>
 
-      <p class="admin-divider">Registrar lectura de pH y CE</p>
+      <div id="tab-lecturas" role="tabpanel" data-tabpanel="lecturas" hidden>
+      <p class="admin-divider" style="margin-top:0; border-top:none; padding-top:0;">Registrar lectura de pH y CE</p>
       <p style="font-size:12.5px; color:var(--ink-soft); line-height:1.55;">Cada lectura queda fechada y pasa a mostrarse en la sección Datos como última sincronización real.</p>
       <div class="admin-field-group" style="margin-top:12px;">
         <label class="form-field">
@@ -3190,6 +3260,81 @@
       </div>
       <button type="button" class="btn btn-ghost" id="teleSaveBtn" style="margin-top:14px; width:100%; justify-content:center;">Registrar lectura</button>
       <p class="form-status" id="teleStatus" role="status" aria-live="polite"></p>
+      </div>
+
+      <div id="tab-investigaciones" role="tabpanel" data-tabpanel="investigaciones" hidden>
+        <div class="inv-lista-head">
+          <p class="admin-divider" style="margin:0; border-top:none; padding-top:0;">Investigaciones</p>
+          <button type="button" class="inv-nueva" id="invNuevaBtn">+ Nueva</button>
+        </div>
+        <p style="font-size:12.5px; color:var(--ink-soft); line-height:1.55; margin-top:8px;">Las publicadas se muestran en la sección Investigaciones del portal. Los borradores solo se ven desde aquí.</p>
+
+        <div id="invAdminLista" class="inv-admin-lista"></div>
+
+        <form id="invForm" class="inv-form" hidden>
+          <p class="admin-divider" style="margin-top:22px;"><span id="invFormTitulo">Nueva investigación</span></p>
+          <div class="admin-field-group">
+            <div class="admin-grid-2">
+              <label class="form-field">
+                <span>Código</span>
+                <input type="text" id="invCode" maxlength="30" placeholder="INV-2026-03" required>
+              </label>
+              <label class="form-field">
+                <span>Estado</span>
+                <input type="text" id="invStatus" maxlength="60" placeholder="Proyecto Eureka 2026">
+              </label>
+            </div>
+            <label class="form-field">
+              <span>Título</span>
+              <textarea id="invTitle" rows="3" maxlength="400" placeholder="Los nombres científicos entre *asteriscos* salen en cursiva" required></textarea>
+            </label>
+            <label class="form-field">
+              <span>Pregunta de investigación</span>
+              <textarea id="invQuestion" rows="3" maxlength="600"></textarea>
+            </label>
+            <label class="form-field">
+              <span>Hipótesis</span>
+              <textarea id="invHypothesis" rows="3" maxlength="600"></textarea>
+            </label>
+            <label class="form-field">
+              <span>Variable independiente</span>
+              <textarea id="invVarInd" rows="2" maxlength="400"></textarea>
+            </label>
+            <label class="form-field">
+              <span>Variable dependiente</span>
+              <textarea id="invVarDep" rows="2" maxlength="400"></textarea>
+            </label>
+            <label class="form-field">
+              <span>Variables de control</span>
+              <textarea id="invVarCon" rows="2" maxlength="400"></textarea>
+            </label>
+            <label class="form-field">
+              <span>Metodología</span>
+              <textarea id="invMethod" rows="2" maxlength="400"></textarea>
+            </label>
+            <div class="admin-grid-2">
+              <label class="form-field">
+                <span>Etiquetas (una por línea)</span>
+                <textarea id="invTags" rows="2" maxlength="200" placeholder="Lechuga · *Lactuca sativa*&#10;Módulo relacionado: NFT"></textarea>
+              </label>
+              <label class="form-field">
+                <span>Orden</span>
+                <input type="number" id="invPosition" min="0" max="99" step="1" value="1">
+              </label>
+            </div>
+            <label class="admin-checkbox-row">
+              <input type="checkbox" id="invPublished">
+              Publicar en el portal
+            </label>
+          </div>
+          <div class="inv-form-acciones">
+            <button type="submit" class="btn btn-primary" id="invGuardarBtn">Guardar</button>
+            <button type="button" class="btn btn-ghost" id="invCancelarBtn">Cancelar</button>
+            <button type="button" class="inv-borrar" id="invBorrarBtn" hidden>Eliminar</button>
+          </div>
+          <p class="form-status" id="invStatusMsg" role="status" aria-live="polite"></p>
+        </form>
+      </div>
 
       <div class="admin-session">
         <span id="adminWho"></span>
@@ -4122,6 +4267,7 @@
   function mostrarFormulario(){
     if(loginStep) loginStep.hidden = true;
     if(formStep) formStep.hidden = false;
+    abrirPestana('portada');
     rellenarFormulario();
     D.sesion().then(function(ses){
       if(whoBox && ses && ses.user) whoBox.textContent = 'Sesión: ' + ses.user.email;
@@ -4235,6 +4381,184 @@
         teleSaveBtn.disabled = false;
         teleStatus.classList.add('error');
         teleStatus.textContent = 'No se pudo registrar: ' + ((e && e.message) || 'error desconocido');
+      });
+    });
+  }
+
+
+  /* ==================== PESTAÑAS DEL PANEL ==================== */
+
+  var tabBtns = document.querySelectorAll('.admin-tabs [data-tab]');
+  var tabPanes = document.querySelectorAll('[data-tabpanel]');
+
+  function abrirPestana(nombre){
+    tabBtns.forEach(function(b){
+      var activo = b.getAttribute('data-tab') === nombre;
+      b.classList.toggle('is-active', activo);
+      b.setAttribute('aria-selected', String(activo));
+    });
+    tabPanes.forEach(function(p){
+      p.hidden = p.getAttribute('data-tabpanel') !== nombre;
+    });
+    if(nombre === 'investigaciones') cargarListaInvestigaciones();
+  }
+
+  tabBtns.forEach(function(b){
+    b.addEventListener('click', function(){ abrirPestana(b.getAttribute('data-tab')); });
+  });
+
+  /* ================ EDITOR DE INVESTIGACIONES ================ */
+
+  var invLista     = el('invAdminLista');
+  var invForm      = el('invForm');
+  var invFormTit   = el('invFormTitulo');
+  var invNuevaBtn  = el('invNuevaBtn');
+  var invCancelar  = el('invCancelarBtn');
+  var invBorrar    = el('invBorrarBtn');
+  var invGuardar   = el('invGuardarBtn');
+  var invMsg       = el('invStatusMsg');
+
+  var invEditando = null;   // code de la fila en edicion, o null si es nueva
+  var invCache = [];
+
+  function cargarListaInvestigaciones(){
+    if(!invLista) return;
+    invLista.innerHTML = '<p class="inv-vacia">Cargando…</p>';
+    D.listarInvestigaciones().then(function(filas){
+      invCache = filas;
+      if(!filas.length){
+        invLista.innerHTML = '<p class="inv-vacia">Todavía no hay ninguna investigación registrada.</p>';
+        return;
+      }
+      invLista.innerHTML = filas.map(function(f){
+        var pub = f.published;
+        return '<div class="inv-item">'
+          + '<div class="txt">'
+          +   '<span class="cod">' + esc(f.code) + '</span>'
+          +   '<span class="tit">' + enfasis(f.title || '') + '</span>'
+          + '</div>'
+          + '<span class="estado ' + (pub ? 'pub' : 'bor') + '">' + (pub ? 'publicada' : 'borrador') + '</span>'
+          + '<button type="button" class="editar" data-editar="' + esc(f.code) + '">Editar</button>'
+          + '</div>';
+      }).join('');
+      invLista.querySelectorAll('[data-editar]').forEach(function(b){
+        b.addEventListener('click', function(){ abrirFicha(b.getAttribute('data-editar')); });
+      });
+    }).catch(function(e){
+      invLista.innerHTML = '<p class="inv-vacia">No se pudo cargar la lista: ' + esc((e && e.message) || 'error') + '</p>';
+    });
+  }
+
+  function valor(id, v){ var n = el(id); if(n) n.value = v == null ? '' : v; }
+
+  function abrirFicha(code){
+    var f = invCache.filter(function(x){ return x.code === code; })[0];
+    invEditando = f ? f.code : null;
+    invFormTit.textContent = f ? ('Editando ' + f.code) : 'Nueva investigación';
+    valor('invCode', f ? f.code : '');
+    valor('invStatus', f ? f.status : 'Proyecto Eureka 2026');
+    valor('invTitle', f ? f.title : '');
+    valor('invQuestion', f ? f.question : '');
+    valor('invHypothesis', f ? f.hypothesis : '');
+    valor('invVarInd', f ? f.var_independent : '');
+    valor('invVarDep', f ? f.var_dependent : '');
+    valor('invVarCon', f ? f.var_control : '');
+    valor('invMethod', f ? f.method : '');
+    valor('invTags', f && f.tags ? f.tags.join('\n') : '');
+    valor('invPosition', f ? f.position : (invCache.length + 1));
+    el('invPublished').checked = f ? !!f.published : false;
+    // El codigo identifica la fila: cambiarlo al editar crearia una copia en
+    // vez de actualizar, asi que se bloquea mientras se edita.
+    el('invCode').readOnly = !!f;
+    invBorrar.hidden = !f;
+    invBorrar.textContent = 'Eliminar';
+    invBorrar.classList.remove('inv-confirmar');
+    invMsg.textContent = '';
+    invMsg.classList.remove('error');
+    invForm.hidden = false;
+    invForm.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+
+  function cerrarFicha(){
+    invForm.hidden = true;
+    invEditando = null;
+    invMsg.textContent = '';
+  }
+
+  if(invNuevaBtn) invNuevaBtn.addEventListener('click', function(){ abrirFicha(null); });
+  if(invCancelar) invCancelar.addEventListener('click', cerrarFicha);
+
+  if(invForm){
+    invForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      var code = el('invCode').value.trim();
+      var title = el('invTitle').value.trim();
+      if(!code || !title){
+        invMsg.classList.add('error');
+        invMsg.textContent = 'El código y el título son obligatorios.';
+        return;
+      }
+      invGuardar.disabled = true;
+      invMsg.classList.remove('error');
+      invMsg.textContent = 'Guardando…';
+      D.guardarInvestigacion({
+        code: code,
+        title: title,
+        status: el('invStatus').value.trim(),
+        question: el('invQuestion').value.trim(),
+        hypothesis: el('invHypothesis').value.trim(),
+        varInd: el('invVarInd').value.trim(),
+        varDep: el('invVarDep').value.trim(),
+        varCon: el('invVarCon').value.trim(),
+        method: el('invMethod').value.trim(),
+        tags: el('invTags').value.split('\n').map(function(t){ return t.trim(); }).filter(Boolean),
+        position: el('invPosition').value,
+        published: el('invPublished').checked
+      }).then(function(){
+        return refrescar();                 // repinta ya la seccion publica
+      }).then(function(){
+        cargarListaInvestigaciones();
+        invGuardar.disabled = false;
+        invMsg.textContent = el('invPublished').checked
+          ? 'Guardada y publicada en el portal.'
+          : 'Guardada como borrador: todavía no se ve en el portal.';
+        setTimeout(cerrarFicha, 1400);
+      }).catch(function(e){
+        invGuardar.disabled = false;
+        invMsg.classList.add('error');
+        var m = (e && e.message) || 'error desconocido';
+        if(/duplicate key/i.test(m)) m = 'Ya existe una investigación con ese código.';
+        invMsg.textContent = 'No se pudo guardar: ' + m;
+      });
+    });
+  }
+
+  if(invBorrar){
+    // Confirmacion en dos pasos sobre el propio boton: un confirm() del
+    // navegador bloquea la pagina y aqui basta con obligar a pulsar dos veces.
+    invBorrar.addEventListener('click', function(){
+      if(!invEditando) return;
+      if(!invBorrar.classList.contains('inv-confirmar')){
+        invBorrar.classList.add('inv-confirmar');
+        invBorrar.textContent = '¿Eliminar definitivamente? Pulsa otra vez';
+        setTimeout(function(){
+          invBorrar.classList.remove('inv-confirmar');
+          invBorrar.textContent = 'Eliminar';
+        }, 4000);
+        return;
+      }
+      invBorrar.disabled = true;
+      invMsg.textContent = 'Eliminando…';
+      D.eliminarInvestigacion(invEditando).then(function(){
+        return refrescar();
+      }).then(function(){
+        invBorrar.disabled = false;
+        cargarListaInvestigaciones();
+        cerrarFicha();
+      }).catch(function(e){
+        invBorrar.disabled = false;
+        invMsg.classList.add('error');
+        invMsg.textContent = 'No se pudo eliminar: ' + ((e && e.message) || 'error');
       });
     });
   }

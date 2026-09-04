@@ -191,5 +191,55 @@
       });
   };
 
+  /* ------------------------- investigaciones ----------------------------- */
+
+  var COLS_INV = 'id, code, title, question, hypothesis, var_independent, var_dependent, ' +
+                 'var_control, method, status, tags, position, published, updated_at';
+
+  // El panel necesita ver TAMBIEN los borradores. No hace falta politica nueva:
+  // la de escritura de administradores es FOR ALL, y eso incluye SELECT, asi que
+  // se combina con la de lectura publica y un admin ve todas las filas.
+  CIEHSData.listarInvestigaciones = function () {
+    return cliente.from('investigations')
+      .select(COLS_INV)
+      .order('position', { ascending: true })
+      .then(function (r) {
+        if (r.error) throw r.error;
+        return r.data || [];
+      });
+  };
+
+  CIEHSData.guardarInvestigacion = function (inv) {
+    var fila = {
+      code: inv.code,
+      title: inv.title,
+      question: inv.question || null,
+      hypothesis: inv.hypothesis || null,
+      var_independent: inv.varInd || null,
+      var_dependent: inv.varDep || null,
+      var_control: inv.varCon || null,
+      method: inv.method || null,
+      status: inv.status || 'en curso',
+      tags: inv.tags || [],
+      position: inv.position === '' || inv.position == null ? 0 : Number(inv.position),
+      published: !!inv.published
+    };
+    // upsert sobre "code", que es la clave unica visible del proyecto: asi crear
+    // y editar recorren el mismo camino y no hay dos rutas que mantener.
+    return cliente.from('investigations')
+      .upsert(fila, { onConflict: 'code' })
+      .select(COLS_INV)
+      .maybeSingle()
+      .then(function (r) {
+        if (r.error) throw r.error;
+        return r.data;
+      });
+  };
+
+  CIEHSData.eliminarInvestigacion = function (code) {
+    return cliente.from('investigations').delete().eq('code', code)
+      .then(function (r) { if (r.error) throw r.error; return true; });
+  };
+
   global.CIEHSData = CIEHSData;
 })(window);
