@@ -730,6 +730,304 @@
   .qr-toolbar .qr-hint{ font-size:12.5px; color:var(--ink-mute); font-family:var(--font-mono); }
   .qr-print-head{ display:none; }
 
+  /* ============================================================
+     ARENA — capa a pantalla completa, independiente del portal.
+     Tiene su propia paleta, su propia tipografia de titulo y su
+     propio ritmo: al abrirla no debe parecer la misma web.
+     ============================================================ */
+  body.ar-abierta{ overflow:hidden; }
+
+  .ar-capa{
+    position:fixed; inset:0; z-index:200;
+    background:#05070c;
+    color:#e8eef6;
+    display:flex; flex-direction:column;
+    overflow:hidden;
+    font-family:var(--font-body);
+    --ar-acento:#7dd3fc;
+  }
+  .ar-capa canvas{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+  /* Velo muy ligero: el fondo animado es la mitad de la experiencia y no debe
+     quedar enterrado. La legibilidad del texto la resuelve el panel de vidrio
+     del reto, no oscureciendo toda la escena. */
+  .ar-capa::after{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background:
+      radial-gradient(130% 100% at 50% 45%, transparent 30%, rgba(5,7,12,0.42) 100%),
+      linear-gradient(0deg, rgba(5,7,12,0.55), rgba(5,7,12,0.10) 45%, rgba(5,7,12,0.30));
+  }
+  .ar-ui{
+    position:relative; z-index:2; flex:1; min-height:0;
+    display:flex; flex-direction:column;
+    overflow-y:auto; overscroll-behavior:contain;
+    padding:22px clamp(18px, 5vw, 56px) 32px;
+  }
+
+  /* ---------- barra superior ---------- */
+  .ar-top{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  .ar-top-izq, .ar-top-der{ display:flex; align-items:center; gap:14px; }
+  .ar-salir{
+    cursor:pointer; background:none; border:none; padding:6px 2px;
+    font-family:var(--font-mono); font-size:12px; color:rgba(232,238,246,0.6);
+    transition:color .2s ease;
+  }
+  .ar-salir:hover{ color:#fff; }
+  .ar-tema{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--ar-acento); padding:5px 12px; border-radius:100px;
+    border:1px solid color-mix(in srgb, var(--ar-acento) 40%, transparent);
+    background:color-mix(in srgb, var(--ar-acento) 10%, transparent);
+  }
+  .ar-vidas{ font-size:16px; letter-spacing:3px; color:#fb7185; }
+  .ar-puntos{ font-family:var(--font-mono); font-size:12px; color:rgba(232,238,246,0.65); }
+  .ar-puntos b{ font-size:17px; color:#fff; font-variant-numeric:tabular-nums; display:inline-block; }
+  .ar-puntos b.ar-sube{ animation:ar-sube .5s var(--ease-out); }
+  @keyframes ar-sube{
+    0%{ transform:scale(1); color:#fff; }
+    35%{ transform:scale(1.45); color:var(--ar-acento); }
+    100%{ transform:scale(1); color:#fff; }
+  }
+
+  .ar-progreso{ height:2px; background:rgba(255,255,255,0.09); margin-top:16px; border-radius:2px; }
+  .ar-progreso span{ display:block; height:100%; background:var(--ar-acento); border-radius:2px; transition:width .4s var(--ease-out); }
+
+  /* ---------- reto ---------- */
+  .ar-reto{
+    flex:1; display:flex; flex-direction:column; justify-content:center;
+    max-width:880px; width:100%; margin:auto; padding:32px clamp(20px,4vw,42px);
+    border-radius:28px;
+    background:rgba(5,7,12,0.52);
+    border:1px solid rgba(255,255,255,0.10);
+    backdrop-filter:blur(18px) saturate(1.2);
+    box-shadow:0 40px 90px -40px rgba(0,0,0,0.9);
+  }
+  .ar-menu, .ar-fin{ backdrop-filter:blur(6px); }
+  .ar-meta{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  .ar-num{ font-family:var(--font-mono); font-size:11px; color:rgba(232,238,246,0.5); letter-spacing:.1em; }
+  .ar-dif{
+    font-family:var(--font-mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+    padding:3px 9px; border-radius:100px; border:1px solid currentColor;
+  }
+  .ar-dif-1{ color:#34d399; } .ar-dif-2{ color:#f0c876; } .ar-dif-3{ color:#fb7185; }
+  .ar-racha{
+    font-family:var(--font-mono); font-size:11px; font-weight:700; color:#05070c;
+    background:var(--ar-acento); padding:3px 10px; border-radius:100px;
+    animation:ar-late 1.1s ease-in-out infinite;
+  }
+  @keyframes ar-late{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.09); } }
+
+  /* ---------- cronómetro ---------- */
+  .ar-crono{
+    position:relative; height:6px; margin:18px 0 26px;
+    background:rgba(255,255,255,0.08); border-radius:100px;
+  }
+  .ar-crono-barra{
+    display:block; height:100%; width:100%; border-radius:100px;
+    background:linear-gradient(90deg, var(--ar-acento), #fb7185);
+    transition:width .1s linear;
+  }
+  .ar-crono-num{
+    position:absolute; right:0; top:-26px;
+    font-family:var(--font-mono); font-size:14px; font-weight:600;
+    color:rgba(232,238,246,0.7); font-variant-numeric:tabular-nums;
+  }
+  .ar-crono-num.ar-urgente{ color:#fb7185; animation:ar-late .5s ease-in-out infinite; }
+
+  .ar-pregunta{
+    font-family:var(--font-display); font-size:clamp(24px, 4.2vw, 40px);
+    line-height:1.18; letter-spacing:-0.02em; color:#fff; text-wrap:balance;
+    margin-bottom:28px;
+  }
+
+  /* ---------- escucha ---------- */
+  .ar-escucha{ margin-bottom:28px; text-align:center; }
+  .ar-escucha-nota{ margin-top:12px; font-size:13px; color:rgba(232,238,246,0.55); }
+  .ar-repetir{ font-size:15px !important; padding:14px 26px !important; }
+
+  /* ---------- botones ---------- */
+  .ar-btn{
+    cursor:pointer; font-family:var(--font-mono); font-size:12.5px; font-weight:600;
+    padding:11px 20px; border-radius:100px;
+    border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.04); color:#e8eef6;
+    transition:transform .18s var(--ease-out), border-color .2s ease, background .2s ease;
+  }
+  .ar-btn:hover:not(:disabled){ transform:translateY(-2px); border-color:var(--ar-acento); background:rgba(255,255,255,0.09); }
+  .ar-btn:disabled{ cursor:default; opacity:.55; }
+  .ar-btn-primario{
+    background:var(--ar-acento); color:#05070c; border-color:transparent;
+    box-shadow:0 12px 30px -14px var(--ar-acento);
+  }
+  .ar-btn-primario:hover:not(:disabled){ background:var(--ar-acento); filter:brightness(1.1); }
+
+  .ar-ops{ display:grid; gap:12px; }
+  @media (min-width:700px){ .ar-ops{ grid-template-columns:1fr 1fr; } }
+  .ar-op{
+    cursor:pointer; text-align:left; padding:18px 22px; border-radius:16px;
+    border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.035);
+    color:#e8eef6; font-size:16px; line-height:1.4; font-family:var(--font-body);
+    backdrop-filter:blur(10px);
+    transition:transform .18s var(--ease-out), border-color .2s ease, background .2s ease;
+  }
+  .ar-op:hover:not(:disabled){ transform:translateY(-3px); border-color:var(--ar-acento); background:rgba(255,255,255,0.08); }
+  .ar-op:disabled{ cursor:default; }
+  .ar-op.ar-ok{ border-color:#34d399; background:rgba(52,211,153,0.18); color:#fff; font-weight:600; }
+  .ar-op.ar-mal{ border-color:#fb7185; background:rgba(251,113,133,0.14); }
+  .ar-vf{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .ar-vf .ar-op{ text-align:center; font-size:19px; font-weight:600; padding:28px 18px; }
+
+  /* ---------- dial ---------- */
+  .ar-dial{ text-align:center; }
+  .ar-dial-val{
+    display:block; font-family:var(--font-display); font-size:clamp(38px,7vw,60px);
+    font-weight:700; color:var(--ar-acento); font-variant-numeric:tabular-nums; line-height:1;
+  }
+  .ar-dial-val small{ font-size:.35em; color:rgba(232,238,246,0.6); font-family:var(--font-mono); }
+  .ar-dial input[type=range]{
+    -webkit-appearance:none; appearance:none; width:100%; margin:26px 0 6px;
+    height:8px; border-radius:100px; background:rgba(255,255,255,0.12); cursor:grab;
+  }
+  .ar-dial input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:30px; height:30px; border-radius:50%;
+    background:var(--ar-acento); border:3px solid #05070c; cursor:grab;
+    box-shadow:0 6px 18px -4px var(--ar-acento);
+  }
+  .ar-dial input[type=range]::-moz-range-thumb{
+    width:30px; height:30px; border-radius:50%; background:var(--ar-acento);
+    border:3px solid #05070c; cursor:grab;
+  }
+  .ar-dial-ejes{
+    display:flex; justify-content:space-between;
+    font-family:var(--font-mono); font-size:11px; color:rgba(232,238,246,0.4); margin-bottom:22px;
+  }
+
+  /* ---------- ordenar ---------- */
+  .ar-orden{ list-style:none; margin:0 0 20px; padding:0; display:flex; flex-direction:column; gap:9px; }
+  .ar-orden-item{
+    display:flex; align-items:center; gap:12px; padding:15px 16px; border-radius:12px;
+    border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.045);
+    font-size:15px; cursor:grab; backdrop-filter:blur(10px);
+  }
+  .ar-orden-item.arrastrando{ opacity:.4; border-color:var(--ar-acento); }
+  .ar-asa{ color:rgba(232,238,246,0.35); font-size:13px; letter-spacing:-2px; flex:none; }
+  .ar-flechas{ margin-left:auto; display:flex; gap:4px; flex:none; }
+  .ar-flechas button{
+    cursor:pointer; width:30px; height:30px; border-radius:8px; font-size:10px;
+    border:1px solid rgba(255,255,255,0.16); background:rgba(255,255,255,0.05); color:#e8eef6;
+  }
+  .ar-flechas button:hover{ border-color:var(--ar-acento); }
+
+  /* ---------- escribir ---------- */
+  .ar-escribe{ display:flex; gap:12px; flex-wrap:wrap; }
+  .ar-escribe input{
+    flex:1; min-width:220px; padding:16px 20px; border-radius:14px; font-size:17px;
+    border:1px solid rgba(255,255,255,0.16); background:rgba(255,255,255,0.05); color:#fff;
+    font-family:var(--font-body);
+  }
+  .ar-escribe input:focus{ outline:none; border-color:var(--ar-acento); }
+
+  /* ---------- feedback ---------- */
+  .ar-feedback{
+    margin-top:26px; padding:20px 24px; border-radius:16px; font-size:15px; line-height:1.65;
+    border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(12px);
+    animation:ar-entra .32s var(--ease-out) both;
+  }
+  @keyframes ar-entra{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
+  .ar-feedback b{ display:block; font-size:17px; margin-bottom:6px; }
+  .ar-feedback i{ font-style:normal; color:rgba(232,238,246,0.6); font-family:var(--font-mono); font-size:13px; }
+  .ar-feedback-ok{ border-color:rgba(52,211,153,0.4); background:rgba(52,211,153,0.10); }
+  .ar-feedback-ok b{ color:#34d399; }
+  .ar-feedback-mal{ border-color:rgba(251,113,133,0.4); background:rgba(251,113,133,0.09); }
+  .ar-feedback-mal b{ color:#fb7185; }
+  .ar-siguiente{ display:block; margin-top:18px; }
+
+  /* ---------- menú y final ---------- */
+  .ar-menu, .ar-fin{
+    flex:1; display:flex; flex-direction:column; justify-content:center;
+    max-width:880px; width:100%; margin:0 auto; text-align:center; padding:20px 0;
+  }
+  .ar-salir-menu{ align-self:flex-start; margin-bottom:26px; }
+  .ar-eyebrow{
+    font-family:var(--font-mono); font-size:11.5px; letter-spacing:.24em; text-transform:uppercase;
+    color:var(--ar-acento);
+  }
+  .ar-menu h1, .ar-fin h2{
+    font-family:var(--font-display); font-weight:700; letter-spacing:-0.03em; color:#fff;
+    font-size:clamp(34px, 7vw, 62px); line-height:1.02; margin-top:12px;
+  }
+  .ar-menu-lede{
+    margin:18px auto 0; max-width:60ch; font-size:15.5px; line-height:1.7;
+    color:rgba(232,238,246,0.62);
+  }
+  .ar-niveles{ display:grid; gap:14px; margin-top:36px; }
+  @media (min-width:760px){ .ar-niveles{ grid-template-columns:1fr 1fr; } }
+  .ar-nivel{
+    cursor:pointer; text-align:left; padding:24px 26px; border-radius:20px;
+    border:1px solid rgba(255,255,255,0.13); background:rgba(255,255,255,0.04);
+    color:#e8eef6; backdrop-filter:blur(12px);
+    display:flex; flex-direction:column; gap:5px;
+    transition:transform .22s var(--ease-out), border-color .22s ease, background .22s ease;
+  }
+  .ar-nivel:hover{ transform:translateY(-4px); border-color:var(--ar-acento); background:rgba(255,255,255,0.08); }
+  .ar-nivel-nom{ font-family:var(--font-display); font-size:21px; font-weight:600; color:#fff; }
+  .ar-nivel-desc{ font-size:14px; color:rgba(232,238,246,0.62); line-height:1.5; }
+  .ar-nivel-pie{
+    margin-top:8px; font-family:var(--font-mono); font-size:11px;
+    color:var(--ar-acento); letter-spacing:.04em;
+  }
+  .ar-menu-pie{ margin-top:28px; font-family:var(--font-mono); font-size:11.5px; color:rgba(232,238,246,0.4); }
+
+  .ar-fin-datos{ display:flex; justify-content:center; gap:36px; margin-top:28px; flex-wrap:wrap; }
+  .ar-fin-datos div{ display:flex; flex-direction:column; gap:4px; }
+  .ar-fin-datos b{
+    font-family:var(--font-display); font-size:38px; color:var(--ar-acento);
+    font-variant-numeric:tabular-nums; line-height:1;
+  }
+  .ar-fin-datos span{ font-family:var(--font-mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:rgba(232,238,246,0.5); }
+  .ar-aviso{
+    margin:26px auto 0; max-width:56ch; padding:14px 18px; border-radius:12px;
+    border:1px dashed rgba(251,113,133,0.4); background:rgba(251,113,133,0.07);
+    font-size:13.5px; line-height:1.6; color:rgba(232,238,246,0.75);
+  }
+  .ar-fin-acciones{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:34px; }
+
+  /* ---------- tarjeta de acceso desde la sección Juega ---------- */
+  .arena-cta{
+    position:relative; overflow:hidden; margin-top:34px; padding:38px 36px;
+    border-radius:var(--radius-l); border:1px solid var(--line);
+    background:linear-gradient(135deg, rgba(168,85,247,0.14), rgba(14,165,233,0.10) 55%, rgba(16,185,129,0.10));
+    display:flex; align-items:center; justify-content:space-between; gap:28px; flex-wrap:wrap;
+  }
+  .arena-cta::before{
+    content:""; position:absolute; inset:-40% -10% auto auto; width:420px; height:420px;
+    background:radial-gradient(circle, rgba(168,85,247,0.28), transparent 66%);
+    animation:ar-orbe 9s ease-in-out infinite alternate; pointer-events:none;
+  }
+  @keyframes ar-orbe{ from{ transform:translate(0,0) scale(1); } to{ transform:translate(-60px,40px) scale(1.15); } }
+  .arena-cta > div{ position:relative; z-index:1; max-width:56ch; }
+  .arena-cta h3{ font-family:var(--font-display); font-size:24px; color:#fff; letter-spacing:-0.02em; }
+  .arena-cta p{ margin-top:10px; font-size:14.5px; line-height:1.65; color:var(--ink-soft); }
+  .arena-cta-btn{
+    position:relative; z-index:1; flex:none; cursor:pointer;
+    font-family:var(--font-mono); font-size:13px; font-weight:700; letter-spacing:.04em;
+    padding:16px 30px; border-radius:100px; border:none; color:#05070c;
+    background:linear-gradient(120deg, #a855f7, #0ea5e9 60%, #34d399);
+    box-shadow:0 18px 40px -18px rgba(168,85,247,0.9);
+    transition:transform .22s var(--ease-out), filter .22s ease;
+  }
+  .arena-cta-btn:hover{ transform:translateY(-3px) scale(1.03); filter:brightness(1.08); }
+  .arena-formatos{ display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
+  .arena-formatos span{
+    font-family:var(--font-mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+    padding:4px 10px; border-radius:100px; border:1px solid var(--line-strong); color:var(--ink-mute);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .ar-racha, .ar-crono-num.ar-urgente, .arena-cta::before{ animation:none !important; }
+    .ar-feedback{ animation:none !important; }
+  }
+
+
   /* ---- privacidad ---- */
   .priv-aviso{
     margin-top:26px; padding:20px 24px;
@@ -2386,6 +2684,19 @@
         </div>
       </div>
 
+      <div class="arena-cta">
+        <div>
+          <p class="eyebrow" style="color:#c4b5fd;">Modo inmersivo</p>
+          <h3>Arena CIEHS</h3>
+          <p>Cuatro niveles, de Primaria a Universitario. Ocho retos por partida, tres vidas y cronómetro: cuanto más difícil el reto, menos tiempo tienes. Cada reto abre una ambientación distinta según su tema — el laboratorio de alquimia, el abismo hídrico, el invernadero, el frente climático, la sala de análisis o el taller de módulos.</p>
+          <div class="arena-formatos">
+            <span>Opciones</span><span>Verdadero o falso</span><span>Escucha</span>
+            <span>Ordenar</span><span>Ajustar valores</span><span>Escribir</span>
+          </div>
+        </div>
+        <button type="button" class="arena-cta-btn" data-abrir-arena>Entrar a la Arena ▸</button>
+      </div>
+
       <div class="quiz-ronda">
         <p class="quiz-ronda-txt" id="quizRondaTxt"></p>
         <button type="button" class="quiz-ronda-btn" id="quizRondaBtn">Otra ronda</button>
@@ -3049,6 +3360,12 @@
 
 </main>
 
+<!-- ============ ARENA CIEHS · capa de juego a pantalla completa ============ -->
+<div class="ar-capa" id="arenaCapa" role="dialog" aria-modal="true" aria-label="Arena CIEHS" tabindex="-1" hidden>
+  <canvas id="arenaFondo" aria-hidden="true"></canvas>
+  <div class="ar-ui" id="arenaUI"></div>
+</div>
+
 <!-- ============ PANEL DE ADMINISTRACIÓN (CMS localStorage) ============ -->
 <button type="button" class="admin-fab" id="adminOpenBtn" aria-label="Abrir panel de administración">
   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" stroke="currentColor" stroke-width="1.6"/><path d="M4 12h1.5M18.5 12H20M12 4v1.5M12 18.5V20M6.5 6.5l1 1M16.5 16.5l1 1M17.5 6.5l-1 1M7.5 16.5l-1 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
@@ -3259,6 +3576,8 @@
 <script src="/assets/js/supabase.js"></script>
 <script src="/assets/js/ciehs-data.js?v=2"></script>
 <script src="/assets/js/ciehs-preguntas.js"></script>
+<script src="/assets/js/ciehs-arena-preguntas.js"></script>
+<script src="/assets/js/ciehs-arena.js"></script>
 <script src="/assets/js/qrcode.js"></script>
 <script>
 (function(){
