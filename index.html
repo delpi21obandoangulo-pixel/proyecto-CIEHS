@@ -869,7 +869,28 @@
     transition:all .25s ease;
   }
   .admin-fab:hover{ border-color:var(--leaf-300); color:#fff; transform:translateY(-2px); }
-  .admin-fab svg{ width:15px; height:15px; }
+  .admin-fab svg{ width:15px; height:15px; flex:none; }
+  /* En móvil el botón se reduce a un icono circular: el rótulo completo se
+     solapaba con las tarjetas de KPI del hero. Se conserva accesible por
+     aria-label y el texto queda oculto solo visualmente. */
+  @media (max-width:720px){
+    .admin-fab{
+      right:14px;
+      bottom:calc(14px + env(safe-area-inset-bottom, 0px));
+      width:46px; height:46px; padding:0; gap:0;
+      border-radius:50%; justify-content:center;
+      background:rgba(13,21,18,0.92);
+    }
+    .admin-fab svg{ width:19px; height:19px; }
+    .admin-fab-label{
+      position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+      overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%);
+      white-space:nowrap; border:0;
+    }
+    /* Aire al pie para que el botón flotante nunca se quede fijo encima del
+       texto legal, que es lo último que queda en pantalla al llegar al final. */
+    footer{ padding-bottom:calc(76px + env(safe-area-inset-bottom, 0px)); }
+  }
   .admin-modal{ position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; padding:20px; }
   .admin-modal-backdrop{ position:absolute; inset:0; background:rgba(3,6,5,0.75); backdrop-filter:blur(6px); }
   .admin-modal-panel{
@@ -2456,9 +2477,9 @@
 </main>
 
 <!-- ============ PANEL DE ADMINISTRACIÓN (CMS localStorage) ============ -->
-<button type="button" class="admin-fab" id="adminOpenBtn">
+<button type="button" class="admin-fab" id="adminOpenBtn" aria-label="Abrir panel de administración">
   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" stroke="currentColor" stroke-width="1.6"/><path d="M4 12h1.5M18.5 12H20M12 4v1.5M12 18.5V20M6.5 6.5l1 1M16.5 16.5l1 1M17.5 6.5l-1 1M7.5 16.5l-1 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-  Administración
+  <span class="admin-fab-label">Administración</span>
 </button>
 
 <div id="adminModal" class="admin-modal" hidden>
@@ -2541,12 +2562,15 @@
 
 <script>
 (function(){
-  // ===== router: each nav item is an independent page, switched in place =====
-  // Deliberately does NOT touch location.hash or use <a href> navigation —
-  // this page is meant to run embedded, where link-style navigation can get
-  // intercepted by the host. All routing is plain in-memory + click handlers.
+  // ===== router: una URL por sección, historial real y enlaces compartibles =====
+  // Cada sección se refleja en location.hash como "#/ruta". El prefijo "#/"
+  // (en lugar de un "#seccion" pelado) es deliberado: varias secciones tienen
+  // un id que coincide con el nombre de su ruta, y un fragmento pelado haría
+  // que el navegador saltara por scroll a ese elemento antes de que el router
+  // pudiera actuar. Con "#/" ningún id coincide y el control es solo nuestro.
   var ROUTES = ['inicio','metodologia','investigaciones','equipos','modulos','trazabilidad','datos','juega','docentes','mural','eureka','contacto'];
   var ROUTE_LABELS = {
+    inicio:'Inicio',
     metodologia:'Metodología', investigaciones:'Investigaciones', equipos:'Equipos',
     modulos:'Módulos', trazabilidad:'Trazabilidad', datos:'Datos',
     juega:'Juega y aprende', docentes:'Recursos para docentes',
@@ -2554,9 +2578,43 @@
   };
   var pageEls = document.querySelectorAll('[data-page]');
   var routeEls = document.querySelectorAll('[data-route]');
+  var currentRoute = null;
 
-  function goTo(route, isInitial){
-    if(ROUTES.indexOf(route) === -1) route = 'inicio';
+  function normalize(route){
+    if(typeof route !== 'string') return 'inicio';
+    route = route.trim().toLowerCase();
+    return ROUTES.indexOf(route) === -1 ? 'inicio' : route;
+  }
+
+  // Tolerante con lo que llegue en la barra de direcciones: "#/modulos",
+  // "#modulos", "#/modulos?utm=qr" y "#/MODULOS" resuelven todos a "modulos".
+  // Devuelve además si el fragmento nombraba una ruta real, para saber cuándo
+  // hay que reescribir la URL y cuándo conviene dejarla tal cual.
+  function parseHash(){
+    var raw = window.location.hash || '';
+    raw = raw.replace(/^#\/?/, '').split('?')[0].split('&')[0];
+    try{ raw = decodeURIComponent(raw); }catch(e){}
+    var token = raw.trim().toLowerCase();
+    var known = ROUTES.indexOf(token) !== -1;
+    return { route: known ? token : 'inicio', known: known };
+  }
+
+  function hashFor(route){ return '#/' + normalize(route); }
+
+  // Solo reescribimos la URL cuando el fragmento no nombra una ruta real
+  // ("/", "#", "#inicio", "#/no-existe" -> "#/inicio"). Una ruta válida se
+  // deja intacta aunque venga con mayúsculas o con parámetros de campaña,
+  // que es lo que permitirá medir después qué QR del laboratorio se escanea.
+  function canonicalize(parsed){
+    if(parsed.known) return;
+    if(window.location.hash === hashFor(parsed.route)) return;
+    try{ history.replaceState(null, '', hashFor(parsed.route)); }catch(e){}
+  }
+
+  function render(route, opts){
+    opts = opts || {};
+    route = normalize(route);
+    currentRoute = route;
     pageEls.forEach(function(el){ el.hidden = el.getAttribute('data-page') !== route; });
     routeEls.forEach(function(el){
       var active = el.getAttribute('data-route') === route;
@@ -2564,7 +2622,7 @@
       if(active){ el.setAttribute('aria-current','page'); } else { el.removeAttribute('aria-current'); }
     });
     document.title = route === 'inicio' ? 'CIEHS' : 'CIEHS · ' + ROUTE_LABELS[route];
-    if(!isInitial){
+    if(opts.moveFocus){
       window.scrollTo(0,0);
       var heading = document.querySelector('[data-page="'+route+'"] h1, [data-page="'+route+'"] h2');
       if(heading){
@@ -2573,10 +2631,46 @@
       }
     }
   }
-  routeEls.forEach(function(el){
-    el.addEventListener('click', function(){ goTo(el.getAttribute('data-route'), false); });
+
+  // Navegación iniciada por el usuario: escribimos la URL y dejamos que el
+  // evento hashchange haga el render. Así un clic en el menú y una pulsación
+  // de Atrás/Adelante recorren exactamente el mismo camino de código.
+  function navigate(route){
+    route = normalize(route);
+    var target = hashFor(route);
+    if(window.location.hash === target){
+      render(route, { moveFocus:true });
+    }else{
+      window.location.hash = target;
+    }
+  }
+
+  window.addEventListener('hashchange', function(){
+    var parsed = parseHash();
+    canonicalize(parsed);
+    render(parsed.route, { moveFocus:true });
   });
-  goTo('inicio', true);
+
+  routeEls.forEach(function(el){
+    el.addEventListener('click', function(){ navigate(el.getAttribute('data-route')); });
+  });
+
+  // Primera pintura: respeta el enlace profundo compartido o escaneado por QR
+  // y canonicaliza la URL — "/", "#", "#inicio" o una ruta inventada terminan
+  // todos en "#/inicio", de modo que lo que el visitante copie siempre sirva.
+  var initial = parseHash();
+  canonicalize(initial);
+  render(initial.route, { moveFocus:false });
+
+  // Punto de entrada para el resto de scripts y para los QR por sección.
+  window.CIEHS = window.CIEHS || {};
+  window.CIEHS.navigate = navigate;
+  window.CIEHS.routes = ROUTES.slice();
+  window.CIEHS.routeLabel = function(r){ return ROUTE_LABELS[normalize(r)]; };
+  window.CIEHS.urlFor = function(r){
+    return window.location.origin + window.location.pathname + hashFor(r);
+  };
+  window.CIEHS.currentRoute = function(){ return currentRoute; };
 
   // mobile nav
   var toggle = document.getElementById('navToggle');
