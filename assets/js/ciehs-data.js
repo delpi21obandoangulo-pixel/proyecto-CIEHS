@@ -60,9 +60,14 @@
     return msg;
   }
 
+  // Columnas explicitas y nunca "*": los identificadores de auth de quien
+  // edita o registra (site_config.updated_by, telemetry_readings.recorded_by)
+  // estan vetados al rol anonimo, y pedir "*" haria fallar la consulta entera.
+  var COLS_CONFIG = 'id, hero_title, hero_subtitle, kpi_cosecha_kg, kpi_ahorro_pct, aviso, aviso_active, updated_at';
+
   CIEHSData.cargarPortal = function () {
     return Promise.all([
-      cliente.from('site_config').select('*').eq('id', 1).maybeSingle(),
+      cliente.from('site_config').select(COLS_CONFIG).eq('id', 1).maybeSingle(),
       cliente.from('modules').select('*').order('position', { ascending: true }),
       cliente.from('qr_codes').select('*').order('slot', { ascending: true }),
       cliente.from('investigations').select('*').order('position', { ascending: true }),

@@ -208,3 +208,25 @@ grant insert, update, delete on
   to authenticated;
 grant usage, select on all sequences in schema ciehs to authenticated;
 alter default privileges in schema ciehs grant select on tables to anon, authenticated;
+
+-- =============================================================================
+-- Columnas vetadas al rol anonimo
+--
+-- site_config.updated_by y telemetry_readings.recorded_by guardan el uuid de
+-- auth de una persona real. En una instancia compartida ese mismo uuid aparece
+-- en otros proyectos, asi que publicarlo permitiria correlacionar identidades.
+--
+-- Un GRANT a nivel de tabla cubre TODAS las columnas y no se puede recortar con
+-- un REVOKE por columna: hay que retirar el permiso de tabla y conceder solo
+-- las columnas publicas. Por eso el cliente consulta columnas explicitas y
+-- nunca "*" sobre estas dos tablas.
+-- =============================================================================
+
+revoke select on ciehs.telemetry_readings from anon;
+grant select (id, module_id, measured_at, ph, ce, water_temp_c, notes, created_at)
+  on ciehs.telemetry_readings to anon;
+
+revoke select on ciehs.site_config from anon;
+grant select (id, hero_title, hero_subtitle, kpi_cosecha_kg, kpi_ahorro_pct,
+              aviso, aviso_active, updated_at)
+  on ciehs.site_config to anon;
