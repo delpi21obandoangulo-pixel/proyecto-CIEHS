@@ -70,7 +70,9 @@
       cliente.from('site_config').select(COLS_CONFIG).eq('id', 1).maybeSingle(),
       cliente.from('modules').select('*').order('position', { ascending: true }),
       cliente.from('qr_codes').select('*').order('slot', { ascending: true }),
-      cliente.from('investigations').select('*').order('position', { ascending: true }),
+      cliente.from('investigations')
+             .select('code, title, question, hypothesis, var_independent, var_dependent, var_control, method, status, tags, position, updated_at')
+             .order('position', { ascending: true }),
       cliente.from('telemetry_readings')
              .select('module_id, measured_at, ph, ce, water_temp_c')
              .order('measured_at', { ascending: false })
