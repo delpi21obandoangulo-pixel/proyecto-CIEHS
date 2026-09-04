@@ -24,12 +24,27 @@
   if (!BANCO) return;
 
   var CLAVE = 'ciehs_arena_v1';
+  // Los tres primeros son los niveles de la institución y se juegan sin límite.
+  // Los dos últimos son EXPEDICIONES: el colegio llega hasta secundaria, así que
+  // se plantean como un desafío excepcional, no como un curso más. Una tirada al
+  // día, una sola vida y puntuación doble.
   var NIVELES = [
-    { id:'primaria',        nombre:'Primaria',        desc:'Observación y primeras medidas' },
-    { id:'secundaria',      nombre:'Secundaria',      desc:'Variables y parámetros del cultivo' },
-    { id:'preuniversitario',nombre:'Preuniversitario',desc:'Cálculo, proporciones y diseño' },
-    { id:'universitario',   nombre:'Universitario',   desc:'Análisis, estadística y fisiología' }
+    { id:'inicial',    nombre:'Inicial',    desc:'Explora, escucha y descubre',           icono:'🌱' },
+    { id:'primaria',   nombre:'Primaria',   desc:'Observación y primeras medidas',        icono:'🔍' },
+    { id:'secundaria', nombre:'Secundaria', desc:'Variables y parámetros del cultivo',    icono:'⚗️' },
+    { id:'preuniversitario', nombre:'Expedición Preuniversitaria',
+      desc:'Cálculo, proporciones y diseño experimental', icono:'🗝️', expedicion:true,
+      requiere:{ nivel:'secundaria', retos:12 },
+      lema:'Más allá del aula' },
+    { id:'universitario', nombre:'Expedición Universitaria',
+      desc:'Análisis, estadística y fisiología vegetal', icono:'👑', expedicion:true,
+      requiere:{ nivel:'preuniversitario', retos:10 },
+      lema:'El último umbral' }
   ];
+  var TIEMPO_EXTRA_NIVEL = { inicial: 1.7 };   // los más pequeños necesitan margen
+  var VIDAS_EXPEDICION = 1;
+  var RETOS_EXPEDICION = 10;
+  var MULTIPLICADOR_EXPEDICION = 2;
   var TEMAS = {
     pociones:    { nombre:'Laboratorio de alquimia', acento:'#a855f7' },
     abismo:      { nombre:'Abismo hídrico',          acento:'#38bdf8' },
@@ -48,11 +63,52 @@
 
   /* ------------------------------ estado ------------------------------ */
 
-  var progreso = { mejores:{}, resueltos:{} };
+  var progreso = { mejores:{}, resueltos:{}, tiradas:{}, sellos:{} };
   try {
     var g = JSON.parse(localStorage.getItem(CLAVE) || 'null');
-    if (g && g.mejores && g.resueltos) progreso = g;
+    if (g && g.mejores && g.resueltos) {
+      progreso = g;
+      progreso.tiradas = progreso.tiradas || {};
+      progreso.sellos  = progreso.sellos  || {};
+    }
   } catch (e) {}
+
+  function hoy(){
+    var d = new Date();
+    return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+  }
+  function defNivel(id){
+    for(var i=0;i<NIVELES.length;i++) if(NIVELES[i].id === id) return NIVELES[i];
+    return null;
+  }
+  function resueltosDe(nivel){
+    var banco = BANCO[nivel] || [];
+    var n = 0;
+    banco.forEach(function(r){ if(progreso.resueltos[r.id]) n++; });
+    return n;
+  }
+  // Devuelve null si se puede jugar; si no, el motivo del bloqueo.
+  function bloqueo(def){
+    if(!def.expedicion) return null;
+    var req = def.requiere;
+    if(req && resueltosDe(req.nivel) < req.retos){
+      var falta = req.retos - resueltosDe(req.nivel);
+      return { tipo:'requisito', texto:'Resuelve ' + falta + ' reto' + (falta===1?'':'s')
+        + ' más de ' + defNivel(req.nivel).nombre + ' para abrir esta expedición.' };
+    }
+    if(progreso.tiradas[def.id] === hoy()){
+      return { tipo:'diario', texto:'Ya emprendiste esta expedición hoy. Vuelve mañana.' };
+    }
+    return null;
+  }
+  function msHastaManana(){
+    var m = new Date(); m.setHours(24,0,0,0);
+    return m - new Date();
+  }
+  function formatoEspera(ms){
+    var h = Math.floor(ms/3600000), m = Math.floor(ms%3600000/60000);
+    return h > 0 ? (h + ' h ' + m + ' min') : (m + ' min');
+  }
   function guardar(){ try{ localStorage.setItem(CLAVE, JSON.stringify(progreso)); }catch(e){} }
 
   var partida = null;
@@ -75,8 +131,9 @@
       .normalize('NFD').replace(/[̀-ͯ]/g,'')
       .replace(/[^a-z0-9 /]/g,'').replace(/\s+/g,' ');
   }
-  function tiempoDe(reto){
-    return (TIEMPOS[reto.dif] || 22) + (reto.tipo === 'escucha' ? EXTRA_ESCUCHA : 0);
+  function tiempoDe(reto, nivel){
+    var base = (TIEMPOS[reto.dif] || 22) + (reto.tipo === 'escucha' ? EXTRA_ESCUCHA : 0);
+    return Math.round(base * (TIEMPO_EXTRA_NIVEL[nivel] || 1));
   }
 
   /* =========================== AMBIENTACIONES ===========================
@@ -253,6 +310,20 @@
     }
   };
 
+  // El cambio de tema no corta en seco: el fondo se apaga, se sustituye el
+  // pintor y vuelve a subir. Sin esto, pasar de las burbujas a la tormenta
+  // era un salto brusco que rompía la inmersión.
+  function cambiarFondo(tema){
+    if(!fondo){ return; }
+    if(reduceMotion){ iniciarFondo(tema); return; }
+    fondo.style.transition = 'opacity .28s ease';
+    fondo.style.opacity = '0';
+    setTimeout(function(){
+      iniciarFondo(tema);
+      requestAnimationFrame(function(){ fondo.style.opacity = '1'; });
+    }, 280);
+  }
+
   function iniciarFondo(tema){
     detenerFondo();
     if(!fondo) return;
@@ -279,6 +350,74 @@
       pintor(w, h, ahora - inicio);
       animId = requestAnimationFrame(bucle);
     })(inicio);
+  }
+
+  /* Chispas: partículas efímeras que salen del punto donde se acertó. Se
+     dibujan en su propio canvas para no interferir con el bucle del fondo. */
+  var chispas = [];
+  var chispasCanvas = null, chispasCtx = null, chispasAnim = null;
+
+  function prepararChispas(){
+    if(chispasCanvas) return;
+    chispasCanvas = document.createElement('canvas');
+    chispasCanvas.className = 'ar-chispas';
+    chispasCanvas.setAttribute('aria-hidden','true');
+    raiz.insertBefore(chispasCanvas, capa);
+    chispasCtx = chispasCanvas.getContext('2d');
+  }
+
+  function lanzarChispas(x, y, color){
+    if(reduceMotion) return;
+    prepararChispas();
+    var dpr = Math.min(global.devicePixelRatio || 1, 2);
+    chispasCanvas.width = raiz.clientWidth * dpr;
+    chispasCanvas.height = raiz.clientHeight * dpr;
+    chispasCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    for(var i=0;i<34;i++){
+      var ang = (Math.PI * 2 * i / 34) + Math.random()*0.4;
+      var vel = 2.4 + Math.random()*5.2;
+      chispas.push({
+        x:x, y:y,
+        vx:Math.cos(ang)*vel, vy:Math.sin(ang)*vel - 1.6,
+        vida:1, r:1.6 + Math.random()*3.2, color:color
+      });
+    }
+    if(!chispasAnim) bucleChispas();
+  }
+
+  function bucleChispas(){
+    chispasAnim = requestAnimationFrame(bucleChispas);
+    var w = chispasCanvas.width, h = chispasCanvas.height;
+    chispasCtx.clearRect(0, 0, w, h);
+    for(var i = chispas.length - 1; i >= 0; i--){
+      var p = chispas[i];
+      p.x += p.vx; p.y += p.vy;
+      p.vy += 0.16;            // gravedad
+      p.vx *= 0.985;
+      p.vida -= 0.019;
+      if(p.vida <= 0){ chispas.splice(i,1); continue; }
+      chispasCtx.globalAlpha = Math.max(0, p.vida);
+      chispasCtx.fillStyle = p.color;
+      chispasCtx.beginPath();
+      chispasCtx.arc(p.x, p.y, p.r * p.vida, 0, 6.283);
+      chispasCtx.fill();
+    }
+    chispasCtx.globalAlpha = 1;
+    if(!chispas.length){ cancelAnimationFrame(chispasAnim); chispasAnim = null; }
+  }
+
+  /* Contador que sube en lugar de saltar: la cifra final llega en ~600 ms. */
+  function contarHasta(el, desde, hasta, ms){
+    if(!el) return;
+    if(reduceMotion){ el.textContent = hasta; return; }
+    var t0 = performance.now();
+    (function paso(ahora){
+      var k = Math.min(1, (ahora - t0) / ms);
+      var suave = 1 - Math.pow(1 - k, 3);
+      el.textContent = Math.round(desde + (hasta - desde) * suave);
+      if(k < 1) requestAnimationFrame(paso);
+    })(t0);
   }
 
   function detenerFondo(){
@@ -309,30 +448,145 @@
     fin:     function(){ tono(523,0.15); setTimeout(function(){ tono(659,0.15); },140); setTimeout(function(){ tono(784,0.3); },280); }
   };
 
+  /* ------------------------------ voz --------------------------------
+     Dos problemas resueltos aquí:
+
+     1. La voz enmudecía al salir y volver a entrar. La causa es conocida:
+        speechSynthesis.cancel() puede dejar el motor en estado pausado, y
+        además speak() inmediatamente después de cancel() se traga la frase.
+        Se corrige llamando a resume() y dejando pasar un tick antes de hablar.
+
+     2. Sonaba robótica. Ahora se busca explícitamente una voz femenina en
+        español entre las del sistema, ordenadas por naturalidad conocida, y
+        se ajustan tono y velocidad para una lectura más cálida.
+     -------------------------------------------------------------------- */
+
+  var vozElegida = null;
+
+  // Nombres habituales de voces femeninas en español, de más a menos natural.
+  var PREFERIDAS = [
+    'google español', 'google español de estados unidos', 'microsoft sabina',
+    'microsoft helena', 'microsoft laura', 'microsoft dalia', 'microsoft elvira',
+    'mónica', 'monica', 'paulina', 'esperanza', 'marisol', 'lucía', 'lucia',
+    'catalina', 'sabina', 'helena', 'laura'
+  ];
+  var MASCULINAS = ['jorge','diego','pablo','carlos','juan','miguel','raul','raúl','enrique','alvaro','álvaro'];
+
+  function elegirVoz(){
+    if(!global.speechSynthesis) return null;
+    var voces = global.speechSynthesis.getVoices() || [];
+    if(!voces.length) return null;
+    var es = voces.filter(function(v){ return /^es/i.test(v.lang || ''); });
+    if(!es.length) es = voces;
+
+    // 1) coincidencia exacta con la lista de preferidas
+    for(var i=0;i<PREFERIDAS.length;i++){
+      for(var j=0;j<es.length;j++){
+        if((es[j].name || '').toLowerCase().indexOf(PREFERIDAS[i]) > -1) return es[j];
+      }
+    }
+    // 2) cualquiera que no suene a nombre masculino
+    var neutra = es.filter(function(v){
+      var n = (v.name || '').toLowerCase();
+      return !MASCULINAS.some(function(m){ return n.indexOf(m) > -1; });
+    });
+    // 3) preferir es-MX o es-US, que suelen ser más suaves que es-ES
+    var latina = neutra.filter(function(v){ return /es-(MX|US|419|PE|CO|AR)/i.test(v.lang || ''); });
+    return latina[0] || neutra[0] || es[0];
+  }
+
+  function cargarVoces(){ vozElegida = elegirVoz(); }
+  if(global.speechSynthesis){
+    cargarVoces();
+    global.speechSynthesis.onvoiceschanged = cargarVoces;
+  }
+
+  var vozTimer = null;
   function leerEnVoz(texto){
+    var ss = global.speechSynthesis;
+    if(!ss) return false;
     try{
-      if(!global.speechSynthesis) return false;
-      global.speechSynthesis.cancel();
-      var u = new SpeechSynthesisUtterance(texto);
-      u.lang = 'es-PE'; u.rate = 0.95;
-      var voces = global.speechSynthesis.getVoices();
-      var es = voces.filter(function(v){ return /^es/i.test(v.lang); })[0];
-      if(es) u.voice = es;
-      global.speechSynthesis.speak(u);
+      if(vozTimer){ clearTimeout(vozTimer); vozTimer = null; }
+      ss.cancel();
+      // El tick es imprescindible: hablar en el mismo turno que cancel() hace
+      // que Chrome descarte la frase sin avisar.
+      vozTimer = setTimeout(function(){
+        try{
+          ss.resume();                       // deshace un estado pausado previo
+          if(!vozElegida) cargarVoces();
+          var u = new SpeechSynthesisUtterance(texto);
+          if(vozElegida){ u.voice = vozElegida; u.lang = vozElegida.lang; }
+          else { u.lang = 'es-MX'; }
+          u.rate = 0.9;      // algo más pausada: se entiende mejor
+          u.pitch = 1.25;    // más aguda y cálida que el ajuste por defecto
+          u.volume = 1;
+          ss.speak(u);
+        }catch(e){}
+      }, 90);
       return true;
     }catch(e){ return false; }
+  }
+  function callarVoz(){
+    if(vozTimer){ clearTimeout(vozTimer); vozTimer = null; }
+    try{
+      if(global.speechSynthesis){
+        global.speechSynthesis.cancel();
+        // resume() tras cancel() deja el motor listo para la próxima vez.
+        global.speechSynthesis.resume();
+      }
+    }catch(e){}
   }
 
   /* ============================ PARTIDA ============================ */
 
   function nuevaPartida(nivel){
+    var def = defNivel(nivel);
+    var esExp = !!(def && def.expedicion);
+    if(esExp){
+      var b = bloqueo(def);
+      if(b){ pintarMenu(); return; }                 // no se cuela por la puerta de atrás
+      progreso.tiradas[nivel] = hoy();               // la tirada del día se consume al entrar
+      guardar();
+    }
     var banco = BANCO[nivel] || [];
+    var cuantos = esExp ? RETOS_EXPEDICION : RETOS_POR_PARTIDA;
     partida = {
-      nivel: nivel,
-      retos: barajar(banco).slice(0, Math.min(RETOS_POR_PARTIDA, banco.length)),
-      i: 0, puntos: 0, racha: 0, mejorRacha: 0, vidas: VIDAS, aciertos: 0, consultas: 0
+      nivel: nivel, def: def, expedicion: esExp,
+      retos: barajar(banco).slice(0, Math.min(cuantos, banco.length)),
+      i: 0, puntos: 0, racha: 0, mejorRacha: 0,
+      vidas: esExp ? VIDAS_EXPEDICION : VIDAS,
+      vidasMax: esExp ? VIDAS_EXPEDICION : VIDAS,
+      aciertos: 0, consultas: 0
     };
-    pintarReto();
+    if(esExp) pintarPortalExpedicion(def);
+    else pintarReto();
+  }
+
+  // Antesala de la expedición: una pantalla que deja claro que esto no es
+  // una partida más antes de gastar la única tirada del día.
+  function pintarPortalExpedicion(def){
+    detenerFondo();
+    raiz.setAttribute('data-tema','pociones');
+    raiz.style.setProperty('--ar-acento', def.id === 'universitario' ? '#f0c876' : '#a855f7');
+    iniciarFondo(def.id === 'universitario' ? 'tormenta' : 'pociones');
+    capa.innerHTML =
+      '<div class="ar-portal">'
+      + '<div class="ar-portal-sello">' + def.icono + '</div>'
+      + '<p class="ar-eyebrow">' + esc(def.lema) + '</p>'
+      + '<h1>' + esc(def.nombre) + '</h1>'
+      + '<p class="ar-menu-lede">' + esc(def.desc) + '</p>'
+      + '<ul class="ar-reglas">'
+      +   '<li><b>' + RETOS_EXPEDICION + '</b> retos seguidos</li>'
+      +   '<li><b>1</b> sola vida</li>'
+      +   '<li><b>×' + MULTIPLICADOR_EXPEDICION + '</b> puntos</li>'
+      +   '<li><b>1</b> intento al día</li>'
+      + '</ul>'
+      + '<p class="ar-portal-aviso">Un solo fallo termina la expedición. La tirada de hoy ya está consumida.</p>'
+      + '<button type="button" class="ar-btn ar-btn-primario ar-portal-btn" id="arEmpezar">Cruzar el umbral</button>'
+      + '</div>';
+    var b = document.getElementById('arEmpezar');
+    b.focus();
+    b.addEventListener('click', function(){ pintarReto(); });
   }
 
   function terminarPartida(){
@@ -343,9 +597,15 @@
     sonido.fin();
 
     var total = partida.retos.length;
+    var completa = partida.aciertos === total;
+    if(partida.expedicion && completa){
+      progreso.sellos[n] = hoy();
+      guardar();
+    }
     capa.innerHTML =
       '<div class="ar-fin">'
-      + '<p class="ar-eyebrow">Partida terminada</p>'
+      + (partida.expedicion && completa ? '<div class="ar-portal-sello ar-sello-gana">' + partida.def.icono + '</div>' : '')
+      + '<p class="ar-eyebrow">' + (partida.expedicion ? (completa ? 'Expedición superada' : 'Expedición fallida') : 'Partida terminada') + '</p>'
       + '<h2>' + partida.aciertos + ' de ' + total + '</h2>'
       + '<div class="ar-fin-datos">'
       +   '<div><b>' + partida.puntos + '</b><span>puntos</span></div>'
@@ -359,19 +619,36 @@
       +   '<button type="button" class="ar-btn" data-accion="menu">Cambiar de nivel</button>'
       +   '<button type="button" class="ar-btn" data-accion="salir">Salir de la Arena</button>'
       + '</div></div>';
+
+    // Las cifras del resumen suben desde cero: el resultado se lee mejor
+    // cuando llega, en lugar de aparecer ya puesto.
+    var cifras = capa.querySelectorAll('.ar-fin-datos b');
+    var finales = [partida.puntos, partida.mejorRacha, progreso.mejores[n]];
+    cifras.forEach(function(el, i){
+      el.textContent = '0';
+      setTimeout(function(){ contarHasta(el, 0, finales[i], 900); }, 180 + i*140);
+    });
   }
 
   function pintarReto(){
     detenerTemporizador();
     if(partida.i >= partida.retos.length || partida.vidas <= 0){ terminarPartida(); return; }
 
+    // El reto saliente se desliza antes de montar el siguiente.
+    var previo = capa.querySelector('.ar-reto');
+    if(previo && !reduceMotion){
+      previo.classList.add('ar-sale');
+      var t = previo;
+      setTimeout(function(){ if(t.parentNode) t.parentNode.removeChild(t); }, 240);
+    }
+
     var r = partida.retos[partida.i];
     var tema = TEMAS[r.tema] || TEMAS.datos;
     raiz.style.setProperty('--ar-acento', tema.acento);
     raiz.setAttribute('data-tema', r.tema);
-    iniciarFondo(r.tema);
+    cambiarFondo(r.tema);
 
-    var segundos = tiempoDe(r);
+    var segundos = tiempoDe(r, partida.nivel);
     var esEscucha = r.tipo === 'escucha';
 
     var cabecera =
@@ -381,7 +658,7 @@
       +   '<span class="ar-tema">' + esc(tema.nombre) + '</span>'
       + '</div>'
       + '<div class="ar-top-der">'
-      +   '<span class="ar-vidas" aria-label="Vidas restantes">' + repetir('◆', partida.vidas) + repetir('◇', VIDAS - partida.vidas) + '</span>'
+      +   '<span class="ar-vidas" aria-label="Vidas restantes">' + repetir('◆', partida.vidas) + repetir('◇', partida.vidasMax - partida.vidas) + '</span>'
       +   '<span class="ar-puntos"><b>' + partida.puntos + '</b> pts</span>'
       + '</div></header>'
       + '<div class="ar-progreso"><span style="width:' + ((partida.i)/partida.retos.length*100) + '%"></span></div>';
@@ -410,6 +687,10 @@
       + '</div>';
 
     montarCuerpo(r);
+    // Entrada escalonada: las opciones aparecen una tras otra, no de golpe.
+    capa.querySelectorAll('.ar-op, .ar-orden-item').forEach(function(el, i){
+      el.style.setProperty('--i', i);
+    });
     arrancarTemporizador(segundos, r);
 
     if(esEscucha){
@@ -555,7 +836,7 @@
 
   function resolver(r, acertado, boton, nota){
     detenerTemporizador();
-    if(global.speechSynthesis) try{ global.speechSynthesis.cancel(); }catch(e){}
+    callarVoz();
 
     var cuerpo = document.getElementById('arCuerpo');
     cuerpo.querySelectorAll('button, input').forEach(function(x){ x.disabled = true; });
@@ -574,7 +855,8 @@
       var base = r.dif * 100;
       var bonusTiempo = Math.round(restante);
       var bonusRacha = (partida.racha - 1) * 25;
-      partida.puntos += base + bonusTiempo + bonusRacha;
+      var mult = partida.expedicion ? MULTIPLICADOR_EXPEDICION : 1;
+      partida.puntos += (base + bonusTiempo + bonusRacha) * mult;
       progreso.resueltos[r.id] = true;
       guardar();
       sonido.acierto();
@@ -588,13 +870,31 @@
     // los puntos en el momento del acierto es la mitad de la recompensa.
     var elPuntos = document.querySelector('.ar-puntos b');
     if(elPuntos){
-      elPuntos.textContent = partida.puntos;
+      var antes = parseInt(elPuntos.textContent, 10) || 0;
+      contarHasta(elPuntos, antes, partida.puntos, 620);
       elPuntos.classList.remove('ar-sube');
       void elPuntos.offsetWidth;            // reinicia la animacion
       if(acertado) elPuntos.classList.add('ar-sube');
     }
+
+    var panel = capa.querySelector('.ar-reto');
+    if(acertado){
+      // Las chispas salen del boton pulsado, o del centro del panel si el
+      // reto no se resolvio con un boton (dial, escribir).
+      var origen = boton || document.getElementById('arDialOk') ||
+                   document.getElementById('arTextoOk') || document.getElementById('arOrdenOk');
+      var caja = (origen || panel).getBoundingClientRect();
+      var acento = getComputedStyle(raiz).getPropertyValue('--ar-acento').trim() || '#7dd3fc';
+      lanzarChispas(caja.left + caja.width/2, caja.top + caja.height/2, acento);
+      if(panel){ panel.classList.remove('ar-acierta'); void panel.offsetWidth; panel.classList.add('ar-acierta'); }
+    } else if(panel){
+      panel.classList.remove('ar-falla'); void panel.offsetWidth; panel.classList.add('ar-falla');
+    }
     var elVidas = document.querySelector('.ar-vidas');
-    if(elVidas) elVidas.textContent = repetir('◆', partida.vidas) + repetir('◇', VIDAS - partida.vidas);
+    if(elVidas){
+      elVidas.textContent = repetir('◆', partida.vidas) + repetir('◇', partida.vidasMax - partida.vidas);
+      if(!acertado){ elVidas.classList.remove('ar-pierde'); void elVidas.offsetWidth; elVidas.classList.add('ar-pierde'); }
+    }
     var elProg = document.querySelector('.ar-progreso span');
     if(elProg) elProg.style.width = ((partida.i + 1) / partida.retos.length * 100) + '%';
     var elRacha = document.querySelector('.ar-racha');
@@ -637,27 +937,47 @@
     var resueltos = Object.keys(progreso.resueltos).length;
     var totalRetos = NIVELES.reduce(function(n, l){ return n + (BANCO[l.id]||[]).length; }, 0);
 
+    function tarjeta(l, idx){
+      var n = (BANCO[l.id]||[]).length;
+      var mejor = progreso.mejores[l.id] || 0;
+      var bl = bloqueo(l);
+      var clases = 'ar-nivel' + (l.expedicion ? ' ar-exped' : '') + (bl ? ' ar-bloq' : '')
+                 + (progreso.sellos[l.id] ? ' ar-sellado' : '');
+      var pie = bl
+        ? (bl.tipo === 'diario'
+            ? '<span class="ar-nivel-pie ar-pie-bloq">🔒 Disponible en ' + formatoEspera(msHastaManana()) + '</span>'
+            : '<span class="ar-nivel-pie ar-pie-bloq">🔒 ' + esc(bl.texto) + '</span>')
+        : '<span class="ar-nivel-pie">' + n + ' retos · récord ' + mejor + ' pts'
+          + (l.expedicion ? ' · 1 intento al día' : '') + '</span>';
+      return '<button type="button" class="' + clases + '" data-nivel="' + l.id + '"'
+           + (bl ? ' disabled aria-disabled="true"' : '') + ' style="--i:' + idx + '">'
+           + '<span class="ar-nivel-icono" aria-hidden="true">' + l.icono + '</span>'
+           + (l.expedicion ? '<span class="ar-nivel-tag">Expedición</span>' : '')
+           + (progreso.sellos[l.id] ? '<span class="ar-nivel-sello" title="Superada">✦</span>' : '')
+           + '<span class="ar-nivel-nom">' + esc(l.nombre) + '</span>'
+           + '<span class="ar-nivel-desc">' + esc(l.desc) + '</span>'
+           + pie
+           + '</button>';
+    }
+
+    var basicos = NIVELES.filter(function(l){ return !l.expedicion; });
+    var expedic = NIVELES.filter(function(l){ return l.expedicion; });
+
     capa.innerHTML =
       '<div class="ar-menu">'
       + '<button type="button" class="ar-salir ar-salir-menu" data-accion="salir">‹ Volver al portal</button>'
       + '<p class="ar-eyebrow">Arena CIEHS</p>'
       + '<h1>Elige tu nivel</h1>'
-      + '<p class="ar-menu-lede">Ocho retos por partida, tres vidas y tiempo contado. Cada reto cambia de ambientación según su tema y alterna entre opciones, verdadero o falso, escucha, ordenar, ajustar valores y escribir.</p>'
-      + '<div class="ar-niveles">'
-      + NIVELES.map(function(l){
-          var n = (BANCO[l.id]||[]).length;
-          var mejor = progreso.mejores[l.id] || 0;
-          return '<button type="button" class="ar-nivel" data-nivel="' + l.id + '">'
-               + '<span class="ar-nivel-nom">' + esc(l.nombre) + '</span>'
-               + '<span class="ar-nivel-desc">' + esc(l.desc) + '</span>'
-               + '<span class="ar-nivel-pie">' + n + ' retos · récord ' + mejor + ' pts</span>'
-               + '</button>';
-        }).join('')
-      + '</div>'
+      + '<p class="ar-menu-lede">Ocho retos por partida, tres vidas y tiempo contado. Cada reto abre una ambientación distinta y alterna entre opciones, verdadero o falso, escucha, ordenar, ajustar valores y escribir.</p>'
+      + '<div class="ar-niveles">' + basicos.map(tarjeta).join('') + '</div>'
+      + '<div class="ar-exped-sep"><span>Expediciones</span></div>'
+      + '<p class="ar-exped-nota">El colegio llega hasta secundaria. Estas dos van más allá: <b>una sola tirada al día</b>, <b>una vida</b> y <b>puntos dobles</b>. Se abren cuando demuestras nivel en la etapa anterior.</p>'
+      + '<div class="ar-niveles">' + expedic.map(function(l,i){ return tarjeta(l, i + basicos.length); }).join('') + '</div>'
       + '<p class="ar-menu-pie">Progreso total: ' + resueltos + ' de ' + totalRetos + ' retos resueltos alguna vez.</p>'
       + '</div>';
 
     capa.querySelectorAll('[data-nivel]').forEach(function(b){
+      if(b.disabled) return;
       b.addEventListener('click', function(){ nuevaPartida(b.getAttribute('data-nivel')); });
     });
   }
@@ -671,8 +991,10 @@
     raiz.focus();
   }
   function cerrar(){
-    detenerTemporizador(); detenerFondo();
-    if(global.speechSynthesis) try{ global.speechSynthesis.cancel(); }catch(e){}
+    detenerTemporizador(); detenerFondo(); callarVoz();
+    chispas.length = 0;
+    if(chispasAnim){ cancelAnimationFrame(chispasAnim); chispasAnim = null; }
+    if(chispasCtx && chispasCanvas) chispasCtx.clearRect(0,0,chispasCanvas.width,chispasCanvas.height);
     raiz.hidden = true;
     document.body.classList.remove('ar-abierta');
     partida = null;

@@ -30,6 +30,162 @@
 
   global.CIEHS_ARENA = {
 
+    /* ====================== INICIAL · Ciclo II (3 a 5 años) ======================
+       Pensado para quien todavia no lee con soltura: predominan los retos de
+       escucha y las opciones de dos o tres palabras. Sin escribir ni calcular.
+       El motor concede a este nivel mas tiempo por reto. */
+    inicial: [
+      { id:'ar-ini-1', tema:'invernadero', tipo:'escucha', dif:1,
+        q:'¿Qué parte de la planta está debajo de todo y bebe el agua?',
+        ops:[['La raíz',true],['La flor',false],['La hoja',false]],
+        exp:'La raíz bebe el agua y sujeta la planta para que no se caiga.' },
+
+      { id:'ar-ini-2', tema:'abismo', tipo:'opcion', dif:1,
+        q:'¿Qué necesitan las plantas para vivir?',
+        ops:[['Agua y luz',true],['Piedras',false],['Papel',false]],
+        exp:'Agua, luz y aire: con eso la planta fabrica su propia comida.' },
+
+      { id:'ar-ini-3', tema:'invernadero', tipo:'opcion', dif:1,
+        q:'¿De qué color son las hojas?',
+        ops:[['Verdes',true],['Moradas',false],['Negras',false]],
+        exp:'Son verdes porque tienen clorofila, que atrapa la luz del sol.' },
+
+      { id:'ar-ini-4', tema:'tormenta', tipo:'escucha', dif:1,
+        q:'¿Qué nos da el sol?',
+        ops:[['Luz y calor',true],['Nieve',false],['Piedras',false]],
+        exp:'El sol da luz y calor, y con su luz crecen las plantas.' },
+
+      { id:'ar-ini-5', tema:'abismo', tipo:'vf', dif:1,
+        q:'El agua se debe cuidar.',
+        correcta:true,
+        exp:'Sí. Cerramos el caño y no la desperdiciamos, porque el agua es un tesoro.' },
+
+      { id:'ar-ini-6', tema:'invernadero', tipo:'escucha', dif:1,
+        q:'¿Qué sale primero de una semilla cuando empieza a crecer?',
+        ops:[['Una raicita',true],['Una flor',false],['Un fruto',false]],
+        exp:'Primero sale la raicita, que busca agua. Después crece el tallito.' },
+
+      { id:'ar-ini-7', tema:'pociones', tipo:'opcion', dif:1,
+        q:'¿En qué crecen nuestras plantas?',
+        ops:[['En agua',true],['En arena',false],['En papel',false]],
+        exp:'Crecen en agua con comida disuelta. Eso se llama hidroponía.' },
+
+      { id:'ar-ini-8', tema:'invernadero', tipo:'opcion', dif:1,
+        q:'¿Cuál de estas es una hoja?',
+        ops:[['La parte plana y verde',true],['La parte de abajo',false],['La semilla',false]],
+        exp:'La hoja es plana y verde, y toma la luz del sol.' },
+
+      { id:'ar-ini-9', tema:'tormenta', tipo:'vf', dif:1,
+        q:'Tirar basura al mar está bien.',
+        correcta:false,
+        exp:'No. La basura daña a los animales del mar y ensucia nuestra playa de Huanchaco.' },
+
+      { id:'ar-ini-10', tema:'abismo', tipo:'escucha', dif:1,
+        q:'¿Qué animalito del mar vive en Huanchaco y no vuela?',
+        ops:[['El pingüino',true],['El elefante',false],['La jirafa',false]],
+        exp:'El pingüino de Humboldt vive en nuestra costa y nada muy bien.' },
+
+      { id:'ar-ini-11', tema:'invernadero', tipo:'opcion', dif:1,
+        q:'¿Qué usamos para saber si la planta creció?',
+        ops:[['Una regla',true],['Una cuchara',false],['Un zapato',false]],
+        exp:'Con la regla medimos, y así sabemos cuánto creció esta semana.' },
+
+      { id:'ar-ini-12', tema:'tormenta', tipo:'opcion', dif:1,
+        q:'¿Qué hacemos con las botellas usadas?',
+        ops:[['Las reciclamos',true],['Las tiramos al piso',false],['Las quemamos',false]],
+        exp:'Reciclar es volver a usar. Así hacemos menos basura.' },
+
+      { id:'ar-ini-13', tema:'invernadero', tipo:'escucha', dif:1,
+        q:'¿Qué le pasa a una planta que nunca ve la luz?',
+        ops:[['Se pone débil',true],['Crece más',false],['Se pone roja',false]],
+        exp:'Sin luz la planta no puede hacer su comida y se debilita.' },
+
+      { id:'ar-ini-14', tema:'abismo', tipo:'opcion', dif:1,
+        q:'¿El agua del mar sirve para regar plantas?',
+        ops:[['No, tiene mucha sal',true],['Sí, siempre',false],['Sí, si está fría',false]],
+        exp:'La sal daña las raíces. Las plantas necesitan agua dulce.' },
+
+      { id:'ar-ini-15', tema:'invernadero', tipo:'orden', dif:2,
+        q:'Ordena: primero la semilla, después la plantita.',
+        pasos:['Semilla','Raicita','Plantita','Hojas grandes'],
+        exp:'Primero la semilla, luego la raicita, después la plantita y sus hojas.' },
+
+      { id:'ar-ini-16', tema:'pociones', tipo:'escucha', dif:1,
+        q:'¿Cómo se llama nuestro laboratorio de plantas?',
+        ops:[['CIEHS',true],['El comedor',false],['El patio',false]],
+        exp:'CIEHS es el laboratorio donde investigamos con plantas.' },
+
+      { id:'ar-ini-17', tema:'taller', tipo:'opcion', dif:1,
+        q:'¿Qué hace una bomba de agua?',
+        ops:[['Mueve el agua',true],['Corta el pasto',false],['Da luz',false]],
+        exp:'La bomba mueve el agua para que llegue a todas las raíces.' },
+
+      { id:'ar-ini-18', tema:'invernadero', tipo:'vf', dif:1,
+        q:'Todas las plantas son iguales.',
+        correcta:false,
+        exp:'No. La lechuga, la espinaca y la cebollita son distintas entre sí.' },
+
+      { id:'ar-ini-19', tema:'tormenta', tipo:'escucha', dif:1,
+        q:'¿Qué cae del cielo cuando llueve?',
+        ops:[['Agua',true],['Arena',false],['Hojas',false]],
+        exp:'Cae agua. El agua sube al cielo, forma nubes y vuelve como lluvia.' },
+
+      { id:'ar-ini-20', tema:'invernadero', tipo:'opcion', dif:1,
+        q:'¿Qué hortaliza de hojas verdes cultivamos?',
+        ops:[['Lechuga',true],['Plátano',false],['Uva',false]],
+        exp:'La lechuga es una de nuestras plantas favoritas del laboratorio.' },
+
+      { id:'ar-ini-21', tema:'datos', tipo:'opcion', dif:1,
+        q:'Si dibujo mi planta cada semana, puedo…',
+        ops:[['Ver cómo cambió',true],['Comérmela',false],['Perderla',false]],
+        exp:'Dibujar y guardar los dibujos nos deja comparar y ver el cambio.' },
+
+      { id:'ar-ini-22', tema:'abismo', tipo:'vf', dif:1,
+        q:'Las raíces también necesitan aire.',
+        correcta:true,
+        exp:'Sí. Por eso el agua se mueve y lleva burbujitas de aire a las raíces.' },
+
+      { id:'ar-ini-23', tema:'invernadero', tipo:'escucha', dif:1,
+        q:'¿Qué parte de la planta es larga y sostiene las hojas?',
+        ops:[['El tallo',true],['La raíz',false],['La semilla',false]],
+        exp:'El tallo sostiene las hojas y lleva el agua hacia arriba.' },
+
+      { id:'ar-ini-24', tema:'tormenta', tipo:'opcion', dif:1,
+        q:'Cuidar las plantas y el agua ayuda a…',
+        ops:[['Cuidar el planeta',true],['Ensuciar el aire',false],['Gastar más',false]],
+        exp:'Cuidar el planeta es de lo que trata la Acción por el Clima.' },
+
+      { id:'ar-ini-25', tema:'pociones', tipo:'opcion', dif:1,
+        q:'El agua de nuestro laboratorio lleva comida para las plantas. ¿Se ve?',
+        ops:[['No, está mezclada',true],['Sí, son piedritas',false],['Sí, flota arriba',false]],
+        exp:'Está disuelta: mezclada en el agua, por eso no se ve.' },
+
+      { id:'ar-ini-26', tema:'datos', tipo:'escucha', dif:1,
+        q:'Si tu planta tenía tres hojas y ahora tiene cinco, ¿creció o no?',
+        ops:[['Creció',true],['No creció',false],['Se hizo más chica',false]],
+        exp:'Contar las hojas es una forma de saber si la planta va creciendo.' },
+
+      { id:'ar-ini-27', tema:'taller', tipo:'opcion', dif:1,
+        q:'Si algo se rompe en el laboratorio, ¿qué hacemos?',
+        ops:[['Avisamos a la profesora',true],['Lo escondemos',false],['Lo arreglamos solos',false]],
+        exp:'Siempre avisamos: así se arregla bien y nadie se hace daño.' },
+
+      { id:'ar-ini-28', tema:'invernadero', tipo:'orden', dif:2,
+        q:'Ordena de más pequeño a más grande.',
+        pasos:['Semilla','Brote','Planta pequeña','Planta grande'],
+        exp:'Todo empieza en una semillita y termina en una planta lista para cosechar.' },
+
+      { id:'ar-ini-29', tema:'abismo', tipo:'opcion', dif:1,
+        q:'¿Dónde está Huanchaco?',
+        ops:[['Junto al mar',true],['En la montaña nevada',false],['En el desierto de hielo',false]],
+        exp:'Huanchaco está junto al mar, y por eso el agua dulce es poquita.' },
+
+      { id:'ar-ini-30', tema:'tormenta', tipo:'vf', dif:1,
+        q:'Podemos ayudar al planeta desde el colegio.',
+        correcta:true,
+        exp:'¡Claro que sí! Cuidando el agua, reciclando y cultivando nuestras plantas.' }
+    ],
+
     /* ============================ PRIMARIA ============================ */
     primaria: [
       { id:'ar-pri-1', tema:'invernadero', tipo:'opcion', dif:1,
