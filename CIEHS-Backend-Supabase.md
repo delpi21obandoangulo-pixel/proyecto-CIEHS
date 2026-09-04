@@ -10,7 +10,7 @@ actualizado: 2026-09-04
 
 # CIEHS · Backend Supabase
 
-Esquema de datos del portal. Ver también [[CIEHS-Portal-Educativo]],
+Esquema de datos del portal. Índice en [[CIEHS]]. Ver también [[CIEHS-Portal-Educativo]],
 [[CIEHS-Auditoria-Seguridad-Auth]] y [[CIEHS-Metodologia-Pedagogica]].
 
 > [!important] Aislamiento estricto
@@ -154,8 +154,9 @@ on conflict (user_id) do nothing;
 
 ## 6. Pendientes
 
-- [ ] Interfaz de edición de `investigations` y `resources` en el panel: hoy se
-      leen de la base pero solo se editan por SQL.
+- [x] `investigations` se **lee** de la base y pinta la sección entera.
+- [ ] Interfaz de **edición** de `investigations` y `resources` en el panel:
+      hoy solo se editan por SQL.
 - [ ] Subida de archivos para `resources.file_url` (Supabase Storage).
 - [ ] Evaluar migración a proyecto Supabase propio → elimina el blast radius
       compartido y la convivencia en `auth.users`.

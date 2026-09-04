@@ -730,6 +730,56 @@
   .qr-toolbar .qr-hint{ font-size:12.5px; color:var(--ink-mute); font-family:var(--font-mono); }
   .qr-print-head{ display:none; }
 
+  /* ---- privacidad ---- */
+  .priv-aviso{
+    margin-top:26px; padding:20px 24px;
+    border:1px solid rgba(224,172,63,0.35); border-left:3px solid var(--sun-500);
+    border-radius:var(--radius-s); background:rgba(224,172,63,0.06);
+    font-size:14px; line-height:1.7; color:var(--ink-soft); max-width:82ch;
+  }
+  .priv-aviso b{ color:var(--sun-300); }
+  .priv-bloque{ margin-top:48px; }
+  .priv-bloque > h3{
+    font-family:var(--font-display); font-size:1.35rem; color:#fff;
+    letter-spacing:-0.015em;
+  }
+  .priv-bloque > p{
+    margin-top:12px; font-size:15px; line-height:1.75; color:var(--ink-soft); max-width:76ch;
+  }
+  .priv-tabla{ overflow-x:auto; margin-top:20px; }
+  .priv-tabla table{ width:100%; border-collapse:collapse; font-size:14px; min-width:560px; }
+  .priv-tabla th, .priv-tabla td{
+    text-align:left; padding:12px 16px 12px 0; border-bottom:1px solid var(--line);
+    vertical-align:top; line-height:1.6;
+  }
+  .priv-tabla th{
+    font-family:var(--font-mono); font-size:10.5px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--ink-mute); font-weight:500;
+    border-bottom:1px solid var(--line-strong);
+  }
+  .priv-tabla td{ color:var(--ink-soft); }
+  .priv-tabla td:first-child{ color:var(--ink); font-weight:600; white-space:nowrap; }
+  .priv-reglas{ margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  @media (max-width:760px){ .priv-reglas{ grid-template-columns:1fr; } }
+  .priv-regla{
+    padding:22px 22px; border:1px solid var(--line); border-radius:var(--radius-m);
+    background:var(--glass); backdrop-filter:blur(14px);
+  }
+  .priv-regla.si{ border-left:3px solid var(--leaf-500); }
+  .priv-regla.no{ border-left:3px solid var(--status-danger); }
+  .priv-regla h4{ font-size:15.5px; font-weight:600; color:#fff; }
+  .priv-regla ul{ margin:12px 0 0; padding-left:18px; }
+  .priv-regla li{ font-size:13.5px; line-height:1.6; color:var(--ink-soft); margin-bottom:7px; }
+  .priv-regla.si li::marker{ color:var(--leaf-500); }
+  .priv-regla.no li::marker{ color:var(--status-danger); }
+  .priv-contacto{
+    margin-top:34px; padding:24px 26px; border-radius:var(--radius-m);
+    background:linear-gradient(160deg, rgba(16,185,129,0.09), rgba(14,165,233,0.05));
+    border:1px solid var(--line);
+  }
+  .priv-contacto p{ font-size:14.5px; line-height:1.7; color:var(--on-ocean-soft); max-width:72ch; }
+  .priv-contacto .mono{ color:var(--leaf-300); }
+
   /* ---- identidad institucional ----
      El escudo es apaisado y a color pleno. Sobre el fondo oscuro del portal
      funciona tal cual gracias al fondo transparente del PNG; no lleva panel
@@ -2894,6 +2944,114 @@
     </div>
   </section>
 
+
+  <!-- ============ PRIVACIDAD Y USO DE IMAGEN ============ -->
+  <section id="page-privacidad" class="alt" data-page="privacidad" hidden>
+    <div class="wrap">
+      <button type="button" class="breadcrumb" data-route="inicio">← Inicio</button>
+      <div class="section-head">
+        <p class="eyebrow">Privacidad y uso de imagen</p>
+        <h2>Qué publicamos de nuestros estudiantes, y qué no</h2>
+        <p>El CIEHS publica trabajo de estudiantes menores de edad. Esta página explica qué datos trata el portal, qué se puede publicar y qué nunca, y cómo pedir que se retire algo.</p>
+      </div>
+
+      <p class="priv-aviso"><b>Documento en validación.</b> Este texto recoge los criterios de trabajo del equipo del CIEHS y está redactado como base para su revisión por la dirección de la institución. <b>No sustituye asesoría legal</b> y debe ser aprobado formalmente antes de publicar la primera fotografía de un estudiante.</p>
+
+      <div class="priv-bloque">
+        <h3>1. Qué datos trata este portal</h3>
+        <p>El portal es un sitio estático. <b>No pide registro a los visitantes, no usa cookies de seguimiento y no tiene analítica.</b> Esto es todo lo que se guarda o se transmite:</p>
+        <div class="priv-tabla">
+          <table>
+            <thead>
+              <tr><th>Qué</th><th>Dónde vive</th><th>Para qué</th><th>Quién lo ve</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Progreso del Pasaporte CIEHS</td>
+                <td>Navegador del estudiante (<span class="mono">localStorage</span>)</td>
+                <td>Recordar retos resueltos e insignias</td>
+                <td>Solo quien usa ese equipo. No se envía a ningún servidor</td>
+              </tr>
+              <tr>
+                <td>Aviso institucional cerrado</td>
+                <td>Navegador (<span class="mono">sessionStorage</span>)</td>
+                <td>No volver a mostrar un aviso ya leído</td>
+                <td>Solo quien usa ese equipo</td>
+              </tr>
+              <tr>
+                <td>Sesión de administración</td>
+                <td>Navegador del coordinador</td>
+                <td>Mantener la sesión del panel</td>
+                <td>Solo la persona autorizada</td>
+              </tr>
+              <tr>
+                <td>Contenido del portal y mediciones</td>
+                <td>Base de datos del CIEHS</td>
+                <td>Publicar indicadores, módulos y lecturas de pH y CE</td>
+                <td>Público. <b>No contiene datos personales de estudiantes</b></td>
+              </tr>
+              <tr>
+                <td>Tipografías del sitio</td>
+                <td>Servidores de Google Fonts</td>
+                <td>Cargar las fuentes de la web</td>
+                <td>Al pedirlas, el navegador comunica su dirección IP a Google</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:16px;">El formulario de contacto <b>no almacena nada</b>: abre el cliente de correo del visitante con el mensaje escrito, y el envío ocurre desde su propia cuenta.</p>
+      </div>
+
+      <div class="priv-bloque">
+        <h3>2. Protocolo de imagen y datos de menores</h3>
+        <p>Regla de fondo: el portal difunde <b>el trabajo científico</b>, no la identidad de quien lo hace. Un logro se atribuye al equipo y al grado, nunca a un menor identificable.</p>
+        <div class="priv-reglas">
+          <div class="priv-regla si">
+            <h4>Sí se publica</h4>
+            <ul>
+              <li>Nombre del equipo de investigación y grado o sección.</li>
+              <li>Fotografías de módulos, cultivos, instrumentos y del mural.</li>
+              <li>Fotografías de manos trabajando, planos generales de espalda o imágenes donde no se distinga el rostro.</li>
+              <li>Datos, gráficos, bitácoras e informes de investigación.</li>
+              <li>Fotografías con rostro <b>solo</b> con autorización escrita del apoderado, vigente y archivada.</li>
+            </ul>
+          </div>
+          <div class="priv-regla no">
+            <h4>Nunca se publica</h4>
+            <ul>
+              <li>Apellidos completos de estudiantes.</li>
+              <li>Rostros identificables sin autorización firmada del apoderado.</li>
+              <li>Domicilio, teléfono, correo personal, DNI o código de matrícula.</li>
+              <li>Datos de salud, situación familiar o cualquier dato sensible.</li>
+              <li>Geolocalización precisa asociada a una persona.</li>
+              <li>Metadatos de las fotografías: se retiran antes de subirlas.</li>
+            </ul>
+          </div>
+        </div>
+        <p style="margin-top:18px;">La autorización de uso de imagen es <b>específica</b> (dice para qué se usará), <b>revocable en cualquier momento y sin dar motivos</b>, y <b>no condiciona la participación</b>: ningún estudiante queda fuera del CIEHS por no autorizarla.</p>
+      </div>
+
+      <div class="priv-bloque">
+        <h3>3. Marco legal</h3>
+        <p>El tratamiento de datos personales en el Perú se rige por la <b>Ley N.° 29733, Ley de Protección de Datos Personales</b>, y su reglamento. Tratándose de menores de edad, el consentimiento lo otorga el padre, la madre o el apoderado.</p>
+        <p>La institución educativa es la responsable del tratamiento. Cualquier persona puede ejercer sus derechos de <b>acceso, rectificación, cancelación y oposición</b> escribiendo a la dirección de contacto.</p>
+      </div>
+
+      <div class="priv-bloque">
+        <h3>4. Cómo pedir que se retire algo</h3>
+        <div class="priv-contacto">
+          <p>Si una familia, un estudiante o un docente considera que algo publicado no debería estar, basta con escribir a <span class="mono">ciehs.olaya@gmail.com</span> indicando qué contenido es y por qué. <b>No hace falta justificar la decisión ni aportar documentación:</b> el contenido se retira mientras se revisa.</p>
+          <p style="margin-top:12px;">Coordinación del Área de Ciencia y Tecnología (CyT) — I.E. N.° 80033 “José Olaya Balandra”, Huanchaco, La Libertad. Atención de lunes a viernes, 8:00 a. m. a 1:00 p. m.</p>
+        </div>
+      </div>
+
+      <div class="priv-bloque">
+        <h3>5. Cambios en esta página</h3>
+        <p>Cualquier modificación de estos criterios se publica aquí. La versión vigente es la que aparece en esta página en el momento de consultarla.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ CONTACTO ============ -->
   <section id="contacto" class="alt" data-page="contacto" hidden>
     <div class="wrap">
@@ -3053,6 +3211,7 @@
         <li><button type="button" data-route="investigaciones">Investigaciones</button></li>
         <li><button type="button" data-route="modulos">Módulos</button></li>
         <li><button type="button" data-route="contacto">Contacto</button></li>
+        <li><button type="button" data-route="privacidad">Privacidad y uso de imagen</button></li>
       </ul>
     </div>
 
@@ -3063,7 +3222,7 @@
       <span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l7 4v5c0 4.4-3 8.3-7 9-4-0.7-7-4.6-7-9V7l7-4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.5 12l1.8 1.8L15 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Área de Ciencia y Tecnología (CyT)</span>
     </div>
 
-    <p class="small">Datos institucionales, módulos, indicadores y contacto son oficiales de la I.E. N.° 80033 “José Olaya Balandra”. Siguen pendientes de reemplazo por información real los equipos de investigación, las fotografías del laboratorio y los archivos descargables para docentes. La marca mostrada es la versión vectorial del CIEHS, sustituible por el escudo institucional.</p>
+    <p class="small">Datos institucionales, módulos, indicadores y contacto son oficiales de la I.E. N.° 80033 “José Olaya Balandra”. Siguen pendientes de reemplazo por información real los equipos de investigación, las fotografías del laboratorio y los archivos descargables para docentes. El protocolo de imagen de menores se detalla en la página de privacidad y debe ser aprobado por la dirección antes de publicar la primera fotografía de un estudiante.</p>
     <p class="copyright">© 2026 CIEHS - I.E. N.° 80033 José Olaya Balandra. Todos los derechos reservados.</p>
   </div>
 </footer>
@@ -3079,13 +3238,14 @@
   // un id que coincide con el nombre de su ruta, y un fragmento pelado haría
   // que el navegador saltara por scroll a ese elemento antes de que el router
   // pudiera actuar. Con "#/" ningún id coincide y el control es solo nuestro.
-  var ROUTES = ['inicio','metodologia','investigaciones','equipos','modulos','trazabilidad','datos','juega','docentes','mural','eureka','contacto'];
+  var ROUTES = ['inicio','metodologia','investigaciones','equipos','modulos','trazabilidad','datos','juega','docentes','mural','eureka','contacto','privacidad'];
   var ROUTE_LABELS = {
     inicio:'Inicio',
     metodologia:'Metodología', investigaciones:'Investigaciones', equipos:'Equipos',
     modulos:'Módulos', trazabilidad:'Trazabilidad', datos:'Datos',
     juega:'Juega y aprende', docentes:'Recursos para docentes',
-    mural:'Nuestro Mural', eureka:'Rumbo a Eureka 2026', contacto:'Contacto'
+    mural:'Nuestro Mural', eureka:'Rumbo a Eureka 2026', contacto:'Contacto',
+    privacidad:'Privacidad y uso de imagen'
   };
   var pageEls = document.querySelectorAll('[data-page]');
   var routeEls = document.querySelectorAll('[data-route]');

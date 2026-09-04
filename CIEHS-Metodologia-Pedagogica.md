@@ -21,7 +21,9 @@ Educación Básica.
 > acumula investigaciones, equipos, módulos y resultados a lo largo de varios
 > años escolares.
 
-Relacionadas: [[CIEHS-Portal-Educativo]] · [[CIEHS-Backend-Supabase]] · [[CIEHS-Auditoria-Seguridad-Auth]]
+Índice en [[CIEHS]]. Relacionadas: [[CIEHS-Portal-Educativo]] ·
+[[CIEHS-Backend-Supabase]] · [[CIEHS-Auditoria-Seguridad-Auth]] ·
+[[CIEHS-Identidad-Visual]] · [[CIEHS-Privacidad-Menores]]
 
 ---
 
@@ -149,8 +151,7 @@ suelo como sustrato y recircula la solución nutritiva.
       tabla `methodology_steps` siguiendo el patrón de [[CIEHS-Backend-Supabase]].
 - [ ] Vincular cada paso de la ruta con los recursos descargables
       correspondientes cuando existan los archivos.
-- [ ] Sustituir la marca vectorial provisional por el escudo institucional
-      (ver [[CIEHS-Portal-Educativo]]).
+- [x] Escudo institucional en uso → [[CIEHS-Identidad-Visual]].
 
 ---
 

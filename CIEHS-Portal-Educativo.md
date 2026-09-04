@@ -11,7 +11,7 @@ actualizado: 2026-09-04
 
 # CIEHS · Portal educativo
 
-Nota raíz de la arquitectura del portal. De aquí cuelgan
+Arquitectura del portal. Índice general en [[CIEHS]]. Notas hermanas:
 [[CIEHS-Backend-Supabase]], [[CIEHS-Metodologia-Pedagogica]] y
 [[CIEHS-Auditoria-Seguridad-Auth]].
 
@@ -33,10 +33,11 @@ Nota raíz de la arquitectura del portal. De aquí cuelgan
 | **Alojamiento** | Vercel, proyecto propio `ciehs`. Ver §4 |
 | **Bibliotecas** | `qrcode-generator` y `supabase-js`, ambas servidas desde `/assets/js` del propio dominio |
 
-### Las doce rutas
+### Las trece rutas
 
 `inicio` · `metodologia` · `investigaciones` · `equipos` · `modulos` ·
-`trazabilidad` · `datos` · `juega` · `docentes` · `mural` · `eureka` · `contacto`
+`trazabilidad` · `datos` · `juega` · `docentes` · `mural` · `eureka` ·
+`contacto` · `privacidad`
 
 ---
 
@@ -133,14 +134,15 @@ Los valores de respaldo del HTML se mantienen sincronizados con los de la base
 
 ## 7. Pendientes
 
-- [ ] Sustituir la marca vectorial provisional por el **escudo institucional**.
-- [ ] **Fotografías reales** del laboratorio, los módulos y el mural: hoy el
-      portal no tiene ni una sola imagen fotográfica.
+- [x] Sustituir la marca vectorial provisional por el **escudo institucional** → [[CIEHS-Identidad-Visual]].
+- [x] Imagen real del **mural** integrada con puntos interactivos.
+- [ ] **Fotografías del laboratorio y de los cuatro módulos**, sujetas al
+      protocolo de [[CIEHS-Privacidad-Menores]].
 - [ ] **Archivos descargables** para docentes: los filtros funcionan pero no hay
       ni un PDF detrás.
 - [ ] Sustituir los **equipos ficticios** por los reales, sin datos de menores.
-- [ ] **Política de privacidad y protocolo de imagen de menores** antes de
-      publicar cualquier fotografía — Ley N.° 29733.
+- [x] **Página de privacidad y protocolo de imagen** publicada; falta la
+      aprobación de dirección → [[CIEHS-Privacidad-Menores]].
 - [ ] Conectar el repositorio a Vercel para despliegue automático.
 - [ ] Banco de preguntas del quiz: 5 por nivel se agotan en una sesión.
 
@@ -151,3 +153,6 @@ Los valores de respaldo del HTML se mantienen sincronizados con los de la base
 - [[CIEHS-Metodologia-Pedagogica]] — ruta de 9 pasos y articulación con el CNEB.
 - [[CIEHS-Backend-Supabase]] — esquema `ciehs`, tablas, RLS y capa de datos.
 - [[CIEHS-Auditoria-Seguridad-Auth]] — autenticación, cabeceras y hallazgos.
+- [[CIEHS-Identidad-Visual]] — escudo, sello, mural y paleta.
+- [[CIEHS-Privacidad-Menores]] — qué se publica de los estudiantes.
+- [[CIEHS]] — índice general.

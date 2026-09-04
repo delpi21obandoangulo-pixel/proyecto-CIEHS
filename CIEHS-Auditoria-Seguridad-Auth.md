@@ -8,8 +8,8 @@ actualizado: 2026-09-04
 
 # CIEHS · Auditoría de seguridad y autenticación
 
-Registro de hallazgos, correcciones y riesgos abiertos. Contexto en
-[[CIEHS-Portal-Educativo]] y [[CIEHS-Backend-Supabase]].
+Registro de hallazgos, correcciones y riesgos abiertos. Índice en [[CIEHS]];
+contexto en [[CIEHS-Portal-Educativo]] y [[CIEHS-Backend-Supabase]].
 
 ---
 
@@ -111,7 +111,7 @@ Definidas en `vercel.json`, verificadas en producción:
 
 ## 4. Riesgos abiertos
 
-### 🔴 Datos personales de menores — Ley N.° 29733
+### 🟠 Datos personales de menores — Ley N.° 29733 · *parcialmente atendido*
 
 El portal publicará trabajo de estudiantes menores de edad. **No existe aviso de
 privacidad, ni consentimiento de uso de imagen, ni criterio escrito de qué se
@@ -119,10 +119,10 @@ publica.** La sección de trazabilidad ya declara la intención correcta —«si
 exponer datos personales de los estudiantes»— pero no hay política que la
 respalde.
 
-**Antes de subir la primera fotografía:** redactar el aviso de privacidad,
-fijar por escrito la regla (por ejemplo: solo nombre de equipo y grado, nunca
-apellidos ni rostros identificables sin autorización firmada) y archivar las
-autorizaciones de los apoderados.
+La página de privacidad y el protocolo ya están **redactados y publicados** en
+`#/privacidad`, con el inventario real de datos que trata el portal. Lo que
+**sigue bloqueando** es la aprobación formal de la dirección y la ficha de
+autorización para apoderados → [[CIEHS-Privacidad-Menores]].
 
 ### 🟠 Sin responsable ni proceso de actualización
 
