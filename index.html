@@ -1023,6 +1023,23 @@
   .quiz-opt.incorrect{ border-color:var(--status-danger); background:rgba(248,113,113,0.1); }
   .quiz-feedback{ margin-top:12px; font-size:13px; line-height:1.55; color:var(--ink-soft); padding-top:12px; border-top:1px dashed var(--line); }
   .quiz-feedback.is-correct{ color:var(--leaf-300); }
+  .quiz-ronda{
+    display:flex; align-items:center; justify-content:space-between; gap:14px;
+    flex-wrap:wrap; margin:20px 0 18px;
+  }
+  .quiz-ronda-txt{ font-family:var(--font-mono); font-size:11.5px; color:var(--ink-mute); line-height:1.5; }
+  .quiz-ronda-btn{
+    cursor:pointer; flex:none; font-family:var(--font-mono); font-size:11px; font-weight:600;
+    padding:8px 15px; border-radius:100px; border:1px solid var(--line-strong);
+    background:transparent; color:var(--leaf-300);
+    transition:border-color .25s ease, background .25s ease, color .25s ease;
+  }
+  .quiz-ronda-btn:hover{ border-color:var(--leaf-500); background:rgba(16,185,129,0.12); color:#fff; }
+  .quiz-q.ya-acertada{ border-color:rgba(52,211,153,0.28); }
+  .quiz-q .quiz-repaso{
+    font-family:var(--font-mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--status-good); display:block; margin-bottom:8px;
+  }
 
   .passport{ display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-top:24px; }
   @media (max-width:900px){ .passport{ grid-template-columns:repeat(2,1fr); } }
@@ -2369,149 +2386,16 @@
         </div>
       </div>
 
-      <div class="quiz-set" data-level-set="inicial">
-        <div class="quiz-q" data-qid="inicial-1" data-category="ciencia" data-explain="CIEHS significa Centro de Investigación Escolar Hidropónico Sostenible.">
-          <p class="quiz-q-text">¿Cómo se llama el laboratorio de plantas de nuestro colegio?</p>
-          <div class="quiz-opts">
-            <button type="button" class="quiz-opt" data-correct="true">CIEHS</button>
-            <button type="button" class="quiz-opt" data-correct="false">El patio</button>
-            <button type="button" class="quiz-opt" data-correct="false">La biblioteca</button>
-          </div>
-          <p class="quiz-feedback" hidden></p>
-        </div>
-        <div class="quiz-q" data-qid="inicial-2" data-category="agua" data-explain="En hidroponía, las raíces reciben agua con nutrientes disueltos, sin necesitar tierra.">
-          <p class="quiz-q-text">¿En qué crecen las plantas del CIEHS?</p>
-          <div class="quiz-opts">
-            <button type="button" class="quiz-opt" data-correct="true">En agua con nutrientes</button>
-            <button type="button" class="quiz-opt" data-correct="false">Solo en tierra</button>
-            <button type="button" class="quiz-opt" data-correct="false">En arena seca</button>
-          </div>
-          <p class="quiz-feedback" hidden></p>
-        </div>
-        <div class="quiz-q" data-qid="inicial-3" data-category="clima" data-explain="Cuidar el agua y las plantas es parte de la Acción por el Clima, que cuida todo el planeta.">
-          <p class="quiz-q-text">Cuidar el agua y las plantas ayuda a cuidar…</p>
-          <div class="quiz-opts">
-            <button type="button" class="quiz-opt" data-correct="true">El planeta</button>
-            <button type="button" class="quiz-opt" data-correct="false">Nada en especial</button>
-            <button type="button" class="quiz-opt" data-correct="false">Solo el colegio</button>
-          </div>
-          <p class="quiz-feedback" hidden></p>
-        </div>
-        <div class="quiz-q" data-qid="inicial-4" data-category="ciencia" data-explain="La ruta del CIEHS empieza en Descubre y Pregunta, antes de investigar.">
-          <p class="quiz-q-text">Antes de investigar algo, ¿qué hacemos primero?</p>
-          <div class="quiz-opts">
-            <button type="button" class="quiz-opt" data-correct="true">Observar y preguntar</button>
-            <button type="button" class="quiz-opt" data-correct="false">Escribir la conclusión</button>
-            <button type="button" class="quiz-opt" data-correct="false">Cosechar</button>
-          </div>
-          <p class="quiz-feedback" hidden></p>
-        </div>
-        <div class="quiz-q" data-qid="inicial-5" data-category="cultivo" data-explain="En el CIEHS también cultivamos espinaca, cebollita y plantas aromáticas, además de la lechuga.">
-          <p class="quiz-q-text">¿Cuál de estas verduras también se cultiva en el CIEHS, además de la lechuga?</p>
-          <div class="quiz-opts">
-            <button type="button" class="quiz-opt" data-correct="true">Espinaca</button>
-            <button type="button" class="quiz-opt" data-correct="false">Una piedra</button>
-            <button type="button" class="quiz-opt" data-correct="false">Un juguete</button>
-          </div>
-          <p class="quiz-feedback" hidden></p>
-        </div>
+      <div class="quiz-ronda">
+        <p class="quiz-ronda-txt" id="quizRondaTxt"></p>
+        <button type="button" class="quiz-ronda-btn" id="quizRondaBtn">Otra ronda</button>
       </div>
 
-      <div class="quiz-set" data-level-set="primaria" hidden>
-        <div class="quiz-q" data-qid="primaria-1" data-category="ciencia" data-explain="NFT (Nutrient Film Technique) es un sistema de película de nutrientes que recircula la solución por tubos de PVC.">
-          <p class="quiz-q-text">¿Qué significa la sigla NFT, uno de los módulos del CIEHS?</p>
-          <div class="quiz-opts">
-            <button type="button" class="quiz-opt" data-correct="true">Nutrient Film Technique</button>
-            <button type="button" class="quiz-opt" data-correct="false">Nueva Fórmula de Tierra</button>
-            <button type="button" class="quiz-opt" data-correct="false">Nivel Full de Temperatura</button>
-          </div>
-          <p class="quiz-feedback" hidden></p>
-        </div>
-        <div class="quiz-q" data-qid="primaria-2" data-category="agua" data-explain="El sistema hidropónico del CIEHS ahorra cerca del 90 % del agua frente al cultivo tradicional en suelo.">
-          <p class="quiz-q-text">¿Cuánta agua ahorra aproximadamente la hidroponía del CIEHS frente al cultivo tradicional?</p>
-          <div class="quiz-opts">
-            <button type="button" class="quiz-opt" data-correct="true">Alrededor del 90 %</button>
-            <button type="button" class="quiz-opt" data-correct="false">Alrededor del 10 %</button>
-            <button type="button" class="quiz-opt" data-correct="false">No hay diferencia</button>
-          </div>
-          <p class="quiz-feedback" hidden></p>
-        </div>
-        <div class="quiz-q" data-qid="primaria-3" data-category="clima" data-explain="El ODS 13 (Acción por el Clima) es el eje movilizador del CIEHS.">
-          <p class="quiz-q-text">¿A qué Objetivo de Desarrollo Sostenible (ODS) se dedica principalmente el CIEHS?</p>
-          <div class="quiz-opts">
-            <button type="button" class="quiz-opt" data-correct="true">ODS 13 — Acción por el Clima</button>
-            <button type="button" class="quiz-opt" data-correct="false">ODS 1 — Fin de la pobreza</button>
-            <button type="button" class="quiz-opt" data-correct="false">ODS 17 — Alianzas</button>
-          </div>
-          <p class="quiz-feedback" hidden></p>
-        </div>
-        <div class="quiz-q" data-qid="primaria-4" data-category="ciencia" data-explain="La ruta oficial es Descubre → Explora → Pregunta → Investiga → Analiza → Juega → Crea → Actúa → Comparte.">
-          <p class="quiz-q-text">En la ruta del CIEHS, ¿qué paso viene justo después de Pregunta?</p>
-          <div class="quiz-opts">
-            <button type="button" class="quiz-opt" data-correct="true">Investiga</button>
-            <button type="button" class="quiz-opt" data-correct="false">Juega</button>
-            <button type="button" class="quiz-opt" data-correct="false">Comparte</button>
-          </div>
-          <p class="quiz-feedback" hidden></p>
-        </div>
-        <div class="quiz-q" data-qid="primaria-5" data-category="cultivo" data-explain="La espinaca (Spinacia oleracea) requiere un pH de 6.0 a 6.8 y una CE de 1.8 a 2.3 mS/cm.">
-          <p class="quiz-q-text">¿Qué rango de pH necesita la espinaca (<i>Spinacia oleracea</i>) en el CIEHS?</p>
-          <div class="quiz-opts">
-            <button type="button" class="quiz-opt" data-correct="true">6.0 – 6.8</button>
-            <button type="button" class="quiz-opt" data-correct="false">2.0 – 3.0</button>
-            <button type="button" class="quiz-opt" data-correct="false">9.0 – 10.0</button>
-          </div>
-          <p class="quiz-feedback" hidden></p>
-        </div>
-      </div>
+      <div class="quiz-set" data-level-set="inicial"></div>
 
-      <div class="quiz-set" data-level-set="secundaria" hidden>
-        <div class="quiz-q" data-qid="secundaria-1" data-category="agua" data-explain="El módulo NFT opera con un pH de 5.5 a 6.5 para una absorción óptima de nutrientes.">
-          <p class="quiz-q-text">¿Cuál es el rango de pH recomendado para el módulo MOD-NFT-01?</p>
-          <div class="quiz-opts">
-            <button type="button" class="quiz-opt" data-correct="true">5.5 – 6.5</button>
-            <button type="button" class="quiz-opt" data-correct="false">7.5 – 8.5</button>
-            <button type="button" class="quiz-opt" data-correct="false">3.0 – 4.0</button>
-          </div>
-          <p class="quiz-feedback" hidden></p>
-        </div>
-        <div class="quiz-q" data-qid="secundaria-2" data-category="agua" data-explain="La CE indica cuántos nutrientes minerales están disueltos en la solución; se mide en mS/cm.">
-          <p class="quiz-q-text">¿Qué mide la conductividad eléctrica (CE) de una solución nutritiva?</p>
-          <div class="quiz-opts">
-            <button type="button" class="quiz-opt" data-correct="true">La concentración de sales y nutrientes disueltos</button>
-            <button type="button" class="quiz-opt" data-correct="false">La temperatura del agua</button>
-            <button type="button" class="quiz-opt" data-correct="false">La cantidad de luz solar</button>
-          </div>
-          <p class="quiz-feedback" hidden></p>
-        </div>
-        <div class="quiz-q" data-qid="secundaria-3" data-category="clima" data-explain="El ODS 13 plantea adoptar medidas urgentes para combatir el cambio climático y sus efectos.">
-          <p class="quiz-q-text">Según la Agenda 2030 de Naciones Unidas, ¿qué plantea el ODS 13?</p>
-          <div class="quiz-opts">
-            <button type="button" class="quiz-opt" data-correct="true">Adoptar medidas urgentes contra el cambio climático y sus efectos</button>
-            <button type="button" class="quiz-opt" data-correct="false">Eliminar el analfabetismo digital</button>
-            <button type="button" class="quiz-opt" data-correct="false">Reducir el precio del agua potable</button>
-          </div>
-          <p class="quiz-feedback" hidden></p>
-        </div>
-        <div class="quiz-q" data-qid="secundaria-4" data-category="ciencia" data-explain="INV-2026-01 manipula la concentración de solución nutritiva; la altura y el número de hojas son variables dependientes.">
-          <p class="quiz-q-text">En la investigación INV-2026-01, ¿cuál es la variable independiente?</p>
-          <div class="quiz-opts">
-            <button type="button" class="quiz-opt" data-correct="true">La concentración de solución nutritiva (50 %, 100 %, 150 %)</button>
-            <button type="button" class="quiz-opt" data-correct="false">La altura de la planta</button>
-            <button type="button" class="quiz-opt" data-correct="false">El número de hojas</button>
-          </div>
-          <p class="quiz-feedback" hidden></p>
-        </div>
-        <div class="quiz-q" data-qid="secundaria-5" data-category="cultivo" data-explain="Las aromáticas crecen en el módulo vertical (MOD-VER-04) y la acelga en sustrato inerte (MOD-SUS-03).">
-          <p class="quiz-q-text">¿En qué módulos se cultivan las aromáticas y la acelga en el CIEHS?</p>
-          <div class="quiz-opts">
-            <button type="button" class="quiz-opt" data-correct="true">Sistema Vertical y Sustrato Inerte</button>
-            <button type="button" class="quiz-opt" data-correct="false">Solo en agua de mar</button>
-            <button type="button" class="quiz-opt" data-correct="false">En macetas de tierra sin control</button>
-          </div>
-          <p class="quiz-feedback" hidden></p>
-        </div>
-      </div>
+      <div class="quiz-set" data-level-set="primaria" hidden></div>
+
+      <div class="quiz-set" data-level-set="secundaria" hidden></div>
 
       <div style="margin-top:64px;">
         <p class="eyebrow">Centro de juegos · Reto Acción por el Clima</p>
@@ -3374,6 +3258,7 @@
 
 <script src="/assets/js/supabase.js"></script>
 <script src="/assets/js/ciehs-data.js?v=2"></script>
+<script src="/assets/js/ciehs-preguntas.js"></script>
 <script src="/assets/js/qrcode.js"></script>
 <script>
 (function(){
@@ -3570,9 +3455,82 @@
     });
   });
 
-  var questions = document.querySelectorAll('.quiz-q');
+  /* ---------------------------------------------------------------------
+     El banco vive en /assets/js/ciehs-preguntas.js y aqui se baraja una
+     ronda distinta cada vez. Antes las preguntas estaban escritas a mano en
+     el HTML, siempre las mismas y en el mismo orden: se agotaban en una sola
+     sesion de clase.
+     --------------------------------------------------------------------- */
+  var BANCO = window.CIEHS_PREGUNTAS || { inicial:[], primaria:[], secundaria:[] };
+  var POR_RONDA = 8;
   var scoreEl = document.getElementById('quizScore');
-  var totalQ = questions.length;
+  var rondaTxt = document.getElementById('quizRondaTxt');
+  var rondaBtn = document.getElementById('quizRondaBtn');
+
+  var totalQ = ['inicial','primaria','secundaria']
+    .reduce(function(n, k){ return n + (BANCO[k] || []).length; }, 0);
+
+  function barajar(arr){
+    var a = arr.slice();
+    for(var i = a.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function esc(t){
+    return String(t == null ? '' : t)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // Primero lo que aun no se ha acertado, para que el estudiante avance en vez
+  // de repetir lo que ya sabe. Si ya acerto casi todo, se completa la ronda con
+  // preguntas antiguas marcadas como repaso.
+  function elegirRonda(nivel){
+    var banco = BANCO[nivel] || [];
+    var pendientes = barajar(banco.filter(function(p){ return !state.correct[p.id]; }));
+    var acertadas  = barajar(banco.filter(function(p){ return  state.correct[p.id]; }));
+    return pendientes.concat(acertadas).slice(0, POR_RONDA);
+  }
+
+  function pintarNivel(nivel){
+    var cont = juegaPage.querySelector('[data-level-set="' + nivel + '"]');
+    if(!cont) return;
+    var ronda = elegirRonda(nivel);
+    cont.innerHTML = ronda.map(function(p){
+      var repaso = !!state.correct[p.id];
+      var opciones = barajar(p.ops).map(function(o){
+        return '<button type="button" class="quiz-opt" data-correct="' + (o[1] ? 'true' : 'false') + '">'
+             + esc(o[0]) + '</button>';
+      }).join('');
+      return '<div class="quiz-q' + (repaso ? ' ya-acertada' : '') + '" data-qid="' + esc(p.id)
+           + '" data-category="' + esc(p.cat) + '" data-explain="' + esc(p.exp) + '">'
+           + (repaso ? '<span class="quiz-repaso">Repaso · ya acertada</span>' : '')
+           + '<p class="quiz-q-text">' + esc(p.q) + '</p>'
+           + '<div class="quiz-opts">' + opciones + '</div>'
+           + '<p class="quiz-feedback" hidden></p>'
+           + '</div>';
+    }).join('');
+    conectarPreguntas(cont);
+  }
+
+  function pintarTodo(){
+    ['inicial','primaria','secundaria'].forEach(pintarNivel);
+    actualizarRonda();
+  }
+
+  function actualizarRonda(){
+    if(!rondaTxt) return;
+    var hechas = Object.keys(state.correct).length;
+    var quedan = totalQ - hechas;
+    rondaTxt.textContent = quedan > 0
+      ? POR_RONDA + ' preguntas por nivel en cada ronda · te quedan ' + quedan + ' sin acertar de ' + totalQ
+      : 'Has acertado las ' + totalQ + ' preguntas del banco. Las rondas siguen sirviendo como repaso.';
+  }
+
+  if(rondaBtn) rondaBtn.addEventListener('click', pintarTodo);
 
   function persist(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){} }
 
@@ -3625,23 +3583,20 @@
     persist(); updateScore(); updateBadges();
   }
 
-  questions.forEach(function(q){
-    var qid = q.getAttribute('data-qid');
-    var opts = q.querySelectorAll('.quiz-opt');
-    var feedback = q.querySelector('.quiz-feedback');
-    if(state.correct[qid]){
-      // restore answered state on reload
-      var correctOpt = q.querySelector('.quiz-opt[data-correct="true"]');
-      if(correctOpt){ markAnswered(q, opts, correctOpt, feedback); }
-    }
-    opts.forEach(function(opt){
-      opt.addEventListener('click', function(){
-        if(q.classList.contains('is-answered')) return;
-        markAnswered(q, opts, opt, feedback);
+  function conectarPreguntas(raiz){
+    raiz.querySelectorAll('.quiz-q').forEach(function(q){
+      var opts = [].slice.call(q.querySelectorAll('.quiz-opt'));
+      var feedback = q.querySelector('.quiz-feedback');
+      opts.forEach(function(o){
+        o.addEventListener('click', function(){
+          if(q.classList.contains('is-answered')) return;
+          markAnswered(q, opts, o, feedback);
+        });
       });
     });
-  });
+  }
 
+  pintarTodo();
   updateScore();
   updateBadges();
 
@@ -3650,15 +3605,7 @@
     resetBtn.addEventListener('click', function(){
       state = { correct:{}, badges:{} };
       persist();
-      questions.forEach(function(q){
-        q.classList.remove('is-answered');
-        q.querySelectorAll('.quiz-opt').forEach(function(o){
-          o.classList.remove('correct','incorrect');
-          o.disabled = false;
-        });
-        var fb = q.querySelector('.quiz-feedback');
-        if(fb){ fb.hidden = true; }
-      });
+      pintarTodo();          // ronda nueva y limpia, en vez de reabrir la anterior
       updateScore();
       updateBadges();
     });
