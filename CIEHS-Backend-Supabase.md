@@ -15,9 +15,15 @@ Esquema de datos del portal. Índice en [[CIEHS]]. Ver también [[CIEHS-Portal-E
 
 > [!important] Aislamiento estricto
 > El portal usa **exclusivamente** el esquema `ciehs` de una instancia
-> **compartida** con otros proyectos del ecosistema. Es la «opción tolerada» de
-> la política de aislamiento: lo preferible sería un proyecto Supabase propio.
-> Migrar después solo exige cambiar la URL y la clave publicable.
+> **compartida** con Aura (`public`) y Safari (`safary_kids`). Es la «opción
+> tolerada» de la política de aislamiento.
+>
+> Un proyecto Supabase propio sería lo ideal, pero **no cabe en el plan
+> gratuito**: Supabase permite 2 proyectos y ya están ocupados por Aura y
+> Kunturmasha; un tercero sería de pago. Por eso el CIEHS convive en el proyecto
+> de Aura, y no es una decisión reversible sin coste. Si algún día se paga o se
+> libera un proyecto, migrar solo exige cambiar la URL y la clave publicable: el
+> esquema y el código no cambian.
 
 ---
 
@@ -158,8 +164,10 @@ on conflict (user_id) do nothing;
 - [ ] Interfaz de **edición** de `investigations` y `resources` en el panel:
       hoy solo se editan por SQL.
 - [ ] Subida de archivos para `resources.file_url` (Supabase Storage).
-- [ ] Evaluar migración a proyecto Supabase propio → elimina el blast radius
-      compartido y la convivencia en `auth.users`.
+- [ ] Migración a proyecto Supabase propio: **bloqueada por el plan gratuito**
+      (2 proyectos, ocupados por Aura y Kunturmasha). Queda para cuando se pague
+      o se libere uno; entonces elimina el blast radius y la convivencia en
+      `auth.users`.
 - [ ] Exportación de mediciones a CSV: los estudiantes deberían poder llevarse
       los datos a la hoja de cálculo.
 - [x] Autoría (`recorded_by`, `updated_by`) la pone el servidor, no el cliente

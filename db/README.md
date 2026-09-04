@@ -21,7 +21,7 @@ El portal usa **exclusivamente** el esquema `ciehs` de la instancia Supabase
 administración del CIEHS existe en el mismo registro que las de los demás
 proyectos. Lo que impide el cruce es RLS más la tabla `ciehs.admins`: tener
 sesión no da ningún permiso sobre los datos del CIEHS si el `user_id` no está
-en esa tabla (probado). Migrar a un proyecto Supabase propio elimina también
+en esa tabla (probado). Un proyecto propio eliminaria tambien
 esta condición y solo exige cambiar la URL y la clave publicable.
 
 ## Puesta en marcha
