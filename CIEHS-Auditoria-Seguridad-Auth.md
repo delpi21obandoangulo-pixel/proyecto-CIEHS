@@ -134,7 +134,29 @@ puede ser futura ni anterior a 2024, y `tags` no admite más de 8 entradas.
 
 ---
 
-## 5. Riesgos abiertos
+## 5. Dependencias
+
+Ambas se sirven **desde el propio dominio**, no desde un CDN: así el visitante
+no queda expuesto a un tercero y la CSP no necesita abrir `script-src` a
+ningún host externo.
+
+| Biblioteca | Versión | Notas |
+|---|---|---|
+| `@supabase/supabase-js` | **2.115.0** | Estaba en 2.58.0, 57 versiones por detrás. Es la que maneja red y autenticación, así que sus correcciones importan |
+| `qrcode-generator` | **2.0.4** | Cálculo puro, sin red ni dependencias. El salto de major resultó ser solo de empaquetado: misma API |
+
+Tras actualizar se verificó que **los nueve códigos QR siguen decodificando
+correctamente** con un lector independiente, y que la descarga en SVG no viola
+la política.
+
+> [!tip] Cómo comprobar si hay versiones nuevas
+> `curl -s https://registry.npmjs.org/<paquete>/latest` y comparar con el
+> archivo de `assets/js`. No hay `package.json`: el portal no tiene paso de
+> compilación y las bibliotecas se guardan ya construidas.
+
+---
+
+## 6. Riesgos abiertos
 
 ### 🔴 Datos personales de menores — Ley N.° 29733
 
@@ -177,7 +199,7 @@ sin acordarlo.
 
 ---
 
-## 6. Qué revisar tras cada cambio
+## 7. Qué revisar tras cada cambio
 
 - [ ] `curl -I` sobre producción: las ocho cabeceras siguen presentes.
 - [ ] Ninguna violación de CSP al recorrer las rutas
@@ -188,6 +210,7 @@ sin acordarlo.
 - [ ] Que las consultas anónimas pidan **columnas explícitas** donde haya
       columnas vetadas — un `select=*` nuevo rompería la sección entera.
 - [ ] `get_advisors` de Supabase: ninguna alerta con esquema `ciehs`.
+- [ ] Versiones de las dos bibliotecas frente al registro de npm (ver §5).
 
 > [!bug] La trampa que ya se pisó dos veces
 > Un `GRANT` a nivel de **tabla** cubre todas las columnas y **no se recorta con
