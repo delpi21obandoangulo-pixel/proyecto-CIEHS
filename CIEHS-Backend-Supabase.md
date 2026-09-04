@@ -162,6 +162,8 @@ on conflict (user_id) do nothing;
       compartido y la convivencia en `auth.users`.
 - [ ] Exportación de mediciones a CSV: los estudiantes deberían poder llevarse
       los datos a la hoja de cálculo.
+- [x] Autoría (`recorded_by`, `updated_by`) la pone el servidor, no el cliente
+      → [[CIEHS-Auditoria-Seguridad-Auth]].
 
 ---
 

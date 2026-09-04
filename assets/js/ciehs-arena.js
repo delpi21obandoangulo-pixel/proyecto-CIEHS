@@ -98,9 +98,18 @@
   try {
     var g = JSON.parse(localStorage.getItem(CLAVE) || 'null');
     if (g && g.mejores && g.resueltos) {
-      progreso = g;
-      progreso.tiradas = progreso.tiradas || {};
-      progreso.sellos  = progreso.sellos  || {};
+      // El contenido de localStorage lo controla quien usa el navegador, y los
+      // records acaban insertados en HTML. Se normalizan los tipos al cargar:
+      // un numero no puede llevar marcado dentro. Es auto-XSS de bajo riesgo,
+      // pero sanear en la frontera cuesta cuatro lineas.
+      progreso = { mejores:{}, resueltos:{}, tiradas:{}, sellos:{} };
+      Object.keys(g.mejores || {}).forEach(function(k){
+        var v = Number(g.mejores[k]);
+        if (isFinite(v) && v >= 0) progreso.mejores[k] = Math.floor(v);
+      });
+      Object.keys(g.resueltos || {}).forEach(function(k){ progreso.resueltos[k] = true; });
+      Object.keys(g.tiradas || {}).forEach(function(k){ progreso.tiradas[k] = String(g.tiradas[k]).slice(0, 12); });
+      Object.keys(g.sellos  || {}).forEach(function(k){ progreso.sellos[k]  = String(g.sellos[k]).slice(0, 12); });
     }
   } catch (e) {}
 

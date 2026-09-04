@@ -47,6 +47,7 @@ está cada cosa.
 | Panel | Supabase Auth + comprobación de administrador |
 | Identidad | Escudo institucional oficial en uso |
 | Privacidad | Página publicada, **pendiente de aprobación por dirección** |
+| Seguridad | CSP estricta sin `unsafe-inline` en scripts · auditoría 2026-09-04 |
 | Arena | 5 niveles, 150 retos, 2 expediciones diarias |
 
 ---

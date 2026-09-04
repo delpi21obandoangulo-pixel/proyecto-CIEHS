@@ -183,6 +183,8 @@ array del nivel con `id`, `tema`, `tipo`, `dif`, `q`, los datos del formato y `e
 
 Progreso del jugador en `localStorage`, clave `ciehs_arena_v1`: récords,
 retos resueltos, tiradas del día y sellos. Declarado en [[CIEHS-Privacidad-Menores]].
+Los valores se **normalizan al cargar**: acaban insertados en HTML y el
+contenido de `localStorage` lo controla quien usa el navegador.
 
 ---
 

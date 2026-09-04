@@ -230,3 +230,70 @@ revoke select on ciehs.site_config from anon;
 grant select (id, hero_title, hero_subtitle, kpi_cosecha_kg, kpi_ahorro_pct,
               aviso, aviso_active, updated_at)
   on ciehs.site_config to anon;
+
+-- =============================================================================
+-- Endurecimiento posterior a la auditoria
+--
+-- 1. AUTORIA POR EL SERVIDOR. Antes el navegador enviaba recorded_by y
+--    updated_by, de modo que una cuenta de administracion podia atribuir una
+--    lectura o una edicion a otra persona. Ahora los pone el servidor y se
+--    retira el permiso de escribir esas columnas.
+--
+--    Recordatorio: un GRANT a nivel de TABLA cubre todas las columnas y no se
+--    recorta con un REVOKE por columna. Hay que retirar el permiso de tabla y
+--    conceder solo las columnas escribibles.
+--
+-- 2. Borrar la configuracion del portal no tiene caso de uso legitimo.
+--
+-- 3. Limites de tamano y coherencia: defensa en profundidad frente a una cuenta
+--    comprometida o a un error de copiar y pegar.
+-- =============================================================================
+
+alter table ciehs.telemetry_readings alter column recorded_by set default auth.uid();
+alter table ciehs.site_config        alter column updated_by  set default auth.uid();
+
+revoke insert, update on ciehs.telemetry_readings from authenticated;
+grant insert (module_id, measured_at, ph, ce, water_temp_c, notes),
+      update (module_id, measured_at, ph, ce, water_temp_c, notes)
+  on ciehs.telemetry_readings to authenticated;
+
+revoke insert, update, delete on ciehs.site_config from authenticated;
+grant update (hero_title, hero_subtitle, kpi_cosecha_kg, kpi_ahorro_pct, aviso, aviso_active)
+  on ciehs.site_config to authenticated;
+
+-- Un DEFAULT solo actua al insertar: para que un UPDATE registre quien edito,
+-- la marca la pone el mismo trigger que fecha la fila.
+create or replace function ciehs.touch_site_config()
+returns trigger language plpgsql
+set search_path = ciehs, pg_temp as $fn$
+begin
+  new.updated_at := now();
+  new.updated_by := auth.uid();
+  return new;
+end;
+$fn$;
+
+drop trigger if exists touch_site_config on ciehs.site_config;
+create trigger touch_site_config before update on ciehs.site_config
+  for each row execute function ciehs.touch_site_config();
+
+alter table ciehs.site_config
+  drop constraint if exists site_config_largos,
+  add constraint site_config_largos check (
+    coalesce(length(hero_title),0)    <= 200 and
+    coalesce(length(hero_subtitle),0) <= 400 and
+    coalesce(length(aviso),0)         <= 400);
+
+alter table ciehs.telemetry_readings
+  drop constraint if exists telemetry_fecha_razonable,
+  add constraint telemetry_fecha_razonable check (
+    measured_at <= now() + interval '1 day' and
+    measured_at >= timestamptz '2024-01-01');
+
+alter table ciehs.investigations
+  drop constraint if exists investigations_largos,
+  add constraint investigations_largos check (
+    length(code) <= 40 and length(title) <= 500 and
+    coalesce(length(question),0)   <= 800 and
+    coalesce(length(hypothesis),0) <= 800 and
+    coalesce(array_length(tags,1),0) <= 8);

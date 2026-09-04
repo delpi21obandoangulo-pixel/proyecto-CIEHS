@@ -39,7 +39,20 @@
     auth: {
       persistSession: true,
       autoRefreshToken: true,
-      storageKey: 'ciehs-auth'
+      storageKey: 'ciehs-auth',
+      // sessionStorage y no localStorage: los equipos del laboratorio son
+      // compartidos. Asi la sesion de administracion muere al cerrar la pestaña
+      // en lugar de quedar disponible para quien se siente despues.
+      storage: (function () {
+        try {
+          var p = '__ciehs_probe__';
+          global.sessionStorage.setItem(p, '1');
+          global.sessionStorage.removeItem(p);
+          return global.sessionStorage;
+        } catch (e) {
+          return undefined;   // navegador sin almacenamiento: sesion solo en memoria
+        }
+      })()
     },
     global: { headers: { 'x-client-info': 'ciehs-portal' } }
   });
@@ -166,7 +179,7 @@
         aviso_active: !!valores.avisoActive
       })
       .eq('id', 1)
-      .select()
+      .select(COLS_CONFIG)
       .maybeSingle()
       .then(function (r) {
         if (r.error) throw r.error;
@@ -182,8 +195,10 @@
         ph: lectura.ph === '' ? null : lectura.ph,
         ce: lectura.ce === '' ? null : lectura.ce,
         notes: lectura.notes || null
+        // recorded_by lo pone el servidor con auth.uid(): el cliente no tiene
+        // permiso para escribir esa columna y no debe intentarlo.
       })
-      .select()
+      .select('id, module_id, measured_at, ph, ce, water_temp_c, notes')
       .maybeSingle()
       .then(function (r) {
         if (r.error) throw r.error;
