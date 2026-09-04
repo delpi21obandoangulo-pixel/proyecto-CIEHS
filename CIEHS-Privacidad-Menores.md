@@ -129,4 +129,5 @@ obstáculo.
 - [[CIEHS-Auditoria-Seguridad-Auth]] — riesgos y hallazgos de seguridad.
 - [[CIEHS-Identidad-Visual]] — qué imágenes existen hoy en el portal.
 - [[CIEHS-Arena-Juego]] — qué guarda el juego en el navegador.
+- [[CIEHS-Pentest-2026-09]] — evaluación de ciberseguridad del portal.
 - [[CIEHS-Portal-Educativo]] — dónde vive la página de privacidad.

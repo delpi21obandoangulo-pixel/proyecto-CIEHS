@@ -173,3 +173,4 @@ on conflict (user_id) do nothing;
 - [[CIEHS-Auditoria-Seguridad-Auth]] — autenticación y hallazgos de seguridad.
 - [[CIEHS-Metodologia-Pedagogica]] — qué contenido pedagógico consume estos datos.
 - [[CIEHS-Arena-Juego]] — un marcador entre clases necesitaría una tabla aquí.
+- [[CIEHS-Pentest-2026-09]] — el pentest y el argumento del proyecto propio.

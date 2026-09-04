@@ -246,3 +246,4 @@ sin acordarlo.
 - [[CIEHS-Metodologia-Pedagogica]] — contenido pedagógico que se publica.
 - [[CIEHS-Privacidad-Menores]] — protocolo de imagen y datos de menores.
 - [[CIEHS-Arena-Juego]] — sus contramedidas también son fricción, no seguridad.
+- [[CIEHS-Pentest-2026-09]] — auto-evaluación de ciberseguridad con 14 ataques.

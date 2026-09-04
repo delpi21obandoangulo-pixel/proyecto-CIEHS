@@ -297,3 +297,16 @@ alter table ciehs.investigations
     coalesce(length(question),0)   <= 800 and
     coalesce(length(hypothesis),0) <= 800 and
     coalesce(array_length(tags,1),0) <= 8);
+
+-- =============================================================================
+-- Endurecimiento posterior al pentest (auto-evaluacion de ciberseguridad)
+--
+-- La app NUNCA lee ciehs.admins directamente: comprueba con is_admin(), que es
+-- SECURITY DEFINER y por tanto no depende de los permisos del llamante. Se
+-- retira el SELECT de authenticated y la politica de auto-lectura: la tabla
+-- queda accesible solo para el servidor. Elimina la superficie por la que un
+-- autenticado podia ejecutar count(*) sobre admins (aunque solo recibiera 0).
+-- =============================================================================
+
+revoke select on ciehs.admins from authenticated;
+drop policy if exists admins_self_read on ciehs.admins;

@@ -33,6 +33,7 @@ está cada cosa.
 | [[CIEHS-Identidad-Visual]] | Escudo, sello, mural, paleta e iconos |
 | [[CIEHS-Privacidad-Menores]] | Qué se publica de los estudiantes y qué nunca |
 | [[CIEHS-Arena-Juego]] | El modo de juego: niveles, expediciones, animación y voz |
+| [[CIEHS-Pentest-2026-09]] | Auto-evaluación de ciberseguridad: 14 ataques, resultado |
 
 ---
 
@@ -47,7 +48,7 @@ está cada cosa.
 | Panel | Supabase Auth + comprobación de administrador |
 | Identidad | Escudo institucional oficial en uso |
 | Privacidad | Página publicada, **pendiente de aprobación por dirección** |
-| Seguridad | CSP estricta sin `unsafe-inline` en scripts · auditoría 2026-09-04 |
+| Seguridad | CSP sin `unsafe-inline` (scripts ni estilos) · pentest sin hallazgos explotables en el CIEHS |
 | Arena | 5 niveles, 150 retos, 2 expediciones diarias |
 
 ---
