@@ -631,6 +631,47 @@
     font-size:12.5px; line-height:1.65; color:var(--chart-ink-2); max-width:76ch;
   }
   .viz-note b{ color:var(--ink-soft); font-weight:600; }
+  .tele-block{ margin-top:26px; padding-top:20px; border-top:1px solid var(--chart-grid); }
+  .tele-head{ display:flex; justify-content:space-between; align-items:baseline; gap:14px; flex-wrap:wrap; }
+  .tele-head h4{ font-size:14px; font-weight:600; color:var(--ink); font-family:var(--font-display); }
+  .tele-state{ font-family:var(--font-mono); font-size:11px; color:var(--ink-mute); }
+  .tele-empty{
+    margin-top:14px; padding:16px 18px; border:1px dashed var(--line);
+    border-radius:var(--radius-s); font-size:13px; line-height:1.6; color:var(--ink-soft);
+  }
+  .tele-row{
+    display:grid; grid-template-columns:1.1fr .8fr .6fr .6fr; gap:12px; align-items:baseline;
+    padding:11px 0; border-top:1px solid var(--line); font-size:13px;
+  }
+  .tele-row:first-of-type{ border-top:none; }
+  .tele-row .m{ font-family:var(--font-mono); font-size:12px; color:var(--ink); }
+  .tele-row .f{ font-family:var(--font-mono); font-size:11.5px; color:var(--ink-mute); }
+  .tele-row .v{ font-family:var(--font-mono); font-weight:600; color:var(--leaf-300); font-variant-numeric:tabular-nums; }
+  .tele-row .v.fuera{ color:var(--status-danger); }
+  .tele-row .v small{ color:var(--ink-mute); font-weight:400; }
+  @media (max-width:620px){
+    .tele-row{ grid-template-columns:1fr 1fr; gap:6px 12px; }
+  }
+  /* ---- panel: sesion y registro de lecturas ---- */
+  .admin-conn{
+    margin-top:14px; padding:10px 12px; border-radius:var(--radius-s);
+    font-family:var(--font-mono); font-size:11px; line-height:1.5;
+    border:1px solid var(--line); color:var(--ink-mute);
+  }
+  .admin-conn.ok{ color:var(--status-good); border-color:rgba(52,211,153,0.35); background:rgba(52,211,153,0.07); }
+  .admin-conn.bad{ color:var(--status-danger); border-color:rgba(248,113,113,0.35); background:rgba(248,113,113,0.07); }
+  .admin-divider{
+    margin:24px 0 6px; padding-top:18px; border-top:1px solid var(--line);
+    font-family:var(--font-mono); font-size:10.5px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--ink-mute);
+  }
+  .admin-session{
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+    font-family:var(--font-mono); font-size:11px; color:var(--ink-mute); margin-top:4px;
+  }
+  .admin-session button{ cursor:pointer; color:var(--azure-300); text-decoration:underline; font-size:11px; }
+  .admin-grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media (max-width:480px){ .admin-grid-2{ grid-template-columns:1fr; } }
 
   /* ============ HOJA IMPRIMIBLE DE CODIGOS ============ */
   @media print{
@@ -1302,7 +1343,7 @@
       </div>
 
       <div class="grid cols-2">
-        <article class="card research-card">
+        <article class="card research-card" data-inv-code="INV-2026-01">
           <div class="top-row"><span class="code mono">INV-2026-01</span><span class="chip status-curso">Proyecto Eureka 2026</span></div>
           <h3>Evaluación del efecto de diferentes concentraciones de solución nutritiva en la biomasa de <i>Lactuca sativa</i> (lechuga) en sistema hidropónico</h3>
           <p class="hyp"><b>Pregunta:</b> ¿de qué manera influyen las variaciones en la concentración de la solución nutritiva hidropónica (50 %, 100 %, 150 %) en la ganancia de biomasa foliar de la lechuga?</p>
@@ -1319,7 +1360,7 @@
           </div>
         </article>
 
-        <article class="card research-card">
+        <article class="card research-card" data-inv-code="INV-2026-02">
           <div class="top-row"><span class="code mono">INV-2026-02</span><span class="chip status-curso">Proyecto Eureka 2026</span></div>
           <h3>Efecto de la aplicación de bioestimulante orgánico a base de germinados de lenteja (<i>Lens culinaris</i>) en el enraizamiento y desarrollo vegetativo escolar</h3>
           <p class="hyp"><b>Pregunta:</b> ¿en qué medida la aplicación foliar y radicular de extracto de germinado de lenteja favorece la tasa de enraizamiento en plántulas hidropónicas?</p>
@@ -1730,7 +1771,7 @@
           </div>
 
           <p style="margin-top:6px; font-size:11.5px; color:var(--chart-ink-2); text-transform:uppercase; letter-spacing:0.05em;">pH (5.5 – 6.5 general)</p>
-          <div class="range-chart">
+          <div class="range-chart" id="phModulosChart">
             <div class="range-row">
               <span class="range-label mono">MOD-NFT-01</span>
               <div class="range-track"><div class="range-fill" style="left:25%; width:50%;"></div></div>
@@ -1880,10 +1921,18 @@
           </div>
           <div class="range-axis"><span>1.0</span><span>1.5</span><span>2.0</span><span>2.5</span></div>
 
+          <div class="tele-block" id="telemetriaBloque">
+            <div class="tele-head">
+              <h4>Últimas lecturas registradas</h4>
+              <span class="tele-state" id="telemetriaEstado">Cargando…</span>
+            </div>
+            <div id="telemetriaLista"></div>
+          </div>
+
           <p class="viz-note">Estos son los <b>rangos objetivo</b> fijados por el equipo del CIEHS para cada
           cultivo, no lecturas de sensores en línea. El pH y la CE se miden a mano cada 5 días y se registran
-          en la bitácora del módulo; los valores publicados aquí se actualizan desde el panel de administración
-          y quedan guardados en este navegador.</p>
+          en la bitácora del módulo y se publican desde el panel de administración, que los guarda en la base de
+          datos del CIEHS y los deja visibles para cualquiera que abra el portal.</p>
         </div>
       </div>
     </div>
@@ -2644,10 +2693,18 @@
     <div id="adminPinStep">
       <p class="eyebrow">Panel administrativo</p>
       <h3 id="adminModalTitle" style="margin-top:10px; font-size:20px;">Acceso restringido</h3>
-      <p style="margin-top:10px; font-size:14px; color:var(--ink-soft);">Ingresa el PIN de administración del CIEHS para editar la portada, los indicadores y publicar un aviso.</p>
-      <input type="password" id="adminPinInput" inputmode="numeric" maxlength="8" placeholder="PIN" autocomplete="off">
+      <p style="margin-top:10px; font-size:14px; color:var(--ink-soft);">Ingresa con la cuenta de administración del CIEHS para editar la portada, registrar lecturas de pH y CE y publicar avisos.</p>
+      <label class="form-field" style="margin-top:14px;">
+        <span>Correo institucional</span>
+        <input type="email" id="adminEmail" autocomplete="username" placeholder="coordinacion@…">
+      </label>
+      <label class="form-field" style="margin-top:10px;">
+        <span>Contraseña</span>
+        <input type="password" id="adminPassword" autocomplete="current-password" placeholder="••••••••">
+      </label>
       <button type="button" class="btn btn-primary" id="adminPinSubmit" style="margin-top:16px; width:100%; justify-content:center;">Ingresar</button>
-      <p id="adminPinError" class="form-status error" hidden>PIN incorrecto. Inténtalo de nuevo.</p>
+      <p id="adminPinError" class="form-status error" hidden></p>
+      <p class="admin-conn" id="adminConn">Comprobando conexión con la base del CIEHS…</p>
     </div>
 
     <div id="adminFormStep" hidden>
@@ -2679,9 +2736,39 @@
           Publicar este aviso en el portal
         </label>
       </div>
-      <p class="admin-hint">Los cambios se guardan en este navegador (localStorage) y se reflejan de inmediato en la web.</p>
+      <p class="admin-hint">Los cambios se guardan en la base de datos del CIEHS y quedan visibles para todo el que abra el portal.</p>
       <button type="button" class="btn btn-primary" id="adminSaveBtn" style="margin-top:20px; width:100%; justify-content:center;">Guardar y publicar cambios</button>
       <p class="form-status" id="adminSaveStatus" role="status" aria-live="polite"></p>
+
+      <p class="admin-divider">Registrar lectura de pH y CE</p>
+      <p style="font-size:12.5px; color:var(--ink-soft); line-height:1.55;">Cada lectura queda fechada y pasa a mostrarse en la sección Datos como última sincronización real.</p>
+      <div class="admin-field-group" style="margin-top:12px;">
+        <label class="form-field">
+          <span>Módulo</span>
+          <select id="teleModulo" class="trace-select"></select>
+        </label>
+        <div class="admin-grid-2">
+          <label class="form-field">
+            <span>pH</span>
+            <input type="number" id="telePh" min="0" max="14" step="0.1" placeholder="Ej. 6.0">
+          </label>
+          <label class="form-field">
+            <span>CE (mS/cm)</span>
+            <input type="number" id="teleCe" min="0" step="0.01" placeholder="Ej. 1.5">
+          </label>
+        </div>
+        <label class="form-field">
+          <span>Observación (opcional)</span>
+          <input type="text" id="teleNota" maxlength="180" placeholder="Ej. Ajuste de solución tras recirculación">
+        </label>
+      </div>
+      <button type="button" class="btn btn-ghost" id="teleSaveBtn" style="margin-top:14px; width:100%; justify-content:center;">Registrar lectura</button>
+      <p class="form-status" id="teleStatus" role="status" aria-live="polite"></p>
+
+      <div class="admin-session">
+        <span id="adminWho"></span>
+        <button type="button" id="adminLogoutBtn">Cerrar sesión</button>
+      </div>
     </div>
   </div>
 </div>
@@ -2714,6 +2801,8 @@
   </div>
 </footer>
 
+<script src="/assets/js/supabase.js"></script>
+<script src="/assets/js/ciehs-data.js"></script>
 <script src="/assets/js/qrcode.js"></script>
 <script>
 (function(){
@@ -3259,199 +3348,420 @@
 })();
 </script>
 
-<!-- ============ PANEL DE ADMINISTRACIÓN: PIN + CMS en localStorage ============ -->
+<!-- ============ PORTAL CONECTADO A SUPABASE (esquema ciehs) ============ -->
 <script>
 (function(){
-  var ADMIN_KEY = 'ciehs_admin_v1';
+  var D = window.CIEHSData;
 
-  // El PIN ya no aparece escrito en el codigo: se guarda su huella SHA-256 con
-  // un prefijo fijo. Esto es FRICCION DELIBERADA, NO SEGURIDAD: quien abra las
-  // herramientas del navegador puede saltarse la comprobacion igual que antes,
-  // porque toda validacion hecha en el cliente es evitable por definicion.
-  // Lo unico que evita es que la clave quede legible a simple vista en el
-  // codigo fuente publico. La proteccion real llega al conectar un backend con
-  // autenticacion y politicas de acceso; hasta entonces, el panel no debe
-  // usarse para nada sensible.
-  var ADMIN_PIN_SALT = 'ciehs:';
-  var ADMIN_PIN_SHA256 = '79a13377c4fb43d0f18c681cf98299ee557805ee634a6f0ffa16482f0fb99060';
+  var el = function(id){ return document.getElementById(id); };
+  var avisoBanner = el('avisoBanner');
+  var avisoText   = el('avisoBannerText');
+  var avisoClose  = el('avisoCloseBtn');
+  var syncLabel   = el('datosSyncLabel');
+  var teleEstado  = el('telemetriaEstado');
+  var teleLista   = el('telemetriaLista');
 
-  function sha256Hex(text){
-    var subtle = (window.crypto && window.crypto.subtle) || null;
-    if(!subtle || !window.TextEncoder){
-      return Promise.reject(new Error('sin-webcrypto'));
-    }
-    return subtle.digest('SHA-256', new TextEncoder().encode(text)).then(function(buf){
-      var out = '';
-      new Uint8Array(buf).forEach(function(b){ out += b.toString(16).padStart(2, '0'); });
-      return out;
+  var datos = null;      // ultimo snapshot cargado de la base
+  var modulosPorId = {};
+
+  /* ------------------------------------------------------------------
+     Mejora progresiva: si la base no responde, el HTML que ya vino con
+     la pagina se queda tal cual. El portal nunca depende de la red para
+     poder leerse, que es lo que hace falta en el laboratorio.
+     ------------------------------------------------------------------ */
+
+  function fmtFecha(d){
+    return d.toLocaleString('es-PE', {
+      day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'
     });
   }
-  var DEFAULTS = { heroTitle:'', heroSub:'', kpiCosechaKg:'', kpiAhorroPct:'', aviso:'', avisoActive:false };
 
-  function loadAdminData(){
-    try{
-      var saved = JSON.parse(localStorage.getItem(ADMIN_KEY) || 'null');
-      if(saved && typeof saved === 'object'){
-        var merged = {}; for(var k in DEFAULTS){ merged[k] = (k in saved) ? saved[k] : DEFAULTS[k]; }
-        return merged;
-      }
-    }catch(e){}
-    return Object.assign({}, DEFAULTS);
+  function esc(t){
+    return String(t == null ? '' : t)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
-  function saveAdminData(data){ try{ localStorage.setItem(ADMIN_KEY, JSON.stringify(data)); }catch(e){} }
 
-  function avisoDismissed(){
+  /* ---------------------- portada, KPIs y aviso ---------------------- */
+
+  function pintarConfig(c){
+    if(!c) return;
+    if(c.hero_title){
+      var t = el('heroTitleMain');
+      if(t) t.textContent = c.hero_title;
+    }
+    if(c.hero_subtitle){
+      var sEl = el('heroSub');
+      if(sEl) sEl.textContent = c.hero_subtitle;
+    }
+    if(c.kpi_ahorro_pct !== null && c.kpi_ahorro_pct !== undefined){
+      document.querySelectorAll('.js-kpi-ahorro').forEach(function(x){
+        x.innerHTML = esc(c.kpi_ahorro_pct) + '<small>%</small>';
+      });
+      document.querySelectorAll('.js-kpi-ahorro-neg').forEach(function(x){
+        x.innerHTML = '-' + esc(c.kpi_ahorro_pct) + '<small>%</small>';
+      });
+    }
+    if(c.kpi_cosecha_kg !== null && c.kpi_cosecha_kg !== undefined){
+      var kg = Number(c.kpi_cosecha_kg);
+      var txt = isNaN(kg) ? esc(c.kpi_cosecha_kg) : String(kg % 1 === 0 ? kg.toFixed(0) : kg);
+      document.querySelectorAll('.js-kpi-cosecha').forEach(function(x){
+        x.innerHTML = txt + '<small>&nbsp;kg</small>';
+      });
+    }
+    pintarAviso(c);
+  }
+
+  function avisoDescartado(){
     try{ return sessionStorage.getItem('ciehs_aviso_dismissed') === '1'; }catch(e){ return false; }
   }
 
-  function applyAdminData(data){
-    var titleEl = document.getElementById('heroTitleMain');
-    if(titleEl && data.heroTitle) titleEl.textContent = data.heroTitle;
-    var subEl = document.getElementById('heroSub');
-    if(subEl && data.heroSub) subEl.textContent = data.heroSub;
-
-    if(data.kpiAhorroPct !== '' && data.kpiAhorroPct !== null && data.kpiAhorroPct !== undefined){
-      document.querySelectorAll('.js-kpi-ahorro').forEach(function(el){ el.innerHTML = data.kpiAhorroPct + '<small>%</small>'; });
-      document.querySelectorAll('.js-kpi-ahorro-neg').forEach(function(el){ el.innerHTML = '-' + data.kpiAhorroPct + '<small>%</small>'; });
+  function pintarAviso(c){
+    if(!avisoBanner || !avisoText) return;
+    var hay = c && c.aviso_active && c.aviso;
+    if(hay && !avisoDescartado()){
+      avisoText.textContent = c.aviso;
+      avisoBanner.hidden = false;
+    }else{
+      avisoBanner.hidden = true;
     }
-    if(data.kpiCosechaKg !== '' && data.kpiCosechaKg !== null && data.kpiCosechaKg !== undefined){
-      document.querySelectorAll('.js-kpi-cosecha').forEach(function(el){ el.innerHTML = data.kpiCosechaKg + '<small>&nbsp;kg</small>'; });
+  }
+
+  if(avisoClose && avisoBanner){
+    avisoClose.addEventListener('click', function(){
+      avisoBanner.hidden = true;
+      try{ sessionStorage.setItem('ciehs_aviso_dismissed','1'); }catch(e){}
+    });
+  }
+
+  /* ------------------------- rangos por modulo ------------------------ */
+
+  // El eje del grafico de pH va de 5.0 a 7.0 y el de CE de 1.0 a 2.5;
+  // convertimos el rango de cada modulo a porcentaje sobre esa misma escala.
+  // Un rango de 6 debe leerse "6.0": en una escala de pH la decima importa
+  // y la base la guarda, aunque JSON la entregue como numero pelado.
+  function dec1(v){ var n = Number(v); return isNaN(n) ? esc(v) : n.toFixed(1); }
+
+  function barra(min, max, ejeMin, ejeMax){
+    var span = ejeMax - ejeMin;
+    var izq = Math.max(0, Math.min(100, ((min - ejeMin) / span) * 100));
+    var anc = Math.max(1.5, Math.min(100 - izq, ((max - min) / span) * 100));
+    return { left: izq, width: anc };
+  }
+
+  function pintarRangosPh(modulos){
+    var cont = el('phModulosChart');
+    if(!cont || !modulos.length) return;
+    var filas = modulos.filter(function(m){ return m.ph_min != null && m.ph_max != null; });
+    if(!filas.length) return;
+    cont.innerHTML = filas.map(function(m){
+      var b = barra(Number(m.ph_min), Number(m.ph_max), 5, 7);
+      return '<div class="range-row">'
+        + '<span class="range-label mono">' + esc(m.code) + '</span>'
+        + '<div class="range-track"><div class="range-fill" style="left:' + b.left.toFixed(1) + '%; width:' + b.width.toFixed(1) + '%;"></div></div>'
+        + '<span class="range-value mono">' + dec1(m.ph_min) + '–' + dec1(m.ph_max) + '</span>'
+        + '</div>';
+    }).join('');
+  }
+
+  /* --------------------------- telemetria ---------------------------- */
+
+  function fuera(valor, min, max){
+    if(valor == null || min == null || max == null) return false;
+    return Number(valor) < Number(min) || Number(valor) > Number(max);
+  }
+
+  function pintarTelemetria(){
+    if(!teleLista || !teleEstado) return;
+
+    if(!D || !D.conectado){
+      teleEstado.textContent = 'sin conexión';
+      teleLista.innerHTML = '<p class="tele-empty">No se pudo consultar el registro de lecturas. '
+        + 'Se muestran los rangos de referencia que trae el portal.</p>';
+      return;
     }
 
-    var avisoEl = document.getElementById('avisoBanner');
-    var avisoTextEl = document.getElementById('avisoBannerText');
-    if(avisoEl && avisoTextEl){
-      if(data.avisoActive && data.aviso && data.aviso.trim() && !avisoDismissed()){
-        avisoTextEl.textContent = data.aviso.trim();
-        avisoEl.hidden = false;
-      } else {
-        avisoEl.hidden = true;
+    var lecturas = (datos && datos.lecturas) || [];
+    if(!lecturas.length){
+      teleEstado.textContent = '0 lecturas';
+      // Estado vacio honesto: no se inventan mediciones que nadie ha tomado.
+      teleLista.innerHTML = '<p class="tele-empty">Todavía no hay lecturas registradas. '
+        + 'En cuanto el equipo anote la primera medición de pH y CE desde el panel de administración, '
+        + 'aparecerá aquí con su fecha.</p>';
+      return;
+    }
+
+    var ultimas = D.ultimaLecturaPorModulo(lecturas);
+    var ids = Object.keys(ultimas);
+    teleEstado.textContent = lecturas.length + ' lectura' + (lecturas.length === 1 ? '' : 's') + ' registradas';
+    teleLista.innerHTML = ids.map(function(id){
+      var l = ultimas[id];
+      var m = modulosPorId[id] || {};
+      var d = new Date(l.measured_at);
+      var phFuera = fuera(l.ph, m.ph_min, m.ph_max);
+      var ceFuera = fuera(l.ce, m.ce_min, m.ce_max);
+      return '<div class="tele-row">'
+        + '<span class="m">' + esc(m.code || '—') + '</span>'
+        + '<span class="f">' + esc(isNaN(d.getTime()) ? '—' : fmtFecha(d)) + '</span>'
+        + '<span class="v' + (phFuera ? ' fuera' : '') + '">' + (l.ph == null ? '—' : 'pH ' + esc(l.ph)) + '</span>'
+        + '<span class="v' + (ceFuera ? ' fuera' : '') + '">' + (l.ce == null ? '—' : esc(l.ce) + ' <small>mS/cm</small>') + '</span>'
+        + '</div>';
+    }).join('');
+  }
+
+  function pintarSync(){
+    if(!syncLabel) return;
+    if(!D || !D.conectado){
+      syncLabel.textContent = 'Sin conexión · valores de referencia publicados';
+      return;
+    }
+    var f = D.ultimaSincronizacion(datos);
+    syncLabel.textContent = f
+      ? 'Última sincronización: ' + fmtFecha(f)
+      : 'Sin lecturas registradas todavía';
+  }
+
+  /* ------------------------------ QR --------------------------------- */
+
+  function pintarQR(qr){
+    if(!qr || !qr.length) return;
+    qr.forEach(function(q){
+      var tarjeta = document.querySelector('[data-qr-card="' + q.target_route + '"]');
+      if(!tarjeta) return;
+      var h = tarjeta.querySelector('h4');
+      var p = tarjeta.querySelector('p');
+      if(h && q.title) h.textContent = q.title;
+      if(p && q.description){
+        p.textContent = q.description + (q.location_hint ? ' — ' + q.location_hint : '');
       }
-    }
-  }
-
-  var adminData = loadAdminData();
-  // "Última sincronización local" y no "tiempo real": lo único que puede haber
-  // cambiado son los valores que alguien guardó desde el panel, y viven solo en
-  // el localStorage de este navegador.
-  function renderSyncLabel(data){
-    var el = document.getElementById('datosSyncLabel');
-    if(!el) return;
-    if(!data || !data.savedAt){
-      el.textContent = 'Sin sincronización local · valores de referencia publicados';
-      return;
-    }
-    var d = new Date(data.savedAt);
-    if(isNaN(d.getTime())){
-      el.textContent = 'Sin sincronización local · valores de referencia publicados';
-      return;
-    }
-    var f = d.toLocaleString('es-PE', {
-      day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'
-    });
-    el.textContent = 'Última sincronización local: ' + f;
-  }
-
-  applyAdminData(adminData);
-  renderSyncLabel(adminData);
-
-  var avisoCloseBtn = document.getElementById('avisoCloseBtn');
-  if(avisoCloseBtn){
-    avisoCloseBtn.addEventListener('click', function(){
-      var el = document.getElementById('avisoBanner');
-      if(el) el.hidden = true;
-      try{ sessionStorage.setItem('ciehs_aviso_dismissed', '1'); }catch(e){}
     });
   }
 
-  var adminFab = document.getElementById('adminOpenBtn');
-  var adminModal = document.getElementById('adminModal');
-  if(!adminFab || !adminModal) return; // admin UI not present
+  /* -------------------------- investigaciones ------------------------- */
 
-  var adminBackdrop = document.getElementById('adminBackdrop');
-  var adminCloseBtn = document.getElementById('adminCloseBtn');
-  var adminPinStep = document.getElementById('adminPinStep');
-  var adminFormStep = document.getElementById('adminFormStep');
-  var adminPinInput = document.getElementById('adminPinInput');
-  var adminPinSubmit = document.getElementById('adminPinSubmit');
-  var adminPinError = document.getElementById('adminPinError');
-  var adminSaveBtn = document.getElementById('adminSaveBtn');
-  var adminSaveStatus = document.getElementById('adminSaveStatus');
+  function pintarInvestigaciones(inv){
+    if(!inv || !inv.length) return;
+    inv.forEach(function(i){
+      var card = document.querySelector('[data-inv-code="' + i.code + '"]');
+      if(!card) return;
+      var h = card.querySelector('h3');
+      if(h && i.title) h.textContent = i.title;
+    });
+  }
 
-  function openAdminModal(){
+  /* ------------------------------ carga ------------------------------- */
+
+  function refrescar(){
+    if(!D || !D.listo) return Promise.resolve();
+    return D.cargarPortal().then(function(res){
+      if(!res) { pintarSync(); pintarTelemetria(); return; }
+      datos = res;
+      modulosPorId = {};
+      res.modulos.forEach(function(m){ modulosPorId[m.id] = m; });
+      pintarConfig(res.config);
+      pintarRangosPh(res.modulos);
+      pintarQR(res.qr);
+      pintarInvestigaciones(res.investigaciones);
+      pintarTelemetria();
+      pintarSync();
+      llenarSelectorModulos(res.modulos);
+    });
+  }
+
+  /* =================== PANEL DE ADMINISTRACION =================== */
+
+  var adminModal   = el('adminModal');
+  var adminOpen    = el('adminOpenBtn');
+  var adminClose   = el('adminCloseBtn');
+  var adminBack    = el('adminBackdrop');
+  var loginStep    = el('adminPinStep');
+  var formStep     = el('adminFormStep');
+  var loginBtn     = el('adminPinSubmit');
+  var loginError   = el('adminPinError');
+  var connBox      = el('adminConn');
+  var whoBox       = el('adminWho');
+  var logoutBtn    = el('adminLogoutBtn');
+  var saveBtn      = el('adminSaveBtn');
+  var saveStatus   = el('adminSaveStatus');
+  var teleSaveBtn  = el('teleSaveBtn');
+  var teleStatus   = el('teleStatus');
+  var teleModulo   = el('teleModulo');
+
+  function llenarSelectorModulos(modulos){
+    if(!teleModulo) return;
+    teleModulo.innerHTML = (modulos || []).map(function(m){
+      return '<option value="' + esc(m.id) + '">' + esc(m.code) + ' · ' + esc(m.crop || m.name) + '</option>';
+    }).join('');
+  }
+
+  function mostrarConexion(){
+    if(!connBox) return;
+    if(!D || !D.listo){
+      connBox.className = 'admin-conn bad';
+      connBox.textContent = 'No se pudo cargar el cliente de la base de datos.';
+      return;
+    }
+    if(D.conectado){
+      connBox.className = 'admin-conn ok';
+      connBox.textContent = 'Conectado a la base del CIEHS · esquema ciehs';
+    }else{
+      connBox.className = 'admin-conn bad';
+      connBox.textContent = D.motivo || 'Sin conexión con la base del CIEHS.';
+    }
+  }
+
+  function abrirPanel(){
+    if(!adminModal) return;
     adminModal.hidden = false;
-    adminPinStep.hidden = false;
-    adminFormStep.hidden = true;
-    adminPinInput.value = '';
-    adminPinError.hidden = true;
-    if(adminSaveStatus) adminSaveStatus.textContent = '';
-    adminPinInput.focus();
+    document.body.style.overflow = 'hidden';
+    mostrarConexion();
+    if(loginError){ loginError.hidden = true; }
+    D.sesion().then(function(ses){
+      if(!ses) return false;
+      return D.esAdmin();
+    }).then(function(ok){
+      if(ok){ mostrarFormulario(); } else { mostrarLogin(); }
+    }).catch(function(){ mostrarLogin(); });
   }
-  function closeAdminModal(){ adminModal.hidden = true; }
 
-  adminFab.addEventListener('click', openAdminModal);
-  if(adminBackdrop) adminBackdrop.addEventListener('click', closeAdminModal);
-  if(adminCloseBtn) adminCloseBtn.addEventListener('click', closeAdminModal);
+  function cerrarPanel(){
+    if(!adminModal) return;
+    adminModal.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  function mostrarLogin(){
+    if(loginStep) loginStep.hidden = false;
+    if(formStep) formStep.hidden = true;
+  }
+
+  function mostrarFormulario(){
+    if(loginStep) loginStep.hidden = true;
+    if(formStep) formStep.hidden = false;
+    rellenarFormulario();
+    D.sesion().then(function(ses){
+      if(whoBox && ses && ses.user) whoBox.textContent = 'Sesión: ' + ses.user.email;
+    });
+  }
+
+  function rellenarFormulario(){
+    var c = (datos && datos.config) || {};
+    if(el('adminHeroTitle'))  el('adminHeroTitle').value  = c.hero_title || '';
+    if(el('adminHeroSub'))    el('adminHeroSub').value    = c.hero_subtitle || '';
+    if(el('adminKpiCosecha')) el('adminKpiCosecha').value = c.kpi_cosecha_kg != null ? c.kpi_cosecha_kg : '';
+    if(el('adminKpiAhorro'))  el('adminKpiAhorro').value  = c.kpi_ahorro_pct != null ? c.kpi_ahorro_pct : '';
+    if(el('adminAviso'))      el('adminAviso').value      = c.aviso || '';
+    if(el('adminAvisoActive'))el('adminAvisoActive').checked = !!c.aviso_active;
+    if(datos && datos.modulos) llenarSelectorModulos(datos.modulos);
+  }
+
+  if(adminOpen)  adminOpen.addEventListener('click', abrirPanel);
+  if(adminClose) adminClose.addEventListener('click', cerrarPanel);
+  if(adminBack)  adminBack.addEventListener('click', cerrarPanel);
   document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape' && !adminModal.hidden) closeAdminModal();
+    if(e.key === 'Escape' && adminModal && !adminModal.hidden) cerrarPanel();
   });
 
-  function fillAdminForm(){
-    var titleEl = document.getElementById('heroTitleMain');
-    var subEl = document.getElementById('heroSub');
-    document.getElementById('adminHeroTitle').value = adminData.heroTitle || (titleEl ? titleEl.textContent.trim() : '');
-    document.getElementById('adminHeroSub').value = adminData.heroSub || (subEl ? subEl.textContent.trim() : '');
-    document.getElementById('adminKpiCosecha').value = adminData.kpiCosechaKg !== '' ? adminData.kpiCosechaKg : 18;
-    document.getElementById('adminKpiAhorro').value = adminData.kpiAhorroPct !== '' ? adminData.kpiAhorroPct : 90;
-    document.getElementById('adminAviso').value = adminData.aviso || '';
-    document.getElementById('adminAvisoActive').checked = !!adminData.avisoActive;
+  function entrar(){
+    var email = (el('adminEmail') || {}).value;
+    var pass  = (el('adminPassword') || {}).value;
+    if(!email || !pass){
+      loginError.textContent = 'Escribe el correo y la contraseña.';
+      loginError.hidden = false;
+      return;
+    }
+    loginBtn.disabled = true;
+    loginError.hidden = true;
+    D.entrar(email.trim(), pass).then(function(){
+      loginBtn.disabled = false;
+      if(el('adminPassword')) el('adminPassword').value = '';
+      return refrescar().then(mostrarFormulario);
+    }).catch(function(e){
+      loginBtn.disabled = false;
+      var m = (e && e.message) || 'No se pudo iniciar sesión.';
+      if(/invalid login credentials/i.test(m)) m = 'Correo o contraseña incorrectos.';
+      loginError.textContent = m;
+      loginError.hidden = false;
+    });
   }
 
-  function checkPin(){
-    var entered = adminPinInput.value.trim();
-    if(!entered){ adminPinError.hidden = false; return; }
-    // Web Crypto exige contexto seguro (https o localhost). Si no esta
-    // disponible se dice por que, en vez de dejar el boton sin responder.
-    sha256Hex(ADMIN_PIN_SALT + entered).then(function(hex){
-      if(hex === ADMIN_PIN_SHA256){
-        adminPinError.hidden = true;
-        adminPinStep.hidden = true;
-        adminFormStep.hidden = false;
-        fillAdminForm();
-      } else {
-        adminPinError.textContent = 'PIN incorrecto. Inténtalo de nuevo.';
-        adminPinError.hidden = false;
+  if(loginBtn) loginBtn.addEventListener('click', entrar);
+  [el('adminEmail'), el('adminPassword')].forEach(function(inp){
+    if(!inp) return;
+    inp.addEventListener('keydown', function(e){
+      if(e.key === 'Enter'){ e.preventDefault(); entrar(); }
+    });
+  });
+
+  if(logoutBtn){
+    logoutBtn.addEventListener('click', function(){
+      D.salir().then(function(){ mostrarLogin(); });
+    });
+  }
+
+  if(saveBtn){
+    saveBtn.addEventListener('click', function(){
+      saveBtn.disabled = true;
+      saveStatus.classList.remove('error');
+      saveStatus.textContent = 'Guardando…';
+      D.guardarConfig({
+        heroTitle:    el('adminHeroTitle').value.trim(),
+        heroSub:      el('adminHeroSub').value.trim(),
+        kpiCosechaKg: el('adminKpiCosecha').value.trim(),
+        kpiAhorroPct: el('adminKpiAhorro').value.trim(),
+        aviso:        el('adminAviso').value.trim(),
+        avisoActive:  el('adminAvisoActive').checked
+      }).then(function(){
+        try{ sessionStorage.removeItem('ciehs_aviso_dismissed'); }catch(e){}
+        return refrescar();
+      }).then(function(){
+        saveBtn.disabled = false;
+        saveStatus.textContent = 'Cambios publicados para todo el portal.';
+      }).catch(function(e){
+        saveBtn.disabled = false;
+        saveStatus.classList.add('error');
+        saveStatus.textContent = 'No se pudo guardar: ' + ((e && e.message) || 'error desconocido');
+      });
+    });
+  }
+
+  if(teleSaveBtn){
+    teleSaveBtn.addEventListener('click', function(){
+      var ph = el('telePh').value.trim();
+      var ce = el('teleCe').value.trim();
+      if(!ph && !ce){
+        teleStatus.classList.add('error');
+        teleStatus.textContent = 'Anota al menos el pH o la CE.';
+        return;
       }
-    }).catch(function(){
-      adminPinError.textContent = 'El panel necesita abrirse por https (o en localhost) para verificar el acceso.';
-      adminPinError.hidden = false;
+      teleSaveBtn.disabled = true;
+      teleStatus.classList.remove('error');
+      teleStatus.textContent = 'Registrando…';
+      D.registrarLectura({
+        moduleId: teleModulo.value,
+        ph: ph, ce: ce,
+        notes: el('teleNota').value.trim()
+      }).then(function(){
+        el('telePh').value = ''; el('teleCe').value = ''; el('teleNota').value = '';
+        return refrescar();
+      }).then(function(){
+        teleSaveBtn.disabled = false;
+        teleStatus.textContent = 'Lectura registrada y publicada en la sección Datos.';
+      }).catch(function(e){
+        teleSaveBtn.disabled = false;
+        teleStatus.classList.add('error');
+        teleStatus.textContent = 'No se pudo registrar: ' + ((e && e.message) || 'error desconocido');
+      });
     });
   }
-  if(adminPinSubmit) adminPinSubmit.addEventListener('click', checkPin);
-  if(adminPinInput) adminPinInput.addEventListener('keydown', function(e){
-    if(e.key === 'Enter'){ e.preventDefault(); checkPin(); }
-  });
 
-  if(adminSaveBtn){
-    adminSaveBtn.addEventListener('click', function(){
-      adminData = {
-        savedAt: new Date().toISOString(),
-        heroTitle: document.getElementById('adminHeroTitle').value.trim(),
-        heroSub: document.getElementById('adminHeroSub').value.trim(),
-        kpiCosechaKg: document.getElementById('adminKpiCosecha').value.trim(),
-        kpiAhorroPct: document.getElementById('adminKpiAhorro').value.trim(),
-        aviso: document.getElementById('adminAviso').value.trim(),
-        avisoActive: document.getElementById('adminAvisoActive').checked
-      };
-      saveAdminData(adminData);
-      try{ sessionStorage.removeItem('ciehs_aviso_dismissed'); }catch(e){}
-      applyAdminData(adminData);
-      renderSyncLabel(adminData);
-      adminSaveStatus.classList.remove('error');
-      adminSaveStatus.textContent = 'Cambios guardados en este navegador.';
-      setTimeout(function(){ closeAdminModal(); }, 1100);
-    });
-  }
+  /* ------------------------------ arranque ---------------------------- */
+
+  refrescar();
+
+  window.CIEHS = window.CIEHS || {};
+  window.CIEHS.refrescarDatos = refrescar;
+  window.CIEHS.snapshot = function(){ return datos; };
 })();
 </script>
 
