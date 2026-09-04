@@ -584,10 +584,16 @@
       var b = barra(Number(m.ph_min), Number(m.ph_max), 5, 7);
       return '<div class="range-row">'
         + '<span class="range-label mono">' + esc(m.code) + '</span>'
-        + '<div class="range-track"><div class="range-fill" style="left:' + b.left.toFixed(1) + '%; width:' + b.width.toFixed(1) + '%;"></div></div>'
+        + '<div class="range-track"><div class="range-fill" data-left="' + b.left.toFixed(1) + '" data-width="' + b.width.toFixed(1) + '"></div></div>'
         + '<span class="range-value mono">' + dec1(m.ph_min) + '–' + dec1(m.ph_max) + '</span>'
         + '</div>';
     }).join('');
+    // La posicion de cada barra se aplica por CSSOM y no como atributo style:
+    // la CSP prohibe los atributos style, tambien los que llegan por innerHTML.
+    cont.querySelectorAll('.range-fill[data-left]').forEach(function(f){
+      f.style.left = f.getAttribute('data-left') + '%';
+      f.style.width = f.getAttribute('data-width') + '%';
+    });
   }
 
   /* --------------------------- telemetria ---------------------------- */

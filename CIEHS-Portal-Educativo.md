@@ -29,6 +29,7 @@ Arquitectura del portal. Índice general en [[CIEHS]]. Notas hermanas:
 | **Punto de entrada** | `index.html` — único. Había un `ciehs.html` byte a byte idéntico; se eliminó porque cada corrección había que hacerla dos veces |
 | **Stack** | HTML + CSS + JavaScript sin dependencias de compilación |
 | **Lógica** | `assets/js/ciehs-app.js` — **cero JavaScript en línea**, para que la CSP pueda prohibirlo |
+| **Estilos** | `assets/css/ciehs.css` — **cero CSS en línea**, ni bloque `<style>` ni atributos `style=` |
 | **Enrutado** | Por fragmento: `#/ruta`. Ver §2 |
 | **Datos** | Supabase, esquema `ciehs` → [[CIEHS-Backend-Supabase]] |
 | **Alojamiento** | Vercel, proyecto propio `ciehs`. Ver §4 |
@@ -106,9 +107,11 @@ Cabeceras en `vercel.json`: `Content-Security-Policy`, `Strict-Transport-Securit
 `.vercelignore` excluye `db/`, todos los `.md` y `.env*`: la documentación
 interna y las notas de esta bóveda no se publican.
 
-> [!danger] No añadir `<script>` inline
-> La CSP es `script-src 'self'`. Un bloque en línea nuevo **no se ejecutaría** y
-> el fallo sería silencioso. Toda la lógica va a `assets/js/ciehs-app.js`.
+> [!danger] No añadir nada en línea, ni script ni estilo
+> La CSP es `script-src 'self'` y `style-src 'self'` con `style-src-attr 'none'`.
+> Un `<script>`, un `<style>` o un atributo `style=` nuevo **no se aplicaría** y
+> el fallo sería silencioso. La lógica va a `assets/js/ciehs-app.js` y los
+> estilos a `assets/css/ciehs.css`; lo dinámico, por `element.style` desde JS.
 
 ---
 

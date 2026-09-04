@@ -102,7 +102,7 @@ Verificadas en producción:
 
 | Cabecera | Valor |
 |---|---|
-| `Content-Security-Policy` | `default-src 'self'` · **`script-src 'self'`** · `frame-ancestors 'none'` · `object-src 'none'` · `connect-src` solo al host Supabase del proyecto |
+| `Content-Security-Policy` | `default-src 'self'` · **`script-src 'self'`** · **`style-src 'self'`** · **`style-src-attr 'none'`** · `frame-ancestors 'none'` · `object-src 'none'` · `connect-src` solo al host Supabase del proyecto |
 | `Strict-Transport-Security` | `max-age=63072000; includeSubDomains; preload` |
 | `Cross-Origin-Opener-Policy` | `same-origin` |
 | `X-Frame-Options` | `DENY` |
@@ -111,11 +111,26 @@ Verificadas en producción:
 | `Referrer-Policy` | `strict-origin-when-cross-origin` |
 | `Permissions-Policy` | cámara, micrófono y geolocalización denegados |
 
-> [!warning] Lo que queda de `'unsafe-inline'`
-> Sigue en **`style-src`**, porque el HTML usa atributos `style=` en línea.
-> Es un riesgo mucho menor que el de `script-src` (permite alterar apariencia,
-> no ejecutar código), pero no es cero: habilita ataques de exfiltración por
-> CSS. Eliminarlo exige retirar todos los `style=` del maquetado.
+> [!success] Sin `'unsafe-inline'` en ninguna directiva
+> También se retiró de `style-src`, que era el último resto. Hizo falta:
+> 1. Sacar el bloque `<style>` de 105 KB a `assets/css/ciehs.css`.
+> 2. Convertir los **97 atributos `style=`** del maquetado en **90 clases
+>    atómicas** (una por declaración `propiedad:valor`, reutilizadas donde se
+>    repetían). Llevan `!important` porque reproducen el comportamiento del
+>    atributo que sustituyen: un override puntual que gana al componente.
+> 3. Sustituir los **tres `style=` que generaba el JavaScript** dentro de
+>    `innerHTML` por CSSOM. Ese detalle es fácil de pasar por alto: un
+>    `style=` insertado con `innerHTML` lo parsea el navegador y la política
+>    lo bloquea igual que si estuviera escrito en el HTML.
+>
+> `style-src-attr 'none'` cierra la puerta de forma explícita. Manipular
+> `element.style` desde JavaScript **no** está restringido por CSP: es CSSOM,
+> no un atributo, y por eso el 3D de la Arena y las barras de rango siguen
+> funcionando.
+>
+> **Verificación:** se capturó la huella de 20 propiedades computadas de los
+> 191 elementos afectados antes del cambio y se comparó después.
+> **Cero diferencias.** Ninguna violación de CSP en las 13 rutas ni en la Arena.
 
 ---
 
@@ -206,6 +221,9 @@ sin acordarlo.
       (`securitypolicyviolation` en consola).
 - [ ] **Ningún `<script>` inline nuevo en `index.html`**: rompería la CSP
       estricta en silencio. La lógica va a `assets/js/ciehs-app.js`.
+- [ ] **Ningún `<style>` ni atributo `style=` nuevo**, tampoco dentro de un
+      `innerHTML`. Los estilos van a `assets/css/ciehs.css`; lo dinámico, por
+      `element.style` desde JavaScript.
 - [ ] Que ningún documento interno responda 200 (`db/`, `*.md`, `.env*`).
 - [ ] Que las consultas anónimas pidan **columnas explícitas** donde haya
       columnas vetadas — un `select=*` nuevo rompería la sección entera.

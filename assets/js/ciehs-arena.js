@@ -842,7 +842,7 @@
       +   '<span class="ar-vidas" aria-label="Vidas restantes">' + repetir('◆', partida.vidas) + repetir('◇', partida.vidasMax - partida.vidas) + '</span>'
       +   '<span class="ar-puntos"><b>' + partida.puntos + '</b> pts</span>'
       + '</div></header>'
-      + '<div class="ar-progreso"><span style="width:' + ((partida.i)/partida.retos.length*100) + '%"></span></div>';
+      + '<div class="ar-progreso"><span></span></div>';
 
     var meta =
       '<div class="ar-meta">'
@@ -866,6 +866,9 @@
       +   '<div class="ar-cuerpo" id="arCuerpo"></div>'
       +   '<p class="ar-feedback" id="arFeedback" hidden></p>'
       + '</div>';
+
+    var barraProg = capa.querySelector('.ar-progreso span');
+    if(barraProg) barraProg.style.width = (partida.i / partida.retos.length * 100) + '%';
 
     montarCuerpo(r);
     // Entrada escalonada: las opciones aparecen una tras otra, no de golpe.
@@ -1184,8 +1187,8 @@
             : '<span class="ar-nivel-pie ar-pie-bloq"><svg class="ar-mini" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8.2 10.5V7.8a3.8 3.8 0 0 1 7.6 0v2.7"/></svg> ' + esc(bl.texto) + '</span>')
         : '<span class="ar-nivel-pie">' + n + ' retos · récord ' + mejor + ' pts'
           + (l.expedicion ? ' · 1 intento al día' : '') + '</span>';
-      return '<button type="button" class="' + clases + '" data-nivel="' + l.id + '"'
-           + (bl ? ' disabled aria-disabled="true"' : '') + ' style="--i:' + idx + '">'
+      return '<button type="button" class="' + clases + '" data-nivel="' + l.id + '" data-i="' + idx + '"'
+           + (bl ? ' disabled aria-disabled="true"' : '') + '>'
            + '<span class="ar-nivel-icono" aria-hidden="true">' + icono(l.icono) + '</span>'
            + (l.expedicion ? '<span class="ar-nivel-tag">Expedición</span>' : '')
            + (progreso.sellos[l.id] ? '<span class="ar-nivel-sello" title="Expedición superada">' + icono('sello') + '</span>' : '')
@@ -1212,6 +1215,9 @@
       + '</div>';
 
     capa.querySelectorAll('[data-nivel]').forEach(function(b){
+      // El retardo escalonado se aplica por CSSOM: la CSP no permite atributos
+      // style, ni siquiera los que llegan dentro de innerHTML.
+      b.style.setProperty('--i', b.getAttribute('data-i') || '0');
       if(b.disabled) return;
       b.addEventListener('click', function(){ nuevaPartida(b.getAttribute('data-nivel')); });
     });
