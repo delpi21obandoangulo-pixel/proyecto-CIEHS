@@ -71,6 +71,7 @@ Inventario real, verificado en el código y no supuesto:
 |---|---|---|
 | Progreso del Pasaporte (`ciehs_pasaporte_v1`) | `localStorage` | **No** |
 | Progreso de minijuegos (`ciehs_minijuegos_v1`) | `localStorage` | **No** |
+| Progreso de la Arena (`ciehs_arena_v1`) | `localStorage` | **No** |
 | Aviso cerrado (`ciehs_aviso_dismissed`) | `sessionStorage` | **No** |
 | Sesión de administración (`ciehs-auth`) | `localStorage` del coordinador | Sí, a Supabase |
 | Contenido y mediciones | Base de datos `ciehs` | Público, sin datos personales |
@@ -127,4 +128,5 @@ obstáculo.
 - [[CIEHS]] — índice general.
 - [[CIEHS-Auditoria-Seguridad-Auth]] — riesgos y hallazgos de seguridad.
 - [[CIEHS-Identidad-Visual]] — qué imágenes existen hoy en el portal.
+- [[CIEHS-Arena-Juego]] — qué guarda el juego en el navegador.
 - [[CIEHS-Portal-Educativo]] — dónde vive la página de privacidad.

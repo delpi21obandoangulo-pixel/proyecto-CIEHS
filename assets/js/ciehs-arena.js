@@ -29,23 +29,54 @@
   // se plantean como un desafío excepcional, no como un curso más. Una tirada al
   // día, una sola vida y puntuación doble.
   var NIVELES = [
-    { id:'inicial',    nombre:'Inicial',    desc:'Explora, escucha y descubre',           icono:'🌱' },
-    { id:'primaria',   nombre:'Primaria',   desc:'Observación y primeras medidas',        icono:'🔍' },
-    { id:'secundaria', nombre:'Secundaria', desc:'Variables y parámetros del cultivo',    icono:'⚗️' },
+    { id:'inicial',    nombre:'Inicial',    desc:'Explora, escucha y descubre',        icono:'brote' },
+    { id:'primaria',   nombre:'Primaria',   desc:'Observación y primeras medidas',     icono:'lente' },
+    { id:'secundaria', nombre:'Secundaria', desc:'Variables y parámetros del cultivo', icono:'matraz' },
     { id:'preuniversitario', nombre:'Expedición Preuniversitaria',
-      desc:'Cálculo, proporciones y diseño experimental', icono:'🗝️', expedicion:true,
+      desc:'Cálculo, proporciones y diseño experimental', icono:'umbral', expedicion:true,
       requiere:{ nivel:'secundaria', retos:12 },
       lema:'Más allá del aula' },
     { id:'universitario', nombre:'Expedición Universitaria',
-      desc:'Análisis, estadística y fisiología vegetal', icono:'👑', expedicion:true,
+      desc:'Análisis, estadística y fisiología vegetal', icono:'corona', expedicion:true,
       requiere:{ nivel:'preuniversitario', retos:10 },
       lema:'El último umbral' }
   ];
+  // Marcas vectoriales en lugar de emoji. El emoji cambia de dibujo en cada
+  // sistema operativo y en las expediciones desentonaba por completo.
+  var ICONOS = {
+    brote:  '<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">'
+          + '<path d="M20 34V16"/><path d="M20 22c-6 0-9-4-9-9 5-1 9 3 9 9Z" fill="currentColor" fill-opacity=".18"/>'
+          + '<path d="M20 19c6-1 9-5 8-10-5 0-9 4-8 10Z" fill="currentColor" fill-opacity=".28"/></svg>',
+    lente:  '<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">'
+          + '<circle cx="17" cy="17" r="10"/><path d="M25 25l9 9"/>'
+          + '<path d="M13 17a4 4 0 0 1 4-4" opacity=".55"/></svg>',
+    matraz: '<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">'
+          + '<path d="M16 5v11L7 31a3 3 0 0 0 2.6 4.5h20.8A3 3 0 0 0 33 31l-9-15V5"/>'
+          + '<path d="M13 5h14"/><path d="M11.5 25h17" opacity=".6"/>'
+          + '<circle cx="17" cy="29" r="1.6" fill="currentColor" stroke="none"/>'
+          + '<circle cx="23" cy="31" r="1.1" fill="currentColor" stroke="none"/></svg>',
+    umbral: '<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">'
+          + '<path d="M20 3 34 11v18L20 37 6 29V11Z"/>'
+          + '<path d="M20 10 28 14.6v9.8L20 29l-8-4.6v-9.8Z" opacity=".55"/>'
+          + '<circle cx="20" cy="20" r="2.6" fill="currentColor" stroke="none"/></svg>',
+    corona: '<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">'
+          + '<path d="M6 28 8 12l7 6 5-9 5 9 7-6 2 16Z" fill="currentColor" fill-opacity=".14"/>'
+          + '<path d="M6 32h28" opacity=".7"/>'
+          + '<circle cx="20" cy="22" r="1.8" fill="currentColor" stroke="none"/></svg>',
+    sello:  '<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.4">'
+          + '<circle cx="20" cy="20" r="14" stroke-dasharray="3 4" opacity=".7"/>'
+          + '<circle cx="20" cy="20" r="9"/>'
+          + '<path d="m20 14 1.9 4.1 4.1.5-3 2.9.8 4.5L20 24l-3.8 2 .8-4.5-3-2.9 4.1-.5Z" fill="currentColor" stroke="none"/></svg>'
+  };
+  function icono(id){ return ICONOS[id] || ''; }
+
   var TIEMPO_EXTRA_NIVEL = { inicial: 1.7 };   // los más pequeños necesitan margen
   var VIDAS_EXPEDICION = 1;
   var RETOS_EXPEDICION = 10;
   var MULTIPLICADOR_EXPEDICION = 2;
   var TEMAS = {
+    umbral:      { nombre:'El umbral',               acento:'#c084fc' },
+    santuario:   { nombre:'Santuario de datos',      acento:'#f0c876' },
     pociones:    { nombre:'Laboratorio de alquimia', acento:'#a855f7' },
     abismo:      { nombre:'Abismo hídrico',          acento:'#38bdf8' },
     invernadero: { nombre:'Invernadero',             acento:'#34d399' },
@@ -286,6 +317,79 @@
       ctx.globalAlpha = 1;
     },
 
+    /* -------- ambientaciones exclusivas de expedición --------
+       Más sobrias y más lentas que las de los niveles básicos: aquí manda
+       la luz volumétrica, no el confeti. */
+
+    // Rayos de luz atravesando una cámara en penumbra, con polvo suspendido.
+    umbral: function(w, h, t){
+      var cx = w*0.5, cy = h*0.34;
+      // haces volumétricos que barren muy despacio
+      for(var i=0;i<7;i++){
+        var ang = -Math.PI/2 + (i-3)*0.30 + Math.sin(t/5200 + i)*0.07;
+        var largo = Math.max(w,h)*1.5;
+        var ancho = 46 + Math.sin(t/2300 + i*1.7)*22;
+        var g = ctx.createLinearGradient(cx, cy, cx+Math.cos(ang)*largo, cy+Math.sin(ang)*largo);
+        g.addColorStop(0, 'rgba(192,132,252,0.30)');
+        g.addColorStop(0.45, 'rgba(192,132,252,0.09)');
+        g.addColorStop(1, 'rgba(192,132,252,0)');
+        ctx.save(); ctx.translate(cx, cy); ctx.rotate(ang + Math.PI/2);
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.moveTo(-ancho*0.16, 0); ctx.lineTo(ancho*0.16, 0);
+        ctx.lineTo(ancho, largo); ctx.lineTo(-ancho, largo);
+        ctx.closePath(); ctx.fill(); ctx.restore();
+      }
+      // polvo en suspensión, muy lento
+      for(var p=0;p<80;p++){
+        var f = ((t/16000) + p*0.0125) % 1;
+        var px = ((p*173) % w) + Math.sin(t/3000 + p)*26;
+        var py = h - f*(h+120);
+        ctx.globalAlpha = 0.30 * Math.sin(f*Math.PI);
+        ctx.fillStyle = '#e9d5ff';
+        ctx.beginPath(); ctx.arc(px, py, 0.9 + (p%3)*0.7, 0, 6.283); ctx.fill();
+      }
+      // anillo del portal, latiendo
+      var r0 = Math.min(w,h)*0.19 + Math.sin(t/1500)*7;
+      ctx.globalAlpha = 0.5; ctx.strokeStyle = '#c084fc'; ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.arc(cx, cy, r0, 0, 6.283); ctx.stroke();
+      ctx.globalAlpha = 0.22;
+      ctx.beginPath(); ctx.arc(cx, cy, r0*1.35 + Math.sin(t/1900)*10, 0, 6.283); ctx.stroke();
+      ctx.globalAlpha = 1;
+    },
+
+    // Constelación de nodos que se enlazan al pasar cerca, en tono ámbar.
+    santuario: function(w, h, t){
+      var n = 34, nodos = [];
+      for(var i=0;i<n;i++){
+        var a = (i*2.399) + t/9000;
+        var rad = (Math.min(w,h)*0.12) + ((i*97)%Math.min(w,h))*0.42;
+        nodos.push({
+          x: w*0.5 + Math.cos(a)*rad*0.9,
+          y: h*0.5 + Math.sin(a)*rad*0.55
+        });
+      }
+      ctx.lineWidth = 1;
+      for(var i2=0;i2<n;i2++){
+        for(var j=i2+1;j<n;j++){
+          var dx = nodos[i2].x-nodos[j].x, dy = nodos[i2].y-nodos[j].y;
+          var d = Math.sqrt(dx*dx+dy*dy);
+          if(d < 165){
+            ctx.globalAlpha = 0.24*(1 - d/165);
+            ctx.strokeStyle = '#f0c876';
+            ctx.beginPath(); ctx.moveTo(nodos[i2].x,nodos[i2].y); ctx.lineTo(nodos[j].x,nodos[j].y); ctx.stroke();
+          }
+        }
+      }
+      for(var k=0;k<n;k++){
+        var brillo = 0.4 + 0.6*Math.abs(Math.sin(t/1400 + k));
+        ctx.globalAlpha = 0.65*brillo;
+        ctx.fillStyle = '#fde68a';
+        ctx.beginPath(); ctx.arc(nodos[k].x, nodos[k].y, 1.6 + brillo*1.9, 0, 6.283); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    },
+
     // Circuitos y pulsos recorriendo pistas, como los sensores del módulo.
     taller: function(w, h, t){
       ctx.globalAlpha = 0.26; ctx.strokeStyle = '#fb923c'; ctx.lineWidth = 2;
@@ -386,25 +490,87 @@
     if(!chispasAnim) bucleChispas();
   }
 
+  /* ---------------- explosión de fallo ----------------
+     Onda de choque que se expande, esquirlas con rotación propia y un
+     destello que se apaga. Comparte canvas y bucle con las chispas para no
+     abrir un segundo requestAnimationFrame. */
+  var ondas = [];
+
+  function explotar(x, y){
+    if(reduceMotion) return;
+    prepararChispas();
+    var dpr = Math.min(global.devicePixelRatio || 1, 2);
+    chispasCanvas.width = raiz.clientWidth * dpr;
+    chispasCanvas.height = raiz.clientHeight * dpr;
+    chispasCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    ondas.push({ x:x, y:y, r:6, vida:1 });
+
+    // Esquirlas: fragmentos alargados que giran mientras se alejan.
+    for(var i=0;i<46;i++){
+      var ang = Math.random() * 6.283;
+      var vel = 3.5 + Math.random()*11;
+      chispas.push({
+        x:x, y:y,
+        vx:Math.cos(ang)*vel, vy:Math.sin(ang)*vel,
+        vida:1, decae:0.013 + Math.random()*0.012,
+        r:1.4 + Math.random()*2.6,
+        largo: 5 + Math.random()*16,
+        giro: Math.random()*6.283,
+        vgiro: (Math.random()-0.5)*0.34,
+        color: i % 4 === 0 ? '#ffffff' : (i % 3 === 0 ? '#fca5a5' : '#fb7185'),
+        esquirla: true
+      });
+    }
+    if(!chispasAnim) bucleChispas();
+  }
+
   function bucleChispas(){
     chispasAnim = requestAnimationFrame(bucleChispas);
     var w = chispasCanvas.width, h = chispasCanvas.height;
     chispasCtx.clearRect(0, 0, w, h);
+
+    // ondas de choque: dos anillos que se expanden y adelgazan
+    for(var o = ondas.length - 1; o >= 0; o--){
+      var on = ondas[o];
+      on.r += 16 + on.r * 0.055;      // se abre acelerando
+      on.vida -= 0.026;
+      if(on.vida <= 0){ ondas.splice(o,1); continue; }
+      chispasCtx.globalAlpha = Math.max(0, on.vida * 0.85);
+      chispasCtx.strokeStyle = '#fb7185';
+      chispasCtx.lineWidth = Math.max(0.6, 9 * on.vida);
+      chispasCtx.beginPath(); chispasCtx.arc(on.x, on.y, on.r, 0, 6.283); chispasCtx.stroke();
+      chispasCtx.globalAlpha = Math.max(0, on.vida * 0.45);
+      chispasCtx.strokeStyle = '#ffffff';
+      chispasCtx.lineWidth = Math.max(0.4, 3 * on.vida);
+      chispasCtx.beginPath(); chispasCtx.arc(on.x, on.y, on.r * 0.72, 0, 6.283); chispasCtx.stroke();
+    }
+
     for(var i = chispas.length - 1; i >= 0; i--){
       var p = chispas[i];
       p.x += p.vx; p.y += p.vy;
       p.vy += 0.16;            // gravedad
       p.vx *= 0.985;
-      p.vida -= 0.019;
+      p.vida -= (p.decae || 0.019);
       if(p.vida <= 0){ chispas.splice(i,1); continue; }
       chispasCtx.globalAlpha = Math.max(0, p.vida);
-      chispasCtx.fillStyle = p.color;
-      chispasCtx.beginPath();
-      chispasCtx.arc(p.x, p.y, p.r * p.vida, 0, 6.283);
-      chispasCtx.fill();
+      if(p.esquirla){
+        p.giro += p.vgiro;
+        chispasCtx.save();
+        chispasCtx.translate(p.x, p.y);
+        chispasCtx.rotate(p.giro);
+        chispasCtx.fillStyle = p.color;
+        chispasCtx.fillRect(-p.largo*p.vida/2, -p.r/2, p.largo*p.vida, p.r);
+        chispasCtx.restore();
+      } else {
+        chispasCtx.fillStyle = p.color;
+        chispasCtx.beginPath();
+        chispasCtx.arc(p.x, p.y, p.r * p.vida, 0, 6.283);
+        chispasCtx.fill();
+      }
     }
     chispasCtx.globalAlpha = 1;
-    if(!chispas.length){ cancelAnimationFrame(chispasAnim); chispasAnim = null; }
+    if(!chispas.length && !ondas.length){ cancelAnimationFrame(chispasAnim); chispasAnim = null; }
   }
 
   /* Contador que sube en lugar de saltar: la cifra final llega en ~600 ms. */
@@ -445,7 +611,10 @@
     acierto: function(){ tono(660,0.12); setTimeout(function(){ tono(880,0.16); },90); },
     fallo:   function(){ tono(200,0.22,'sawtooth'); },
     tic:     function(){ tono(1200,0.04,'square'); },
-    fin:     function(){ tono(523,0.15); setTimeout(function(){ tono(659,0.15); },140); setTimeout(function(){ tono(784,0.3); },280); }
+    fin:     function(){ tono(523,0.15); setTimeout(function(){ tono(659,0.15); },140); setTimeout(function(){ tono(784,0.3); },280); },
+    // Golpe grave y corto: acompaña a la onda de choque.
+    impacto: function(){ tono(70,0.42,'sawtooth'); setTimeout(function(){ tono(48,0.5,'triangle'); }, 40); },
+    umbral:  function(){ tono(196,0.5,'sine'); setTimeout(function(){ tono(294,0.5); },180); setTimeout(function(){ tono(392,0.9); },360); }
   };
 
   /* ------------------------------ voz --------------------------------
@@ -558,6 +727,7 @@
       vidasMax: esExp ? VIDAS_EXPEDICION : VIDAS,
       aciertos: 0, consultas: 0
     };
+    raiz.classList.toggle('ar-modo-exped', esExp);
     if(esExp) pintarPortalExpedicion(def);
     else pintarReto();
   }
@@ -566,12 +736,14 @@
   // una partida más antes de gastar la única tirada del día.
   function pintarPortalExpedicion(def){
     detenerFondo();
-    raiz.setAttribute('data-tema','pociones');
-    raiz.style.setProperty('--ar-acento', def.id === 'universitario' ? '#f0c876' : '#a855f7');
-    iniciarFondo(def.id === 'universitario' ? 'tormenta' : 'pociones');
+    var tema = def.id === 'universitario' ? 'santuario' : 'umbral';
+    raiz.setAttribute('data-tema', tema);
+    raiz.style.setProperty('--ar-acento', TEMAS[tema].acento);
+    iniciarFondo(tema);
+    sonido.umbral();
     capa.innerHTML =
       '<div class="ar-portal">'
-      + '<div class="ar-portal-sello">' + def.icono + '</div>'
+      + '<div class="ar-portal-sello">' + icono(def.icono) + '</div>'
       + '<p class="ar-eyebrow">' + esc(def.lema) + '</p>'
       + '<h1>' + esc(def.nombre) + '</h1>'
       + '<p class="ar-menu-lede">' + esc(def.desc) + '</p>'
@@ -604,7 +776,7 @@
     }
     capa.innerHTML =
       '<div class="ar-fin">'
-      + (partida.expedicion && completa ? '<div class="ar-portal-sello ar-sello-gana">' + partida.def.icono + '</div>' : '')
+      + (partida.expedicion && completa ? '<div class="ar-portal-sello ar-sello-gana">' + icono(partida.def.icono) + '</div>' : '')
       + '<p class="ar-eyebrow">' + (partida.expedicion ? (completa ? 'Expedición superada' : 'Expedición fallida') : 'Partida terminada') + '</p>'
       + '<h2>' + partida.aciertos + ' de ' + total + '</h2>'
       + '<div class="ar-fin-datos">'
@@ -671,7 +843,7 @@
       + '</div>';
 
     var enunciado = esEscucha
-      ? '<div class="ar-escucha"><button type="button" class="ar-btn ar-repetir" id="arRepetir">🔊 Repetir enunciado</button>'
+      ? '<div class="ar-escucha"><button type="button" class="ar-btn ar-repetir" id="arRepetir"><svg class="ar-mini" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4Z"/><path d="M15.5 9.2a4 4 0 0 1 0 5.6"/><path d="M18.2 6.6a7.6 7.6 0 0 1 0 10.8"/></svg> Repetir enunciado</button>'
         + '<p class="ar-escucha-nota">Este reto se escucha: el enunciado no aparece escrito.</p></div>'
       : '<h2 class="ar-pregunta">' + esc(r.q) + '</h2>';
 
@@ -818,6 +990,7 @@
       var queda = Math.max(0, fin - performance.now());
       var pct = queda / total;
       if(barra) barra.style.width = (pct*100).toFixed(1) + '%';
+      tension(pct);
       var s = Math.ceil(queda/1000);
       if(num && s !== ultimoTic){
         num.textContent = s;
@@ -830,7 +1003,10 @@
       }
     }, 100);
   }
-  function detenerTemporizador(){ if(temporizador){ clearInterval(temporizador); temporizador = null; } }
+  function detenerTemporizador(){
+    if(temporizador){ clearInterval(temporizador); temporizador = null; }
+    tension(1);
+  }
 
   /* ----------------------------- resolver ----------------------------- */
 
@@ -889,6 +1065,13 @@
       if(panel){ panel.classList.remove('ar-acierta'); void panel.offsetWidth; panel.classList.add('ar-acierta'); }
     } else if(panel){
       panel.classList.remove('ar-falla'); void panel.offsetWidth; panel.classList.add('ar-falla');
+      var foco = boton || document.getElementById('arDialOk') ||
+                 document.getElementById('arTextoOk') || document.getElementById('arOrdenOk') || panel;
+      var cf = foco.getBoundingClientRect();
+      explotar(cf.left + cf.width/2, cf.top + cf.height/2);
+      // Sacudida de toda la escena y destello rojo: el fallo se siente.
+      raiz.classList.remove('ar-impacto'); void raiz.offsetWidth; raiz.classList.add('ar-impacto');
+      sonido.impacto();
     }
     var elVidas = document.querySelector('.ar-vidas');
     if(elVidas){
@@ -926,6 +1109,49 @@
     sig.addEventListener('click', function(){ partida.i++; pintarReto(); });
   }
 
+  /* ---------------- relieve y luz ----------------
+     El panel se inclina en el espacio siguiendo al cursor y una luz especular
+     recorre su superficie. En las expediciones la inclinación es mayor: son
+     las que deben sentirse como un objeto físico y no como una pantalla. */
+
+  var punteroRaf = null, punteroUlt = null;
+
+  function seguirPuntero(e){
+    punteroUlt = e;
+    if(punteroRaf) return;
+    punteroRaf = requestAnimationFrame(function(){
+      punteroRaf = null;
+      var ev = punteroUlt;
+      if(!ev) return;
+      var objetivos = capa.querySelectorAll('.ar-reto, .ar-portal, .ar-nivel');
+      objetivos.forEach(function(el){
+        var c = el.getBoundingClientRect();
+        var px = (ev.clientX - c.left) / c.width;
+        var py = (ev.clientY - c.top) / c.height;
+        // La luz se sitúa siempre; la inclinación solo si el cursor está encima.
+        el.style.setProperty('--mx', (px*100).toFixed(1) + '%');
+        el.style.setProperty('--my', (py*100).toFixed(1) + '%');
+        var dentro = px >= -0.15 && px <= 1.15 && py >= -0.15 && py <= 1.15;
+        var fuerza = el.classList.contains('ar-exped') || partida && partida.expedicion ? 9 : 4.5;
+        if(dentro && !reduceMotion){
+          el.style.setProperty('--rx', ((0.5 - py) * fuerza).toFixed(2) + 'deg');
+          el.style.setProperty('--ry', ((px - 0.5) * fuerza).toFixed(2) + 'deg');
+          el.style.setProperty('--luz', '1');
+        } else {
+          el.style.setProperty('--rx', '0deg');
+          el.style.setProperty('--ry', '0deg');
+          el.style.setProperty('--luz', '0');
+        }
+      });
+    });
+  }
+
+  /* Tensión del cronómetro: la viñeta se cierra y late a medida que se agota
+     el tiempo. Es información, no adorno: se ve por el rabillo del ojo. */
+  function tension(pct){
+    raiz.style.setProperty('--tension', (1 - pct).toFixed(3));
+  }
+
   /* ------------------------------- menú ------------------------------- */
 
   function pintarMenu(){
@@ -945,15 +1171,15 @@
                  + (progreso.sellos[l.id] ? ' ar-sellado' : '');
       var pie = bl
         ? (bl.tipo === 'diario'
-            ? '<span class="ar-nivel-pie ar-pie-bloq">🔒 Disponible en ' + formatoEspera(msHastaManana()) + '</span>'
-            : '<span class="ar-nivel-pie ar-pie-bloq">🔒 ' + esc(bl.texto) + '</span>')
+            ? '<span class="ar-nivel-pie ar-pie-bloq"><svg class="ar-mini" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8.2 10.5V7.8a3.8 3.8 0 0 1 7.6 0v2.7"/></svg> Disponible en ' + formatoEspera(msHastaManana()) + '</span>'
+            : '<span class="ar-nivel-pie ar-pie-bloq"><svg class="ar-mini" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8.2 10.5V7.8a3.8 3.8 0 0 1 7.6 0v2.7"/></svg> ' + esc(bl.texto) + '</span>')
         : '<span class="ar-nivel-pie">' + n + ' retos · récord ' + mejor + ' pts'
           + (l.expedicion ? ' · 1 intento al día' : '') + '</span>';
       return '<button type="button" class="' + clases + '" data-nivel="' + l.id + '"'
            + (bl ? ' disabled aria-disabled="true"' : '') + ' style="--i:' + idx + '">'
-           + '<span class="ar-nivel-icono" aria-hidden="true">' + l.icono + '</span>'
+           + '<span class="ar-nivel-icono" aria-hidden="true">' + icono(l.icono) + '</span>'
            + (l.expedicion ? '<span class="ar-nivel-tag">Expedición</span>' : '')
-           + (progreso.sellos[l.id] ? '<span class="ar-nivel-sello" title="Superada">✦</span>' : '')
+           + (progreso.sellos[l.id] ? '<span class="ar-nivel-sello" title="Expedición superada">' + icono('sello') + '</span>' : '')
            + '<span class="ar-nivel-nom">' + esc(l.nombre) + '</span>'
            + '<span class="ar-nivel-desc">' + esc(l.desc) + '</span>'
            + pie
@@ -992,7 +1218,9 @@
   }
   function cerrar(){
     detenerTemporizador(); detenerFondo(); callarVoz();
-    chispas.length = 0;
+    chispas.length = 0; ondas.length = 0;
+    raiz.classList.remove('ar-modo-exped','ar-impacto');
+    tension(1);
     if(chispasAnim){ cancelAnimationFrame(chispasAnim); chispasAnim = null; }
     if(chispasCtx && chispasCanvas) chispasCtx.clearRect(0,0,chispasCanvas.width,chispasCanvas.height);
     raiz.hidden = true;
@@ -1019,6 +1247,7 @@
     });
 
     // Friccion: ni seleccionar ni menu contextual dentro de la arena.
+    raiz.addEventListener('pointermove', seguirPuntero, { passive:true });
     raiz.addEventListener('contextmenu', function(e){ e.preventDefault(); });
     raiz.addEventListener('selectstart', function(e){
       if(e.target.tagName !== 'INPUT') e.preventDefault();

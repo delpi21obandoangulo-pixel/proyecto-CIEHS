@@ -151,6 +151,7 @@ suelo como sustrato y recircula la solución nutritiva.
       tabla `methodology_steps` siguiendo el patrón de [[CIEHS-Backend-Supabase]].
 - [ ] Vincular cada paso de la ruta con los recursos descargables
       correspondientes cuando existan los archivos.
+- [ ] Alinear los retos de [[CIEHS-Arena-Juego]] con los pasos de la ruta.
 - [x] Escudo institucional en uso → [[CIEHS-Identidad-Visual]].
 
 ---

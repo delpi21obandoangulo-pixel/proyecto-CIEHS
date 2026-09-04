@@ -144,7 +144,7 @@ Los valores de respaldo del HTML se mantienen sincronizados con los de la base
 - [x] **Página de privacidad y protocolo de imagen** publicada; falta la
       aprobación de dirección → [[CIEHS-Privacidad-Menores]].
 - [ ] Conectar el repositorio a Vercel para despliegue automático.
-- [ ] Banco de preguntas del quiz: 5 por nivel se agotan en una sesión.
+- [x] Banco de preguntas ampliado a 72, y Arena con 150 retos → [[CIEHS-Arena-Juego]].
 
 ---
 
@@ -155,4 +155,5 @@ Los valores de respaldo del HTML se mantienen sincronizados con los de la base
 - [[CIEHS-Auditoria-Seguridad-Auth]] — autenticación, cabeceras y hallazgos.
 - [[CIEHS-Identidad-Visual]] — escudo, sello, mural y paleta.
 - [[CIEHS-Privacidad-Menores]] — qué se publica de los estudiantes.
+- [[CIEHS-Arena-Juego]] — el modo de juego a pantalla completa.
 - [[CIEHS]] — índice general.

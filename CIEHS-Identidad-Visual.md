@@ -98,3 +98,4 @@ Los tres primeros son los **oficiales de la institución**. El resto del sistema
 - [[CIEHS]] — índice general.
 - [[CIEHS-Portal-Educativo]] — dónde se coloca cada pieza en la interfaz.
 - [[CIEHS-Privacidad-Menores]] — qué imágenes pueden publicarse.
+- [[CIEHS-Arena-Juego]] — la arena tiene paleta e iconografía propias.

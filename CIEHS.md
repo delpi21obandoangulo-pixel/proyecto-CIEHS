@@ -32,6 +32,7 @@ está cada cosa.
 | [[CIEHS-Metodologia-Pedagogica]] | Ruta de 9 pasos y articulación con el CNEB |
 | [[CIEHS-Identidad-Visual]] | Escudo, sello, mural, paleta e iconos |
 | [[CIEHS-Privacidad-Menores]] | Qué se publica de los estudiantes y qué nunca |
+| [[CIEHS-Arena-Juego]] | El modo de juego: niveles, expediciones, animación y voz |
 
 ---
 
@@ -46,6 +47,7 @@ está cada cosa.
 | Panel | Supabase Auth + comprobación de administrador |
 | Identidad | Escudo institucional oficial en uso |
 | Privacidad | Página publicada, **pendiente de aprobación por dirección** |
+| Arena | 5 niveles, 150 retos, 2 expediciones diarias |
 
 ---
 
@@ -57,7 +59,7 @@ está cada cosa.
 3. **Fotografías del laboratorio** y de los cuatro módulos.
 4. **Archivos descargables** para docentes: los filtros funcionan, no hay PDF.
 5. **Interfaz de edición** de investigaciones y recursos en el panel.
-6. **Banco de preguntas**: 5 por nivel se agotan en una sesión.
+6. **Marcador entre clases** de la Arena: hoy el récord es solo local → [[CIEHS-Arena-Juego]]
 7. **Despliegue automático** desde GitHub.
 8. Resolver la contradicción de licencia (MIT vs. «todos los derechos
    reservados») → [[CIEHS-Auditoria-Seguridad-Auth]]

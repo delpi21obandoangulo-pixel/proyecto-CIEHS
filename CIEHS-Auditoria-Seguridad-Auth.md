@@ -160,3 +160,4 @@ cambiarse sin acordarlo.
 - [[CIEHS-Portal-Educativo]] — arquitectura, alojamiento y cacheo.
 - [[CIEHS-Backend-Supabase]] — esquema, RLS y permisos por columna.
 - [[CIEHS-Metodologia-Pedagogica]] — contenido pedagógico que se publica.
+- [[CIEHS-Arena-Juego]] — sus contramedidas también son fricción, no seguridad.
