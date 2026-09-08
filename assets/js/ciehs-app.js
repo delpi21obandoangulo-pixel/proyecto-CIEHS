@@ -24,12 +24,12 @@
   // un id que coincide con el nombre de su ruta, y un fragmento pelado haría
   // que el navegador saltara por scroll a ese elemento antes de que el router
   // pudiera actuar. Con "#/" ningún id coincide y el control es solo nuestro.
-  var ROUTES = ['inicio','metodologia','investigaciones','equipos','modulos','trazabilidad','datos','juega','docentes','mural','eureka','contacto','privacidad'];
+  var ROUTES = ['inicio','metodologia','investigaciones','equipos','modulos','trazabilidad','datos','juega','docentes','comunidad','mural','eureka','contacto','privacidad'];
   var ROUTE_LABELS = {
     inicio:'Inicio',
     metodologia:'Metodología', investigaciones:'Investigaciones', equipos:'Equipos',
     modulos:'Módulos', trazabilidad:'Trazabilidad', datos:'Datos',
-    juega:'Juega y aprende', docentes:'Recursos para docentes',
+    juega:'Juega y aprende', docentes:'Espacio docente y curricular', comunidad:'Comunidad, pedidos y transparencia',
     mural:'Nuestro Mural', eureka:'Rumbo a Eureka 2026', contacto:'Contacto',
     privacidad:'Privacidad y uso de imagen'
   };
@@ -336,7 +336,10 @@
       if(cat === 'cultivo') state.badges.cultivo = true;
       state.badges.ciencia = computeCienciaBadge();
     }
-    persist(); updateScore(); updateBadges();
+    // actualizarRonda tambien: el contador de "te quedan N sin acertar" se
+    // calculaba solo al repintar la ronda, asi que se quedaba congelado
+    // mientras el estudiante iba respondiendo.
+    persist(); updateScore(); updateBadges(); actualizarRonda();
   }
 
   function conectarPreguntas(raiz){
@@ -374,8 +377,11 @@
 (function(){
   var groups = document.querySelectorAll('.res-filter-chips');
   var resGrid = document.getElementById('resGrid');
-  var cards = resGrid ? resGrid.querySelectorAll('.res-card') : [];
-  if(!groups.length || !cards.length) return;
+  // El catalogo se vuelve a consultar en cada filtrado: cuando la base
+  // responde, la rejilla se repinta entera y una lista cacheada al arrancar
+  // apuntaria a tarjetas que ya no estan en el documento.
+  function tarjetas(){ return resGrid ? [].slice.call(resGrid.querySelectorAll(".res-card")) : []; }
+  if(!groups.length || !resGrid) return;
 
   var countEl = document.getElementById('resCount');
   var emptyEl = document.getElementById('resEmpty');
@@ -396,7 +402,7 @@
 
   function applyFilters(){
     var visible = 0;
-    cards.forEach(function(card){
+    tarjetas().forEach(function(card){
       var matches =
         (active.nivel === 'todos' || card.getAttribute('data-nivel') === active.nivel) &&
         (active.area === 'todos' || card.getAttribute('data-area') === active.area) &&
@@ -409,6 +415,11 @@
   }
 
   applyFilters();
+
+  // Gancho para la capa de datos: al repintar la rejilla desde la base hay que
+  // volver a aplicar el filtro activo, o las tarjetas nuevas saldrían todas.
+  window.CIEHS = window.CIEHS || {};
+  window.CIEHS.refiltrarRecursos = applyFilters;
 })();
 
 /* ===========================================================================
@@ -427,7 +438,9 @@
     agua: {
       label: '1 · Ciclo del agua',
       title: 'El ciclo del agua en hidroponía',
-      html: '<p>En cada módulo, la solución nutritiva recircula por el sistema en lugar de perderse en el suelo: se bombea, riega las raíces y regresa al depósito para volver a usarse. Así es como el CIEHS logra cerca del <b>90&nbsp;% de ahorro hídrico</b> frente al cultivo tradicional en suelo.</p>'
+      html: '<p>En <b>raíz flotante</b>, el agua no se infiltra ni se evapora en la tierra: queda encerrada en el contenedor del módulo, con la raíz sumergida bebiendo de ella. Solo se repone lo que la planta consume y lo poco que se evapora en superficie. Por eso los <b>quince módulos DWC</b> del CIEHS logran cerca del <b>90&nbsp;% de ahorro hídrico</b> frente al cultivo tradicional en suelo.</p>'
+        + '<p>El equipo de Monitoreo mide cada 5 días el <b>pH</b> (si el agua está ácida o alcalina, porque de eso depende que la raíz pueda absorber los nutrientes) y la <b>conductividad eléctrica, CE</b> (cuánta sal nutritiva queda disuelta). Toda esa lectura acaba publicada en la bitácora agronómica de este portal.</p>'
+        + '<p>Nuestros módulos funcionan hoy <b>sin bomba de aire</b>: el oxígeno entra por la superficie y por la agitación manual en cada control. Instalar aireación forzada es la primera mejora planificada del laboratorio.</p>'
     },
     fito: {
       label: '2 · Fitohormonas',
@@ -443,7 +456,8 @@
     identidad: {
       label: '4 · Nuestra identidad',
       title: 'I.E. N.° 80033 "José Olaya Balandra"',
-      html: '<p>El CIEHS es el laboratorio de investigación escolar de la I.E. N.° 80033 <b>"José Olaya Balandra"</b>, en Huanchaco, La Libertad — con el lema <i>"Cultivamos Ciencia, Cosechamos Futuro"</i>.</p>'
+      html: '<p>El CIEHS es el laboratorio de investigación escolar de la I.E. N.° 80033 <b>"José Olaya Balandra"</b>, en Huanchaco, La Libertad — con el lema <i>"Cultivamos Ciencia, Cosechamos Futuro"</i>. Lo sostienen <b>280 estudiantes de 1.° a 5.° de secundaria</b> repartidos en diez equipos de gestión.</p>'
+        + '<p>El caballito de totora y el pingüino de Humboldt que aparecen en el mural no son adorno: son el recordatorio de que el problema que estudiamos —agua escasa, suelos salinizados, plástico en la playa— ocurre exactamente aquí.</p>'
     }
   };
 
@@ -743,7 +757,13 @@
   function refrescar(){
     if(!D || !D.listo) return Promise.resolve();
     return D.cargarPortal().then(function(res){
-      if(!res) { pintarSync(); pintarTelemetria(); return; }
+      if(!res) {
+        pintarSync(); pintarTelemetria();
+        // Sin base tampoco hay carpeta ni bitacora: mejor decirlo que dejar
+        // los "Cargando..." colgados para siempre.
+        pintarCarpeta(); pintarBitacora(); pintarTransparencia(); pintarComentarios();
+        return;
+      }
       datos = res;
       modulosPorId = {};
       res.modulos.forEach(function(m){ modulosPorId[m.id] = m; });
@@ -754,8 +774,348 @@
       pintarTelemetria();
       pintarSync();
       llenarSelectorModulos(res.modulos);
+      pintarCarpeta();
+      pintarBitacora();
+      pintarRecursos();
+      pintarTransparencia();
+      pintarComentarios();
     });
   }
+  /* ================= SECCIONES 2026: carpeta, bitácora, comunidad ==========
+     Todas siguen la misma regla que el resto del portal: si la base responde,
+     mandan sus datos; si no responde, se queda el HTML estático que ya vino con
+     la página y el visitante ve un mensaje explícito en lugar de una lista
+     vacía sin explicación. */
+
+  function fmtDia(v){
+    if(!v) return '—';
+    var d = new Date(v + (String(v).length === 10 ? 'T12:00:00' : ''));
+    if(isNaN(d.getTime())) return esc(v);
+    return d.toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' });
+  }
+  function num(v, dec){
+    if(v == null || v === '') return '—';
+    var n = Number(v);
+    return isNaN(n) ? esc(v) : n.toFixed(dec == null ? 1 : dec);
+  }
+  function soles(v){
+    var n = Number(v || 0);
+    return 'S/ ' + n.toLocaleString('es-PE', { minimumFractionDigits:2, maximumFractionDigits:2 });
+  }
+
+  /* ---------------------- carpeta de campo digital -------------------- */
+
+  var carpetaGrid   = el('carpetaGrid');
+  var carpetaEstado = el('carpetaEstado');
+  var carpetaFiltro = 'todos';
+
+  var ETIQUETA_TIPO = {
+    articulo:'Artículo', informe:'Informe científico', foto:'Fotografía',
+    evidencia:'Evidencia experimental', bitacora:'Bitácora'
+  };
+
+  function pintarCarpeta(){
+    if(!carpetaGrid) return;
+    var filas = (datos && datos.carpeta) || [];
+    if(carpetaFiltro !== 'todos'){
+      filas = filas.filter(function(f){ return f.kind === carpetaFiltro; });
+    }
+    if(!filas.length){
+      carpetaGrid.innerHTML = '';
+      if(carpetaEstado){
+        carpetaEstado.hidden = false;
+        carpetaEstado.textContent = (datos && datos.carpeta && datos.carpeta.length)
+          ? 'No hay entradas de ese tipo todavía.'
+          : (D && D.conectado
+              ? 'La carpeta de campo está abierta y todavía sin entradas publicadas. Las primeras las suben los equipos al cerrar el ciclo en curso.'
+              : 'No se pudo conectar con la base del CIEHS, así que la carpeta de campo no se puede mostrar ahora mismo.');
+      }
+      return;
+    }
+    if(carpetaEstado) carpetaEstado.hidden = true;
+    carpetaGrid.innerHTML = filas.map(function(f){
+      var media = f.media_url
+        ? '<a class="carpeta-link" href="' + esc(f.media_url) + '" target="_blank" rel="noopener noreferrer">Ver el archivo adjunto</a>'
+        : '';
+      return '<article class="card carpeta-card" data-kind="' + esc(f.kind) + '">'
+        + '<div class="top-row"><span class="code mono">' + esc(f.code) + '</span>'
+        + '<span class="chip">' + esc(ETIQUETA_TIPO[f.kind] || f.kind) + '</span></div>'
+        + '<h3>' + esc(f.title) + '</h3>'
+        + (f.summary ? '<p class="carpeta-sum">' + esc(f.summary) + '</p>' : '')
+        + (f.body ? '<p class="carpeta-body">' + esc(f.body) + '</p>' : '')
+        + media
+        + '<div class="meta">'
+        +   (f.author_label ? '<span class="chip">' + esc(f.author_label) + '</span>' : '')
+        +   (f.team ? '<span class="chip">' + esc(f.team) + '</span>' : '')
+        +   '<span class="chip mono">' + fmtDia(f.published_on || f.updated_at) + '</span>'
+        + '</div>'
+        + '</article>';
+    }).join('');
+  }
+
+  document.querySelectorAll('[data-carpeta-filtro]').forEach(function(b){
+    b.addEventListener('click', function(){
+      carpetaFiltro = b.getAttribute('data-carpeta-filtro');
+      document.querySelectorAll('[data-carpeta-filtro]').forEach(function(o){
+        o.classList.toggle('is-active', o === b);
+      });
+      pintarCarpeta();
+    });
+  });
+
+  /* ---------------------- bitácora agronómica ------------------------- */
+
+  var bitCuerpo  = el('bitacoraCuerpo');
+  var bitEstado  = el('bitacoraEstado');
+  var bitSelect  = el('bitacoraCultivo');
+
+  function pintarBitacora(){
+    if(!bitCuerpo) return;
+    var filas = (datos && datos.bitacora) || [];
+
+    // El selector se llena con los cultivos que realmente hay registrados, no
+    // con una lista fija: si mañana se siembra otra especie, aparece sola.
+    if(bitSelect && bitSelect.options.length <= 1 && filas.length){
+      var vistos = {};
+      filas.forEach(function(f){
+        if(f.crop && !vistos[f.crop]){
+          vistos[f.crop] = true;
+          var o = document.createElement('option');
+          o.value = f.crop; o.textContent = f.crop;
+          bitSelect.appendChild(o);
+        }
+      });
+    }
+    var filtro = bitSelect ? bitSelect.value : 'todos';
+    if(filtro && filtro !== 'todos'){
+      filas = filas.filter(function(f){ return f.crop === filtro; });
+    }
+
+    if(!filas.length){
+      bitCuerpo.innerHTML = '';
+      if(bitEstado){
+        bitEstado.hidden = false;
+        bitEstado.textContent = D && D.conectado
+          ? 'Todavía no hay lotes registrados para ese filtro.'
+          : 'No se pudo conectar con la base del CIEHS: la bitácora no se puede mostrar ahora mismo.';
+      }
+      return;
+    }
+    if(bitEstado) bitEstado.hidden = true;
+    bitCuerpo.innerHTML = filas.map(function(f){
+      var cosecha = f.harvest_on
+        ? fmtDia(f.harvest_on) + (f.harvest_kg ? ' · ' + num(f.harvest_kg, 2) + ' kg' : '')
+        : '—';
+      return '<tr>'
+        + '<td class="mono">' + esc(f.lote) + '</td>'
+        + '<td>' + esc(f.crop) + (f.scientific ? '<br><em class="bit-cientifico">' + esc(f.scientific) + '</em>' : '') + '</td>'
+        + '<td class="mono">' + esc(f.module_code || '—') + '</td>'
+        + '<td>' + fmtDia(f.sown_on) + '</td>'
+        + '<td class="tabular">' + (f.week == null ? '—' : esc(f.week)) + '</td>'
+        + '<td class="tabular">' + num(f.ph) + '</td>'
+        + '<td class="tabular">' + num(f.ce, 2) + '</td>'
+        + '<td>' + esc(f.phase || '—') + '</td>'
+        + '<td>' + cosecha + '</td>'
+        + '</tr>';
+    }).join('');
+  }
+
+  if(bitSelect) bitSelect.addEventListener('change', pintarBitacora);
+
+  /* -------------------- espacio docente: recursos --------------------- */
+
+  var destacadosGrid = el('destacadosGrid');
+  var resGrid        = el('resGrid');
+  var resCount       = el('resCount');
+
+  var FORMATO_ETIQUETA = {
+    pdf:'PDF', audio:'Audio', video:'Vídeo', imagen:'Imagen', doc:'Documento', enlace:'Enlace'
+  };
+  var NIVEL_ETIQUETA = { inicial:'Inicial', primaria:'Primaria', secundaria:'Secundaria', todos:'Todos los niveles' };
+  var AREA_ETIQUETA = {
+    cyt:'Ciencia y Tecnología', mate:'Matemática', comu:'Comunicación', cs:'Ciencias Sociales',
+    arte:'Arte y Cultura', ept:'Educación para el Trabajo', digital:'Competencias Digitales'
+  };
+
+  function botonRecurso(r){
+    if(!r.file_url){
+      return '<button type="button" class="res-btn" disabled title="Disponible cuando el administrador cargue el archivo">Ver / Descargar</button>';
+    }
+    var texto = r.file_kind === 'audio' ? 'Escuchar / Descargar' : 'Ver / Descargar';
+    return '<a class="res-btn is-ready" href="' + esc(r.file_url) + '" target="_blank" rel="noopener noreferrer">' + texto + '</a>';
+  }
+
+  function pintarRecursos(){
+    var filas = (datos && datos.recursos) || [];
+    if(!filas.length) return;   // se queda el catálogo de ejemplo del HTML
+
+    if(destacadosGrid){
+      var destacados = filas.filter(function(r){ return r.featured; });
+      if(destacados.length){
+        destacadosGrid.innerHTML = destacados.map(function(r){
+          var reproductor = (r.file_kind === 'audio' && r.file_url)
+            ? '<audio class="destacado-audio" controls preload="none" src="' + esc(r.file_url) + '">'
+              + 'Tu navegador no puede reproducir este audio. '
+              + '<a href="' + esc(r.file_url) + '">Descárgalo aquí</a>.</audio>'
+            : '<div class="destacado-player">' + botonRecurso(r) + '</div>';
+          return '<article class="card destacado-card">'
+            + '<div class="destacado-top">'
+            +   '<span class="destacado-kind">' + esc(FORMATO_ETIQUETA[r.file_kind] || r.kind || 'Recurso') + '</span>'
+            +   '<span class="destacado-dur mono">' + esc(r.duration || NIVEL_ETIQUETA[r.level] || '') + '</span>'
+            + '</div>'
+            + '<h3>' + esc(r.title) + '</h3>'
+            + (r.description ? '<p>' + esc(r.description) + '</p>' : '')
+            + reproductor
+            + '<div class="meta"><span class="chip">' + esc(NIVEL_ETIQUETA[r.level] || r.level || '') + '</span>'
+            +   (r.area ? '<span class="chip">' + esc(AREA_ETIQUETA[r.area] || r.area) + '</span>' : '')
+            + '</div>'
+            + '</article>';
+        }).join('');
+      }
+    }
+
+    if(resGrid){
+      resGrid.innerHTML = filas.map(function(r){
+        return '<article class="card res-card" data-nivel="' + esc(r.level || 'todos') + '"'
+          + ' data-area="' + esc(r.area || '') + '" data-tipo="' + esc(r.kind || '') + '">'
+          + '<div class="top-row"><span class="chip">' + esc(r.kind || 'Recurso') + '</span></div>'
+          + '<h3>' + esc(r.title) + '</h3>'
+          + (r.description ? '<p>' + esc(r.description) + '</p>' : '')
+          + '<div class="meta"><span class="chip">' + esc(NIVEL_ETIQUETA[r.level] || r.level || '') + '</span>'
+          +   (r.area ? '<span class="chip">' + esc(AREA_ETIQUETA[r.area] || r.area) + '</span>' : '')
+          + '</div>'
+          + botonRecurso(r)
+          + '</article>';
+      }).join('');
+      if(resCount) resCount.textContent = filas.length + (filas.length === 1 ? ' recurso' : ' recursos');
+      if(window.CIEHS && typeof window.CIEHS.refiltrarRecursos === 'function'){
+        window.CIEHS.refiltrarRecursos();
+      }
+    }
+  }
+
+  /* ------------------------- transparencia ---------------------------- */
+
+  var transpCuerpo = el('transpCuerpo');
+  var transpEstado = el('transpEstado');
+
+  function pintarTransparencia(){
+    if(!transpCuerpo) return;
+    var filas = (datos && datos.caja) || [];
+    var ingresos = 0, egresos = 0;
+    filas.forEach(function(f){
+      var n = Number(f.amount_pen || 0);
+      if(f.kind === 'ingreso') ingresos += n; else egresos += n;
+    });
+    var ti = el('transpIngresos'), te = el('transpEgresos'), ts = el('transpSaldo');
+    if(ti) ti.textContent = soles(ingresos);
+    if(te) te.textContent = soles(egresos);
+    if(ts) ts.textContent = soles(ingresos - egresos);
+
+    if(!filas.length){
+      transpCuerpo.innerHTML = '';
+      if(transpEstado){
+        transpEstado.hidden = false;
+        transpEstado.textContent = D && D.conectado
+          ? 'Todavía no hay movimientos publicados. El equipo de Tesorería registra aquí cada venta y cada compra de insumos.'
+          : 'No se pudo conectar con la base del CIEHS: el registro de caja no se puede mostrar ahora mismo.';
+      }
+      return;
+    }
+    if(transpEstado) transpEstado.hidden = true;
+    transpCuerpo.innerHTML = filas.map(function(f){
+      return '<tr class="transp-fila ' + esc(f.kind) + '">'
+        + '<td>' + fmtDia(f.occurred_on) + '</td>'
+        + '<td>' + esc(f.concept) + (f.note ? '<br><span class="transp-nota">' + esc(f.note) + '</span>' : '') + '</td>'
+        + '<td><span class="chip ' + (f.kind === 'ingreso' ? 'status-activo' : 'status-plan') + '">'
+        +   (f.kind === 'ingreso' ? 'Ingreso' : 'Egreso') + '</span></td>'
+        + '<td class="tabular transp-monto">' + (f.kind === 'egreso' ? '−' : '') + num(f.amount_pen, 2) + '</td>'
+        + '</tr>';
+    }).join('');
+  }
+
+  /* --------------------- comentarios de la comunidad ------------------- */
+
+  var comentariosLista  = el('comentariosLista');
+  var comentariosEstado = el('comentariosEstado');
+  var ROL_ETIQUETA = { estudiante:'Estudiante', docente:'Docente', familia:'Familia', visitante:'Visitante' };
+
+  function pintarComentarios(){
+    if(!comentariosLista) return;
+    var filas = (datos && datos.comentarios) || [];
+    if(!filas.length){
+      comentariosLista.innerHTML = '';
+      if(comentariosEstado){
+        comentariosEstado.hidden = false;
+        comentariosEstado.textContent = D && D.conectado
+          ? 'Todavía no hay comentarios publicados. El tuyo puede ser el primero — pasará antes por la coordinación.'
+          : 'No se pudo conectar con la base del CIEHS: los comentarios no se pueden mostrar ahora mismo.';
+      }
+      return;
+    }
+    if(comentariosEstado) comentariosEstado.hidden = true;
+    comentariosLista.innerHTML = filas.map(function(c){
+      return '<article class="comentario">'
+        + '<div class="comentario-head">'
+        +   '<b>' + esc(c.display_name) + '</b>'
+        +   '<span class="chip">' + esc(ROL_ETIQUETA[c.role] || 'Visitante') + '</span>'
+        +   '<span class="comentario-fecha mono">' + fmtDia(c.created_at) + '</span>'
+        + '</div>'
+        + '<p class="comentario-msg">' + esc(c.message) + '</p>'
+        + (c.reply ? '<p class="comentario-reply"><b>Respuesta del CIEHS:</b> ' + esc(c.reply) + '</p>' : '')
+        + '</article>';
+    }).join('');
+  }
+
+  /* ------------------ formularios públicos: pedido y comentario -------- */
+
+  function conectarEnvio(form, trampaId, statusId, envio, exito){
+    if(!form) return;
+    form.addEventListener('submit', function(ev){
+      ev.preventDefault();
+      var status = el(statusId);
+      var trampa = el(trampaId);
+      // Campo trampa: invisible para una persona, irresistible para un bot.
+      // Si viene relleno, se finge el envío y no se escribe nada.
+      if(trampa && trampa.value){ if(status) status.textContent = exito; form.reset(); return; }
+      if(!D || !D.listo){
+        if(status){ status.classList.add('error'); status.textContent = 'No hay conexión con la base del CIEHS. Vuelve a intentarlo más tarde.'; }
+        return;
+      }
+      var boton = form.querySelector('button[type="submit"]');
+      if(boton) boton.disabled = true;
+      if(status){ status.classList.remove('error'); status.textContent = 'Enviando…'; }
+      envio().then(function(){
+        if(boton) boton.disabled = false;
+        if(status) status.textContent = exito;
+        form.reset();
+      }).catch(function(e){
+        if(boton) boton.disabled = false;
+        if(status){
+          status.classList.add('error');
+          status.textContent = 'No se pudo enviar: ' + ((e && e.message) || 'error desconocido');
+        }
+      });
+    });
+  }
+
+  conectarEnvio(el('pedidoForm'), 'pedTrampa', 'pedStatus', function(){
+    return D.crearPedido({
+      nombre: (el('pedNombre').value || '').trim(),
+      contacto: (el('pedContacto').value || '').trim(),
+      cultivo: el('pedCultivo') ? el('pedCultivo').value : null,
+      kg: el('pedKg').value,
+      notas: (el('pedNota').value || '').trim()
+    });
+  }, 'Reserva recibida. El equipo de Ventas te confirmará la disponibilidad y el día de entrega.');
+
+  conectarEnvio(el('comentarioForm'), 'comTrampa', 'comStatus', function(){
+    return D.crearComentario({
+      nombre: (el('comNombre').value || '').trim(),
+      rol: el('comRol') ? el('comRol').value : null,
+      mensaje: (el('comMensaje').value || '').trim()
+    });
+  }, 'Gracias. Tu comentario llegó a la coordinación y se publicará en cuanto lo revise.');
 
   /* =================== PANEL DE ADMINISTRACION =================== */
 
@@ -961,6 +1321,7 @@
       p.hidden = p.getAttribute('data-tabpanel') !== nombre;
     });
     if(nombre === 'investigaciones') cargarListaInvestigaciones();
+    if(window.CIEHS && window.CIEHS.cargarPestanaAdmin) window.CIEHS.cargarPestanaAdmin(nombre);
   }
 
   tabBtns.forEach(function(b){
@@ -1123,6 +1484,352 @@
     });
   }
 
+  /* ============ EDITORES 2026: bitácora, carpeta, recursos, comunidad ======
+     Los cuatro editores comparten la misma mecánica que el de investigaciones
+     —lista, ficha, guardar, borrar— así que aquí vive una sola implementación
+     genérica y cada editor solo declara qué campos tiene y cómo se guardan. */
+
+  function txt(id, v){ var n = el(id); if(n) n.value = v == null ? '' : v; }
+  function leer(id){ var n = el(id); return n ? n.value : ''; }
+  function marcar(id, v){ var n = el(id); if(n) n.checked = !!v; }
+  function leerMarca(id){ var n = el(id); return !!(n && n.checked); }
+
+  function crearEditor(cfg){
+    var lista    = el(cfg.lista);
+    var form     = el(cfg.form);
+    var titulo   = el(cfg.titulo);
+    var nuevoBtn = el(cfg.nuevo);
+    var cancelar = el(cfg.cancelar);
+    var borrar   = el(cfg.borrar);
+    var msg      = el(cfg.msg);
+    if(!lista || !form) return { cargar: function(){} };
+
+    var cache = [];
+    var editando = null;      // clave de la fila en edición, null si es nueva
+
+    function aviso(texto, error){
+      if(!msg) return;
+      msg.classList.toggle('error', !!error);
+      msg.textContent = texto || '';
+    }
+
+    function cargar(){
+      lista.innerHTML = '<p class="inv-vacia">Cargando…</p>';
+      cfg.listar().then(function(filas){
+        cache = filas;
+        if(!filas.length){
+          lista.innerHTML = '<p class="inv-vacia">' + esc(cfg.vacio) + '</p>';
+          return;
+        }
+        lista.innerHTML = filas.map(function(f){
+          var pub = f.published;
+          return '<div class="inv-item">'
+            + '<div class="txt">'
+            +   '<span class="cod">' + esc(cfg.clave(f)) + '</span>'
+            +   '<span class="tit">' + esc(cfg.etiqueta(f)) + '</span>'
+            + '</div>'
+            + '<span class="estado ' + (pub ? 'pub' : 'bor') + '">' + (pub ? 'publicado' : 'borrador') + '</span>'
+            + '<button type="button" class="editar" data-editar="' + esc(cfg.clave(f)) + '">Editar</button>'
+            + '</div>';
+        }).join('');
+        lista.querySelectorAll('[data-editar]').forEach(function(b){
+          b.addEventListener('click', function(){ abrir(b.getAttribute('data-editar')); });
+        });
+      }).catch(function(e){
+        lista.innerHTML = '<p class="inv-vacia">No se pudo cargar la lista: '
+          + esc((e && e.message) || 'error') + '</p>';
+      });
+    }
+
+    function abrir(clave){
+      var fila = null;
+      for(var i = 0; i < cache.length; i++){
+        if(String(cfg.clave(cache[i])) === String(clave)){ fila = cache[i]; break; }
+      }
+      editando = fila ? clave : null;
+      if(titulo) titulo.textContent = fila ? cfg.tituloEditar : cfg.tituloNuevo;
+      cfg.rellenar(fila);
+      if(borrar) borrar.hidden = !fila;
+      form.hidden = false;
+      aviso('');
+      form.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    }
+
+    if(nuevoBtn) nuevoBtn.addEventListener('click', function(){ abrir(null); });
+    if(cancelar) cancelar.addEventListener('click', function(){ form.hidden = true; aviso(''); });
+
+    form.addEventListener('submit', function(ev){
+      ev.preventDefault();
+      aviso('Guardando…');
+      cfg.guardar().then(function(){
+        aviso('Guardado y publicado.');
+        form.hidden = true;
+        cargar();
+        if(window.CIEHS && window.CIEHS.refrescarDatos) window.CIEHS.refrescarDatos();
+      }).catch(function(e){
+        aviso('No se pudo guardar: ' + ((e && e.message) || 'error desconocido'), true);
+      });
+    });
+
+    if(borrar){
+      borrar.addEventListener('click', function(){
+        if(!editando) return;
+        // Doble pulsación en lugar de confirm(): un diálogo nativo bloquea la
+        // pestaña y en las tablets del laboratorio se queda colgado a veces.
+        if(!borrar.classList.contains('inv-confirmar')){
+          borrar.classList.add('inv-confirmar');
+          borrar.textContent = 'Pulsa otra vez para eliminar';
+          setTimeout(function(){
+            borrar.classList.remove('inv-confirmar');
+            borrar.textContent = 'Eliminar';
+          }, 4000);
+          return;
+        }
+        cfg.eliminar(editando).then(function(){
+          borrar.classList.remove('inv-confirmar');
+          borrar.textContent = 'Eliminar';
+          form.hidden = true;
+          cargar();
+          if(window.CIEHS && window.CIEHS.refrescarDatos) window.CIEHS.refrescarDatos();
+        }).catch(function(e){
+          aviso('No se pudo eliminar: ' + ((e && e.message) || 'error'), true);
+        });
+      });
+    }
+
+    return { cargar: cargar };
+  }
+
+  /* ----------------------------- bitácora ----------------------------- */
+
+  var edBitacora = crearEditor({
+    lista:'bitAdminLista', form:'bitForm', titulo:'bitFormTitulo', nuevo:'bitNuevoBtn',
+    cancelar:'bitCancelarBtn', borrar:'bitBorrarBtn', msg:'bitStatusMsg',
+    tituloNuevo:'Nuevo lote', tituloEditar:'Editar lote',
+    vacio:'Todavía no hay ningún lote registrado.',
+    clave: function(f){ return f.lote; },
+    etiqueta: function(f){ return f.crop + (f.module_code ? ' · ' + f.module_code : ''); },
+    listar: function(){ return D.listarLotes(); },
+    eliminar: function(lote){ return D.eliminarLote(lote); },
+    rellenar: function(f){
+      f = f || {};
+      txt('bitLote', f.lote); txt('bitModulo', f.module_code);
+      txt('bitCultivo', f.crop); txt('bitCientifico', f.scientific);
+      txt('bitSiembra', f.sown_on); txt('bitSemana', f.week);
+      txt('bitPh', f.ph); txt('bitCe', f.ce); txt('bitFase', f.phase);
+      txt('bitCosecha', f.harvest_on); txt('bitKg', f.harvest_kg);
+      txt('bitNotas', f.notes); txt('bitPos', f.position == null ? 1 : f.position);
+      marcar('bitPublicado', f.lote ? f.published : true);
+    },
+    guardar: function(){
+      return D.guardarLote({
+        lote: leer('bitLote').trim(), crop: leer('bitCultivo').trim(),
+        scientific: leer('bitCientifico').trim(), moduleCode: leer('bitModulo').trim(),
+        sownOn: leer('bitSiembra'), week: leer('bitSemana'),
+        ph: leer('bitPh'), ce: leer('bitCe'), phase: leer('bitFase').trim(),
+        harvestOn: leer('bitCosecha'), harvestKg: leer('bitKg'),
+        notes: leer('bitNotas').trim(), position: leer('bitPos'),
+        published: leerMarca('bitPublicado')
+      });
+    }
+  });
+
+  /* -------------------------- carpeta de campo ------------------------ */
+
+  var edCarpeta = crearEditor({
+    lista:'carAdminLista', form:'carForm', titulo:'carFormTitulo', nuevo:'carNuevoBtn',
+    cancelar:'carCancelarBtn', borrar:'carBorrarBtn', msg:'carStatusMsg',
+    tituloNuevo:'Nueva entrada', tituloEditar:'Editar entrada',
+    vacio:'Todavía no hay ninguna entrada en la carpeta de campo.',
+    clave: function(f){ return f.code; },
+    etiqueta: function(f){ return f.title; },
+    listar: function(){ return D.listarNotas(); },
+    eliminar: function(code){ return D.eliminarNota(code); },
+    rellenar: function(f){
+      f = f || {};
+      txt('carCode', f.code); txt('carTitle', f.title);
+      txt('carSummary', f.summary); txt('carBody', f.body);
+      txt('carKind', f.kind || 'informe'); txt('carTeam', f.team);
+      txt('carAuthor', f.author_label); txt('carMedia', f.media_url);
+      txt('carFecha', f.published_on); txt('carPos', f.position == null ? 1 : f.position);
+      marcar('carPublicado', f.published);
+    },
+    guardar: function(){
+      return D.guardarNota({
+        code: leer('carCode').trim(), title: leer('carTitle').trim(),
+        summary: leer('carSummary').trim(), body: leer('carBody').trim(),
+        kind: leer('carKind'), team: leer('carTeam').trim(),
+        authorLabel: leer('carAuthor').trim(), mediaUrl: leer('carMedia').trim(),
+        publishedOn: leer('carFecha'), position: leer('carPos'),
+        published: leerMarca('carPublicado')
+      });
+    }
+  });
+
+  /* ---------------------------- recursos ------------------------------ */
+
+  var edRecursos = crearEditor({
+    lista:'recAdminLista', form:'recForm', titulo:'recFormTitulo', nuevo:'recNuevoBtn',
+    cancelar:'recCancelarBtn', borrar:'recBorrarBtn', msg:'recStatusMsg',
+    tituloNuevo:'Nuevo recurso', tituloEditar:'Editar recurso',
+    vacio:'Todavía no hay ningún recurso cargado.',
+    clave: function(f){ return f.id; },
+    etiqueta: function(f){ return f.title; },
+    listar: function(){ return D.listarRecursos(); },
+    eliminar: function(id){ return D.eliminarRecurso(id); },
+    rellenar: function(f){
+      f = f || {};
+      recEditandoId = f.id || null;
+      txt('recTitle', f.title); txt('recDesc', f.description);
+      txt('recLevel', f.level || 'todos'); txt('recArea', f.area || 'cyt');
+      txt('recKind', f.kind || 'ficha'); txt('recFileKind', f.file_kind || 'pdf');
+      txt('recUrl', f.file_url); txt('recDur', f.duration);
+      txt('recPos', f.position == null ? 1 : f.position);
+      marcar('recFeatured', f.featured); marcar('recPublicado', f.published);
+    },
+    guardar: function(){
+      return D.guardarRecurso({
+        id: recEditandoId,
+        title: leer('recTitle').trim(), description: leer('recDesc').trim(),
+        level: leer('recLevel'), area: leer('recArea'), kind: leer('recKind'),
+        fileKind: leer('recFileKind'), fileUrl: leer('recUrl').trim(),
+        duration: leer('recDur').trim(), position: leer('recPos'),
+        featured: leerMarca('recFeatured'), published: leerMarca('recPublicado')
+      });
+    }
+  });
+  var recEditandoId = null;
+
+  /* -------------------------- transparencia --------------------------- */
+
+  var edCaja = crearEditor({
+    lista:'traAdminLista', form:'traForm', titulo:'traFormTitulo', nuevo:'traNuevoBtn',
+    cancelar:'traCancelarBtn', borrar:'traBorrarBtn', msg:'traStatusMsg',
+    tituloNuevo:'Nuevo movimiento', tituloEditar:'Editar movimiento',
+    vacio:'Todavía no hay movimientos registrados.',
+    clave: function(f){ return f.id; },
+    etiqueta: function(f){ return f.concept + ' · S/ ' + f.amount_pen; },
+    listar: function(){ return D.listarCaja(); },
+    eliminar: function(id){ return D.eliminarMovimiento(id); },
+    rellenar: function(f){
+      f = f || {};
+      traEditandoId = f.id || null;
+      txt('traFecha', f.occurred_on || new Date().toISOString().slice(0,10));
+      txt('traTipo', f.kind || 'ingreso'); txt('traConcepto', f.concept);
+      txt('traMonto', f.amount_pen); txt('traPeriodo', f.period); txt('traNota', f.note);
+      marcar('traPublicado', f.id ? f.published : true);
+    },
+    guardar: function(){
+      return D.guardarMovimiento({
+        id: traEditandoId, occurredOn: leer('traFecha'), kind: leer('traTipo'),
+        concept: leer('traConcepto').trim(), amount: leer('traMonto'),
+        period: leer('traPeriodo').trim(), note: leer('traNota').trim(),
+        published: leerMarca('traPublicado')
+      });
+    }
+  });
+  var traEditandoId = null;
+
+  /* ------------------ pedidos y moderación de comentarios -------------- */
+
+  var pedLista = el('pedAdminLista');
+  var comLista = el('comAdminLista');
+
+  var ESTADO_SIGUIENTE = { pendiente:'confirmado', confirmado:'entregado', entregado:'entregado', anulado:'pendiente' };
+
+  function cargarPedidos(){
+    if(!pedLista) return;
+    pedLista.innerHTML = '<p class="inv-vacia">Cargando…</p>';
+    D.listarPedidos().then(function(filas){
+      if(!filas.length){
+        pedLista.innerHTML = '<p class="inv-vacia">No hay pedidos registrados.</p>';
+        return;
+      }
+      pedLista.innerHTML = filas.map(function(p){
+        return '<div class="inv-item">'
+          + '<div class="txt">'
+          +   '<span class="cod">' + esc(p.requester_name) + '</span>'
+          +   '<span class="tit">' + esc(p.contact) + ' · ' + esc(p.crop || 'sin especificar')
+          +     (p.qty_kg ? ' · ' + esc(p.qty_kg) + ' kg' : '')
+          +     (p.notes ? ' — ' + esc(p.notes) : '') + '</span>'
+          + '</div>'
+          + '<span class="estado ' + (p.status === 'entregado' ? 'pub' : 'bor') + '">' + esc(p.status) + '</span>'
+          + '<button type="button" class="editar" data-avanzar="' + esc(p.id) + '" data-estado="'
+          +   esc(ESTADO_SIGUIENTE[p.status] || 'confirmado') + '">Marcar '
+          +   esc(ESTADO_SIGUIENTE[p.status] || 'confirmado') + '</button>'
+          + '<button type="button" class="inv-borrar" data-borrar-pedido="' + esc(p.id) + '">Borrar</button>'
+          + '</div>';
+      }).join('');
+      pedLista.querySelectorAll('[data-avanzar]').forEach(function(b){
+        b.addEventListener('click', function(){
+          D.cambiarEstadoPedido(b.getAttribute('data-avanzar'), b.getAttribute('data-estado'))
+            .then(cargarPedidos).catch(function(){ b.textContent = 'Error'; });
+        });
+      });
+      pedLista.querySelectorAll('[data-borrar-pedido]').forEach(function(b){
+        b.addEventListener('click', function(){
+          D.eliminarPedido(b.getAttribute('data-borrar-pedido'))
+            .then(cargarPedidos).catch(function(){ b.textContent = 'Error'; });
+        });
+      });
+    }).catch(function(e){
+      pedLista.innerHTML = '<p class="inv-vacia">No se pudo cargar: ' + esc((e && e.message) || 'error') + '</p>';
+    });
+  }
+
+  function cargarComentariosAdmin(){
+    if(!comLista) return;
+    comLista.innerHTML = '<p class="inv-vacia">Cargando…</p>';
+    D.listarComentarios().then(function(filas){
+      if(!filas.length){
+        comLista.innerHTML = '<p class="inv-vacia">No hay comentarios.</p>';
+        return;
+      }
+      comLista.innerHTML = filas.map(function(c){
+        return '<div class="inv-item">'
+          + '<div class="txt">'
+          +   '<span class="cod">' + esc(c.display_name) + '</span>'
+          +   '<span class="tit">' + esc(c.message) + '</span>'
+          + '</div>'
+          + '<span class="estado ' + (c.published ? 'pub' : 'bor') + '">'
+          +   (c.published ? 'publicado' : 'por revisar') + '</span>'
+          + '<button type="button" class="editar" data-publicar="' + esc(c.id) + '" data-valor="'
+          +   (c.published ? 'false' : 'true') + '">'
+          +   (c.published ? 'Retirar' : 'Publicar') + '</button>'
+          + '<button type="button" class="inv-borrar" data-borrar-com="' + esc(c.id) + '">Borrar</button>'
+          + '</div>';
+      }).join('');
+      comLista.querySelectorAll('[data-publicar]').forEach(function(b){
+        b.addEventListener('click', function(){
+          D.moderarComentario(b.getAttribute('data-publicar'),
+                              { published: b.getAttribute('data-valor') === 'true' })
+            .then(function(){
+              cargarComentariosAdmin();
+              if(window.CIEHS && window.CIEHS.refrescarDatos) window.CIEHS.refrescarDatos();
+            }).catch(function(){ b.textContent = 'Error'; });
+        });
+      });
+      comLista.querySelectorAll('[data-borrar-com]').forEach(function(b){
+        b.addEventListener('click', function(){
+          D.eliminarComentario(b.getAttribute('data-borrar-com'))
+            .then(function(){
+              cargarComentariosAdmin();
+              if(window.CIEHS && window.CIEHS.refrescarDatos) window.CIEHS.refrescarDatos();
+            }).catch(function(){ b.textContent = 'Error'; });
+        });
+      });
+    }).catch(function(e){
+      comLista.innerHTML = '<p class="inv-vacia">No se pudo cargar: ' + esc((e && e.message) || 'error') + '</p>';
+    });
+  }
+
+  window.CIEHS = window.CIEHS || {};
+  window.CIEHS.cargarPestanaAdmin = function(nombre){
+    if(nombre === 'bitacora')  edBitacora.cargar();
+    if(nombre === 'carpeta')   edCarpeta.cargar();
+    if(nombre === 'recursos')  edRecursos.cargar();
+    if(nombre === 'comunidad'){ cargarPedidos(); cargarComentariosAdmin(); edCaja.cargar(); }
+  };
   /* ------------------------------ arranque ---------------------------- */
 
   refrescar();
@@ -1130,61 +1837,6 @@
   window.CIEHS = window.CIEHS || {};
   window.CIEHS.refrescarDatos = refrescar;
   window.CIEHS.snapshot = function(){ return datos; };
-})();
-
-/* ===========================================================================
-   6. TRAZABILIDAD: bitácora dinámica por cultivo
-   =========================================================================== */
-(function(){
-  var select = document.getElementById('traceCropSelect');
-  var stepsEl = document.getElementById('qrTraceSteps');
-  var labelEl = document.getElementById('traceQrLabel');
-  if(!select || !stepsEl) return; // page not present
-
-  var LOTES = {
-    lechuga: {
-      lote:'L-2026-01', modulo:'MOD-NFT-01', especie:'Lactuca sativa',
-      siembra:'Siembra — 04/08/2026', siembraDesc:'Lote L-2026-01 · MOD-NFT-01 · Lactuca sativa (lechuga crespa)',
-      insumos:'Solución nutritiva T2 (100 %) · pH inicial 6.0 · CE 1.5 mS/cm',
-      fase:'Fase actual — semana 3', faseDesc:'Crecimiento vegetativo · monitoreo de pH y CE cada 5 días',
-      cosecha:'Cosecha estimada — semana 6', cosechaDesc:'Balance de biomasa publicado junto a los resultados de INV-2026-01'
-    },
-    espinaca: {
-      lote:'L-2026-02', modulo:'MOD-DWC-02', especie:'Spinacia oleracea',
-      siembra:'Siembra — 11/08/2026', siembraDesc:'Lote L-2026-02 · MOD-DWC-02 · Spinacia oleracea (espinaca)',
-      insumos:'Solución nutritiva estándar · pH inicial 6.4 · CE 2.0 mS/cm',
-      fase:'Fase actual — semana 2', faseDesc:'Crecimiento foliar · aireación forzada constante en balsa flotante',
-      cosecha:'Cosecha estimada — semana 5', cosechaDesc:'Comparación de biomasa foliar frente al lote de lechuga en el mismo periodo'
-    },
-    cebollita: {
-      lote:'L-2026-03', modulo:'MOD-SUS-03', especie:'Allium fistulosum',
-      siembra:'Siembra — 18/08/2026', siembraDesc:'Lote L-2026-03 · MOD-SUS-03 · Allium fistulosum (cebollita / cebolla verde)',
-      insumos:'Solución nutritiva estándar · pH inicial 6.5 · CE 1.6 mS/cm',
-      fase:'Fase actual — semana 1', faseDesc:'Enraizamiento en sustrato de perlita, arena y fibra · riego por goteo',
-      cosecha:'Cosecha estimada — semana 8', cosechaDesc:'Ciclo más largo por su hábito de crecimiento en penca'
-    },
-    aromaticas: {
-      lote:'L-2026-04', modulo:'MOD-VER-04 / MOD-SUS-03', especie:'Ocimum basilicum · Beta vulgaris',
-      siembra:'Siembra — 14/08/2026', siembraDesc:'Lote L-2026-04 · MOD-VER-04 y MOD-SUS-03 · aromáticas y acelga',
-      insumos:'Solución nutritiva estándar · pH inicial 6.0 · CE 1.7 mS/cm',
-      fase:'Fase actual — semana 2', faseDesc:'Aromáticas en columnas verticales · acelga en sustrato inerte',
-      cosecha:'Cosecha estimada — semana 6', cosechaDesc:'Uso previsto en actividades de difusión y ferias del CIEHS'
-    }
-  };
-
-  function renderTrace(key){
-    var d = LOTES[key];
-    if(!d) return;
-    if(labelEl) labelEl.innerHTML = 'LOTE ' + d.lote + '<br>' + d.modulo + ' · ' + d.especie;
-    stepsEl.innerHTML =
-      '<div class="step"><span class="dot"></span><div><b>' + d.siembra + '</b><span>' + d.siembraDesc + '</span></div></div>' +
-      '<div class="step"><span class="dot"></span><div><b>Insumos registrados</b><span>' + d.insumos + '</span></div></div>' +
-      '<div class="step"><span class="dot"></span><div><b>' + d.fase + '</b><span>' + d.faseDesc + '</span></div></div>' +
-      '<div class="step"><span class="dot"></span><div><b>' + d.cosecha + '</b><span>' + d.cosechaDesc + '</span></div></div>';
-  }
-
-  select.addEventListener('change', function(){ renderTrace(select.value); });
-  renderTrace(select.value);
 })();
 
 /* ===========================================================================

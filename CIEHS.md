@@ -5,7 +5,7 @@ tags: [ciehs, moc, indice]
 institucion: I.E. N.° 80033 “José Olaya Balandra” — Huanchaco, La Libertad, Perú
 produccion: https://ciehs.vercel.app
 estado: en produccion
-actualizado: 2026-09-04
+actualizado: 2026-09-08
 ---
 
 # CIEHS · Índice
@@ -16,9 +16,12 @@ está cada cosa.
 
 > [!abstract] En una línea
 > Portal del laboratorio de hidroponía escolar de la I.E. N.° 80033 “José Olaya
-> Balandra”, en Huanchaco. Doce secciones más privacidad, datos servidos desde
+> Balandra”, en Huanchaco. **280 estudiantes de 1.° a 5.° de secundaria**, diez
+> equipos de gestión y **quince módulos de raíz flotante (DWC)** que hoy operan
+> **sin bomba de aire**. Trece secciones más privacidad, datos servidos desde
 > Supabase y códigos QR que unen el laboratorio físico con el digital.
 > **Lema:** «Cultivamos Ciencia, Cosechamos Futuro».
+> **Enfoque rector:** Habilidades de Pensamiento de Orden Superior (HPOS).
 
 ---
 
@@ -42,11 +45,12 @@ está cada cosa.
 | Área | Estado |
 |---|---|
 | Alojamiento | Vercel, proyecto propio, cabeceras de seguridad activas |
-| Enrutado | 13 rutas con URL propia, historial y enlaces compartibles |
+| Enrutado | 14 rutas con URL propia, historial y enlaces compartibles |
 | Códigos QR | 9 reales, verificados con un lector independiente |
-| Base de datos | Esquema `ciehs` conectado, 7 tablas, RLS probado por rol |
-| Panel | Supabase Auth + comprobación de administrador |
-| Identidad | Escudo institucional oficial en uso |
+| Base de datos | Esquema `ciehs` conectado, **12 tablas**, RLS probado por rol |
+| Panel | Supabase Auth + comprobación de administrador · **7 pestañas** |
+| Identidad | Escudo, sello y mural oficiales · **línea gráfica luminosa** (fondo claro) |
+| Infraestructura | **15 módulos DWC activos sin bomba de aire**; NFT y vertical solo como proyección |
 | Privacidad | Página publicada, **pendiente de aprobación por dirección** |
 | Seguridad | CSP sin `unsafe-inline` (scripts ni estilos) · pentest sin hallazgos explotables en el CIEHS |
 | Arena | 5 niveles, 150 retos, 2 expediciones diarias |
@@ -57,10 +61,13 @@ está cada cosa.
 
 1. **Aprobar el protocolo de imagen** antes de publicar la primera fotografía de
    un estudiante → [[CIEHS-Privacidad-Menores]]
-2. **Equipos reales** en lugar de los seis nombres ficticios.
-3. **Fotografías del laboratorio** y de los cuatro módulos.
-4. **Archivos descargables** para docentes: los filtros funcionan, no hay PDF.
-5. **Interfaz de edición** de investigaciones y recursos en el panel.
+2. **Fotografías del laboratorio** y de los quince módulos DWC.
+3. **Archivos descargables**: la carpeta de campo y el espacio docente ya tienen
+   panel de carga; faltan los archivos reales (empezando por el audio-cuento
+   «El viaje de una gota de agua»).
+4. **Primeras entradas de la carpeta de campo** y de la bitácora agronómica
+   (los seis lotes existen, sin fechas ni mediciones todavía).
+5. **Bombas de aire** para los quince módulos: primera mejora planificada.
 6. **Marcador entre clases** de la Arena: hoy el récord es solo local → [[CIEHS-Arena-Juego]]
 7. **Despliegue automático** desde GitHub.
 8. Resolver la contradicción de licencia (MIT vs. «todos los derechos
@@ -71,10 +78,18 @@ está cada cosa.
 ## Referencia rápida
 
 - **Producción:** https://ciehs.vercel.app
-- **Módulos:** `MOD-NFT-01` (NFT) · `MOD-DWC-02` (Raíz Flotante) ·
-  `MOD-SUS-03` (Sustrato) · `MOD-VER-04` (Vertical)
+- **Módulos:** `MOD-DWC-01` … `MOD-DWC-15`, todos raíz flotante y **sin bomba de
+  aire**. El 15 es almácigo y rotación. `PROY-NFT` y `PROY-VER` son proyecciones
+  a futuro, no infraestructura instalada.
+- **Especies:** lechuga crespa · lechuga americana · espinaca · cebolla china ·
+  albahaca · acelga
+- **Equipos de gestión (10):** Indagación · Cultivo y manejo hidropónico ·
+  Monitoreo y registro · Cosecha y acondicionamiento · Producción y comunicación ·
+  Ventas y atención · Tesorería y registro de ventas · Inventario ·
+  Impacto ambiental · Coordinación
 - **Investigaciones:** `INV-2026-01` (concentración de solución nutritiva en
   lechuga) · `INV-2026-02` (bioestimulante de lenteja en enraizamiento)
-- **Cifras:** 120 estudiantes 3.°–5.° · 6 equipos · 4 módulos · 20 kg de cosecha
-  acumulada · 90 % de ahorro hídrico
+- **Cifras:** 280 estudiantes 1.°–5.° de secundaria · 10 equipos · 15 módulos DWC ·
+  20 kg de cosecha acumulada · 90 % de ahorro hídrico
+- **Horario:** lunes a viernes, 1:00 p. m. – 6:00 p. m.
 - **Contacto:** ciehs.olaya@gmail.com · Área de Ciencia y Tecnología (CyT)

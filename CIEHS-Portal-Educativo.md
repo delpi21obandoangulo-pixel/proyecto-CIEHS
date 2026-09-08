@@ -130,12 +130,23 @@ Los valores de respaldo del HTML se mantienen sincronizados con los de la base
 ## 6. Datos institucionales oficiales
 
 - **Lema:** «Dios, Patria y Cultura» · **Eje:** Reto Acción por el Clima (ODS 13)
-- **Cifras:** 120 estudiantes de 3.° a 5.° de secundaria · 6 equipos ·
-  4 módulos activos · 20 kg de cosecha acumulada · 90 % de ahorro hídrico
-- **Módulos:** `MOD-NFT-01` (NFT) · `MOD-DWC-02` (Raíz Flotante) ·
-  `MOD-SUS-03` (Sustrato) · `MOD-VER-04` (Vertical)
+- **Enfoque rector:** Habilidades de Pensamiento de Orden Superior (HPOS) y
+  competencias científicas del CNEB — el estudiante es el protagonista.
+- **Problemática de partida:** escasez y desperdicio de agua · suelos de baja
+  fertilidad · alimentación poco saludable · manejo inadecuado de residuos plásticos
+- **Cifras:** 280 estudiantes de 1.° a 5.° de secundaria · 10 equipos de gestión ·
+  15 módulos activos · 20 kg de cosecha acumulada · 90 % de ahorro hídrico
+- **Módulos:** `MOD-DWC-01` … `MOD-DWC-15`, **todos raíz flotante (DWC)** y
+  **operando sin bomba de aire** (la aireación forzada es mejora planificada).
+  `PROY-NFT` y `PROY-VER` son proyecciones a futuro: no están instalados.
+- **Especies:** lechuga crespa · lechuga americana · espinaca · cebolla china ·
+  albahaca · acelga
+- **Equipos de gestión:** Indagación · Cultivo y manejo hidropónico · Monitoreo y
+  registro · Cosecha y acondicionamiento · Producción y comunicación · Ventas y
+  atención · Tesorería y registro de ventas · Inventario · Impacto ambiental ·
+  Coordinación
 - **Contacto:** ciehs.olaya@gmail.com · Área de Ciencia y Tecnología (CyT) ·
-  lunes a viernes, 8:00 a 13:00
+  lunes a viernes, 1:00 p. m. a 6:00 p. m.
 - **Paleta:** `#10b981` primario · `#059669` oscuro · `#0284c7` azul de Huanchaco
 
 ---
@@ -144,11 +155,14 @@ Los valores de respaldo del HTML se mantienen sincronizados con los de la base
 
 - [x] Sustituir la marca vectorial provisional por el **escudo institucional** → [[CIEHS-Identidad-Visual]].
 - [x] Imagen real del **mural** integrada con puntos interactivos.
-- [ ] **Fotografías del laboratorio y de los cuatro módulos**, sujetas al
+- [x] **Carpeta de campo digital**, **bitácora agronómica administrable**,
+      **espacio docente** y **sección de comunidad** (pedidos, comentarios
+      moderados y panel de transparencia) publicados y conectados a la base.
+- [ ] **Fotografías del laboratorio y de los quince módulos DWC**, sujetas al
       protocolo de [[CIEHS-Privacidad-Menores]].
-- [ ] **Archivos descargables** para docentes: los filtros funcionan pero no hay
-      ni un PDF detrás.
-- [ ] Sustituir los **equipos ficticios** por los reales, sin datos de menores.
+- [ ] **Archivos descargables**: el panel ya permite cargarlos; faltan los
+      archivos reales, empezando por el audio-cuento «El viaje de una gota de agua».
+- [x] Sustituir los equipos ficticios por los **diez equipos de gestión reales**, sin datos de menores.
 - [x] **Página de privacidad y protocolo de imagen** publicada; falta la
       aprobación de dirección → [[CIEHS-Privacidad-Menores]].
 - [ ] Conectar el repositorio a Vercel para despliegue automático.

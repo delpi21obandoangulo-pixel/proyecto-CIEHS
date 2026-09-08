@@ -66,11 +66,30 @@ rechaza y RLS también.
 | Tabla | Contenido | Lectura pública |
 |---|---|---|
 | `site_config` | Portada, KPIs y aviso institucional (fila única) | sí |
-| `modules` | Los 4 módulos y sus rangos objetivo de pH y CE | solo `published` |
+| `modules` | Los 15 módulos DWC y las 2 proyecciones, con sus rangos de pH y CE | solo `published` |
 | `telemetry_readings` | Lecturas de pH y CE con fecha y autor | solo de módulos publicados |
 | `investigations` | Fichas de investigación | solo `published` |
-| `resources` | Recursos para docentes | solo `published` |
+| `resources` | Recursos del espacio docente | solo `published` |
 | `qr_codes` | Destino y ubicación de cada código QR | solo `active` |
+| `field_notes` | Carpeta de campo digital | solo `published` |
+| `crop_log` | Bitácora agronómica por lote | solo `published` |
+| `orders` | Pedidos de cosecha | **no** — solo administración |
+| `community_comments` | Caja de comentarios, moderada | solo `published` |
+| `transparency_entries` | Ingresos y egresos publicados | solo `published` |
 | `admins` | Quién puede escribir | no |
 
-La escritura exige sesión iniciada **y** figurar en `ciehs.admins`.
+La escritura exige sesión iniciada **y** figurar en `ciehs.admins`, con dos
+excepciones deliberadas: cualquiera puede **insertar** en `orders` y en
+`community_comments`, porque son los formularios abiertos de la comunidad. Ni
+una ni otra queda expuesta por ello — `orders` no tiene ninguna política de
+lectura pública, y un comentario nace forzado a `published = false`, de modo que
+solo aparece en el portal cuando un administrador lo aprueba.
+
+## Aplicar los cambios
+
+`01_schema.sql` crea el esquema base; `02_infraestructura_2026.sql` añade la
+infraestructura real (15 módulos DWC, sin bomba de aire) y las tablas de las
+secciones nuevas. Ambos son idempotentes y se aplican **de forma aislada** (SQL
+Editor o `execute_sql`), nunca con `supabase db push` ni `apply_migration`: el
+historial `supabase_migrations.schema_migrations` es global en esta instancia
+compartida y escribirlo contaminaría a los demás proyectos.

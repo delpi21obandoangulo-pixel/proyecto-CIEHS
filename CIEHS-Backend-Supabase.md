@@ -54,14 +54,38 @@ instancia afecta a los tres proyectos a la vez.
 | Tabla | Contenido | Lectura pública |
 |---|---|---|
 | `site_config` | Portada, KPIs y aviso institucional (**fila única**, `id = 1`) | sí |
-| `modules` | Los 4 módulos y sus rangos objetivo de pH y CE | solo `published` |
+| `modules` | Los **15 módulos DWC** más las dos proyecciones (`PROY-NFT`, `PROY-VER`) y sus rangos objetivo de pH y CE | solo `published` |
 | `telemetry_readings` | Lecturas de pH y CE con fecha y autor | solo de módulos publicados |
 | `investigations` | Fichas de investigación completas | solo `published` |
-| `resources` | Recursos para docentes | solo `published` |
+| `resources` | Recursos del espacio docente (con `file_kind`, `duration`, `featured`) | solo `published` |
 | `qr_codes` | Destino y ubicación de cada código QR | solo `active` |
+| `field_notes` | **Carpeta de campo digital**: artículos, informes, fotos y evidencias | solo `published` |
+| `crop_log` | **Bitácora agronómica**: lote, siembra, semana, pH, CE, fase y cosecha | solo `published` |
+| `orders` | Pedidos de cosecha de la comunidad | **no** — solo administración |
+| `community_comments` | Caja de comentarios, moderada antes de publicar | solo `published` |
+| `transparency_entries` | Ingresos y egresos del panel de transparencia | solo `published` |
 | `admins` | Quién puede escribir | **no** |
 
-7 tablas · 13 políticas · RLS activo en las 7.
+12 tablas · RLS activo en las 12.
+
+### Escritura abierta al público: las dos excepciones
+
+`orders` y `community_comments` son las únicas tablas donde el rol `anon` puede
+**insertar**, porque son formularios abiertos de la comunidad. Ninguna de las dos
+queda por eso expuesta:
+
+- `orders` **no tiene política de lectura pública en absoluto**. Un pedido lleva
+  nombre y contacto de una familia; se escribe y solo lo lee la administración.
+  La política de alta exige además `status = 'pendiente'`: nadie puede darse de
+  alta un pedido ya «entregado».
+- `community_comments` nace con `published = false` forzado por el `with check`
+  de la política de alta, junto con `reply is null`. Nadie puede autopublicarse
+  ni fabricar una respuesta del CIEHS. La lectura pública solo alcanza a lo que
+  un administrador ha aprobado.
+
+Ambos formularios llevan además un campo trampa (*honeypot*) en el cliente y
+`check` de longitud en las columnas. Probado con el rol anónimo: inserta, y al
+intentar leer devuelve cero filas.
 
 ### Detalles que no son obvios
 

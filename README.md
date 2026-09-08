@@ -50,28 +50,45 @@ El portal organiza el trabajo pedagógico bajo el enfoque de **indagación cient
 
 ### Módulos reales de producción
 
-El laboratorio hidropónico opera con **4 módulos** físicos, cada uno documentado y trazado dentro del portal:
+El laboratorio hidropónico opera con **15 módulos** físicos, **todos de raíz flotante** (*Deep Water Culture*, DWC), cada uno documentado y trazado dentro del portal:
 
-| Código | Sistema |
-|---|---|
-| `MOD-NFT-01` | Técnica de Película de Nutrientes (*Nutrient Film Technique*) |
-| `MOD-DWC-02` | Cultivo en Aguas Profundas (*Deep Water Culture*) |
-| `MOD-SUS-03` | Sustrato / Sistema Sustentable |
-| `MOD-VER-04` | Cultivo Vertical |
+| Código | Sistema | Estado |
+|---|---|---|
+| `MOD-DWC-01` … `MOD-DWC-14` | Raíz flotante (*Deep Water Culture*) | Activos |
+| `MOD-DWC-15` | Raíz flotante — almácigo y rotación de cultivos | Activo |
+| `PROY-NFT` | Técnica de Película de Nutrientes (*Nutrient Film Technique*) | **Proyección a futuro — no instalado** |
+| `PROY-VER` | Cultivo vertical en columnas | **Proyección a futuro — no instalado** |
 
-### 🥬 Diversificación de cultivos
+> [!IMPORTANT]
+> Los quince módulos **operan actualmente sin bomba de aire**: la oxigenación se
+> consigue por difusión en la superficie y agitación manual en cada control. La
+> aireación forzada está **planificada como mejora a futuro**, no disponible hoy.
+> El portal lo declara explícitamente para que cualquier resultado publicado sea
+> reproducible.
 
-- Lechuga crespa
-- Espinaca
-- Cebollita china
-- Aromáticas
+### 🥬 Especies cultivadas
+
+Lechuga crespa · Lechuga americana · Espinaca · Cebolla china · Albahaca · Acelga.
+
+### 👥 Comunidad y equipos
+
+**280 estudiantes de 1.° a 5.° de secundaria**, organizados en **10 equipos de gestión**: Indagación · Cultivo y manejo hidropónico · Monitoreo y registro · Cosecha y acondicionamiento · Producción y comunicación · Ventas y atención · Tesorería y registro de ventas · Inventario · Impacto ambiental · Coordinación.
+
+### 🧠 Enfoque pedagógico rector
+
+**Habilidades de Pensamiento de Orden Superior (HPOS)** y competencias científicas del CNEB: el trabajo se diseña para que el estudiante **analice, evalúe y cree**, no para que recuerde. El cultivo es el fenómeno de estudio; el estudiante es el protagonista y el docente pregunta y acompaña.
 
 ### 🛠️ Herramientas del portal
 
-- **🧪 Simulador hidropónico** — modela el comportamiento de los sistemas NFT, DWC, sustrato y vertical de forma interactiva.
-- **📱 Trazabilidad QR** — ocho códigos QR reales, generados en el navegador, que enlazan cada punto del laboratorio físico con su sección del portal. Descargables en SVG e imprimibles en hoja.
+- **📓 Carpeta de campo digital** — repositorio donde estudiantes y docentes publican artículos, informes científicos, fotografías y evidencias experimentales, con moderación docente previa.
+- **🌱 Bitácora agronómica administrable** — fecha de siembra, semana en curso, pH, CE, fase y cosecha de cada lote, registrados desde el panel y publicados en la sección Trazabilidad.
+- **🎓 Espacio docente y curricular** — recursos reproducibles en el aula (audio-cuento, guías de laboratorio, fichas, rúbricas) con carga desde el panel de administración y filtros por nivel, área y tipo.
+- **🤝 Comunidad, pedidos y transparencia** — reservas de cosecha, caja de comentarios moderada y panel público de ingresos y egresos.
+- **🧪 Simulador de cultivo** — modela el efecto del agua, el pH y la luz sobre un módulo de raíz flotante.
+- **📱 Trazabilidad QR** — ocho estaciones QR reales, generadas en el navegador, con explicación ampliada de qué encontrará quien las escanee (mural, hidroponía, investigaciones, comunidad…). Descargables en SVG e imprimibles en hoja.
 - **💧 Calculadora hídrica** — estima el consumo y ahorro de agua frente al cultivo convencional en suelo.
-- **🔐 Panel CMS (administración)** — permite editar portada, indicadores y avisos institucionales.
+- **🎮 Pasaporte CIEHS** — banco de preguntas barajado en cada ronda que prioriza lo aún no acertado, con cuatro insignias que funcionan como mapa de comprensión, no como premio.
+- **🔐 Panel CMS (administración)** — siete pestañas: portada, lecturas, investigaciones, bitácora, carpeta de campo, recursos y comunidad.
   > **Acceso:** solicitar las credenciales al coordinador del CIEHS. No se publican en este repositorio.
   >
   > ⚠️ **Limitación conocida.** El panel valida el acceso en el navegador y guarda en `localStorage`, así que

@@ -78,6 +78,17 @@
   // estan vetados al rol anonimo, y pedir "*" haria fallar la consulta entera.
   var COLS_CONFIG = 'id, hero_title, hero_subtitle, kpi_cosecha_kg, kpi_ahorro_pct, aviso, aviso_active, updated_at';
 
+  var COLS_NOTA    = 'id, code, title, summary, body, kind, team, author_label, media_url, ' +
+                     'published_on, position, published, updated_at';
+  var COLS_LOTE    = 'id, lote, crop, scientific, module_code, sown_on, week, ph, ce, phase, ' +
+                     'harvest_on, harvest_kg, notes, position, published, updated_at';
+  var COLS_RECURSO = 'id, title, description, level, area, kind, file_url, file_kind, duration, ' +
+                     'featured, position, published, updated_at';
+  var COLS_CAJA    = 'id, occurred_on, period, concept, kind, amount_pen, note, published';
+  // Los pedidos llevan nombre y contacto de familias: no hay politica de lectura
+  // publica sobre esa tabla y estas columnas solo llegan con sesion de admin.
+  var COLS_PEDIDO  = 'id, requester_name, contact, crop, qty_kg, notes, status, created_at';
+
   CIEHSData.cargarPortal = function () {
     return Promise.all([
       cliente.from('site_config').select(COLS_CONFIG).eq('id', 1).maybeSingle(),
@@ -89,6 +100,19 @@
       cliente.from('telemetry_readings')
              .select('module_id, measured_at, ph, ce, water_temp_c')
              .order('measured_at', { ascending: false })
+             .limit(200),
+      // Secciones nuevas de 2026. Van en la misma tanda que el resto para que
+      // el portal se pinte de una sola vez y no encadene esperas.
+      cliente.from('field_notes').select(COLS_NOTA).order('position', { ascending: true }),
+      cliente.from('crop_log').select(COLS_LOTE).order('position', { ascending: true }),
+      cliente.from('resources').select(COLS_RECURSO).order('position', { ascending: true }),
+      cliente.from('community_comments')
+             .select('id, display_name, role, message, reply, created_at')
+             .order('created_at', { ascending: false })
+             .limit(60),
+      cliente.from('transparency_entries')
+             .select(COLS_CAJA)
+             .order('occurred_on', { ascending: false })
              .limit(200)
     ]).then(function (r) {
       var err = r.find(function (x) { return x.error; });
@@ -104,7 +128,12 @@
         modulos: r[1].data || [],
         qr: r[2].data || [],
         investigaciones: r[3].data || [],
-        lecturas: r[4].data || []
+        lecturas: r[4].data || [],
+        carpeta: r[5].data || [],
+        bitacora: r[6].data || [],
+        recursos: r[7].data || [],
+        comentarios: r[8].data || [],
+        caja: r[9].data || []
       };
     }).catch(function (e) {
       CIEHSData.conectado = false;
@@ -255,6 +284,111 @@
     return cliente.from('investigations').delete().eq('code', code)
       .then(function (r) { if (r.error) throw r.error; return true; });
   };
+
+  /* ------------------- secciones administrables 2026 --------------------- */
+
+  // Todas estas colecciones siguen el mismo patron que investigations: el panel
+  // ve tambien los borradores porque la politica de escritura de admins es FOR
+  // ALL (e incluye SELECT), y el publico solo ve lo publicado.
+  function listar(tabla, cols, orden, asc) {
+    return cliente.from(tabla).select(cols).order(orden, { ascending: asc !== false })
+      .then(function (r) { if (r.error) throw r.error; return r.data || []; });
+  }
+  function guardar(tabla, cols, fila, conflicto) {
+    var q = conflicto
+      ? cliente.from(tabla).upsert(fila, { onConflict: conflicto })
+      : (fila.id ? cliente.from(tabla).update(fila).eq('id', fila.id)
+                 : cliente.from(tabla).insert(fila));
+    return q.select(cols).maybeSingle()
+      .then(function (r) { if (r.error) throw r.error; return r.data; });
+  }
+  function eliminar(tabla, columna, valor) {
+    return cliente.from(tabla).delete().eq(columna, valor)
+      .then(function (r) { if (r.error) throw r.error; return true; });
+  }
+
+  function vacio(v) { return v === '' || v === undefined ? null : v; }
+
+  /* carpeta de campo */
+  CIEHSData.listarNotas = function () { return listar('field_notes', COLS_NOTA, 'position'); };
+  CIEHSData.guardarNota = function (n) {
+    return guardar('field_notes', COLS_NOTA, {
+      code: n.code, title: n.title, summary: vacio(n.summary), body: vacio(n.body),
+      kind: n.kind || 'informe', team: vacio(n.team), author_label: vacio(n.authorLabel),
+      media_url: vacio(n.mediaUrl), published_on: vacio(n.publishedOn),
+      position: Number(n.position || 0), published: !!n.published
+    }, 'code');
+  };
+  CIEHSData.eliminarNota = function (code) { return eliminar('field_notes', 'code', code); };
+
+  /* bitacora agronomica */
+  CIEHSData.listarLotes = function () { return listar('crop_log', COLS_LOTE, 'position'); };
+  CIEHSData.guardarLote = function (l) {
+    return guardar('crop_log', COLS_LOTE, {
+      lote: l.lote, crop: l.crop, scientific: vacio(l.scientific), module_code: vacio(l.moduleCode),
+      sown_on: vacio(l.sownOn), week: vacio(l.week), ph: vacio(l.ph), ce: vacio(l.ce),
+      phase: vacio(l.phase), harvest_on: vacio(l.harvestOn), harvest_kg: vacio(l.harvestKg),
+      notes: vacio(l.notes), position: Number(l.position || 0), published: !!l.published
+    }, 'lote');
+  };
+  CIEHSData.eliminarLote = function (lote) { return eliminar('crop_log', 'lote', lote); };
+
+  /* recursos docentes */
+  CIEHSData.listarRecursos = function () { return listar('resources', COLS_RECURSO, 'position'); };
+  CIEHSData.guardarRecurso = function (r) {
+    return guardar('resources', COLS_RECURSO, {
+      id: r.id || undefined,
+      title: r.title, description: vacio(r.description), level: r.level || 'todos',
+      area: vacio(r.area), kind: vacio(r.kind), file_url: vacio(r.fileUrl),
+      file_kind: vacio(r.fileKind), duration: vacio(r.duration),
+      featured: !!r.featured, position: Number(r.position || 0), published: !!r.published
+    });
+  };
+  CIEHSData.eliminarRecurso = function (id) { return eliminar('resources', 'id', id); };
+
+  /* transparencia */
+  CIEHSData.listarCaja = function () {
+    return listar('transparency_entries', COLS_CAJA, 'occurred_on', false);
+  };
+  CIEHSData.guardarMovimiento = function (m) {
+    return guardar('transparency_entries', COLS_CAJA, {
+      id: m.id || undefined,
+      occurred_on: m.occurredOn, period: vacio(m.period), concept: m.concept,
+      kind: m.kind, amount_pen: Number(m.amount || 0), note: vacio(m.note),
+      published: !!m.published
+    });
+  };
+  CIEHSData.eliminarMovimiento = function (id) { return eliminar('transparency_entries', 'id', id); };
+
+  /* pedidos de cosecha — alta abierta, lectura solo para administracion */
+  CIEHSData.crearPedido = function (p) {
+    return cliente.from('orders').insert({
+      requester_name: p.nombre, contact: p.contacto, crop: vacio(p.cultivo),
+      qty_kg: vacio(p.kg), notes: vacio(p.notas), status: 'pendiente'
+    }).then(function (r) { if (r.error) throw r.error; return true; });
+  };
+  CIEHSData.listarPedidos = function () { return listar('orders', COLS_PEDIDO, 'created_at', false); };
+  CIEHSData.cambiarEstadoPedido = function (id, estado) {
+    return cliente.from('orders').update({ status: estado }).eq('id', id)
+      .then(function (r) { if (r.error) throw r.error; return true; });
+  };
+  CIEHSData.eliminarPedido = function (id) { return eliminar('orders', 'id', id); };
+
+  /* comentarios de la comunidad — nacen sin publicar y los aprueba un admin */
+  CIEHSData.crearComentario = function (c) {
+    return cliente.from('community_comments').insert({
+      display_name: c.nombre, role: vacio(c.rol), message: c.mensaje, published: false
+    }).then(function (r) { if (r.error) throw r.error; return true; });
+  };
+  CIEHSData.listarComentarios = function () {
+    return listar('community_comments',
+      'id, display_name, role, message, reply, published, created_at', 'created_at', false);
+  };
+  CIEHSData.moderarComentario = function (id, cambios) {
+    return cliente.from('community_comments').update(cambios).eq('id', id)
+      .then(function (r) { if (r.error) throw r.error; return true; });
+  };
+  CIEHSData.eliminarComentario = function (id) { return eliminar('community_comments', 'id', id); };
 
   global.CIEHSData = CIEHSData;
 })(window);

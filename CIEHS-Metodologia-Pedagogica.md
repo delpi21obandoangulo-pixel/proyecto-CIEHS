@@ -85,7 +85,7 @@ Tecnología**.
 - **Capacidades:** Diseña estrategias · Genera y registra datos · Analiza datos e información.
 - **En el CIEHS:** registro guiado — medición semanal de altura y número de hojas
   con regla y bitácora, traslado a un gráfico de barras, y comparación de
-  germinación entre algodón húmedo y sustrato inerte.
+  germinación entre algodón húmedo y balsa de raíz flotante.
 - **Evidencia:** bitácora de mediciones, gráfico de barras del crecimiento y
   conclusión escrita con sus propias palabras.
 
@@ -98,7 +98,7 @@ Tecnología**.
 - **En el CIEHS:** diseño experimental con control de variables — bloques
   completamente al azar (**DBCA**) con 3 tratamientos y 4 réplicas, cálculo de
   biomasa fresca por tratamiento, y prototipado de mejoras sobre los módulos
-  `MOD-NFT-01` a `MOD-VER-04`.
+  `MOD-DWC-01` a `MOD-DWC-15` — empezando por la aireación forzada, hoy ausente.
 - **Evidencia:** informe de investigación con análisis de resultados y una
   solución tecnológica o mejora aplicada al laboratorio.
 
@@ -119,7 +119,8 @@ Agenda 2030. La indagación conecta además con ODS 2, 3, 4, 6, 12 y 15.
 La justificación es territorial y concreta: Huanchaco enfrenta **salinización de
 suelos** por cercanía al litoral y uso histórico de aguas subterráneas, y **estrés
 hídrico costero**. La hidroponía responde a ambas restricciones — prescinde del
-suelo como sustrato y recircula la solución nutritiva.
+suelo como sustrato y mantiene el agua confinada en el contenedor del módulo, sin
+infiltración ni evaporación en tierra.
 
 > [!caution] Precisión sobre UNESCO
 > El portal declara **inspiración y alineación** con los enfoques de Educación para
@@ -134,12 +135,24 @@ suelo como sustrato y recircula la solución nutritiva.
 | Decisión | Estado | Motivo |
 |---|---|---|
 | Sección `metodologia` **estática** en `index.html` | vigente | Se priorizó calidad visual, UX y semántica sin añadir tablas al esquema. Si más adelante la coordinación necesita editarla sin tocar código, el patrón a replicar es el de [[CIEHS-Backend-Supabase]] |
-| Identificador **`MOD-DWC-02`** conservado | vigente | Identifica el **módulo físico**: es lo que irá rotulado y lo que apunta su código QR. «Raíz Flotante» es el nombre en castellano de la misma técnica (*Deep Water Culture*), no un sistema distinto |
+| Nomenclatura **`MOD-DWC-01`…`15`** | vigente | Identifica cada **módulo físico**: es lo que va rotulado y lo que apunta su código QR. «Raíz Flotante» es el nombre en castellano de la misma técnica (*Deep Water Culture*), no un sistema distinto |
+| **Un solo sistema activo: raíz flotante** | vigente | La maqueta anterior describía cuatro sistemas (NFT, DWC, sustrato inerte y vertical) que no existen en el laboratorio. El sustrato inerte se retiró por completo; NFT y vertical quedan marcados **estrictamente como proyecciones a futuro** |
+| **Sin bomba de aire**, dicho explícitamente | vigente | Los quince módulos oxigenan por difusión superficial y agitación manual. Ocultarlo haría irreproducible cualquier resultado publicado; declararlo lo convierte además en una variable investigable |
+| **HPOS como enfoque rector** | vigente | El objetivo no es el cultivo sino que el estudiante **analice, evalúe y cree**. El cultivo es el fenómeno de estudio; el docente pregunta y acompaña |
 | Ruta como `<ol>`/`<li>` con contador CSS | vigente | La numeración es información, no adorno: un lector de pantalla anuncia la posición de cada paso. Un único contador sobre `.ruta` hace correr la cuenta 1→9 a través de las tres listas |
 | Rejilla de 3 fases, sin scroll horizontal | vigente | La tira anterior escondía media ruta en escritorio y obligaba a arrastrar en móvil. Con tres fases: o caben las tres o va una por fila — dos columnas dejaban la fase 3 huérfana |
 
-**Módulos del laboratorio:** `MOD-NFT-01` (NFT) · `MOD-DWC-02` (Raíz Flotante) ·
-`MOD-SUS-03` (Sustrato) · `MOD-VER-04` (Vertical).
+**Módulos del laboratorio:** `MOD-DWC-01` … `MOD-DWC-15`, todos raíz flotante
+(*Deep Water Culture*) y **operando sin bomba de aire**. El 15 se reserva a
+almácigo y rotación. `PROY-NFT` y `PROY-VER` son proyecciones a futuro.
+
+**Especies cultivadas:** lechuga crespa · lechuga americana · espinaca ·
+cebolla china · albahaca · acelga.
+
+**Comunidad:** 280 estudiantes de 1.° a 5.° de secundaria en diez equipos de
+gestión (Indagación · Cultivo y manejo hidropónico · Monitoreo y registro ·
+Cosecha y acondicionamiento · Producción y comunicación · Ventas y atención ·
+Tesorería y registro de ventas · Inventario · Impacto ambiental · Coordinación).
 
 ---
 
