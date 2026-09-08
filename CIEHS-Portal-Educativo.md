@@ -105,7 +105,41 @@ Cabeceras en `vercel.json`: `Content-Security-Policy`, `Strict-Transport-Securit
 > nombres de archivo no lleven hash.**
 
 `.vercelignore` excluye `db/`, todos los `.md` y `.env*`: la documentación
-interna y las notas de esta bóveda no se publican.
+interna y las notas de esta bóveda no se publican **en el sitio**.
+
+> [!warning] El repositorio de GitHub sí es público
+> `.vercelignore` solo controla qué sube al *hosting*, no qué hay en el
+> repositorio. `github.com/delpi21obandoangulo-pixel/proyecto-CIEHS` es
+> **público** y contiene todas estas notas, incluidos el pentest y la auditoría
+> de seguridad. Si algo no debe ser legible por cualquiera, no basta con
+> añadirlo a `.vercelignore`: hay que sacarlo del repositorio o hacerlo privado.
+
+### Despliegue (estado a 2026-09-08)
+
+| Pieza | Estado |
+|---|---|
+| Enlace local `.vercel/project.json` | Correcto: `delpi21obandoangulo-pixels-projects/ciehs` |
+| Despliegue manual | **Funciona directo**: `vercel --prod` sin banderas |
+| Rama de producción | `master` (es la rama por defecto del repositorio) |
+| Despliegue automático por push | **NO habilitado aún** — ver abajo |
+
+> [!bug] `vercel git connect` falla: falta instalar la GitHub App
+> Devuelve *«Failed to connect … Make sure there aren't any typos and that you
+> have access to the repository»* aunque el repositorio existe, es público y el
+> remoto `origin` es correcto. La causa es que la **Vercel GitHub App no está
+> instalada** en la cuenta `delpi21obandoangulo-pixel`, o esa cuenta de GitHub no
+> está vinculada a la de Vercel. Se resuelve **desde el navegador**, no por CLI:
+> Vercel → proyecto `ciehs` → Settings → Git → *Connect Git Repository*, y
+> autorizar la app sobre `proyecto-CIEHS`. Después ya no hace falta `git connect`.
+
+> [!danger] Antes de conectar: el remoto debe ir al día
+> En cuanto la app quede instalada, Vercel construirá desde la punta de `master`
+> **del repositorio**, no desde la copia local. Si el remoto va por detrás de lo
+> que está en producción, la primera compilación automática **revierte el sitio**.
+> Ocurrió casi: `origin/master` se quedó en `078fe0f` mientras producción ya
+> servía `dd24f99`. Se resolvió empujando el commit antes de tocar nada.
+> **Regla: `git push` antes de conectar, y comprobar que `git rev-parse HEAD` y
+> `git rev-parse origin/master` coinciden.**
 
 > [!danger] No añadir nada en línea, ni script ni estilo
 > La CSP es `script-src 'self'` y `style-src 'self'` con `style-src-attr 'none'`.
@@ -165,7 +199,10 @@ Los valores de respaldo del HTML se mantienen sincronizados con los de la base
 - [x] Sustituir los equipos ficticios por los **diez equipos de gestión reales**, sin datos de menores.
 - [x] **Página de privacidad y protocolo de imagen** publicada; falta la
       aprobación de dirección → [[CIEHS-Privacidad-Menores]].
-- [ ] Conectar el repositorio a Vercel para despliegue automático.
+- [ ] **Instalar la Vercel GitHub App** desde el navegador para habilitar el
+      despliegue automático por push (§4). El CLI no puede hacerlo: es un flujo
+      OAuth interactivo. Todo lo demás ya está listo — enlace correcto, rama
+      `master` y repositorio sincronizado con producción.
 - [x] Banco de preguntas ampliado a 72, y Arena con 150 retos → [[CIEHS-Arena-Juego]].
 
 ---

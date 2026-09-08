@@ -45,6 +45,8 @@ está cada cosa.
 | Área | Estado |
 |---|---|
 | Alojamiento | Vercel, proyecto propio, cabeceras de seguridad activas |
+| Despliegue | Manual y directo (`vercel --prod`). **Automático por push pendiente**: falta instalar la GitHub App → [[CIEHS-Portal-Educativo]] §4 |
+| Repositorio | `proyecto-CIEHS` en GitHub, **público**, sincronizado con producción |
 | Enrutado | 14 rutas con URL propia, historial y enlaces compartibles |
 | Códigos QR | 9 reales, verificados con un lector independiente |
 | Base de datos | Esquema `ciehs` conectado, **12 tablas**, RLS probado por rol |
@@ -69,7 +71,8 @@ está cada cosa.
    (los seis lotes existen, sin fechas ni mediciones todavía).
 5. **Bombas de aire** para los quince módulos: primera mejora planificada.
 6. **Marcador entre clases** de la Arena: hoy el récord es solo local → [[CIEHS-Arena-Juego]]
-7. **Despliegue automático** desde GitHub.
+7. **Despliegue automático** desde GitHub: solo falta instalar la Vercel GitHub
+   App desde el navegador; el resto ya está configurado → [[CIEHS-Portal-Educativo]]
 8. Resolver la contradicción de licencia (MIT vs. «todos los derechos
    reservados») → [[CIEHS-Auditoria-Seguridad-Auth]]
 
