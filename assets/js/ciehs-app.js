@@ -1441,6 +1441,9 @@
     document.body.style.overflow = 'hidden';
     mostrarConexion();
     if(loginError){ loginError.hidden = true; }
+    // Si ya se entró con código en esta pestaña, directo al formulario.
+    if(D.codigoActivo && D.codigoActivo()){ mostrarFormulario(); return; }
+    // Camino histórico: sesión autenticada listada como admin.
     D.sesion().then(function(ses){
       if(!ses) return false;
       return D.esAdmin();
@@ -1465,9 +1468,7 @@
     if(formStep) formStep.hidden = false;
     abrirPestana('portada');
     rellenarFormulario();
-    D.sesion().then(function(ses){
-      if(whoBox && ses && ses.user) whoBox.textContent = 'Sesión: ' + ses.user.email;
-    });
+    if(whoBox) whoBox.textContent = 'Sesión de administración activa';
   }
 
   function rellenarFormulario(){
@@ -1489,30 +1490,31 @@
   });
 
   function entrar(){
-    var email = (el('adminEmail') || {}).value;
-    var pass  = (el('adminPassword') || {}).value;
-    if(!email || !pass){
-      loginError.textContent = 'Escribe el correo y la contraseña.';
+    var codigo = (el('adminCodigo') || {}).value;
+    if(!codigo || !codigo.trim()){
+      loginError.textContent = 'Escribe el código de acceso.';
       loginError.hidden = false;
       return;
     }
     loginBtn.disabled = true;
     loginError.hidden = true;
-    D.entrar(email.trim(), pass).then(function(){
+    D.entrarConCodigo(codigo).then(function(){
       loginBtn.disabled = false;
-      if(el('adminPassword')) el('adminPassword').value = '';
+      if(el('adminCodigo')) el('adminCodigo').value = '';
       return refrescar().then(mostrarFormulario);
     }).catch(function(e){
       loginBtn.disabled = false;
-      var m = (e && e.message) || 'No se pudo iniciar sesión.';
-      if(/invalid login credentials/i.test(m)) m = 'Correo o contraseña incorrectos.';
+      var m = (e && e.message) || 'No se pudo entrar.';
+      if(/permission denied|PGRST202|function .*verificar_codigo/i.test(m)){
+        m = 'El acceso por código todavía no está activo en la base de datos.';
+      }
       loginError.textContent = m;
       loginError.hidden = false;
     });
   }
 
   if(loginBtn) loginBtn.addEventListener('click', entrar);
-  [el('adminEmail'), el('adminPassword')].forEach(function(inp){
+  [el('adminCodigo')].forEach(function(inp){
     if(!inp) return;
     inp.addEventListener('keydown', function(e){
       if(e.key === 'Enter'){ e.preventDefault(); entrar(); }

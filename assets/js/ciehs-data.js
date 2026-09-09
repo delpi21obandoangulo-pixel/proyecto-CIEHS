@@ -34,6 +34,22 @@
     return;
   }
 
+  // Código de administración activo en esta pestaña. Mientras esté puesto, cada
+  // petición lleva la cabecera X-CIEHS-Code, que is_admin() valida en el servidor
+  // para autorizar las escrituras del panel. Se limpia al salir.
+  var codigoAdmin = null;
+  var fetchBase = (typeof global.fetch === 'function') ? global.fetch.bind(global) : null;
+
+  function fetchConCodigo(input, init) {
+    init = init || {};
+    if (codigoAdmin) {
+      var h = new Headers(init.headers || {});
+      h.set('X-CIEHS-Code', codigoAdmin);
+      init.headers = h;
+    }
+    return fetchBase ? fetchBase(input, init) : fetch(input, init);
+  }
+
   var cliente = global.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     db: { schema: SCHEMA },
     auth: {
@@ -54,7 +70,7 @@
         }
       })()
     },
-    global: { headers: { 'x-client-info': 'ciehs-portal' } }
+    global: { fetch: fetchConCodigo, headers: { 'x-client-info': 'ciehs-portal' } }
   });
 
   CIEHSData.cliente = cliente;
@@ -193,24 +209,31 @@
     });
   };
 
-  CIEHSData.entrar = function (email, password) {
-    return cliente.auth.signInWithPassword({ email: email, password: password })
-      .then(function (r) {
-        if (r.error) throw r.error;
-        // Tener sesion no basta: hay que estar registrado como admin del CIEHS.
-        return CIEHSData.esAdmin().then(function (ok) {
-          if (!ok) {
-            return cliente.auth.signOut().then(function () {
-              throw new Error('Esta cuenta no tiene permisos de administración del CIEHS.');
-            });
-          }
-          return r.data.session;
-        });
-      });
+  // Entrada por código: se valida en el servidor (verificar_codigo, SECURITY
+  // DEFINER). Solo si el servidor confirma, se activa la cabecera que autoriza
+  // las escrituras del panel. Nada de correo ni contraseña.
+  CIEHSData.entrarConCodigo = function (codigo) {
+    codigo = (codigo || '').trim();
+    if (!codigo) return Promise.reject(new Error('Escribe el código de acceso.'));
+    return cliente.rpc('verificar_codigo', { p_codigo: codigo }).then(function (r) {
+      if (r.error) throw r.error;
+      if (r.data !== true) throw new Error('Código incorrecto.');
+      codigoAdmin = codigo;   // desde aquí, cada petición lleva X-CIEHS-Code
+      return true;
+    });
   };
 
-  CIEHSData.salir = function () { return cliente.auth.signOut(); };
+  CIEHSData.codigoActivo = function () { return !!codigoAdmin; };
 
+  CIEHSData.salir = function () {
+    codigoAdmin = null;
+    // Por si quedara una sesión autenticada del camino histórico.
+    return cliente.auth.signOut().catch(function () {});
+  };
+
+  // Comprobación de permisos del lado servidor. Con código activo, cualquier
+  // lectura/escritura protegida ya pasa por is_admin(); esta función deja el
+  // gancho por compatibilidad con el camino histórico (usuario en ciehs.admins).
   CIEHSData.esAdmin = function () {
     return cliente.rpc('is_admin').then(function (r) {
       if (r.error) return false;

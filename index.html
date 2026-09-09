@@ -2651,14 +2651,10 @@
     <div id="adminPinStep">
       <p class="eyebrow">Panel administrativo</p>
       <h3 class="u-margin-top-10px u-font-size-20px" id="adminModalTitle">Acceso restringido</h3>
-      <p class="u-margin-top-10px u-font-size-14px u-color-ink-soft">Ingresa con la cuenta de administración del CIEHS para editar la portada, registrar lecturas de pH y CE y publicar avisos.</p>
+      <p class="u-margin-top-10px u-font-size-14px u-color-ink-soft">Escribe el código de administración del CIEHS para editar la portada, registrar lecturas de pH y CE y publicar avisos.</p>
       <label class="form-field u-margin-top-14px">
-        <span>Correo institucional</span>
-        <input type="email" id="adminEmail" autocomplete="username" placeholder="coordinacion@…">
-      </label>
-      <label class="form-field u-margin-top-10px">
-        <span>Contraseña</span>
-        <input type="password" id="adminPassword" autocomplete="current-password" placeholder="••••••••">
+        <span>Código de acceso</span>
+        <input type="password" id="adminCodigo" inputmode="numeric" autocomplete="off" placeholder="••••••••">
       </label>
       <button type="button" class="btn btn-primary u-margin-top-16px u-width-100pct u-justify-content-center" id="adminPinSubmit">Ingresar</button>
       <p id="adminPinError" class="form-status error" hidden></p>
