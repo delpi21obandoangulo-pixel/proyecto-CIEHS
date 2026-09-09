@@ -1,113 +1,126 @@
 /* ============================================================================
-   CIEHS · Fija la contraseña de la cuenta de administración.
+   CIEHS · Crea o repara la cuenta de administración y la deja lista para entrar.
 
-   Usa la API de administración de GoTrue (auth.admin.updateUserById), que es la
-   via correcta: aplica la politica de contraseñas, mantiene el registro de
-   identidades y deja rastro en la auditoria. Escribir el hash a mano en
-   auth.users con SQL "funciona" pero se salta todo eso.
+   Usa la API de administración de GoTrue (auth.admin.*), que es la vía correcta:
+   aplica la política de contraseñas, crea la identidad de correo y deja rastro
+   en la auditoría. Escribir el hash a mano en auth.users con SQL "funciona"
+   pero se salta todo eso y NO crea la identidad de correo — por eso el login
+   con la cuenta de Google fallaba pase lo que pase con la contraseña.
 
    USO
    ---
-   La clave NUNCA va escrita en este archivo ni en la linea de comandos: se pasa
-   por variable de entorno para que no quede en el historial del terminal.
+   Las credenciales NUNCA van escritas aquí ni en la línea de comandos: por
+   entorno, para que no queden en el historial del terminal.
 
      # PowerShell
-     $env:SUPABASE_SERVICE_ROLE_KEY="<la service_role de kumxtheybmqbfixatnok>"
-     $env:CIEHS_ADMIN_PASSWORD="<la contraseña nueva>"
+     $env:SUPABASE_SERVICE_ROLE_KEY="<service_role de kumxtheybmqbfixatnok>"
+     $env:CIEHS_ADMIN_EMAIL="administrador@tu-dominio-real.com"
+     $env:CIEHS_ADMIN_PASSWORD="<la contraseña>"
      node tools/fijar-clave-admin.js
+     Remove-Item Env:SUPABASE_SERVICE_ROLE_KEY, Env:CIEHS_ADMIN_EMAIL, Env:CIEHS_ADMIN_PASSWORD
 
-     # bash
-     SUPABASE_SERVICE_ROLE_KEY="..." CIEHS_ADMIN_PASSWORD="..." \
-       node tools/fijar-clave-admin.js
-
-   Al terminar, cierra el terminal o limpia las variables:
-     Remove-Item Env:SUPABASE_SERVICE_ROLE_KEY, Env:CIEHS_ADMIN_PASSWORD
-
-   QUE HACE, EN ORDEN
+   QUÉ HACE, EN ORDEN
    ------------------
-   1. Comprueba que la cuenta es la esperada ANTES de tocarla.
-   2. Fija la contraseña y confirma el correo.
-   3. Verifica que la nueva contraseña entra de verdad, iniciando sesion con la
-      clave publicable — el mismo camino exacto que recorre el modal.
-   4. Comprueba que esa sesion pasa is_admin(), que es la segunda puerta.
-   5. Cierra la sesion de prueba.
-
-   Si el paso 3 o el 4 fallan, lo dice: fijar la contraseña sin comprobar que
-   sirve para entrar seria dar por hecho justo lo que hay que demostrar.
-   ========================================================================== */
+   1. Valida que el correo tenga forma real (usuario@dominio.tld). Un correo
+      como "administradorCIEHS@EMAIL" no pasa: GoTrue lo rechazaría.
+   2. Busca la cuenta por correo. Si existe, le fija la contraseña y confirma el
+      correo (updateUserById). Si no, la crea (createUser) — con su identidad de
+      correo, que es lo que faltaba.
+   3. Deja `ciehs.admins` con EXACTAMENTE esta cuenta (borra las demás), acorde
+      a "una única cuenta administradora activa".
+   4. Inicia sesión con la clave publicable —el mismo camino que el modal— y
+      comprueba is_admin(). Si no entra, lo dice: fijar una contraseña sin
+      comprobar que abre la puerta es dar por hecho lo que hay que demostrar.
+   ============================================================================ */
 'use strict';
 
-const URL_SUPABASE = 'https://kumxtheybmqbfixatnok.supabase.co';
-const CLAVE_PUBLICABLE = 'sb_publishable_bUmlZhlNSNuYlGE8QdvVmQ_FJbGWeUO';
-const UUID  = 'c653071f-9b80-41dc-8aee-2f4bcf06c002';
-const CORREO = 'delpi21obandoangulo@gmail.com';
+var URL_SUPABASE  = 'https://kumxtheybmqbfixatnok.supabase.co';
+var CLAVE_PUBLICA = 'sb_publishable_bUmlZhlNSNuYlGE8QdvVmQ_FJbGWeUO';
 
-const SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const NUEVA_CLAVE  = process.env.CIEHS_ADMIN_PASSWORD;
+var SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY;
+var EMAIL        = (process.env.CIEHS_ADMIN_EMAIL || '').trim().toLowerCase();
+var PASSWORD     = process.env.CIEHS_ADMIN_PASSWORD;
 
-function abortar(msg) { console.error('\n✗ ' + msg + '\n'); process.exit(1); }
+function abortar(m) { console.error('\n✗ ' + m + '\n'); process.exit(1); }
 
 if (!SERVICE_ROLE) abortar('Falta SUPABASE_SERVICE_ROLE_KEY en el entorno.');
-if (!NUEVA_CLAVE)  abortar('Falta CIEHS_ADMIN_PASSWORD en el entorno.');
-if (NUEVA_CLAVE.length < 8) abortar('La contraseña es demasiado corta (mínimo 8).');
-
-let createClient;
-try {
-  ({ createClient } = require('@supabase/supabase-js'));
-} catch (e) {
-  abortar('Falta la dependencia. Instálala aquí mismo con:\n' +
-          '    npm install @supabase/supabase-js');
+if (!EMAIL)        abortar('Falta CIEHS_ADMIN_EMAIL en el entorno.');
+if (!PASSWORD)     abortar('Falta CIEHS_ADMIN_PASSWORD en el entorno.');
+if (PASSWORD.length < 8) abortar('La contraseña es demasiado corta (mínimo 8).');
+// Forma de correo real: usuario@dominio.tld. Frena "administradorCIEHS@EMAIL".
+if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(EMAIL)) {
+  abortar('El correo "' + EMAIL + '" no tiene forma válida (usuario@dominio.tld). ' +
+          'GoTrue lo rechazaría. Corrígelo y vuelve a ejecutar.');
 }
 
-// Cliente de administración: sin sesión persistente, que este script no debe
-// dejar nada guardado en disco.
-const admin = createClient(URL_SUPABASE, SERVICE_ROLE, {
-  auth: { persistSession: false, autoRefreshToken: false }
+var createClient;
+try { ({ createClient } = require('@supabase/supabase-js')); }
+catch (e) { abortar('Falta la dependencia. Instálala aquí: npm install @supabase/supabase-js'); }
+
+var admin = createClient(URL_SUPABASE, SERVICE_ROLE, {
+  auth: { persistSession: false, autoRefreshToken: false },
+  db: { schema: 'ciehs' }
 });
 
 (async () => {
-  // ---- 1. Confirmar que es la cuenta correcta ANTES de tocar nada ----------
-  const { data: antes, error: eLeer } = await admin.auth.admin.getUserById(UUID);
-  if (eLeer) abortar('No se pudo leer la cuenta: ' + eLeer.message);
-  if (!antes || !antes.user) abortar('No existe ninguna cuenta con ese UUID.');
-  if ((antes.user.email || '').toLowerCase() !== CORREO) {
-    abortar('El UUID no corresponde a ' + CORREO + ', sino a ' +
-            antes.user.email + '. No se toca nada.');
+  // ---- 1. ¿Existe ya la cuenta con ese correo? -----------------------------
+  // listUsers pagina; se busca el correo entre las cuentas (esta instancia
+  // tiene pocas: Aura, Safari y CIEHS).
+  var existente = null;
+  for (var pagina = 1; pagina <= 20 && !existente; pagina++) {
+    var r = await admin.auth.admin.listUsers({ page: pagina, perPage: 200 });
+    if (r.error) abortar('No se pudo listar usuarios: ' + r.error.message);
+    existente = (r.data.users || []).find(function (u) {
+      return (u.email || '').toLowerCase() === EMAIL;
+    });
+    if ((r.data.users || []).length < 200) break;
   }
-  console.log('· Cuenta encontrada: ' + antes.user.email);
 
-  // ---- 2. Fijar la contraseña por la API de GoTrue -------------------------
-  const { error: eUpd } = await admin.auth.admin.updateUserById(UUID, {
-    password: NUEVA_CLAVE,
-    email_confirm: true
-  });
-  if (eUpd) abortar('No se pudo fijar la contraseña: ' + eUpd.message);
-  console.log('· Contraseña fijada mediante auth.admin.updateUserById');
-
-  // ---- 3. Probar que se puede entrar, por el mismo camino que el modal -----
-  const publico = createClient(URL_SUPABASE, CLAVE_PUBLICABLE, {
-    db: { schema: 'ciehs' },
-    auth: { persistSession: false, autoRefreshToken: false }
-  });
-
-  const { data: sesion, error: eLogin } =
-    await publico.auth.signInWithPassword({ email: CORREO, password: NUEVA_CLAVE });
-  if (eLogin) abortar('La contraseña quedó fijada pero el inicio de sesión FALLA: ' + eLogin.message);
-  console.log('· Inicio de sesión correcto (signInWithPassword)');
-
-  // ---- 4. La segunda puerta: estar en ciehs.admins -------------------------
-  const { data: esAdmin, error: eRpc } = await publico.rpc('is_admin');
-  if (eRpc) abortar('La sesión inicia pero is_admin() falla: ' + eRpc.message);
-  if (esAdmin !== true) {
-    abortar('La sesión inicia pero la cuenta NO figura en ciehs.admins, así que ' +
-            'el modal la rechazaría. Falta vincular el UUID en esa tabla.');
+  var uid;
+  if (existente) {
+    var up = await admin.auth.admin.updateUserById(existente.id, {
+      password: PASSWORD, email_confirm: true
+    });
+    if (up.error) abortar('No se pudo actualizar la cuenta: ' + up.error.message);
+    uid = existente.id;
+    console.log('· Cuenta existente actualizada: ' + EMAIL);
+  } else {
+    var cr = await admin.auth.admin.createUser({
+      email: EMAIL, password: PASSWORD, email_confirm: true
+    });
+    if (cr.error) abortar('No se pudo crear la cuenta: ' + cr.error.message);
+    uid = cr.data.user.id;
+    console.log('· Cuenta creada: ' + EMAIL);
   }
+  console.log('· UUID: ' + uid);
+
+  // ---- 2. AÑADIR esta cuenta a ciehs.admins (aún NO se borran las demás) ---
+  // Se añade antes de verificar, porque is_admin() consulta esta tabla. Las
+  // otras filas se limpian solo DESPUÉS de comprobar que esta entra: así, si
+  // algo fallara, no me quedo sin ningún administrador válido.
+  var upa = await admin.from('admins').upsert(
+    { user_id: uid, email: EMAIL, display_name: 'Coordinación CIEHS' },
+    { onConflict: 'user_id' }
+  );
+  if (upa.error) abortar('No se pudo escribir en ciehs.admins: ' + upa.error.message);
+
+  // ---- 3. Prueba de entrada por el mismo camino que el modal ---------------
+  var publico = createClient(URL_SUPABASE, CLAVE_PUBLICA, {
+    db: { schema: 'ciehs' }, auth: { persistSession: false, autoRefreshToken: false }
+  });
+  var login = await publico.auth.signInWithPassword({ email: EMAIL, password: PASSWORD });
+  if (login.error) abortar('Contraseña fijada pero el inicio de sesión FALLA: ' + login.error.message);
+  console.log('· Inicio de sesión correcto');
+
+  var esAdmin = await publico.rpc('is_admin');
+  if (esAdmin.error) abortar('Inicia sesión pero is_admin() falla: ' + esAdmin.error.message);
+  if (esAdmin.data !== true) abortar('Inicia sesión pero is_admin() es falso: revisa ciehs.admins.');
   console.log('· is_admin() = true — el modal aceptará esta cuenta');
-
-  // ---- 5. No dejar la sesión de prueba abierta ----------------------------
   await publico.auth.signOut();
 
-  console.log('\n✓ Listo. Entra en https://ciehs.vercel.app → Administración' +
-              '\n  Correo: ' + CORREO +
-              '\n  (la contraseña es la que pusiste en CIEHS_ADMIN_PASSWORD)\n');
-})().catch(e => abortar(e && e.message ? e.message : String(e)));
+  // ---- 4. Solo ahora: dejar ciehs.admins con EXACTAMENTE esta cuenta -------
+  var del = await admin.from('admins').delete().neq('user_id', uid);
+  if (del.error) abortar('Login OK pero no se pudieron quitar admins antiguos: ' + del.error.message);
+  console.log('· ciehs.admins deja una sola cuenta: esta');
+  console.log('\n✓ Listo. Entra en https://ciehs.vercel.app → Administración con ' + EMAIL + '\n');
+})().catch(function (e) { abortar(e && e.message ? e.message : String(e)); });
