@@ -87,6 +87,8 @@
   var COLS_CAJA    = 'id, occurred_on, period, concept, kind, amount_pen, note, published';
   var COLS_EVIDENCIA = 'id, storage_path, title, eyebrow, body, alt, width, height, ' +
                        'consent_ref, position, published';
+  var COLS_APORTE    = 'id, kind, title, description, equipo, grado, storage_path, ' +
+                       'mime, size_bytes, published, created_at';
   var COLS_REGISTRO  = 'id, module_code, equipo, grado, medido_en, ph, ce, temp_c, ' +
                        'altura_cm, hojas, nota, published, created_at';
   // Los pedidos llevan nombre y contacto de familias: no hay politica de lectura
@@ -120,7 +122,9 @@
              .limit(200),
       cliente.from('evidencias').select(COLS_EVIDENCIA).order('position', { ascending: true }),
       cliente.from('registros_campo').select(COLS_REGISTRO)
-             .order('medido_en', { ascending: true }).limit(600)
+             .order('medido_en', { ascending: true }).limit(600),
+      cliente.from('aportes').select(COLS_APORTE)
+             .order('created_at', { ascending: false }).limit(60)
     ]).then(function (r) {
       var err = r.find(function (x) { return x.error; });
       if (err) {
@@ -142,7 +146,8 @@
         comentarios: r[8].data || [],
         caja: r[9].data || [],
         evidencias: r[10].data || [],
-        registros: r[11].data || []
+        registros: r[11].data || [],
+        aportes: r[12].data || []
       };
     }).catch(function (e) {
       CIEHSData.conectado = false;
@@ -420,6 +425,65 @@
       .then(function (r) { if (r.error) throw r.error; return true; });
   };
   CIEHSData.eliminarRegistro = function (id) { return eliminar('registros_campo', 'id', id); };
+
+  /* ------------------ aportes: fotos, videos, articulos ------------------
+     Bucket PRIVADO y en cuarentena. Un anonimo puede depositar un archivo pero
+     no leerlo: la politica de lectura de storage.objects exige que exista una
+     ficha aprobada apuntando a ese objeto. Eso convierte "retirar la
+     aprobacion" en una revocacion real e inmediata, sin tener que acordarse de
+     borrar el archivo aparte, y evita que el bucket se convierta en un
+     alojamiento gratuito para cualquiera que encuentre la URL. */
+  var BUCKET_APORTES = 'ciehs-aportes';
+  var LIMITE_APORTE = 25 * 1024 * 1024;
+
+  CIEHSData.limiteAporte = LIMITE_APORTE;
+
+  CIEHSData.subirAporte = function (archivo, ruta) {
+    if (archivo.size > LIMITE_APORTE) {
+      return Promise.reject(new Error('El archivo pesa más de 25 MB. Comprímelo o súbelo en partes.'));
+    }
+    return cliente.storage.from(BUCKET_APORTES)
+      .upload(ruta, archivo, { upsert: false, contentType: archivo.type || 'application/octet-stream' })
+      .then(function (r) { if (r.error) throw r.error; return ruta; });
+  };
+
+  CIEHSData.registrarAporte = function (a) {
+    var fila = {
+      kind: a.kind, title: a.title, description: vacio(a.description),
+      equipo: vacio(a.equipo), grado: vacio(a.grado),
+      storage_path: a.storagePath, mime: vacio(a.mime),
+      size_bytes: a.sizeBytes == null ? null : Number(a.sizeBytes)
+      // published no se envia: la RLS solo admite el alta en cuarentena.
+    };
+    // Sin .select(), por lo mismo que en registros_campo: el RETURNING evalua
+    // la politica de lectura sobre una fila que aun no es legible.
+    return cliente.from('aportes').insert(fila)
+      .then(function (r) { if (r.error) throw r.error; return fila; });
+  };
+
+  // El bucket es privado: no hay URL publica, se firma una temporal. Solo
+  // funciona si la ficha esta aprobada (o si quien pregunta es administrador).
+  CIEHSData.urlAporte = function (ruta, segundos) {
+    return cliente.storage.from(BUCKET_APORTES).createSignedUrl(ruta, segundos || 3600)
+      .then(function (r) { if (r.error) throw r.error; return r.data.signedUrl; });
+  };
+
+  CIEHSData.listarAportes = function () {
+    return cliente.from('aportes').select(COLS_APORTE)
+      .order('created_at', { ascending: false }).limit(200)
+      .then(function (r) { if (r.error) throw r.error; return r.data || []; });
+  };
+  CIEHSData.aprobarAporte = function (id, publicado) {
+    return cliente.from('aportes').update({ published: !!publicado }).eq('id', id)
+      .then(function (r) { if (r.error) throw r.error; return true; });
+  };
+  // Borra el objeto ANTES que la ficha: sin la ficha, la politica de lectura ya
+  // no encuentra a que aprobacion agarrarse, pero el archivo seguiria ocupando
+  // cuota y siendo alcanzable por un administrador. Se van los dos.
+  CIEHSData.eliminarAporte = function (id, ruta) {
+    return cliente.storage.from(BUCKET_APORTES).remove([ruta])
+      .then(function () { return eliminar('aportes', 'id', id); });
+  };
 
   CIEHSData.eliminarEvidencia = function (ruta) {
     return cliente.storage.from(BUCKET_EVIDENCIAS).remove([ruta])

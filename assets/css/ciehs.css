@@ -2916,3 +2916,88 @@
     margin:-1px; padding:0; overflow:hidden; white-space:nowrap;
     clip:rect(0 0 0 0); clip-path:inset(50%); border:0;
   }
+
+  /* ============================================================================
+     APORTES — iconos que se activan al pulsar y abren el formulario
+     ========================================================================== */
+  .aporte-iconos{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(168px,1fr));
+    gap:14px; margin-top:32px;
+  }
+  .aporte-icono{
+    display:flex; flex-direction:column; align-items:flex-start; gap:7px;
+    padding:20px 18px; cursor:pointer; text-align:left;
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius-m); box-shadow:var(--shadow-1);
+    transition:transform .32s var(--ease-out), border-color .3s var(--ease-soft),
+               box-shadow .35s var(--ease-out), background .3s var(--ease-soft);
+  }
+  .aporte-icono .ico{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:44px; height:44px; border-radius:12px;
+    background:var(--surface-2); color:var(--ink-soft);
+    transition:background .3s var(--ease-soft), color .3s var(--ease-soft), transform .38s var(--ease-spring);
+  }
+  .aporte-icono .ico svg{ width:23px; height:23px; }
+  .aporte-icono b{ font-size:15px; font-weight:600; color:var(--ink); }
+  .aporte-icono span:not(.ico){ font-size:12.5px; color:var(--ink-mute); font-family:var(--font-mono); }
+  .aporte-icono:hover{ transform:translateY(-4px); border-color:rgba(5,150,105,0.28); box-shadow:var(--shadow-2); }
+  .aporte-icono:hover .ico{ transform:scale(1.06); }
+  /* Estado activo: el icono se enciende. Es la señal de que la pulsación hizo
+     algo, además de abrirse el formulario más abajo. */
+  .aporte-icono.is-active{
+    border-color:rgba(5,150,105,0.4); box-shadow:var(--shadow-2), var(--ring-accent);
+    background:var(--veil);
+  }
+  .aporte-icono.is-active .ico{
+    background:linear-gradient(135deg, var(--leaf-500), var(--azure-500));
+    color:#ffffff; transform:scale(1.1) rotate(-4deg);
+  }
+  .aporte-icono.is-active b{ color:var(--leaf-300); }
+  @media (prefers-reduced-motion: reduce){
+    .aporte-icono, .aporte-icono .ico{ transition:none; }
+    .aporte-icono:hover{ transform:none; }
+    .aporte-icono.is-active .ico{ transform:none; }
+  }
+
+  .aporte-form{ margin-top:22px; padding:26px; display:flex; flex-direction:column; gap:14px; }
+  .aporte-form-cab{ display:flex; align-items:center; justify-content:space-between; gap:14px; }
+  .aporte-form .req{ color:var(--status-danger); font-weight:700; }
+  .aporte-limite{ margin-top:-6px; font-size:12px; color:var(--ink-mute); font-family:var(--font-mono); }
+  .aporte-privacidad{
+    padding:14px 16px; background:var(--veil);
+    border:1px dashed var(--surface-3); border-radius:var(--radius-s);
+    font-size:12.5px; line-height:1.6; color:var(--ink-soft);
+  }
+
+  /* Barra de subida indeterminada: no hay progreso real desde el SDK, así que
+     se muestra movimiento y no un porcentaje inventado. */
+  .aporte-barra{ height:4px; border-radius:999px; background:var(--surface-2); overflow:hidden; }
+  .aporte-barra i{
+    display:block; width:38%; height:100%; border-radius:999px;
+    background:linear-gradient(90deg, var(--leaf-500), var(--azure-500));
+    animation:aporteCarga 1.15s var(--ease-soft) infinite;
+  }
+  @keyframes aporteCarga{ 0%{ transform:translateX(-100%); } 100%{ transform:translateX(320%); } }
+  @media (prefers-reduced-motion: reduce){ .aporte-barra i{ animation:none; width:100%; } }
+
+  .aporte-pub-titulo{ margin-top:38px; font-family:var(--font-display); font-size:17px; font-weight:700; color:var(--ink); }
+  .aporte-lista{ list-style:none; margin:14px 0 0; padding:0; display:flex; flex-direction:column; gap:10px; }
+  .aporte-item{
+    display:flex; align-items:center; gap:14px; padding:14px 16px;
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius-s); box-shadow:var(--shadow-1);
+  }
+  .aporte-ico{ font-size:22px; flex:none; line-height:1; }
+  .aporte-txt{ display:flex; flex-direction:column; gap:2px; min-width:0; flex:1; }
+  .aporte-txt b{ font-size:14.5px; font-weight:600; color:var(--ink); }
+  .aporte-txt span{ font-size:12.5px; color:var(--ink-soft); line-height:1.5; }
+  .aporte-meta{ font-size:11.5px !important; color:var(--ink-mute) !important; }
+  .aporte-abrir{
+    flex:none; padding:7px 14px; border-radius:999px;
+    border:1px solid var(--line-strong); background:var(--surface);
+    font-size:12.5px; font-weight:600; color:var(--leaf-300); text-decoration:none;
+    transition:border-color .25s var(--ease-soft), box-shadow .3s var(--ease-out);
+  }
+  .aporte-abrir:hover{ border-color:rgba(5,150,105,0.3); box-shadow:var(--ring-accent); }
+  .aporte-abrir.is-off{ color:var(--ink-mute); }

@@ -626,6 +626,106 @@
         <p class="carpeta-estado" id="carpetaEstado" role="status" aria-live="polite">Cargando la carpeta de campo…</p>
         <div class="carpeta-grid" id="carpetaGrid"><div class="skeleton skeleton-tarjeta"></div><div class="skeleton skeleton-tarjeta"></div><div class="skeleton skeleton-tarjeta"></div></div>
 
+
+        <!-- ============ SUBIR UN APORTE ============
+             Los iconos son botones: al pulsarlos se abre el formulario ya
+             configurado para ese tipo de archivo. Todo lo que llega entra en
+             CUARENTENA — bucket privado y ficha sin aprobar — y no es legible
+             por nadie hasta que el panel lo apruebe. -->
+        <div class="aportes" id="aportes">
+          <div class="section-head u-margin-top-56px">
+            <p class="eyebrow">Sube tu trabajo</p>
+            <h3>Comparte lo que ha hecho tu equipo</h3>
+            <p>Fotografías del módulo, un vídeo del proceso, el artículo científico o el informe de tu investigación. Elige qué vas a subir y el formulario se prepara solo. Lo revisa el equipo coordinador antes de publicarse.</p>
+          </div>
+
+          <div class="aporte-iconos" role="group" aria-label="Qué quieres subir">
+            <button type="button" class="aporte-icono" data-kind="foto">
+              <span class="ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.7"/><path d="M8 5l1.2-2h5.6L16 5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+              </span>
+              <b>Fotografía</b>
+              <span>JPG, PNG o WebP</span>
+            </button>
+            <button type="button" class="aporte-icono" data-kind="video">
+              <span class="ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="12" height="12" rx="2.5" stroke="currentColor" stroke-width="1.7"/><path d="M15 11l6-3.5v9L15 13z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+              </span>
+              <b>Vídeo</b>
+              <span>MP4 o WebM</span>
+            </button>
+            <button type="button" class="aporte-icono" data-kind="articulo">
+              <span class="ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M6 3h8l4 4v14H6z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 3v4h4M9 12h6M9 16h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+              </span>
+              <b>Artículo científico</b>
+              <span>PDF</span>
+            </button>
+            <button type="button" class="aporte-icono" data-kind="investigacion">
+              <span class="ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><circle cx="10.5" cy="10.5" r="6" stroke="currentColor" stroke-width="1.7"/><path d="M15 15l5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M8 10.5h5M10.5 8v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </span>
+              <b>Trabajo de investigación</b>
+              <span>PDF con tus resultados</span>
+            </button>
+            <button type="button" class="aporte-icono" data-kind="audio">
+              <span class="ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><rect x="9" y="3" width="6" height="11" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+              </span>
+              <b>Audio</b>
+              <span>MP3 u OGG</span>
+            </button>
+          </div>
+
+          <form class="aporte-form card" id="aporteForm" hidden novalidate>
+            <div class="aporte-form-cab">
+              <p class="eyebrow" id="aporteTipoLabel">Fotografía</p>
+              <button type="button" class="menu-cerrar" id="aporteCerrar" aria-label="Cerrar el formulario">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+
+            <label class="form-field">
+              <span>Archivo <b class="req" aria-hidden="true">*</b></span>
+              <input type="file" id="aporteArchivo" required>
+            </label>
+            <p class="aporte-limite" id="aporteLimite">Máximo 25 MB.</p>
+
+            <label class="form-field">
+              <span>Título <b class="req" aria-hidden="true">*</b></span>
+              <input type="text" id="aporteTitulo" maxlength="160" required placeholder="Efecto de la concentración de solución nutritiva en lechuga crespa">
+            </label>
+
+            <label class="form-field">
+              <span>¿Qué es y por qué importa?</span>
+              <textarea id="aporteDesc" rows="3" maxlength="800" placeholder="Explica en dos líneas qué se ve o qué se concluye."></textarea>
+            </label>
+
+            <div class="admin-grid-2">
+              <label class="form-field">
+                <span>Equipo</span>
+                <input type="text" id="aporteEquipo" maxlength="80" placeholder="Equipo de Indagación">
+              </label>
+              <label class="form-field">
+                <span>Grado y sección</span>
+                <input type="text" id="aporteGrado" maxlength="40" placeholder="4.° A">
+              </label>
+            </div>
+
+            <p class="aporte-privacidad">
+              <b>Antes de subir una fotografía o un vídeo con caras:</b> hace falta la autorización firmada del apoderado. Si no la tienes, sube tomas de manos trabajando, planos de espalda o del propio cultivo — el portal difunde el trabajo, no la identidad de quien lo hace.
+            </p>
+
+            <div class="inv-form-acciones">
+              <button type="submit" class="btn btn-primary" id="aporteEnviar">Subir aporte</button>
+            </div>
+            <div class="aporte-barra" id="aporteBarra" hidden><i></i></div>
+            <p class="form-status" id="aporteStatus" role="status" aria-live="polite"></p>
+          </form>
+
+          <div class="aporte-publicados" id="aportePublicados"></div>
+        </div>
+
         <div class="carpeta-como">
           <h3>Cómo se publica aquí</h3>
           <ol>
@@ -2228,6 +2328,20 @@
         <button type="button" role="tab" data-tab="comunidad" aria-selected="false" aria-controls="tab-comunidad">Comunidad</button>
         <button type="button" role="tab" data-tab="evidencias" aria-selected="false" aria-controls="tab-evidencias">Evidencias</button>
         <button type="button" role="tab" data-tab="registros" aria-selected="false" aria-controls="tab-registros">Registros</button>
+        <button type="button" role="tab" data-tab="aportes" aria-selected="false" aria-controls="tab-aportes">Aportes</button>
+      </div>
+
+      <!-- ---------- Revisión de aportes ----------
+           Todo llega a un bucket privado y en cuarentena. Mientras no se
+           apruebe, el archivo no es legible para nadie salvo desde aquí. -->
+      <div id="tab-aportes" role="tabpanel" data-tabpanel="aportes" hidden>
+        <div class="inv-lista-head">
+          <p class="admin-divider u-margin-0 u-border-top-none u-padding-top-0">Aportes de los equipos</p>
+          <button type="button" class="inv-nueva" id="apoRecargarBtn">Recargar</button>
+        </div>
+        <p class="u-font-size-12p5px u-color-ink-soft u-line-height-1p55 u-margin-top-8px">Fotos, vídeos, artículos y trabajos que suben los equipos. Llegan <b>en cuarentena</b>: el archivo no es accesible para nadie hasta que lo apruebes, y retirar la aprobación lo vuelve inaccesible al instante. <b>Ábrelo siempre antes de aprobar</b> — y si aparece la cara de un estudiante, comprueba que hay autorización firmada.</p>
+        <div id="apoAdminLista" class="inv-admin-lista"></div>
+        <p class="form-status" id="apoStatusMsg" role="status" aria-live="polite"></p>
       </div>
 
       <!-- ---------- Validación de la carpeta de campo digital ----------

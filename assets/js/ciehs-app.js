@@ -855,6 +855,7 @@
       // La carpeta de campo depende de los modulos y de los registros, que solo
       // existen a partir de aqui: antes de esto su selector estaria vacio.
       if(window.CIEHS && window.CIEHS.refrescarCampo) window.CIEHS.refrescarCampo();
+      if(window.CIEHS && window.CIEHS.refrescarAportes) window.CIEHS.refrescarAportes();
       if(window.CIEHS && window.CIEHS.escalonar) window.CIEHS.escalonar();
     })["catch"](function(err){
       // Un rechazo (red caida, CORS, token invalido) tiene que terminar igual
@@ -2124,7 +2125,99 @@
   var regRecargar = el('regRecargarBtn');
   if(regRecargar) regRecargar.addEventListener('click', cargarRegistros);
 
+  /* ------------------------- revision de aportes -------------------------
+     Cada fila trae su propio enlace firmado: aprobar a ciegas un archivo que
+     no se ha abierto es justo lo que la cuarentena existe para impedir. */
+  var apoLista = el('apoAdminLista');
+  var apoMsg   = el('apoStatusMsg');
+
+  function apoAviso(t, error){
+    if(!apoMsg) return;
+    apoMsg.classList.toggle('error', !!error);
+    apoMsg.textContent = t || '';
+  }
+  function peso(b){
+    if(b == null) return '';
+    return b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
+  }
+
+  function cargarAportes(){
+    if(!apoLista) return;
+    apoLista.innerHTML = '<p class="inv-vacia">Cargando…</p>';
+    D.listarAportes().then(function(filas){
+      if(!filas.length){
+        apoLista.innerHTML = '<p class="inv-vacia">Todavía no hay aportes subidos.</p>';
+        return;
+      }
+      apoLista.innerHTML = filas.map(function(a){
+        var quien = [a.equipo, a.grado].filter(Boolean).join(' · ') || 'Sin equipo indicado';
+        return '<div class="inv-item">'
+          + '<div class="txt">'
+          +   '<span class="cod">' + esc(a.kind) + ' · ' + esc(peso(a.size_bytes)) + '</span>'
+          +   '<span class="tit">' + esc(a.title) + '</span>'
+          +   '<span class="tit u-color-ink-mute">' + esc(quien)
+          +     (a.description ? ' — ' + esc(a.description) : '') + '</span>'
+          + '</div>'
+          + '<span class="estado ' + (a.published ? 'pub' : 'bor') + '">'
+          +   (a.published ? 'publicado' : 'en cuarentena') + '</span>'
+          + '<button type="button" class="editar" data-ver="' + esc(a.storage_path) + '">Abrir</button>'
+          + '<button type="button" class="editar" data-aprobar="' + esc(a.id) + '" data-a="'
+          +   (a.published ? '0' : '1') + '">' + (a.published ? 'Retirar' : 'Aprobar') + '</button>'
+          + '<button type="button" class="inv-borrar" data-quitar="' + esc(a.id)
+          +   '" data-ruta="' + esc(a.storage_path) + '">Eliminar</button>'
+          + '</div>';
+      }).join('');
+
+      apoLista.querySelectorAll('[data-ver]').forEach(function(b){
+        b.addEventListener('click', function(){
+          b.disabled = true;
+          D.urlAporte(b.getAttribute('data-ver'), 600).then(function(url){
+            window.open(url, '_blank', 'noopener,noreferrer');
+          }).catch(function(e){
+            apoAviso('No se pudo abrir: ' + ((e && e.message) || 'error'), true);
+          }).then(function(){ b.disabled = false; });
+        });
+      });
+
+      apoLista.querySelectorAll('[data-aprobar]').forEach(function(b){
+        b.addEventListener('click', function(){
+          b.disabled = true;
+          apoAviso('Guardando…');
+          D.aprobarAporte(b.getAttribute('data-aprobar'), b.getAttribute('data-a') === '1')
+            .then(function(){
+              apoAviso('Hecho.');
+              cargarAportes();
+              if(window.CIEHS && window.CIEHS.refrescarDatos) window.CIEHS.refrescarDatos();
+            })
+            .catch(function(e){ b.disabled = false; apoAviso('No se pudo: ' + ((e && e.message) || 'error'), true); });
+        });
+      });
+
+      apoLista.querySelectorAll('[data-quitar]').forEach(function(b){
+        b.addEventListener('click', function(){
+          if(!b.classList.contains('inv-confirmar')){
+            b.classList.add('inv-confirmar');
+            b.textContent = 'Pulsa otra vez';
+            setTimeout(function(){ b.classList.remove('inv-confirmar'); b.textContent = 'Eliminar'; }, 4000);
+            return;
+          }
+          D.eliminarAporte(b.getAttribute('data-quitar'), b.getAttribute('data-ruta')).then(function(){
+            apoAviso('Aporte y archivo eliminados.');
+            cargarAportes();
+            if(window.CIEHS && window.CIEHS.refrescarDatos) window.CIEHS.refrescarDatos();
+          }).catch(function(e){ apoAviso('No se pudo eliminar: ' + ((e && e.message) || 'error'), true); });
+        });
+      });
+    }).catch(function(e){
+      apoLista.innerHTML = '<p class="inv-vacia">No se pudo cargar: ' + esc((e && e.message) || 'error') + '</p>';
+    });
+  }
+
+  var apoRecargar = el('apoRecargarBtn');
+  if(apoRecargar) apoRecargar.addEventListener('click', cargarAportes);
+
   window.CIEHS.cargarPestanaAdmin = function(nombre){
+    if(nombre === 'aportes')   cargarAportes();
     if(nombre === 'bitacora')  edBitacora.cargar();
     if(nombre === 'carpeta')   edCarpeta.cargar();
     if(nombre === 'recursos')  edRecursos.cargar();
@@ -3153,4 +3246,190 @@
   // modulos que listar ni registros que graficar.
   window.CIEHS = window.CIEHS || {};
   window.CIEHS.refrescarCampo = function(){ llenarModulos(); dibujar(); };
+})();
+
+/* ===========================================================================
+   12. APORTES: fotos, videos, articulos y trabajos de investigacion
+
+   Los iconos son botones: al pulsar uno se abre el formulario ya configurado
+   para ese tipo de archivo (accept, limite y textos). Nada de lo que llega es
+   accesible hasta que el panel lo apruebe — el bucket es privado y la politica
+   de lectura exige una ficha aprobada.
+   =========================================================================== */
+(function(){
+  var zona = document.getElementById('aportes');
+  if(!zona) return;
+
+  var D = window.CIEHSData;
+  var form     = document.getElementById('aporteForm');
+  var elArch   = document.getElementById('aporteArchivo');
+  var elTipo   = document.getElementById('aporteTipoLabel');
+  var elLim    = document.getElementById('aporteLimite');
+  var elStatus = document.getElementById('aporteStatus');
+  var elEnviar = document.getElementById('aporteEnviar');
+  var elBarra  = document.getElementById('aporteBarra');
+  var elPubs   = document.getElementById('aportePublicados');
+  var elCerrar = document.getElementById('aporteCerrar');
+
+  var TIPOS = {
+    foto:          { etiqueta:'Fotografía',            accept:'image/jpeg,image/png,image/webp', mb:6  },
+    video:         { etiqueta:'Vídeo',                 accept:'video/mp4,video/webm',            mb:25 },
+    articulo:      { etiqueta:'Artículo científico',   accept:'application/pdf',                 mb:15 },
+    investigacion: { etiqueta:'Trabajo de investigación', accept:'application/pdf',              mb:15 },
+    audio:         { etiqueta:'Audio',                 accept:'audio/mpeg,audio/mp4,audio/ogg',  mb:15 }
+  };
+  var tipoActivo = 'foto';
+
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+  function aviso(t, error){
+    if(!elStatus) return;
+    elStatus.classList.toggle('error', !!error);
+    elStatus.textContent = t || '';
+  }
+  function pesoLegible(b){
+    if(b == null) return '';
+    return b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
+  }
+
+  // Mismo saneado que en evidencias: un nombre con tildes o espacios acaba
+  // siendo una ruta ilegible que hay que escapar en cada sitio donde se use.
+  function rutaSegura(nombre){
+    return String(nombre || '').trim().toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9.-]+/g, '-')
+      .replace(/-+/g, '-').replace(/^-|-$/g, '');
+  }
+
+  /* ------------------------------------------------- los iconos-boton -----*/
+  function activarTipo(kind){
+    tipoActivo = kind;
+    var t = TIPOS[kind] || TIPOS.foto;
+    zona.querySelectorAll('.aporte-icono').forEach(function(b){
+      var mio = b.getAttribute('data-kind') === kind;
+      b.classList.toggle('is-active', mio);
+      b.setAttribute('aria-pressed', String(mio));
+    });
+    if(elTipo) elTipo.textContent = t.etiqueta;
+    if(elArch){ elArch.setAttribute('accept', t.accept); elArch.value = ''; }
+    if(elLim) elLim.textContent = 'Máximo ' + t.mb + ' MB.';
+    form.hidden = false;
+    aviso('');
+    form.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    var titulo = document.getElementById('aporteTitulo');
+    if(titulo) titulo.focus();
+  }
+
+  zona.querySelectorAll('.aporte-icono').forEach(function(b){
+    b.setAttribute('aria-pressed', 'false');
+    b.addEventListener('click', function(){ activarTipo(b.getAttribute('data-kind')); });
+  });
+  if(elCerrar) elCerrar.addEventListener('click', function(){
+    form.hidden = true;
+    zona.querySelectorAll('.aporte-icono').forEach(function(b){
+      b.classList.remove('is-active'); b.setAttribute('aria-pressed','false');
+    });
+  });
+
+  /* ------------------------------------------------------------ el envio --*/
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    if(!D || !D.listo){
+      aviso('No hay conexión con la base del CIEHS, así que el archivo no se puede subir ahora mismo.', true);
+      return;
+    }
+    var archivo = elArch && elArch.files && elArch.files[0];
+    var titulo  = (document.getElementById('aporteTitulo') || {}).value || '';
+    var t = TIPOS[tipoActivo] || TIPOS.foto;
+
+    if(!archivo){ aviso('Elige el archivo que quieres subir.', true); return; }
+    if(titulo.trim().length < 3){ aviso('Ponle un título de al menos tres letras.', true); return; }
+    if(archivo.size > t.mb * 1024 * 1024){
+      aviso('El archivo pesa ' + pesoLegible(archivo.size) + ' y el máximo para ' +
+            t.etiqueta.toLowerCase() + ' es ' + t.mb + ' MB.', true);
+      return;
+    }
+
+    // Ruta unica: sin esto, dos equipos que suban "informe.pdf" chocarian, y
+    // como el alta usa upsert:false el segundo recibiria un error opaco.
+    var base = rutaSegura(archivo.name) || 'aporte';
+    var ruta = tipoActivo + '/' + Date.now().toString(36) + '-' +
+               Math.random().toString(36).slice(2, 7) + '-' + base;
+
+    if(elEnviar) elEnviar.disabled = true;
+    if(elBarra) elBarra.hidden = false;
+    aviso('Subiendo ' + pesoLegible(archivo.size) + '…');
+
+    D.subirAporte(archivo, ruta).then(function(){
+      aviso('Guardando la ficha…');
+      return D.registrarAporte({
+        kind: tipoActivo, title: titulo.trim(),
+        description: (document.getElementById('aporteDesc')   || {}).value || '',
+        equipo:      (document.getElementById('aporteEquipo') || {}).value || '',
+        grado:       (document.getElementById('aporteGrado')  || {}).value || '',
+        storagePath: ruta, mime: archivo.type, sizeBytes: archivo.size
+      });
+    }).then(function(){
+      aviso('Subido. Tu aporte queda a la espera de que el equipo coordinador lo revise; hasta entonces no es visible para nadie más.');
+      form.reset();
+      if(elArch) elArch.setAttribute('accept', t.accept);
+    }).catch(function(e){
+      var m = (e && e.message) || 'error desconocido';
+      // El error crudo del bucket no le dice nada a un estudiante de 2.°.
+      if(/mime|content type/i.test(m)) m = 'Ese tipo de archivo no se admite para ' + t.etiqueta.toLowerCase() + '.';
+      else if(/exceeded|too large|maximum/i.test(m)) m = 'El archivo supera el tamaño permitido.';
+      else if(/duplicate|already exists/i.test(m)) m = 'Ya hay un archivo con ese nombre. Vuelve a intentarlo.';
+      aviso('No se pudo subir: ' + m, true);
+    }).then(function(){
+      if(elEnviar) elEnviar.disabled = false;
+      if(elBarra) elBarra.hidden = true;
+    });
+  });
+
+  /* ------------------------------------------- lo ya aprobado, en lista ---
+     El bucket es privado, asi que cada enlace se firma al vuelo y caduca. Se
+     piden todos a la vez y se pintan los que respondan: si uno falla, el resto
+     no debe quedarse sin aparecer. */
+  var ICONO = {
+    foto:'🖼️', video:'🎬', articulo:'📄', investigacion:'🔬', audio:'🎧', otro:'📎'
+  };
+
+  function pintarAprobados(){
+    if(!elPubs) return;
+    var snap = (window.CIEHS && window.CIEHS.snapshot && window.CIEHS.snapshot()) || null;
+    var filas = (snap && snap.aportes) || [];
+    if(!filas.length){ elPubs.innerHTML = ''; return; }
+
+    elPubs.innerHTML = '<h4 class="aporte-pub-titulo">Aportes publicados</h4>'
+      + '<ul class="aporte-lista">' + filas.map(function(a){
+      var quien = [a.equipo, a.grado].filter(Boolean).join(' · ');
+      return '<li class="aporte-item" data-ruta="' + esc(a.storage_path) + '">'
+        + '<span class="aporte-ico" aria-hidden="true">' + (ICONO[a.kind] || ICONO.otro) + '</span>'
+        + '<div class="aporte-txt">'
+        +   '<b>' + esc(a.title) + '</b>'
+        +   (a.description ? '<span>' + esc(a.description) + '</span>' : '')
+        +   '<span class="aporte-meta mono">' + esc(quien || 'CIEHS')
+        +     (a.size_bytes ? ' · ' + pesoLegible(a.size_bytes) : '') + '</span>'
+        + '</div>'
+        + '<span class="aporte-abrir" data-slot>…</span>'
+        + '</li>';
+    }).join('') + '</ul>';
+
+    filas.forEach(function(a){
+      var li = elPubs.querySelector('[data-ruta="' + (window.CSS && CSS.escape ? CSS.escape(a.storage_path) : a.storage_path) + '"]');
+      if(!li) return;
+      var slot = li.querySelector('[data-slot]');
+      D.urlAporte(a.storage_path).then(function(url){
+        slot.outerHTML = '<a class="aporte-abrir" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">Abrir</a>';
+      }).catch(function(){
+        slot.outerHTML = '<span class="aporte-abrir is-off">No disponible</span>';
+      });
+    });
+  }
+
+  window.CIEHS = window.CIEHS || {};
+  window.CIEHS.refrescarAportes = pintarAprobados;
 })();
