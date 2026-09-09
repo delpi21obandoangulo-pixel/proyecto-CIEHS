@@ -3449,7 +3449,7 @@
 }
 .hm-veil{
   position:absolute; inset:0; z-index:2;
-  background:linear-gradient(180deg, rgba(7,11,10,.72) 0%, rgba(7,11,10,.50) 34%, rgba(7,11,10,.86) 100%);
+  background:linear-gradient(180deg, rgba(7,11,10,.72) 0%, rgba(7,11,10,.62) 34%, rgba(7,11,10,.86) 100%);
 }
 
 /* Capa 3: palabra gigante serif */
