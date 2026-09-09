@@ -851,6 +851,7 @@
       pintarRecursos();
       pintarTransparencia();
       pintarComentarios();
+      pintarEvidencias();
       if(window.CIEHS && window.CIEHS.escalonar) window.CIEHS.escalonar();
     })["catch"](function(err){
       // Un rechazo (red caida, CORS, token invalido) tiene que terminar igual
@@ -1121,6 +1122,44 @@
   var comentariosLista  = el('comentariosLista');
   var comentariosEstado = el('comentariosEstado');
   var ROL_ETIQUETA = { estudiante:'Estudiante', docente:'Docente', familia:'Familia', visitante:'Visitante' };
+
+  /* --------- galeria de evidencias de la portada ----------------------
+     Las cuatro laminas que trae el HTML son fotografias de infraestructura sin
+     ninguna persona, y se quedan como respaldo: si la base no responde, la
+     portada sigue teniendo galeria en lugar de un hueco. Cuando si responde,
+     manda la base, porque es alli donde se puede revocar una autorizacion. */
+  function pintarEvidencias(){
+    var pista = el('galeriaPista');
+    if(!pista) return;
+    var filas = (datos && datos.evidencias) || [];
+    if(!filas.length) return;               // se conserva el respaldo estatico
+
+    pista.innerHTML = filas.map(function(f, i){
+      var url = D.urlEvidencia(f.storage_path);
+      if(!url) return '';
+      var dim = (f.width && f.height)
+        ? ' width="' + Number(f.width) + '" height="' + Number(f.height) + '"'
+        : '';
+      // La primera se carga de inmediato porque es la que se ve; el resto en
+      // diferido. fetchpriority solo tiene sentido en la primera.
+      var carga = i === 0
+        ? ' decoding="async" fetchpriority="high"'
+        : ' loading="lazy" decoding="async"';
+      return '<li class="galeria-lam' + (i === 0 ? ' is-activa' : '') + '">'
+        + '<img src="' + esc(url) + '"' + dim + carga + ' alt="' + esc(f.alt || f.title) + '">'
+        + '<div class="galeria-pie">'
+        +   (f.eyebrow ? '<p class="eyebrow">' + esc(f.eyebrow) + '</p>' : '')
+        +   '<h3>' + esc(f.title) + '</h3>'
+        +   (f.body ? '<p>' + esc(f.body) + '</p>' : '')
+        + '</div>'
+        + '</li>';
+    }).join('');
+
+    // El carrusel se monto sobre las laminas que habia al cargar la pagina:
+    // hay que decirle que ahora son otras, o las flechas y los puntos se
+    // quedarian contando las viejas.
+    if(window.CIEHS && window.CIEHS.recomponerGaleria) window.CIEHS.recomponerGaleria();
+  }
 
   function pintarComentarios(){
     if(!comentariosLista) return;
@@ -1906,10 +1945,101 @@
   }
 
   window.CIEHS = window.CIEHS || {};
+  /* --------------------------- evidencias ----------------------------
+     Unico editor con subida de archivo. El orden importa: primero sube la
+     imagen al bucket y solo si eso funciona escribe la ficha. Al reves
+     quedaria una fila apuntando a un archivo que no existe, y la galeria
+     mostraria un hueco roto en la portada. */
+  var eviArchivoEl = el('eviArchivo');
+
+  // Nombre de archivo seguro: el bucket admite casi cualquier cosa, pero un
+  // nombre con tildes o espacios acaba siendo una URL ilegible que ademas hay
+  // que escapar en cada sitio donde se use.
+  function rutaSegura(nombre){
+    return String(nombre || '').trim().toLowerCase()
+      // ̀-ͯ son las marcas diacriticas que NFD separa de su letra.
+      // Escrito con escapes y no con los caracteres literales: combinantes
+      // sueltos en el fuente son invisibles y sobreviven mal a un copiado.
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9.-]+/g, '-')
+      .replace(/-+/g, '-').replace(/^-|-$/g, '');
+  }
+
+  // Se leen las dimensiones reales del archivo para escribirlas en la ficha:
+  // con width y height la galeria reserva el hueco y la pagina no da el salto
+  // de maquetacion al cargar la imagen.
+  function medirImagen(archivo){
+    return new Promise(function(res){
+      var url = URL.createObjectURL(archivo);
+      var img = new Image();
+      img.onload = function(){ URL.revokeObjectURL(url); res({ w: img.naturalWidth, h: img.naturalHeight }); };
+      img.onerror = function(){ URL.revokeObjectURL(url); res({ w: null, h: null }); };
+      img.src = url;
+    });
+  }
+
+  var edEvidencias = crearEditor({
+    lista:'eviAdminLista', form:'eviForm', titulo:'eviFormTitulo', nuevo:'eviNuevoBtn',
+    cancelar:'eviCancelarBtn', borrar:'eviBorrarBtn', msg:'eviStatusMsg',
+    tituloNuevo:'Nueva fotografía', tituloEditar:'Editar fotografía',
+    vacio:'Todavía no hay ninguna fotografía en la galería.',
+    clave: function(f){ return f.storage_path; },
+    etiqueta: function(f){ return f.title; },
+    listar: function(){ return D.listarEvidencias(); },
+    eliminar: function(ruta){ return D.eliminarEvidencia(ruta); },
+    rellenar: function(f){
+      f = f || {};
+      txt('eviRuta', f.storage_path); txt('eviTitle', f.title);
+      txt('eviEyebrow', f.eyebrow); txt('eviBody', f.body);
+      txt('eviAlt', f.alt); txt('eviConsent', f.consent_ref);
+      txt('eviPos', f.position == null ? 0 : f.position);
+      marcar('eviPublicado', f.published);
+      if(eviArchivoEl) eviArchivoEl.value = '';
+      // La ficha guarda el id para que al editar se actualice la fila en vez
+      // de intentar crear otra con la misma ruta.
+      edEvidencias._id = f.id || null;
+      edEvidencias._w = f.width || null;
+      edEvidencias._h = f.height || null;
+    },
+    guardar: function(){
+      var archivo = eviArchivoEl && eviArchivoEl.files && eviArchivoEl.files[0];
+      var ruta = rutaSegura(leer('eviRuta'));
+      if(!ruta) return Promise.reject(new Error('Falta el nombre del archivo.'));
+      if(!edEvidencias._id && !archivo){
+        return Promise.reject(new Error('Elige una imagen: es una fotografía nueva.'));
+      }
+      if(archivo && archivo.size > 6 * 1024 * 1024){
+        return Promise.reject(new Error('La imagen pesa más de 6 MB. Redúcela antes de subirla.'));
+      }
+
+      var paso = archivo
+        ? medirImagen(archivo).then(function(dim){
+            return D.subirEvidencia(archivo, ruta).then(function(){ return dim; });
+          })
+        : Promise.resolve({ w: edEvidencias._w, h: edEvidencias._h });
+
+      return paso.then(function(dim){
+        return D.guardarEvidencia({
+          id: edEvidencias._id,
+          storagePath: ruta,
+          title: leer('eviTitle').trim(),
+          eyebrow: leer('eviEyebrow').trim(),
+          body: leer('eviBody').trim(),
+          alt: leer('eviAlt').trim(),
+          width: dim.w, height: dim.h,
+          consentRef: leer('eviConsent').trim(),
+          position: leer('eviPos'),
+          published: leerMarca('eviPublicado')
+        });
+      });
+    }
+  });
+
   window.CIEHS.cargarPestanaAdmin = function(nombre){
     if(nombre === 'bitacora')  edBitacora.cargar();
     if(nombre === 'carpeta')   edCarpeta.cargar();
     if(nombre === 'recursos')  edRecursos.cargar();
+    if(nombre === 'evidencias') edEvidencias.cargar();
     if(nombre === 'comunidad'){ cargarPedidos(); cargarComentariosAdmin(); edCaja.cargar(); }
   };
   /* ------------------------------ arranque ---------------------------- */
@@ -2594,6 +2724,7 @@
     var lams   = [].slice.call(pista.querySelectorAll('.galeria-lam'));
 
     var indiceActual = function(){
+      if(!lams.length) return 0;
       var centro = pista.scrollLeft + pista.clientWidth / 2;
       var mejor = 0, dist = Infinity;
       lams.forEach(function(lam, i){
@@ -2613,10 +2744,13 @@
     };
 
     var sincronizar = function(){
+      if(!lams.length) return;
       var i = indiceActual();
-      [].forEach.call(puntos.children, function(b, j){
-        b.setAttribute('aria-selected', String(j === i));
-      });
+      if(puntos){
+        [].forEach.call(puntos.children, function(b, j){
+          b.setAttribute('aria-selected', String(j === i));
+        });
+      }
       lams.forEach(function(lam, j){ lam.classList.toggle('is-activa', j === i); });
       // Las flechas se esconden en los extremos en vez de quedarse muertas: un
       // boton visible que no hace nada es peor que uno ausente.
@@ -2624,36 +2758,51 @@
       if(next) next.disabled = (i === lams.length - 1);
     };
 
-    if(lams.length > 1){
-      lams.forEach(function(lam, i){
-        var b = document.createElement('button');
-        b.type = 'button';
-        b.setAttribute('role', 'tab');
-        b.setAttribute('aria-label', 'Fotografía ' + (i + 1) + ' de ' + lams.length);
-        b.addEventListener('click', function(){ ir(i); });
-        puntos.appendChild(b);
-      });
+    // Los oyentes se enganchan UNA vez y no dependen de que laminas haya: la
+    // base sustituye el contenido de la pista despues de cargar, y volver a
+    // registrarlos en cada repintado los iria acumulando.
+    if(prev) prev.addEventListener('click', function(){ ir(indiceActual() - 1); });
+    if(next) next.addEventListener('click', function(){ ir(indiceActual() + 1); });
 
-      if(prev) prev.addEventListener('click', function(){ ir(indiceActual() - 1); });
-      if(next) next.addEventListener('click', function(){ ir(indiceActual() + 1); });
+    var tick = null;
+    pista.addEventListener('scroll', function(){
+      if(tick) return;
+      tick = requestAnimationFrame(function(){ tick = null; sincronizar(); });
+    }, { passive:true });
 
-      var tick = null;
-      pista.addEventListener('scroll', function(){
-        if(tick) return;
-        tick = requestAnimationFrame(function(){ tick = null; sincronizar(); });
-      }, { passive:true });
+    galeria.addEventListener('keydown', function(e){
+      if(e.key === 'ArrowLeft'){ e.preventDefault(); ir(indiceActual() - 1); }
+      else if(e.key === 'ArrowRight'){ e.preventDefault(); ir(indiceActual() + 1); }
+    });
 
-      galeria.addEventListener('keydown', function(e){
-        if(e.key === 'ArrowLeft'){ e.preventDefault(); ir(indiceActual() - 1); }
-        else if(e.key === 'ArrowRight'){ e.preventDefault(); ir(indiceActual() + 1); }
-      });
+    window.addEventListener('resize', function(){ sincronizar(); }, { passive:true });
 
-      window.addEventListener('resize', sincronizar, { passive:true });
+    // Lee las laminas que hay AHORA y rehace los puntos. Se llama al cargar y
+    // otra vez cuando la base entrega su propia galeria.
+    function montar(){
+      lams = [].slice.call(pista.querySelectorAll('.galeria-lam'));
+      var varias = lams.length > 1;
+      if(puntos){
+        puntos.innerHTML = '';
+        puntos.hidden = !varias;
+      }
+      if(prev) prev.hidden = !varias;
+      if(next) next.hidden = !varias;
+      if(varias && puntos){
+        lams.forEach(function(lam, i){
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.setAttribute('role', 'tab');
+          b.setAttribute('aria-label', 'Fotografía ' + (i + 1) + ' de ' + lams.length);
+          b.addEventListener('click', function(){ ir(i); });
+          puntos.appendChild(b);
+        });
+      }
       sincronizar();
-    } else {
-      if(puntos) puntos.hidden = true;
-      if(prev) prev.hidden = true;
-      if(next) next.hidden = true;
     }
+
+    montar();
+    window.CIEHS = window.CIEHS || {};
+    window.CIEHS.recomponerGaleria = montar;
   }
 })();

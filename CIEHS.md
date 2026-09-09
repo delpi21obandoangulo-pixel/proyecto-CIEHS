@@ -49,10 +49,10 @@ está cada cosa.
 | Repositorio | `proyecto-CIEHS` en GitHub, **público**, sincronizado con producción |
 | Enrutado | 14 rutas con URL propia, agrupadas en **4 familias** tras un menú de tres rayas |
 | Códigos QR | 9 reales, verificados con un lector independiente |
-| Base de datos | Esquema `ciehs` conectado, **12 tablas**, RLS probado por rol |
-| Panel | Supabase Auth + comprobación de administrador · **7 pestañas** |
+| Base de datos | Esquema `ciehs` conectado, **13 tablas**, RLS probado por rol · bucket `ciehs-evidencias` |
+| Panel | Supabase Auth + comprobación de administrador · **8 pestañas** |
 | Identidad | Escudo, sello y mural oficiales · **blanco por capas** con capa de movimiento |
-| Portada | Hero con **fondo animado de brisa** + galería «El CIEHS en acción» (**4 de 19 fotos**: el resto, bloqueado por privacidad) |
+| Portada | Hero con **fondo animado de brisa** + galería «El CIEHS en acción», administrable desde el panel |
 | Infraestructura | **15 módulos DWC activos sin bomba de aire**; NFT y vertical solo como proyección |
 | Privacidad | Página publicada, **pendiente de aprobación por dirección** — hoy bloquea 15 fotografías |
 | Seguridad | CSP sin `unsafe-inline` (scripts ni estilos) · pentest sin hallazgos explotables en el CIEHS |
@@ -64,9 +64,10 @@ está cada cosa.
 
 1. **Aprobar el protocolo de imagen** antes de publicar la primera fotografía de
    un estudiante → [[CIEHS-Privacidad-Menores]]
-2. **Liberar las quince fotografías con estudiantes**, bloqueadas por el
-   protocolo de imagen. Ya están clasificadas: en cuanto la dirección apruebe,
-   entran en la galería. → [[CIEHS-Privacidad-Menores]]
+2. **Subir las quince fotografías con estudiantes** desde la pestaña
+   «Evidencias» del panel. Están clasificadas y sin metadatos; el apoderado ya
+   autorizó por escrito. Falta la **aprobación de la dirección**, que el
+   protocolo marca como bloqueante → [[CIEHS-Privacidad-Menores]]
 3. **Archivos descargables**: la carpeta de campo y el espacio docente ya tienen
    panel de carga; faltan los archivos reales (empezando por el audio-cuento
    «El viaje de una gota de agua»).

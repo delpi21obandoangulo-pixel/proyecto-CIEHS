@@ -89,7 +89,9 @@ solo aparece en el portal cuando un administrador lo aprueba.
 
 `01_schema.sql` crea el esquema base; `02_infraestructura_2026.sql` añade la
 infraestructura real (15 módulos DWC, sin bomba de aire) y las tablas de las
-secciones nuevas. Ambos son idempotentes y se aplican **de forma aislada** (SQL
+secciones nuevas; `03_evidencias.sql` crea el bucket `ciehs-evidencias` y la
+tabla de la galería de la portada. Los tres son idempotentes y se aplican
+**de forma aislada** (SQL
 Editor o `execute_sql`), nunca con `supabase db push` ni `apply_migration`: el
 historial `supabase_migrations.schema_migrations` es global en esta instancia
 compartida y escribirlo contaminaría a los demás proyectos.

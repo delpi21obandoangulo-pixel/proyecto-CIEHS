@@ -39,18 +39,20 @@ nombran.
 | `evidencias/almacigo-trasplante.jpg` | Mesa recién trasplantada, plántulas separadas | Galería, portada |
 | `evidencias/cosecha-empaque.jpg` | Lechugas cosechadas y embolsadas | Galería, portada |
 
-> [!danger] Las cuatro fotografías publicadas no son las únicas que existen
-> De las diecinueve que aportó la coordinación, **quince muestran rostros
-> identificables de estudiantes** y no se publican. El bloqueo no es estético:
-> lo impone [[CIEHS-Privacidad-Menores]] hasta que la dirección apruebe el
-> protocolo de imagen. Además **el repositorio es público**, así que copiar
-> esas fotografías a `assets/` las publicaría igual que subirlas al portal,
-> aunque no se enlazaran desde ninguna página.
+> [!important] Las fotografías con rostros NO viven en el repositorio
+> Las cuatro de arriba son de infraestructura, sin ninguna persona, y sí están
+> en `assets/`. Las que muestran estudiantes van a **Supabase Storage**
+> (bucket `ciehs-evidencias`), nunca a git.
 >
-> Las cuatro que sí están cumplen la regla por sí solas: solo infraestructura y
-> cultivo, sin ninguna persona. Todas pasaron por un limpiador de metadatos
-> propio antes de entrar (WhatsApp ya había retirado EXIF y GPS, pero eso no se
-> da por supuesto).
+> El motivo no es el peso, es la reversibilidad. El repositorio es **público** y
+> su historial es permanente: un commit con la cara de un menor no se puede
+> deshacer, aunque después se borre el archivo. Y el protocolo promete que la
+> autorización es **revocable en cualquier momento** (§3) y que el contenido se
+> retira sin exigir explicaciones (§6). Con las fotografías en el bucket esa
+> promesa se puede cumplir: borrar la evidencia desde el panel borra la ficha
+> **y** el archivo, y desaparece de verdad.
+>
+> Todas pasan por `tools/limpiar-metadatos-jpeg.js` antes de subirse.
 
 > [!tip] Cómo se hizo la transparencia
 > El fondo se elimina por **inundación desde los bordes hacia dentro**, no

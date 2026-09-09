@@ -2130,6 +2130,48 @@
         <button type="button" role="tab" data-tab="carpeta" aria-selected="false" aria-controls="tab-carpeta">Carpeta</button>
         <button type="button" role="tab" data-tab="recursos" aria-selected="false" aria-controls="tab-recursos">Recursos</button>
         <button type="button" role="tab" data-tab="comunidad" aria-selected="false" aria-controls="tab-comunidad">Comunidad</button>
+        <button type="button" role="tab" data-tab="evidencias" aria-selected="false" aria-controls="tab-evidencias">Evidencias</button>
+      </div>
+
+      <!-- ============ EVIDENCIAS ============
+           Las fotografías se suben a Supabase Storage, nunca al repositorio:
+           el repositorio es público y su historial es permanente, así que una
+           autorización revocada no podría hacerse efectiva. Aquí sí: borrar
+           una evidencia borra también el archivo. -->
+      <div id="tab-evidencias" role="tabpanel" data-tabpanel="evidencias" hidden>
+        <div class="inv-lista-head">
+          <p class="admin-divider u-margin-0 u-border-top-none u-padding-top-0">Galería de la portada</p>
+          <button type="button" class="inv-nueva" id="eviNuevoBtn">+ Añadir fotografía</button>
+        </div>
+        <p class="u-font-size-12p5px u-color-ink-soft u-line-height-1p55 u-margin-top-8px"><b>Antes de publicar una fotografía con rostros:</b> debe existir autorización escrita del apoderado, vigente y archivada, y la dirección debe haber aprobado el protocolo de imagen. Anota en «Respaldo de autorización» dónde está el documento firmado; dentro de unos meses nadie recordará con qué permiso se publicó cada cara. Las imágenes se guardan en el servidor de archivos, no en el repositorio: por eso <b>eliminar una evidencia borra también el archivo</b> y una revocación se cumple de verdad.</p>
+
+        <div id="eviAdminLista" class="inv-admin-lista"></div>
+
+        <form id="eviForm" class="inv-form" hidden>
+          <p class="admin-divider u-margin-top-22px"><span id="eviFormTitulo">Nueva fotografía</span></p>
+          <div class="admin-field-group">
+            <label class="form-field"><span>Archivo de imagen (JPG, PNG o WebP · máx. 6 MB)</span><input type="file" id="eviArchivo" accept="image/jpeg,image/png,image/webp"></label>
+            <p class="u-font-size-12p5px u-color-ink-soft u-line-height-1p55" id="eviArchivoInfo">Al editar una que ya existe, deja este campo vacío para conservar la imagen actual.</p>
+            <label class="form-field"><span>Nombre del archivo en el servidor</span><input type="text" id="eviRuta" maxlength="120" placeholder="cosecha-equipo-3b.jpg" required></label>
+            <div class="admin-grid-2">
+              <label class="form-field"><span>Cintillo</span><input type="text" id="eviEyebrow" maxlength="60" placeholder="Indagación"></label>
+              <label class="form-field"><span>Título</span><input type="text" id="eviTitle" maxlength="120" required></label>
+            </div>
+            <label class="form-field"><span>Texto descriptivo</span><textarea id="eviBody" rows="3" maxlength="400"></textarea></label>
+            <label class="form-field"><span>Texto alternativo (obligatorio: es lo que oye quien no ve la imagen)</span><textarea id="eviAlt" rows="2" maxlength="300" required></textarea></label>
+            <div class="admin-grid-2">
+              <label class="form-field"><span>Respaldo de autorización</span><input type="text" id="eviConsent" maxlength="160" placeholder="Carpeta física 2026 · folios 12-14"></label>
+              <label class="form-field"><span>Orden</span><input type="number" id="eviPos" min="0" max="99" step="1" value="0"></label>
+            </div>
+            <label class="admin-checkbox-row"><input type="checkbox" id="eviPublicado"> Publicar en la portada</label>
+          </div>
+          <div class="inv-form-acciones">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <button type="button" class="btn btn-ghost" id="eviCancelarBtn">Cancelar</button>
+            <button type="button" class="inv-borrar" id="eviBorrarBtn" hidden>Eliminar</button>
+          </div>
+          <p class="form-status" id="eviStatusMsg" role="status" aria-live="polite"></p>
+        </form>
       </div>
 
       <div id="tab-portada" role="tabpanel" data-tabpanel="portada">

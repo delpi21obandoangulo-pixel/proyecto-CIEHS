@@ -4,8 +4,9 @@ aliases: [Esquema ciehs, Base de datos CIEHS, RLS CIEHS]
 tags: [ciehs, supabase, postgres, rls, backend, aislamiento]
 instancia: kumxtheybmqbfixatnok (compartida)
 esquema: ciehs
+bucket: ciehs-evidencias
 estado: en produccion
-actualizado: 2026-09-04
+actualizado: 2026-09-09
 ---
 
 # CIEHS · Backend Supabase
@@ -54,6 +55,7 @@ instancia afecta a los tres proyectos a la vez.
 | Tabla | Contenido | Lectura pública |
 |---|---|---|
 | `site_config` | Portada, KPIs y aviso institucional (**fila única**, `id = 1`) | sí |
+| `evidencias` | Galería «El CIEHS en acción». Imágenes en el bucket `ciehs-evidencias`, no en git → §7 | solo `published` |
 | `modules` | Los **15 módulos DWC** más las dos proyecciones (`PROY-NFT`, `PROY-VER`) y sus rangos objetivo de pH y CE | solo `published` |
 | `telemetry_readings` | Lecturas de pH y CE con fecha y autor | solo de módulos publicados |
 | `investigations` | Fichas de investigación completas | solo `published` |
@@ -196,6 +198,76 @@ on conflict (user_id) do nothing;
       los datos a la hoja de cálculo.
 - [x] Autoría (`recorded_by`, `updated_by`) la pone el servidor, no el cliente
       → [[CIEHS-Auditoria-Seguridad-Auth]].
+
+## 7. Galería de evidencias: imágenes fuera de git
+
+Añadido el 2026-09-09. Es la única parte del portal cuyo contenido **no** puede
+vivir en el repositorio, y el motivo es de privacidad, no técnico.
+
+### El bucket
+
+`ciehs-evidencias`, público en lectura, límite de 6 MB, solo `image/jpeg`,
+`image/png` y `image/webp`.
+
+> [!warning] Storage es de toda la instancia
+> Los *buckets* no están dentro del esquema `ciehs`: viven en `storage` y son
+> comunes a Aura y Safari. Se aplica la misma regla de convivencia que a las
+> tablas: **un bucket propio con nombre propio**, y jamás tocar `avatars`,
+> `profile-media` ni `battle-videos`, que son de Aura.
+
+Políticas sobre `storage.objects`, acotadas por `bucket_id`:
+
+| Operación | Quién |
+|---|---|
+| `select` | cualquiera (la galería carga sin sesión) |
+| `insert` / `update` / `delete` | solo `ciehs.is_admin()` |
+
+### La tabla `ciehs.evidencias`
+
+| Columna | Para qué |
+|---|---|
+| `storage_path` | Nombre del objeto en el bucket. Único. |
+| `title`, `eyebrow`, `body` | Texto de la lámina |
+| `alt` | Obligatorio: es lo que oye quien no ve la imagen |
+| `width`, `height` | Se leen del archivo al subirlo, para reservar el hueco y evitar el salto de maquetación |
+| `consent_ref` | **Dónde está la autorización firmada.** Sin esto, meses después nadie sabe con qué respaldo se publicó cada rostro |
+| `position`, `published` | Orden y visibilidad |
+
+### Por qué no en el repositorio
+
+El repositorio es **público** y el historial de git es permanente. Un commit con
+la cara de un menor no se deshace: queda en el historial, en los clones y en los
+forks aunque se borre el archivo. Pero
+[[CIEHS-Privacidad-Menores]] promete que la autorización es **revocable en
+cualquier momento** (§3) y que el contenido se retira sin pedir explicaciones
+(§6). Con git esa promesa no se puede cumplir; con el bucket sí: eliminar una
+evidencia desde el panel borra **la fila y el objeto**.
+
+Por eso `CIEHSData.eliminarEvidencia()` borra primero el archivo y después la
+fila. Dejar el objeto huérfano sería lo peor de los dos mundos: invisible en el
+portal pero todavía descargable por URL directa.
+
+### Respaldo estático
+
+La portada trae cuatro láminas en el HTML —solo infraestructura, sin personas—.
+Si la base no responde o la galería está vacía, se quedan esas. Cuando la base
+entrega filas, sustituyen a las estáticas y el carrusel se recompone
+(`window.CIEHS.recomponerGaleria()`).
+
+### La CSP hubo que ampliarla
+
+`img-src` solo admitía `'self'` y `data:`. Ahora incluye el origen de Supabase
+—o las imágenes se bloquearían en producción sin previo aviso— y `blob:`,
+porque al subir se mide el archivo cargándolo con `URL.createObjectURL`.
+
+### Quién puede subir
+
+Solo un administrador del CIEHS, desde la pestaña **Evidencias** del panel, con
+su propia sesión. No hay ninguna vía automatizada, y es deliberado: la
+`service_role` de esta instancia pertenece a Aura y Safari según su ficha de la
+bóveda, y reutilizarla para el CIEHS sería cruce de credenciales entre
+proyectos.
+
 
 ---
 

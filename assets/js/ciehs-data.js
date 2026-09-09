@@ -85,6 +85,8 @@
   var COLS_RECURSO = 'id, title, description, level, area, kind, file_url, file_kind, duration, ' +
                      'featured, position, published, updated_at';
   var COLS_CAJA    = 'id, occurred_on, period, concept, kind, amount_pen, note, published';
+  var COLS_EVIDENCIA = 'id, storage_path, title, eyebrow, body, alt, width, height, ' +
+                       'consent_ref, position, published';
   // Los pedidos llevan nombre y contacto de familias: no hay politica de lectura
   // publica sobre esa tabla y estas columnas solo llegan con sesion de admin.
   var COLS_PEDIDO  = 'id, requester_name, contact, crop, qty_kg, notes, status, created_at';
@@ -113,7 +115,8 @@
       cliente.from('transparency_entries')
              .select(COLS_CAJA)
              .order('occurred_on', { ascending: false })
-             .limit(200)
+             .limit(200),
+      cliente.from('evidencias').select(COLS_EVIDENCIA).order('position', { ascending: true })
     ]).then(function (r) {
       var err = r.find(function (x) { return x.error; });
       if (err) {
@@ -133,7 +136,8 @@
         bitacora: r[6].data || [],
         recursos: r[7].data || [],
         comentarios: r[8].data || [],
-        caja: r[9].data || []
+        caja: r[9].data || [],
+        evidencias: r[10].data || []
       };
     }).catch(function (e) {
       CIEHSData.conectado = false;
@@ -320,6 +324,56 @@
     }, 'code');
   };
   CIEHSData.eliminarNota = function (code) { return eliminar('field_notes', 'code', code); };
+
+  /* -------- galeria de evidencias: fotografias fuera del repositorio ------
+     Las imagenes viven en el bucket 'ciehs-evidencias', NO en git. El motivo
+     no es de tamano: el repositorio es publico y su historial es permanente,
+     asi que un commit con la fotografia de un menor no se puede deshacer. El
+     protocolo promete que la autorizacion es revocable en cualquier momento;
+     esto es lo que hace que esa promesa se pueda cumplir de verdad, porque
+     borrar el objeto lo borra. */
+  var BUCKET_EVIDENCIAS = 'ciehs-evidencias';
+
+  CIEHSData.urlEvidencia = function (ruta) {
+    if (!ruta) return '';
+    // Ya absoluta: se respeta tal cual (permite alojar alguna pieza aparte).
+    if (/^https?:\/\//i.test(ruta)) return ruta;
+    return cliente.storage.from(BUCKET_EVIDENCIAS).getPublicUrl(ruta).data.publicUrl;
+  };
+
+  CIEHSData.listarEvidencias = function () {
+    return listar('evidencias', COLS_EVIDENCIA, 'position');
+  };
+
+  CIEHSData.subirEvidencia = function (archivo, nombre) {
+    // upsert:true para que reintentar una subida fallida no obligue a inventar
+    // otro nombre y deje huerfano el objeto anterior.
+    var ruta = nombre || archivo.name;
+    return cliente.storage.from(BUCKET_EVIDENCIAS)
+      .upload(ruta, archivo, { upsert: true, contentType: archivo.type, cacheControl: '3600' })
+      .then(function (r) { if (r.error) throw r.error; return ruta; });
+  };
+
+  CIEHSData.guardarEvidencia = function (e) {
+    return guardar('evidencias', COLS_EVIDENCIA, {
+      id: e.id || undefined,
+      storage_path: e.storagePath, title: e.title, eyebrow: vacio(e.eyebrow),
+      body: vacio(e.body), alt: e.alt,
+      width: e.width ? Number(e.width) : null,
+      height: e.height ? Number(e.height) : null,
+      consent_ref: vacio(e.consentRef),
+      position: Number(e.position || 0), published: !!e.published
+    }, 'storage_path');
+  };
+
+  // Elimina la fila Y el objeto. Dejar el archivo en el bucket con la fila
+  // borrada seria lo peor de los dos mundos: invisible en el portal pero
+  // todavia descargable por URL directa, que es justo lo que una revocacion
+  // tiene que impedir.
+  CIEHSData.eliminarEvidencia = function (ruta) {
+    return cliente.storage.from(BUCKET_EVIDENCIAS).remove([ruta])
+      .then(function () { return eliminar('evidencias', 'storage_path', ruta); });
+  };
 
   /* bitacora agronomica */
   CIEHSData.listarLotes = function () { return listar('crop_log', COLS_LOTE, 'position'); };
