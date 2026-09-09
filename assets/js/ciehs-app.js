@@ -852,6 +852,9 @@
       pintarTransparencia();
       pintarComentarios();
       pintarEvidencias();
+      // La carpeta de campo depende de los modulos y de los registros, que solo
+      // existen a partir de aqui: antes de esto su selector estaria vacio.
+      if(window.CIEHS && window.CIEHS.refrescarCampo) window.CIEHS.refrescarCampo();
       if(window.CIEHS && window.CIEHS.escalonar) window.CIEHS.escalonar();
     })["catch"](function(err){
       // Un rechazo (red caida, CORS, token invalido) tiene que terminar igual
@@ -2035,11 +2038,98 @@
     }
   });
 
+  /* ------------------- validacion de la carpeta de campo -----------------
+     No usa crearEditor: aqui no se edita nada, solo se decide si un dato entra
+     o no. Dos botones por fila y ninguna ficha que rellenar. */
+  var regLista = el('regAdminLista');
+  var regMsg   = el('regStatusMsg');
+
+  function regAviso(t, error){
+    if(!regMsg) return;
+    regMsg.classList.toggle('error', !!error);
+    regMsg.textContent = t || '';
+  }
+
+  function resumenMedidas(r){
+    var partes = [];
+    if(r.ph != null)        partes.push('pH ' + r.ph);
+    if(r.ce != null)        partes.push('CE ' + r.ce);
+    if(r.temp_c != null)    partes.push(r.temp_c + ' °C');
+    if(r.altura_cm != null) partes.push(r.altura_cm + ' cm');
+    if(r.hojas != null)     partes.push(r.hojas + ' hojas');
+    return partes.join(' · ') || '—';
+  }
+
+  function cargarRegistros(){
+    if(!regLista) return;
+    regLista.innerHTML = '<p class="inv-vacia">Cargando…</p>';
+    D.listarRegistros().then(function(filas){
+      if(!filas.length){
+        regLista.innerHTML = '<p class="inv-vacia">Todavía no hay mediciones registradas por los estudiantes.</p>';
+        return;
+      }
+      regLista.innerHTML = filas.map(function(r){
+        var quien = [r.equipo, r.grado].filter(Boolean).join(' · ') || 'Sin equipo indicado';
+        return '<div class="inv-item">'
+          + '<div class="txt">'
+          +   '<span class="cod">' + esc(r.module_code) + ' · ' + esc(r.medido_en) + '</span>'
+          +   '<span class="tit">' + esc(resumenMedidas(r)) + '</span>'
+          +   '<span class="tit u-color-ink-mute">' + esc(quien)
+          +     (r.nota ? ' — “' + esc(r.nota) + '”' : '') + '</span>'
+          + '</div>'
+          + '<span class="estado ' + (r.published ? 'pub' : 'bor') + '">'
+          +   (r.published ? 'validado' : 'pendiente') + '</span>'
+          + '<button type="button" class="editar" data-validar="' + esc(r.id) + '" data-a="'
+          +   (r.published ? '0' : '1') + '">' + (r.published ? 'Retirar' : 'Validar') + '</button>'
+          + '<button type="button" class="inv-borrar" data-borrar="' + esc(r.id) + '">Eliminar</button>'
+          + '</div>';
+      }).join('');
+
+      regLista.querySelectorAll('[data-validar]').forEach(function(b){
+        b.addEventListener('click', function(){
+          b.disabled = true;
+          regAviso('Guardando…');
+          D.validarRegistro(b.getAttribute('data-validar'), b.getAttribute('data-a') === '1')
+            .then(function(){
+              regAviso('Hecho.');
+              cargarRegistros();
+              if(window.CIEHS && window.CIEHS.refrescarDatos) window.CIEHS.refrescarDatos();
+            })
+            .catch(function(e){ b.disabled = false; regAviso('No se pudo: ' + ((e && e.message) || 'error'), true); });
+        });
+      });
+
+      regLista.querySelectorAll('[data-borrar]').forEach(function(b){
+        b.addEventListener('click', function(){
+          // Doble pulsacion, igual que en el resto del panel: confirm() nativo
+          // deja colgadas las tablets del laboratorio.
+          if(!b.classList.contains('inv-confirmar')){
+            b.classList.add('inv-confirmar');
+            b.textContent = 'Pulsa otra vez';
+            setTimeout(function(){ b.classList.remove('inv-confirmar'); b.textContent = 'Eliminar'; }, 4000);
+            return;
+          }
+          D.eliminarRegistro(b.getAttribute('data-borrar')).then(function(){
+            regAviso('Medición descartada.');
+            cargarRegistros();
+            if(window.CIEHS && window.CIEHS.refrescarDatos) window.CIEHS.refrescarDatos();
+          }).catch(function(e){ regAviso('No se pudo eliminar: ' + ((e && e.message) || 'error'), true); });
+        });
+      });
+    }).catch(function(e){
+      regLista.innerHTML = '<p class="inv-vacia">No se pudo cargar: ' + esc((e && e.message) || 'error') + '</p>';
+    });
+  }
+
+  var regRecargar = el('regRecargarBtn');
+  if(regRecargar) regRecargar.addEventListener('click', cargarRegistros);
+
   window.CIEHS.cargarPestanaAdmin = function(nombre){
     if(nombre === 'bitacora')  edBitacora.cargar();
     if(nombre === 'carpeta')   edCarpeta.cargar();
     if(nombre === 'recursos')  edRecursos.cargar();
     if(nombre === 'evidencias') edEvidencias.cargar();
+    if(nombre === 'registros') cargarRegistros();
     if(nombre === 'comunidad'){ cargarPedidos(); cargarComentariosAdmin(); edCaja.cargar(); }
   };
   /* ------------------------------ arranque ---------------------------- */
@@ -2805,4 +2895,262 @@
     window.CIEHS = window.CIEHS || {};
     window.CIEHS.recomponerGaleria = montar;
   }
+})();
+
+/* ===========================================================================
+   11. CARPETA DE CAMPO DIGITAL
+
+   El estudiante registra su medicion y la grafica se rehace sola. El registro
+   nace SIN publicar y lo valida el panel, igual que los comentarios: eso no es
+   burocracia, es lo que ensena que un dato cientifico se contrasta antes de
+   darse por bueno. Mientras espera, su punto se dibuja aparte, marcado como
+   pendiente, para que vea que su trabajo cuenta.
+
+   La grafica es SVG generado a mano, sin libreria: son series de pocas decenas
+   de puntos y cargar una dependencia entera para eso no se sostiene.
+   =========================================================================== */
+(function(){
+  var form = document.getElementById('campoForm');
+  if(!form) return;                       // la seccion no esta en esta pagina
+
+  var D = window.CIEHSData;
+  var selModulo = document.getElementById('campoModulo');
+  var elFecha   = document.getElementById('campoFecha');
+  var elStatus  = document.getElementById('campoStatus');
+  var elEnviar  = document.getElementById('campoEnviar');
+  var svg       = document.getElementById('campoGrafica');
+  var elTitulo  = document.getElementById('campoVisorTitulo');
+  var elVacio   = document.getElementById('campoVacio');
+  var elSeries  = document.getElementById('campoSeries');
+
+  var VARIABLES = [
+    { clave:'ph',        etiqueta:'pH',      unidad:'',       min:4,  max:8   },
+    { clave:'ce',        etiqueta:'CE',      unidad:' mS/cm', min:0,  max:4   },
+    { clave:'temp_c',    etiqueta:'Temp.',   unidad:' °C',    min:10, max:35  },
+    { clave:'altura_cm', etiqueta:'Altura',  unidad:' cm',    min:0,  max:40  },
+    { clave:'hojas',     etiqueta:'Hojas',   unidad:'',       min:0,  max:20  }
+  ];
+  var variableActiva = 'ph';
+
+  // Registros que este navegador acaba de enviar y todavia no estan validados.
+  // Viven solo en memoria: no se guardan en localStorage porque una medicion
+  // pendiente no es un dato del portal, es un envio en transito.
+  var pendientes = [];
+
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  function aviso(texto, error){
+    if(!elStatus) return;
+    elStatus.classList.toggle('error', !!error);
+    elStatus.textContent = texto || '';
+  }
+
+  /* ------------------------------------------------- selector de modulos --*/
+  function llenarModulos(){
+    if(!selModulo) return;
+    var snap = (window.CIEHS && window.CIEHS.snapshot && window.CIEHS.snapshot()) || null;
+    var mods = (snap && snap.modulos) || [];
+    // Solo modulos reales: PROY-NFT y PROY-VER son proyecciones a futuro y no
+    // existen fisicamente, asi que nadie puede medirlos.
+    mods = mods.filter(function(m){ return m.code && m.code.indexOf('PROY-') !== 0; });
+    if(!mods.length){
+      selModulo.innerHTML = '<option value="">(no se pudo cargar la lista)</option>';
+      return;
+    }
+    var previo = selModulo.value;
+    selModulo.innerHTML = mods.map(function(m){
+      return '<option value="' + esc(m.code) + '">' + esc(m.code)
+           + (m.crop ? ' · ' + esc(m.crop) : '') + '</option>';
+    }).join('');
+    if(previo) selModulo.value = previo;
+    dibujar();
+  }
+
+  /* ----------------------------------------------- pestanas de variable ---*/
+  function pintarSeries(){
+    if(!elSeries) return;
+    elSeries.innerHTML = VARIABLES.map(function(v){
+      return '<button type="button" role="tab" class="campo-serie' + (v.clave === variableActiva ? ' is-active' : '')
+        + '" data-var="' + v.clave + '" aria-selected="' + (v.clave === variableActiva) + '">'
+        + esc(v.etiqueta) + '</button>';
+    }).join('');
+    elSeries.querySelectorAll('[data-var]').forEach(function(b){
+      b.addEventListener('click', function(){
+        variableActiva = b.getAttribute('data-var');
+        pintarSeries();
+        dibujar();
+      });
+    });
+  }
+
+  /* ---------------------------------------------------------- la grafica --*/
+  function datosDe(codigo, clave){
+    var snap = (window.CIEHS && window.CIEHS.snapshot && window.CIEHS.snapshot()) || null;
+    var todos = (snap && snap.registros) || [];
+    function util(r){
+      return r.module_code === codigo && r[clave] != null && r[clave] !== '';
+    }
+    var val = todos.filter(util).map(function(r){
+      return { x: r.medido_en, y: Number(r[clave]), pendiente: false };
+    });
+    var pen = pendientes.filter(util).map(function(r){
+      return { x: r.medido_en, y: Number(r[clave]), pendiente: true };
+    });
+    return val.concat(pen).sort(function(a, b){ return a.x < b.x ? -1 : a.x > b.x ? 1 : 0; });
+  }
+
+  function dibujar(){
+    if(!svg || !selModulo) return;
+    var codigo = selModulo.value;
+    var v = VARIABLES.filter(function(x){ return x.clave === variableActiva; })[0] || VARIABLES[0];
+    var puntos = datosDe(codigo, v.clave);
+
+    if(elTitulo) elTitulo.textContent = codigo ? (codigo + ' · ' + v.etiqueta) : 'Elige un módulo';
+    if(elVacio) elVacio.hidden = puntos.length > 0;
+    if(!puntos.length){ svg.innerHTML = ''; return; }
+
+    var W = 640, H = 260, ml = 48, mr = 16, mt = 18, mb = 34;
+    var iw = W - ml - mr, ih = H - mt - mb;
+
+    // La escala se calcula sobre los datos reales, pero se ensancha hasta el
+    // rango de referencia del cultivo: si todos los puntos caen en 6.1-6.3, una
+    // escala ajustada a eso convertiria el ruido en una montana rusa.
+    var ys = puntos.map(function(p){ return p.y; });
+    var yMin = Math.min.apply(null, ys.concat([v.min]));
+    var yMax = Math.max.apply(null, ys.concat([v.max]));
+    if(yMax - yMin < 1e-6){ yMax = yMin + 1; }
+    var pad = (yMax - yMin) * 0.08;
+    yMin -= pad; yMax += pad;
+
+    var n = puntos.length;
+    function px(i){ return ml + (n === 1 ? iw / 2 : (i / (n - 1)) * iw); }
+    function py(y){ return mt + ih - ((y - yMin) / (yMax - yMin)) * ih; }
+
+    var partes = [];
+
+    // Rejilla horizontal con sus etiquetas.
+    for(var g = 0; g <= 4; g++){
+      var val = yMin + (yMax - yMin) * (g / 4);
+      var yy = py(val);
+      partes.push('<line x1="' + ml + '" y1="' + yy.toFixed(1) + '" x2="' + (W - mr) + '" y2="' + yy.toFixed(1)
+        + '" stroke="var(--chart-grid)" stroke-width="1"/>');
+      partes.push('<text x="' + (ml - 8) + '" y="' + (yy + 4).toFixed(1)
+        + '" text-anchor="end" font-size="11" fill="var(--chart-ink-2)" font-family="var(--font-mono)">'
+        + val.toFixed(v.clave === 'hojas' ? 0 : 1) + '</text>');
+    }
+
+    // Linea de los validados. Los pendientes NO entran en la linea: son puntos
+    // sueltos, porque unirlos daria a un dato sin contrastar la misma
+    // apariencia de verdad que a los demas.
+    var val2 = puntos.filter(function(p){ return !p.pendiente; });
+    if(val2.length > 1){
+      var d = val2.map(function(p){
+        var i = puntos.indexOf(p);
+        return px(i).toFixed(1) + ',' + py(p.y).toFixed(1);
+      }).join(' ');
+      partes.push('<polyline points="' + d + '" fill="none" stroke="var(--leaf-500)" stroke-width="2.5" '
+        + 'stroke-linecap="round" stroke-linejoin="round"/>');
+    }
+
+    puntos.forEach(function(p, i){
+      var cx = px(i).toFixed(1), cy = py(p.y).toFixed(1);
+      var etiqueta = p.x + ' · ' + p.y + v.unidad + (p.pendiente ? ' (pendiente de validar)' : '');
+      if(p.pendiente){
+        partes.push('<circle cx="' + cx + '" cy="' + cy + '" r="5.5" fill="var(--surface)" '
+          + 'stroke="var(--sun-500)" stroke-width="2.5" stroke-dasharray="3 2">'
+          + '<title>' + esc(etiqueta) + '</title></circle>');
+      } else {
+        partes.push('<circle cx="' + cx + '" cy="' + cy + '" r="4.5" fill="var(--leaf-500)" '
+          + 'stroke="var(--surface)" stroke-width="2">'
+          + '<title>' + esc(etiqueta) + '</title></circle>');
+      }
+    });
+
+    // Fechas: solo la primera y la ultima. Con quince mediciones, todas las
+    // etiquetas se solapan y no se lee ninguna.
+    if(n){
+      partes.push('<text x="' + ml + '" y="' + (H - 10) + '" font-size="11" fill="var(--chart-ink-2)" '
+        + 'font-family="var(--font-mono)">' + esc(puntos[0].x) + '</text>');
+      if(n > 1){
+        partes.push('<text x="' + (W - mr) + '" y="' + (H - 10) + '" text-anchor="end" font-size="11" '
+          + 'fill="var(--chart-ink-2)" font-family="var(--font-mono)">' + esc(puntos[n - 1].x) + '</text>');
+      }
+    }
+
+    svg.innerHTML = partes.join('');
+    svg.setAttribute('aria-label', 'Evolución de ' + v.etiqueta + ' en el módulo ' + codigo
+      + ': ' + n + (n === 1 ? ' medición' : ' mediciones')
+      + ', de ' + Math.min.apply(null, ys).toFixed(1) + ' a ' + Math.max.apply(null, ys).toFixed(1) + v.unidad + '.');
+  }
+
+  /* ------------------------------------------------------------- el envio --*/
+  function hoy(){
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0')
+         + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  if(elFecha){
+    elFecha.value = hoy();
+    elFecha.max = hoy();                  // no se puede medir el futuro
+  }
+
+  function leerNum(id){
+    var e = document.getElementById(id);
+    return e && e.value !== '' ? e.value : '';
+  }
+
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    if(!D || !D.listo){
+      aviso('No hay conexión con la base del CIEHS, así que la medición no se puede registrar ahora mismo.', true);
+      return;
+    }
+    var medida = {
+      moduleCode: selModulo.value,
+      equipo: (document.getElementById('campoEquipo') || {}).value || '',
+      grado:  (document.getElementById('campoGrado')  || {}).value || '',
+      medidoEn: elFecha.value,
+      ph: leerNum('campoPh'), ce: leerNum('campoCe'), tempC: leerNum('campoTemp'),
+      alturaCm: leerNum('campoAltura'), hojas: leerNum('campoHojas'),
+      nota: (document.getElementById('campoNota') || {}).value || ''
+    };
+    if(!medida.moduleCode){ aviso('Elige el módulo que has medido.', true); return; }
+    if(!medida.medidoEn){ aviso('Pon la fecha de la medición.', true); return; }
+    // Misma regla que la restriccion de la base: al menos una medicion. Se
+    // comprueba aqui tambien para dar un mensaje util en vez de un error de SQL.
+    if(!medida.ph && !medida.ce && !medida.tempC && !medida.alturaCm && !medida.hojas){
+      aviso('Anota al menos una medición: pH, CE, temperatura, altura o número de hojas.', true);
+      return;
+    }
+
+    if(elEnviar) elEnviar.disabled = true;
+    aviso('Registrando…');
+    D.registrarMedicion(medida).then(function(fila){
+      if(fila) pendientes.push(fila);
+      aviso('Registrado. Tu medición ya aparece en la gráfica marcada como pendiente: el equipo coordinador la valida y pasa a ser oficial.');
+      dibujar();
+      ['campoPh','campoCe','campoTemp','campoAltura','campoHojas','campoNota'].forEach(function(id){
+        var e = document.getElementById(id); if(e) e.value = '';
+      });
+    }).catch(function(e){
+      aviso('No se pudo registrar: ' + ((e && e.message) || 'error desconocido'), true);
+    }).then(function(){
+      if(elEnviar) elEnviar.disabled = false;
+    });
+  });
+
+  if(selModulo) selModulo.addEventListener('change', dibujar);
+
+  pintarSeries();
+  llenarModulos();
+  dibujar();
+
+  // La capa de datos avisa cuando termina de cargar: hasta entonces no hay
+  // modulos que listar ni registros que graficar.
+  window.CIEHS = window.CIEHS || {};
+  window.CIEHS.refrescarCampo = function(){ llenarModulos(); dibujar(); };
 })();

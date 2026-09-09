@@ -1086,6 +1086,102 @@
           </table>
         </div>
 
+
+        <!-- ============ CARPETA DE CAMPO DIGITAL ============
+             El estudiante registra su medición y la gráfica se redibuja sola.
+             El registro nace SIN publicar: lo valida el panel, igual que los
+             comentarios. Eso no es burocracia — es lo que enseña que un dato
+             científico se contrasta antes de darse por bueno. Mientras espera,
+             el estudiante ve su punto marcado como «pendiente». -->
+        <div class="campo-digital" id="campoDigital">
+          <div class="section-head u-margin-top-56px">
+            <p class="eyebrow">Carpeta de campo digital</p>
+            <h3>Registra tu medición y mira cómo se dibuja</h3>
+            <p>Cada vez que tu equipo mide un módulo, anótalo aquí. La gráfica se rehace al instante con lo que acabas de escribir. No pedimos tu nombre: basta con el equipo y el grado, porque lo que se publica es el trabajo, no quién lo hizo.</p>
+          </div>
+
+          <div class="campo-grid">
+            <form class="campo-form card" id="campoForm" novalidate>
+              <div class="admin-grid-2">
+                <label class="form-field">
+                  <span>Módulo <b class="req" aria-hidden="true">*</b></span>
+                  <select id="campoModulo" required></select>
+                </label>
+                <label class="form-field">
+                  <span>Fecha de la medición <b class="req" aria-hidden="true">*</b></span>
+                  <input type="date" id="campoFecha" required>
+                </label>
+              </div>
+              <div class="admin-grid-2">
+                <label class="form-field">
+                  <span>Equipo</span>
+                  <input type="text" id="campoEquipo" maxlength="80" placeholder="Equipo de Monitoreo y Registro">
+                </label>
+                <label class="form-field">
+                  <span>Grado y sección</span>
+                  <input type="text" id="campoGrado" maxlength="40" placeholder="3.° B">
+                </label>
+              </div>
+
+              <p class="campo-instruccion">Anota <b>al menos una</b> medición. Las que no hayas tomado, déjalas vacías: es preferible un hueco a un dato inventado.</p>
+
+              <div class="campo-medidas">
+                <label class="form-field">
+                  <span>pH</span>
+                  <input type="number" id="campoPh" min="0" max="14" step="0.1" inputmode="decimal" placeholder="6.2">
+                </label>
+                <label class="form-field">
+                  <span>CE <small>(mS/cm)</small></span>
+                  <input type="number" id="campoCe" min="0" max="10" step="0.1" inputmode="decimal" placeholder="1.5">
+                </label>
+                <label class="form-field">
+                  <span>Temperatura <small>(°C)</small></span>
+                  <input type="number" id="campoTemp" min="-5" max="60" step="0.1" inputmode="decimal" placeholder="21.5">
+                </label>
+                <label class="form-field">
+                  <span>Altura <small>(cm)</small></span>
+                  <input type="number" id="campoAltura" min="0" max="300" step="0.5" inputmode="decimal" placeholder="12.5">
+                </label>
+                <label class="form-field">
+                  <span>N.º de hojas</span>
+                  <input type="number" id="campoHojas" min="0" max="500" step="1" inputmode="numeric" placeholder="8">
+                </label>
+              </div>
+
+              <label class="form-field">
+                <span>Observación <small>(¿viste algo raro? anótalo)</small></span>
+                <textarea id="campoNota" rows="2" maxlength="400" placeholder="Las hojas de la fila 2 están más pálidas que el resto."></textarea>
+              </label>
+
+              <div class="inv-form-acciones">
+                <button type="submit" class="btn btn-primary" id="campoEnviar">Registrar medición</button>
+              </div>
+              <p class="form-status" id="campoStatus" role="status" aria-live="polite"></p>
+            </form>
+
+            <div class="campo-visor card">
+              <div class="campo-visor-cab">
+                <div>
+                  <p class="eyebrow">Evolución del módulo</p>
+                  <h4 id="campoVisorTitulo">Elige un módulo</h4>
+                </div>
+                <div class="campo-series" id="campoSeries" role="tablist" aria-label="Qué se grafica"></div>
+              </div>
+
+              <div class="campo-gr-wrap">
+                <svg class="campo-grafica" id="campoGrafica" viewBox="0 0 640 260" role="img" aria-labelledby="campoGraficaDesc"></svg>
+                <p class="u-visually-hidden" id="campoGraficaDesc">Gráfica de la evolución de la variable elegida en el módulo seleccionado.</p>
+              </div>
+
+              <p class="campo-vacio" id="campoVacio">Todavía no hay mediciones validadas de este módulo. La primera puede ser la tuya.</p>
+              <p class="campo-leyenda">
+                <span class="lg lg-val"></span> Validado por el equipo coordinador
+                <span class="lg lg-pend"></span> Tu registro, pendiente de validar
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div class="qr-panel u-margin-top-40px">
           <div class="qr-visual">
             <div class="qr-thumb u-max-width-150px" data-qr-slot="trazabilidad" data-qr-label="Código QR de la bitácora de trazabilidad"></div>
@@ -2131,6 +2227,21 @@
         <button type="button" role="tab" data-tab="recursos" aria-selected="false" aria-controls="tab-recursos">Recursos</button>
         <button type="button" role="tab" data-tab="comunidad" aria-selected="false" aria-controls="tab-comunidad">Comunidad</button>
         <button type="button" role="tab" data-tab="evidencias" aria-selected="false" aria-controls="tab-evidencias">Evidencias</button>
+        <button type="button" role="tab" data-tab="registros" aria-selected="false" aria-controls="tab-registros">Registros</button>
+      </div>
+
+      <!-- ---------- Validación de la carpeta de campo digital ----------
+           Los estudiantes registran mediciones desde la sección pública y
+           nacen sin publicar. Aquí se validan: hasta entonces no entran en la
+           gráfica oficial. -->
+      <div id="tab-registros" role="tabpanel" data-tabpanel="registros" hidden>
+        <div class="inv-lista-head">
+          <p class="admin-divider u-margin-0 u-border-top-none u-padding-top-0">Mediciones de los estudiantes</p>
+          <button type="button" class="inv-nueva" id="regRecargarBtn">Recargar</button>
+        </div>
+        <p class="u-font-size-12p5px u-color-ink-soft u-line-height-1p55 u-margin-top-8px">Cada medición que registra un equipo llega aquí como borrador. <b>Validar</b> la incorpora a la gráfica pública del módulo; <b>eliminar</b> la descarta. Contrastar el dato antes de darlo por bueno es parte del método, no un trámite: si una cifra es imposible, descártala y coméntalo con el equipo.</p>
+        <div id="regAdminLista" class="inv-admin-lista"></div>
+        <p class="form-status" id="regStatusMsg" role="status" aria-live="polite"></p>
       </div>
 
       <!-- ============ EVIDENCIAS ============

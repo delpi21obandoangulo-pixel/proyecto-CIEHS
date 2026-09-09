@@ -87,6 +87,8 @@
   var COLS_CAJA    = 'id, occurred_on, period, concept, kind, amount_pen, note, published';
   var COLS_EVIDENCIA = 'id, storage_path, title, eyebrow, body, alt, width, height, ' +
                        'consent_ref, position, published';
+  var COLS_REGISTRO  = 'id, module_code, equipo, grado, medido_en, ph, ce, temp_c, ' +
+                       'altura_cm, hojas, nota, published, created_at';
   // Los pedidos llevan nombre y contacto de familias: no hay politica de lectura
   // publica sobre esa tabla y estas columnas solo llegan con sesion de admin.
   var COLS_PEDIDO  = 'id, requester_name, contact, crop, qty_kg, notes, status, created_at';
@@ -116,7 +118,9 @@
              .select(COLS_CAJA)
              .order('occurred_on', { ascending: false })
              .limit(200),
-      cliente.from('evidencias').select(COLS_EVIDENCIA).order('position', { ascending: true })
+      cliente.from('evidencias').select(COLS_EVIDENCIA).order('position', { ascending: true }),
+      cliente.from('registros_campo').select(COLS_REGISTRO)
+             .order('medido_en', { ascending: true }).limit(600)
     ]).then(function (r) {
       var err = r.find(function (x) { return x.error; });
       if (err) {
@@ -137,7 +141,8 @@
         recursos: r[7].data || [],
         comentarios: r[8].data || [],
         caja: r[9].data || [],
-        evidencias: r[10].data || []
+        evidencias: r[10].data || [],
+        registros: r[11].data || []
       };
     }).catch(function (e) {
       CIEHSData.conectado = false;
@@ -370,6 +375,52 @@
   // borrada seria lo peor de los dos mundos: invisible en el portal pero
   // todavia descargable por URL directa, que es justo lo que una revocacion
   // tiene que impedir.
+  /* ---------- carpeta de campo digital: registros de estudiantes ----------
+     Alta publica, igual que los comentarios: nace sin publicar y el panel la
+     valida. Es lo que permite que un estudiante registre su medicion sin
+     cuenta, sin que eso convierta la tabla en un tablon abierto. */
+  CIEHSData.registrarMedicion = function (m) {
+    var fila = {
+      module_code: m.moduleCode,
+      equipo: vacio(m.equipo), grado: vacio(m.grado),
+      medido_en: m.medidoEn,
+      ph:        m.ph        === '' || m.ph        == null ? null : Number(m.ph),
+      ce:        m.ce        === '' || m.ce        == null ? null : Number(m.ce),
+      temp_c:    m.tempC     === '' || m.tempC     == null ? null : Number(m.tempC),
+      altura_cm: m.alturaCm  === '' || m.alturaCm  == null ? null : Number(m.alturaCm),
+      hojas:     m.hojas     === '' || m.hojas     == null ? null : Number(m.hojas),
+      nota: vacio(m.nota)
+      // published NO se envia: la politica RLS solo admite el alta como
+      // borrador, y mandarlo en true haria fallar la insercion entera.
+    };
+    // Sin .select(): pedir la fila de vuelta obliga a Postgres a evaluar la
+    // politica de LECTURA sobre ella, y una fila recien creada tiene
+    // published=false, asi que no es legible. El resultado seria un
+    // "new row violates row-level security policy" enganoso, con la fila
+    // insertada o no segun el caso. Se devuelve lo que se envio, que es
+    // exactamente lo que el formulario necesita para pintar el punto pendiente.
+    return cliente.from('registros_campo').insert(fila)
+      .then(function (r) {
+        if (r.error) throw r.error;
+        var copia = {};
+        for (var k in fila) if (Object.prototype.hasOwnProperty.call(fila, k)) copia[k] = fila[k];
+        copia.published = false;
+        return copia;
+      });
+  };
+
+  // El panel ve tambien los borradores: su politica es FOR ALL e incluye SELECT.
+  CIEHSData.listarRegistros = function () {
+    return cliente.from('registros_campo').select(COLS_REGISTRO)
+      .order('created_at', { ascending: false }).limit(300)
+      .then(function (r) { if (r.error) throw r.error; return r.data || []; });
+  };
+  CIEHSData.validarRegistro = function (id, publicado) {
+    return cliente.from('registros_campo').update({ published: !!publicado }).eq('id', id)
+      .then(function (r) { if (r.error) throw r.error; return true; });
+  };
+  CIEHSData.eliminarRegistro = function (id) { return eliminar('registros_campo', 'id', id); };
+
   CIEHSData.eliminarEvidencia = function (ruta) {
     return cliente.storage.from(BUCKET_EVIDENCIAS).remove([ruta])
       .then(function () { return eliminar('evidencias', 'storage_path', ruta); });

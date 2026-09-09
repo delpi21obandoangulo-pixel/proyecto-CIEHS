@@ -76,21 +76,33 @@ rechaza y RLS también.
 | `orders` | Pedidos de cosecha | **no** — solo administración |
 | `community_comments` | Caja de comentarios, moderada | solo `published` |
 | `transparency_entries` | Ingresos y egresos publicados | solo `published` |
+| `evidencias` | Galería «El CIEHS en acción»; imágenes en el bucket, no en git | solo `published` |
+| `registros_campo` | Carpeta de campo digital: mediciones de los estudiantes | solo `published` |
 | `admins` | Quién puede escribir | no |
 
-La escritura exige sesión iniciada **y** figurar en `ciehs.admins`, con dos
-excepciones deliberadas: cualquiera puede **insertar** en `orders` y en
-`community_comments`, porque son los formularios abiertos de la comunidad. Ni
+La escritura exige sesión iniciada **y** figurar en `ciehs.admins`, con tres
+excepciones deliberadas: cualquiera puede **insertar** en `orders`, en
+`community_comments` y en `registros_campo`, porque son los formularios
+abiertos de la comunidad y de los estudiantes. Ni
 una ni otra queda expuesta por ello — `orders` no tiene ninguna política de
 lectura pública, y un comentario nace forzado a `published = false`, de modo que
-solo aparece en el portal cuando un administrador lo aprueba.
+solo aparece en el portal cuando un administrador lo aprueba. `registros_campo`
+sigue exactamente esa misma regla.
+
+> **Al insertar desde el cliente, no encadenes `.select()`.** El `RETURNING`
+> obliga a Postgres a evaluar la política de *lectura* sobre la fila recién
+> creada, que nace con `published = false` y por tanto no es legible: el error
+> que devuelve es un «new row violates row-level security policy» que despista,
+> porque parece un fallo de escritura y no lo es.
 
 ## Aplicar los cambios
 
 `01_schema.sql` crea el esquema base; `02_infraestructura_2026.sql` añade la
 infraestructura real (15 módulos DWC, sin bomba de aire) y las tablas de las
 secciones nuevas; `03_evidencias.sql` crea el bucket `ciehs-evidencias` y la
-tabla de la galería de la portada. Los tres son idempotentes y se aplican
+tabla de la galería de la portada; `04_registros_campo.sql` crea la carpeta de
+campo digital, con alta pública en borrador y validación por el panel. Los
+cuatro son idempotentes y se aplican
 **de forma aislada** (SQL
 Editor o `execute_sql`), nunca con `supabase db push` ni `apply_migration`: el
 historial `supabase_migrations.schema_migrations` es global en esta instancia
