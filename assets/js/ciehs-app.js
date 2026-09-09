@@ -4806,3 +4806,21 @@
     }).observe(nodo, { childList:true, subtree:true, characterData:true });
   });
 })();
+
+/* ===========================================================================
+   18. REGISTRO DEL SERVICE WORKER (PWA offline)
+
+   Se registra al final y en un bloque propio para que, si algo falla aquí, no
+   arrastre al resto del portal. Solo en https (o localhost), que es requisito
+   del navegador. El SW hace que el portal abra sin red; ver sw.js.
+   =========================================================================== */
+(function(){
+  if(!('serviceWorker' in navigator)) return;
+  // Registro tras 'load' para no competir por ancho de banda con el primer
+  // pintado: el SW es para la SEGUNDA visita, no urge en la primera.
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('/sw.js').catch(function(e){
+      if(window.console && console.warn) console.warn('CIEHS: no se pudo registrar el service worker', e);
+    });
+  });
+})();

@@ -1,0 +1,17 @@
+{
+  "name": "CIEHS · Centro de Investigación Escolar Hidropónico Sostenible",
+  "short_name": "CIEHS",
+  "description": "Laboratorio de hidroponía escolar de la I.E. N.° 80033 José Olaya Balandra, Huanchaco.",
+  "lang": "es-PE",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f4f6f9",
+  "theme_color": "#f4f6f9",
+  "icons": [
+    { "src": "/assets/img/icon-180.png", "sizes": "180x180", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
