@@ -42,6 +42,7 @@ create table if not exists ciehs.aportes (
   storage_path text not null unique,
   mime         text,
   size_bytes   bigint,
+  rol          text,
   published    boolean not null default false,
   created_at   timestamptz not null default now(),
 
@@ -50,11 +51,18 @@ create table if not exists ciehs.aportes (
   constraint aportes_desc_corta   check (description is null or char_length(description) <= 800),
   constraint aportes_equipo_corto check (equipo is null or char_length(equipo) <= 80),
   constraint aportes_grado_corto  check (grado  is null or char_length(grado)  <= 40),
-  constraint aportes_tam_maximo   check (size_bytes is null or size_bytes <= 26214400)
+  constraint aportes_tam_maximo   check (size_bytes is null or size_bytes <= 26214400),
+  constraint aportes_rol_valido   check (rol is null or rol in ('estudiante','docente'))
 );
 
 comment on table ciehs.aportes is
   'Bandeja de aportes: fotos, videos, articulos y trabajos de investigacion que suben los equipos. Llegan en cuarentena (published=false) a un bucket PRIVADO y solo son legibles cuando el panel los aprueba. Retirar la aprobacion los vuelve inaccesibles al instante.';
+
+comment on column ciehs.aportes.rol is
+  'Quien sube: estudiante o docente. No identifica a nadie; distingue el material del aula del material didactico.';
+
+-- Para bases ya creadas antes de anadir la columna.
+alter table ciehs.aportes add column if not exists rol text;
 
 create index if not exists aportes_kind_fecha on ciehs.aportes (kind, created_at desc);
 

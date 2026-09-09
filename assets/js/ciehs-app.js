@@ -3327,6 +3327,59 @@
     b.setAttribute('aria-pressed', 'false');
     b.addEventListener('click', function(){ activarTipo(b.getAttribute('data-kind')); });
   });
+
+  /* ------------------------------------------- tapado de rostros ---------
+     Toda imagen pasa por el editor, tenga caras o no: la recodificacion del
+     canvas es lo que elimina los metadatos EXIF (el GPS de una foto de movil
+     puede llevar las coordenadas del laboratorio o de una casa), y eso no
+     puede depender de que alguien se acuerde de pedirlo. */
+  var zonaRostros = document.getElementById('rostrosZona');
+  var hostRostros = document.getElementById('rostrosEditor');
+  var chkSinCaras = document.getElementById('rostrosSinCaras');
+  var avisoRostros = document.getElementById('rostrosAviso');
+  var editorRostros = null;
+
+  function esImagen(archivo){
+    return archivo && /^image\//.test(archivo.type || '');
+  }
+
+  function avisoR(t, error){
+    if(!avisoRostros) return;
+    avisoRostros.classList.toggle('error', !!error);
+    avisoRostros.textContent = t || '';
+  }
+
+  function refrescarAvisoRostros(n){
+    if(!chkSinCaras) return;
+    // Marcar "no hay caras" y a la vez haber tapado alguna es contradictorio:
+    // manda lo tapado y se desmarca la casilla.
+    if(n > 0 && chkSinCaras.checked) chkSinCaras.checked = false;
+    chkSinCaras.disabled = n > 0;
+    avisoR(n > 0
+      ? 'Se subirá la imagen con ' + n + (n === 1 ? ' cara tapada.' : ' caras tapadas.')
+      : '');
+  }
+
+  if(elArch){
+    elArch.addEventListener('change', function(){
+      var archivo = elArch.files && elArch.files[0];
+      if(!zonaRostros) return;
+      if(!esImagen(archivo)){
+        zonaRostros.hidden = true;
+        editorRostros = null;
+        return;
+      }
+      zonaRostros.hidden = false;
+      if(chkSinCaras){ chkSinCaras.checked = false; chkSinCaras.disabled = false; }
+      avisoR('Abriendo la imagen…');
+      if(!editorRostros && window.CIEHS && window.CIEHS.crearEditorRostros){
+        editorRostros = window.CIEHS.crearEditorRostros(hostRostros, { alCambiar: refrescarAvisoRostros });
+      }
+      if(!editorRostros){ avisoR('No se pudo abrir el editor de rostros en este navegador.', true); return; }
+      editorRostros.cargar(archivo).then(function(){ avisoR(''); })
+        .catch(function(e){ avisoR(e.message, true); });
+    });
+  }
   if(elCerrar) elCerrar.addEventListener('click', function(){
     form.hidden = true;
     zona.querySelectorAll('.aporte-icono').forEach(function(b){
@@ -3353,6 +3406,18 @@
       return;
     }
 
+    // Puerta de los rostros: una imagen no sale de aqui sin haber pasado por el
+    // editor. O se tapo al menos una cara, o alguien afirmo expresamente que no
+    // hay ninguna. No se permite subir "sin decidir".
+    if(esImagen(archivo)){
+      if(!editorRostros){ aviso('Vuelve a elegir la imagen: el editor de rostros no llegó a abrirse.', true); return; }
+      if(!editorRostros.hayCaras() && !(chkSinCaras && chkSinCaras.checked)){
+        aviso('Tapa las caras arrastrando sobre cada una, o marca que en la imagen no aparece ninguna.', true);
+        if(zonaRostros) zonaRostros.scrollIntoView({ behavior:'smooth', block:'center' });
+        return;
+      }
+    }
+
     // Ruta unica: sin esto, dos equipos que suban "informe.pdf" chocarian, y
     // como el alta usa upsert:false el segundo recibiria un error opaco.
     var base = rutaSegura(archivo.name) || 'aporte';
@@ -3361,21 +3426,39 @@
 
     if(elEnviar) elEnviar.disabled = true;
     if(elBarra) elBarra.hidden = false;
-    aviso('Subiendo ' + pesoLegible(archivo.size) + '…');
+    aviso('Preparando la imagen…');
 
-    D.subirAporte(archivo, ruta).then(function(){
+    // Para imagenes se sube SIEMPRE el resultado del canvas, nunca el archivo
+    // original: es lo que garantiza que el original no salga del dispositivo y
+    // que los metadatos se vayan con la recodificacion.
+    var preparar = esImagen(archivo)
+      ? editorRostros.exportar(archivo.name).then(function(tapada){
+          archivo = tapada;
+          ruta = tipoActivo + '/' + Date.now().toString(36) + '-' +
+                 Math.random().toString(36).slice(2, 7) + '-' + (rutaSegura(tapada.name) || 'foto.jpg');
+          return tapada;
+        })
+      : Promise.resolve(archivo);
+
+    preparar.then(function(){
+      aviso('Subiendo ' + pesoLegible(archivo.size) + '…');
+      return D.subirAporte(archivo, ruta);
+    }).then(function(){
       aviso('Guardando la ficha…');
       return D.registrarAporte({
         kind: tipoActivo, title: titulo.trim(),
         description: (document.getElementById('aporteDesc')   || {}).value || '',
         equipo:      (document.getElementById('aporteEquipo') || {}).value || '',
         grado:       (document.getElementById('aporteGrado')  || {}).value || '',
+        rol:         (document.getElementById('aporteRol')    || {}).value || '',
         storagePath: ruta, mime: archivo.type, sizeBytes: archivo.size
       });
     }).then(function(){
       aviso('Subido. Tu aporte queda a la espera de que el equipo coordinador lo revise; hasta entonces no es visible para nadie más.');
       form.reset();
       if(elArch) elArch.setAttribute('accept', t.accept);
+      if(zonaRostros) zonaRostros.hidden = true;
+      editorRostros = null;
     }).catch(function(e){
       var m = (e && e.message) || 'error desconocido';
       // El error crudo del bucket no le dice nada a un estudiante de 2.°.
@@ -3432,4 +3515,259 @@
 
   window.CIEHS = window.CIEHS || {};
   window.CIEHS.refrescarAportes = pintarAprobados;
+})();
+
+/* ===========================================================================
+   13. TAPAR ROSTROS ANTES DE SUBIR
+
+   Por que PIXELADO y no desenfoque. Un desenfoque gaussiano es una operacion
+   reversible en el sentido practico: existen tecnicas de deconvolucion que
+   recuperan bastante de la cara original, y sobre rostros pequenos el
+   resultado puede volver a ser identificable. El pixelado con bloques grandes
+   promedia y descarta la informacion: no hay nada que recuperar. Para
+   anonimizar a un menor esa diferencia no es un matiz.
+
+   Por que en el navegador. El archivo original NUNCA sale del dispositivo. Lo
+   que se sube es un canvas re-codificado, y eso ademas elimina de paso todos
+   los metadatos EXIF (incluido el GPS, que en una foto de movil puede llevar
+   las coordenadas del laboratorio o de una casa).
+
+   Todo pasa por aqui, incluso una foto sin caras: asi la re-codificacion —y
+   por tanto el borrado de metadatos— no depende de que alguien se acuerde.
+   =========================================================================== */
+(function(){
+  var BLOQUE_MIN = 12;      // lado minimo del mosaico, en pixeles de la imagen
+
+  // Crea el editor sobre un contenedor. Devuelve un objeto con:
+  //   cargar(File) -> Promise           abre una imagen
+  //   exportar()   -> Promise<Blob>     devuelve la imagen ya tapada
+  //   hayCaras()   -> boolean           si se marco al menos una region
+  //   limpiar()                         vuelve a cero
+  function crearEditorRostros(host, opciones){
+    opciones = opciones || {};
+    var lienzo = document.createElement('canvas');
+    lienzo.className = 'rostros-lienzo';
+    var ctx = lienzo.getContext('2d');
+
+    var barra = document.createElement('div');
+    barra.className = 'rostros-barra';
+    barra.innerHTML =
+        '<button type="button" class="rostros-btn" data-accion="auto" hidden>Detectar caras</button>'
+      + '<button type="button" class="rostros-btn" data-accion="deshacer">Deshacer</button>'
+      + '<button type="button" class="rostros-btn" data-accion="limpiar">Quitar todas</button>'
+      + '<span class="rostros-cuenta" data-cuenta>Sin caras tapadas</span>';
+
+    var ayuda = document.createElement('p');
+    ayuda.className = 'rostros-ayuda';
+    ayuda.innerHTML = '<b>Arrastra sobre cada cara</b> para taparla. Puedes marcar varias. '
+      + 'Lo que se sube es la imagen tapada: el archivo original no sale de este dispositivo.';
+
+    host.innerHTML = '';
+    host.appendChild(ayuda);
+    host.appendChild(lienzo);
+    host.appendChild(barra);
+
+    var img = null;         // Image ya cargada
+    var cajas = [];         // regiones en coordenadas de la IMAGEN, no del canvas
+    var escala = 1;         // canvas / imagen
+    var arrastrando = null; // caja en curso
+
+    function elCuenta(){ return barra.querySelector('[data-cuenta]'); }
+
+    function pintar(){
+      if(!img) return;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, lienzo.width, lienzo.height);
+      ctx.drawImage(img, 0, 0, lienzo.width, lienzo.height);
+
+      cajas.forEach(function(c){ pixelarEnCanvas(ctx, img, c, escala); });
+
+      if(arrastrando){
+        ctx.save();
+        ctx.strokeStyle = '#059669';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 4]);
+        ctx.strokeRect(arrastrando.x * escala, arrastrando.y * escala,
+                       arrastrando.w * escala, arrastrando.h * escala);
+        ctx.restore();
+      }
+
+      var n = cajas.length;
+      elCuenta().textContent = n === 0 ? 'Sin caras tapadas'
+        : (n === 1 ? '1 cara tapada' : n + ' caras tapadas');
+      elCuenta().classList.toggle('is-ok', n > 0);
+      if(typeof opciones.alCambiar === 'function') opciones.alCambiar(n);
+    }
+
+    // Pixela una region dibujando la zona reducida y volviendola a ampliar con
+    // el suavizado apagado. Trabaja sobre la imagen ORIGINAL, no sobre lo ya
+    // pintado: asi el mosaico es igual de grueso en la vista previa y en la
+    // exportacion a tamano completo.
+    function pixelarEnCanvas(destino, fuente, caja, k){
+      var sx = Math.max(0, Math.round(caja.x));
+      var sy = Math.max(0, Math.round(caja.y));
+      var sw = Math.max(1, Math.round(caja.w));
+      var sh = Math.max(1, Math.round(caja.h));
+      if(sx + sw > fuente.naturalWidth)  sw = fuente.naturalWidth  - sx;
+      if(sy + sh > fuente.naturalHeight) sh = fuente.naturalHeight - sy;
+      if(sw <= 0 || sh <= 0) return;
+
+      // Bloques grandes en proporcion al tamano de la cara: una cara pequena
+      // necesita bloques relativamente mas grandes para quedar irreconocible.
+      var lado = Math.max(BLOQUE_MIN, Math.round(Math.min(sw, sh) / 5));
+      var cols = Math.max(1, Math.round(sw / lado));
+      var filas = Math.max(1, Math.round(sh / lado));
+
+      var mini = document.createElement('canvas');
+      mini.width = cols; mini.height = filas;
+      var mctx = mini.getContext('2d');
+      mctx.imageSmoothingEnabled = true;      // al reducir, promedia
+      mctx.drawImage(fuente, sx, sy, sw, sh, 0, 0, cols, filas);
+
+      destino.save();
+      destino.imageSmoothingEnabled = false;  // al ampliar, bloques duros
+      destino.drawImage(mini, 0, 0, cols, filas,
+                        sx * k, sy * k, sw * k, sh * k);
+      destino.restore();
+    }
+
+    /* --------------------------------------------- dibujar con el puntero --*/
+    function puntoEnImagen(ev){
+      var r = lienzo.getBoundingClientRect();
+      // El canvas puede estar escalado por CSS: se traduce del pixel de
+      // pantalla al pixel del canvas y de ahi al de la imagen.
+      var cx = (ev.clientX - r.left) * (lienzo.width / r.width);
+      var cy = (ev.clientY - r.top)  * (lienzo.height / r.height);
+      return { x: cx / escala, y: cy / escala };
+    }
+
+    lienzo.addEventListener('pointerdown', function(ev){
+      if(!img) return;
+      // setPointerCapture lanza InvalidStateError si el puntero ya no esta
+      // activo. Sin este try, esa excepcion abortaria el manejador antes de
+      // empezar el trazo y el recuadro no se dibujaria nunca.
+      try { lienzo.setPointerCapture(ev.pointerId); } catch(e){ /* se sigue sin captura */ }
+      var p = puntoEnImagen(ev);
+      arrastrando = { x0:p.x, y0:p.y, x:p.x, y:p.y, w:0, h:0 };
+    });
+
+    lienzo.addEventListener('pointermove', function(ev){
+      if(!arrastrando) return;
+      var p = puntoEnImagen(ev);
+      arrastrando.x = Math.min(arrastrando.x0, p.x);
+      arrastrando.y = Math.min(arrastrando.y0, p.y);
+      arrastrando.w = Math.abs(p.x - arrastrando.x0);
+      arrastrando.h = Math.abs(p.y - arrastrando.y0);
+      pintar();
+    });
+
+    function soltar(){
+      if(!arrastrando) return;
+      var c = arrastrando;
+      arrastrando = null;
+      // Un toque suelto no es una region: seria una caja de 0 px que ademas
+      // dejaria la cuenta diciendo que hay una cara tapada cuando no la hay.
+      if(c.w > 6 && c.h > 6) cajas.push({ x:c.x, y:c.y, w:c.w, h:c.h });
+      pintar();
+    }
+    lienzo.addEventListener('pointerup', soltar);
+    lienzo.addEventListener('pointercancel', soltar);
+    lienzo.addEventListener('pointerleave', soltar);
+
+    barra.addEventListener('click', function(ev){
+      var b = ev.target.closest('[data-accion]');
+      if(!b) return;
+      var a = b.getAttribute('data-accion');
+      if(a === 'deshacer'){ cajas.pop(); pintar(); }
+      else if(a === 'limpiar'){ cajas = []; pintar(); }
+      else if(a === 'auto'){ detectar(b); }
+    });
+
+    /* ------------------------------------------------- deteccion opcional --
+       FaceDetector solo existe en algunos navegadores. Cuando esta, ahorra
+       trabajo; cuando no, el boton ni aparece. Nunca sustituye a la revision
+       manual: lo que detecta se anade como cajas normales, editables. */
+    var hayDetector = typeof window.FaceDetector === 'function';
+    if(hayDetector) barra.querySelector('[data-accion="auto"]').hidden = false;
+
+    function detectar(boton){
+      if(!img || !hayDetector) return;
+      boton.disabled = true;
+      var textoPrevio = boton.textContent;
+      boton.textContent = 'Buscando…';
+      new window.FaceDetector({ fastMode:false })
+        .detect(img)
+        .then(function(caras){
+          (caras || []).forEach(function(c){
+            var b = c.boundingBox;
+            // Se ensancha un 18 %: los detectores ajustan al rostro y dejan
+            // fuera frente, orejas y menton, que tambien identifican.
+            var mx = b.width * 0.18, my = b.height * 0.18;
+            cajas.push({ x:b.x - mx, y:b.y - my, w:b.width + mx*2, h:b.height + my*2 });
+          });
+          pintar();
+          boton.textContent = (caras && caras.length)
+            ? 'Detectadas ' + caras.length
+            : 'No encontró caras';
+          setTimeout(function(){ boton.textContent = textoPrevio; boton.disabled = false; }, 2200);
+        })
+        .catch(function(){
+          boton.textContent = 'No se pudo';
+          setTimeout(function(){ boton.textContent = textoPrevio; boton.disabled = false; }, 2200);
+        });
+    }
+
+    /* -------------------------------------------------------- carga/export --*/
+    function cargar(archivo){
+      return new Promise(function(res, rej){
+        var url = URL.createObjectURL(archivo);
+        var im = new Image();
+        im.onload = function(){
+          URL.revokeObjectURL(url);
+          img = im;
+          cajas = [];
+          // El lienzo se limita a 900 px de ancho para que dibujar sea comodo;
+          // la exportacion usa siempre el tamano original.
+          var anchoVista = Math.min(900, im.naturalWidth);
+          escala = anchoVista / im.naturalWidth;
+          lienzo.width  = Math.round(im.naturalWidth  * escala);
+          lienzo.height = Math.round(im.naturalHeight * escala);
+          pintar();
+          res();
+        };
+        im.onerror = function(){ URL.revokeObjectURL(url); rej(new Error('No se pudo abrir la imagen.')); };
+        im.src = url;
+      });
+    }
+
+    // Exporta a tamano original. JPEG con calidad alta: el PNG de una foto de
+    // movil puede multiplicar por cinco el peso sin ganar nada.
+    function exportar(nombre){
+      return new Promise(function(res, rej){
+        if(!img) return rej(new Error('No hay ninguna imagen cargada.'));
+        var full = document.createElement('canvas');
+        full.width = img.naturalWidth;
+        full.height = img.naturalHeight;
+        var fctx = full.getContext('2d');
+        fctx.drawImage(img, 0, 0);
+        cajas.forEach(function(c){ pixelarEnCanvas(fctx, img, c, 1); });
+        full.toBlob(function(blob){
+          if(!blob) return rej(new Error('No se pudo generar la imagen.'));
+          var base = (nombre || 'foto').replace(/\.[^.]+$/, '');
+          res(new File([blob], base + '.jpg', { type:'image/jpeg' }));
+        }, 'image/jpeg', 0.9);
+      });
+    }
+
+    return {
+      cargar: cargar,
+      exportar: exportar,
+      hayCaras: function(){ return cajas.length > 0; },
+      cuenta: function(){ return cajas.length; },
+      limpiar: function(){ cajas = []; pintar(); }
+    };
+  }
+
+  window.CIEHS = window.CIEHS || {};
+  window.CIEHS.crearEditorRostros = crearEditorRostros;
 })();

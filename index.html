@@ -269,9 +269,9 @@
       </div>
 
       <p class="galeria-nota">
-        Toda fotografía en la que aparece un estudiante se publica con autorización escrita de su apoderado y bajo el
+        Toda fotografía en la que aparece una persona se publica con el rostro tapado, según el
         <button type="button" class="link-inline" data-route="privacidad">protocolo de uso de imagen</button>,
-        aprobado por la Dirección de la institución. La autorización es revocable en cualquier momento: basta escribir al CIEHS y la fotografía se retira.
+        que exige tapar las caras antes de subir. Si aun así quieres que retiremos una imagen, basta escribir al CIEHS y se retira.
       </p>
     </div>
   </section>
@@ -691,6 +691,23 @@
             </label>
             <p class="aporte-limite" id="aporteLimite">Máximo 25 MB.</p>
 
+            <!-- Editor de rostros. Aparece solo para imágenes. Toda foto pasa
+                 por aquí aunque no tenga caras: la recodificación es lo que
+                 elimina los metadatos EXIF, y eso no puede depender de que
+                 alguien se acuerde de pedirlo. -->
+            <div class="rostros" id="rostrosZona" hidden>
+              <div class="rostros-cab">
+                <p class="eyebrow">Tapa las caras</p>
+                <p class="rostros-sub">Antes de subir, cubre el rostro de cada persona que aparezca. Se pixela de forma irreversible.</p>
+              </div>
+              <div id="rostrosEditor"></div>
+              <label class="rostros-sincaras">
+                <input type="checkbox" id="rostrosSinCaras">
+                <span>En esta imagen <b>no aparece la cara de ninguna persona</b> (solo cultivos, módulos, manos o planos de espalda).</span>
+              </label>
+              <p class="rostros-aviso" id="rostrosAviso" role="status" aria-live="polite"></p>
+            </div>
+
             <label class="form-field">
               <span>Título <b class="req" aria-hidden="true">*</b></span>
               <input type="text" id="aporteTitulo" maxlength="160" required placeholder="Efecto de la concentración de solución nutritiva en lechuga crespa">
@@ -700,8 +717,14 @@
               <span>¿Qué es y por qué importa?</span>
               <textarea id="aporteDesc" rows="3" maxlength="800" placeholder="Explica en dos líneas qué se ve o qué se concluye."></textarea>
             </label>
-
-            <div class="admin-grid-2">
+            <div class="aporte-quien">
+              <label class="form-field">
+                <span>¿Quién sube?</span>
+                <select id="aporteRol">
+                  <option value="estudiante">Estudiante</option>
+                  <option value="docente">Docente</option>
+                </select>
+              </label>
               <label class="form-field">
                 <span>Equipo</span>
                 <input type="text" id="aporteEquipo" maxlength="80" placeholder="Equipo de Indagación">
@@ -713,7 +736,7 @@
             </div>
 
             <p class="aporte-privacidad">
-              <b>Antes de subir una fotografía o un vídeo con caras:</b> hace falta la autorización firmada del apoderado. Si no la tienes, sube tomas de manos trabajando, planos de espalda o del propio cultivo — el portal difunde el trabajo, no la identidad de quien lo hace.
+              <b>Las caras se tapan aquí, en tu propio dispositivo.</b> El archivo original nunca se envía: lo que sube es la imagen ya pixelada. Una foto sin rostro identificable deja de ser un dato personal, y por eso puede publicarse sin permisos añadidos. En <b>vídeo el tapado automático no está disponible</b>: graba manos, planos generales o de espalda.
             </p>
 
             <div class="inv-form-acciones">
@@ -1994,7 +2017,7 @@
         <p>El CIEHS publica trabajo de estudiantes menores de edad. Esta página explica qué datos trata el portal, qué se puede publicar y qué nunca, y cómo pedir que se retire algo.</p>
       </div>
 
-      <p class="priv-aviso"><b>Protocolo aprobado por la Dirección</b> de la I.E. N.° 80033 «José Olaya Balandra» el <b>9 de septiembre de 2026</b>. Toda fotografía en la que aparece un estudiante se publica además con autorización escrita de su apoderado, vigente y archivada; esa autorización es <b>revocable en cualquier momento y sin dar motivos</b>. Este texto <b>no sustituye asesoría legal</b>.</p>
+      <p class="priv-aviso"><b>Aquí no se publican rostros.</b> Toda imagen que llega al portal pasa antes por un editor que <b>pixela las caras en el propio navegador de quien la sube</b>: el archivo original nunca se envía, y la recodificación elimina de paso los metadatos (incluida la ubicación GPS). Una imagen sin rostro identificable deja de ser un dato personal. Si alguna vez quieres que retiremos algo, escríbenos y se retira sin pedirte explicaciones. Este texto <b>no sustituye asesoría legal</b>.</p>
 
       <div class="priv-bloque">
         <h3>1. Qué datos trata este portal</h3>
@@ -2368,7 +2391,7 @@
           <p class="admin-divider u-margin-0 u-border-top-none u-padding-top-0">Galería de la portada</p>
           <button type="button" class="inv-nueva" id="eviNuevoBtn">+ Añadir fotografía</button>
         </div>
-        <p class="u-font-size-12p5px u-color-ink-soft u-line-height-1p55 u-margin-top-8px"><b>Antes de publicar una fotografía con rostros:</b> debe existir autorización escrita del apoderado, vigente y archivada. El protocolo de imagen está aprobado por la Dirección desde el 2026-09-09, pero esa aprobación habilita el marco y <b>no sustituye el permiso de cada familia</b>. Anota en «Respaldo de autorización» dónde está el documento firmado; dentro de unos meses nadie recordará con qué permiso se publicó cada cara. Las imágenes se guardan en el servidor de archivos, no en el repositorio: por eso <b>eliminar una evidencia borra también el archivo</b> y una revocación se cumple de verdad.</p>
+        <p class="u-font-size-12p5px u-color-ink-soft u-line-height-1p55 u-margin-top-8px"><b>Sube siempre la imagen con las caras ya tapadas.</b> El formulario público lo hace solo, pero si cargas una foto desde aquí compruébalo tú: una cara sin pixelar es un dato personal de un menor. El campo «Respaldo de autorización» es para el caso excepcional de publicar un rostro sin tapar — si lo dejas vacío, es que no hay ninguno, y entonces no debería haber caras visibles. Las imágenes se guardan en el servidor de archivos, no en el repositorio: por eso <b>eliminar una evidencia borra también el archivo</b> y una revocación se cumple de verdad.</p>
 
         <div id="eviAdminLista" class="inv-admin-lista"></div>
 
@@ -2787,7 +2810,7 @@
       <span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l7 4v5c0 4.4-3 8.3-7 9-4-0.7-7-4.6-7-9V7l7-4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.5 12l1.8 1.8L15 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Área de Ciencia y Tecnología (CyT)</span>
     </div>
 
-    <p class="small">Datos institucionales, infraestructura, equipos de gestión, indicadores y contacto son oficiales de la I.E. N.° 80033 “José Olaya Balandra”: 280 estudiantes de 1.° a 5.° de secundaria, diez equipos de gestión y quince módulos de raíz flotante que operan actualmente sin bomba de aire. Los sistemas NFT y vertical figuran como proyecciones a futuro y no están instalados. Siguen pendientes de carga los archivos descargables de la carpeta de campo y del espacio docente. El protocolo de imagen de menores se detalla en la página de privacidad y fue aprobado por la dirección el 9 de septiembre de 2026; cada fotografía con rostro cuenta además con autorización escrita del apoderado.</p>
+    <p class="small">Datos institucionales, infraestructura, equipos de gestión, indicadores y contacto son oficiales de la I.E. N.° 80033 “José Olaya Balandra”: 280 estudiantes de 1.° a 5.° de secundaria, diez equipos de gestión y quince módulos de raíz flotante que operan actualmente sin bomba de aire. Los sistemas NFT y vertical figuran como proyecciones a futuro y no están instalados. Siguen pendientes de carga los archivos descargables de la carpeta de campo y del espacio docente. El protocolo de imagen de menores se detalla en la página de privacidad: toda fotografía se sube con las caras pixeladas desde el propio navegador.</p>
     <p class="copyright">© 2026 CIEHS - I.E. N.° 80033 José Olaya Balandra. Todos los derechos reservados.</p>
   </div>
 </footer>

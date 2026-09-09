@@ -2,7 +2,7 @@
 title: CIEHS · Privacidad y uso de imagen de menores
 aliases: [Privacidad CIEHS, Protocolo de imagen, Ley 29733 CIEHS]
 tags: [ciehs, privacidad, menores, legal, ley-29733]
-estado: publicado · APROBADO POR DIRECCION 2026-09-09
+estado: publicado · rostros tapados en origen · sin aprobacion de direccion
 publicado-en: https://ciehs.vercel.app/#/privacidad
 actualizado: 2026-09-09
 ---
@@ -12,17 +12,34 @@ actualizado: 2026-09-09
 Protocolo de qué se publica y qué no. Parte de [[CIEHS]]; el riesgo que lo
 motiva está registrado en [[CIEHS-Auditoria-Seguridad-Auth]].
 
-> [!success] Bloqueo levantado — **aprobado por la Dirección el 2026-09-09**
-> La Dirección de la I.E. N.° 80033 «José Olaya Balandra» aprobó formalmente
-> este protocolo. Con eso decae el bloqueo general que impedía publicar
-> cualquier fotografía de un estudiante.
+> [!warning] Corrección del registro — 2026-09-09
+> Una versión anterior de esta nota afirmaba que la Dirección había aprobado
+> formalmente el protocolo en esta fecha. **Eso no consta.** El CIEHS es, en la
+> práctica, un proyecto personal del docente coordinador apoyado en el
+> laboratorio del colegio, y no se tramitó tal aprobación. Se deja escrito en
+> lugar de borrarlo: un documento que dice tener un respaldo que no tiene es
+> peor que uno que reconoce no tenerlo.
 >
-> **Lo que sigue vigente, y no depende de esa aprobación:** una fotografía con
-> rostro identificable necesita además **autorización escrita del apoderado**,
-> vigente y archivada (§2 y §3). La aprobación de la Dirección habilita el
-> marco; no sustituye el consentimiento de cada familia.
+> **Qué cambia con eso: nada del deber legal.** Que el proyecto sea personal no
+> rebaja el listón de la Ley N.° 29733 — si acaso lo sube, porque desaparece el
+> paraguas institucional que normalmente da cobertura al tratamiento de datos
+> de estudiantes.
+
+> [!success] Cómo se resuelve de verdad: **las caras se tapan antes de subir**
+> Desde el 2026-09-09 el portal no publica rostros. Toda fotografía pasa por un
+> editor que **pixela las caras en el propio navegador**, y lo que se sube es la
+> imagen ya tapada: el original nunca sale del dispositivo.
 >
-> Este documento sigue sin ser asesoría legal.
+> Eso desactiva el problema en origen. Una imagen sin rostro identificable
+> **deja de ser un dato personal**, y con ello decae la exigencia de
+> autorización del apoderado para esa fotografía. No es un permiso conseguido:
+> es un dato que ya no existe.
+>
+> La autorización escrita sigue siendo obligatoria **solo** si alguna vez se
+> quisiera publicar una cara sin tapar (§2 y §3). Hoy el portal no ofrece esa
+> vía por defecto.
+>
+> Este documento no es asesoría legal.
 
 > [!important] Dónde viven las fotografías, y por qué importa
 > Las que muestran personas **no van al repositorio**: van al bucket
@@ -54,8 +71,10 @@ lo demás son consecuencias de esta regla.
 - Fotografías de manos trabajando, planos generales de espalda o imágenes donde
   no se distinga el rostro.
 - Datos, gráficos, bitácoras e informes de investigación.
-- Fotografías con rostro **solo** con autorización escrita del apoderado,
-  vigente y archivada.
+- Fotografías **con las caras tapadas**, que es lo que hace el portal por
+  defecto en toda imagen que se sube → §2 bis.
+- Fotografías con rostro **sin tapar**: solo con autorización escrita del
+  apoderado, vigente y archivada. El portal no ofrece hoy esa vía.
 
 ### Nunca se publica
 - Apellidos completos de estudiantes.
@@ -65,6 +84,59 @@ lo demás son consecuencias de esta regla.
 - Geolocalización precisa asociada a una persona.
 - **Metadatos de las fotografías** — se retiran antes de subirlas. Una foto de
   móvil puede llevar coordenadas GPS del laboratorio y del propio domicilio.
+
+
+---
+
+## 2 bis. El tapado de rostros
+
+Desde el 2026-09-09, **toda imagen que se sube al portal pasa por un editor que
+pixela las caras en el propio navegador**. Es la pieza que hace viable publicar
+el trabajo del laboratorio sin publicar a los menores que lo hacen.
+
+### Por qué pixelado y no desenfoque
+
+Un desenfoque gaussiano es reversible en la práctica: existen técnicas de
+deconvolución que recuperan buena parte del rostro, y sobre caras pequeñas el
+resultado puede volver a ser identificable. **El pixelado con bloques grandes
+promedia y descarta la información: no queda nada que recuperar.** Para
+anonimizar a un menor esa diferencia no es un matiz técnico.
+
+Comprobado: un patrón de ajedrez de negro puro y blanco puro sale de la zona
+tapada como **gris uniforme (125,125,125)**.
+
+El tamaño del bloque es proporcional a la cara —un quinto de su lado menor, con
+un mínimo de 12 px—, porque una cara pequeña necesita bloques relativamente más
+grandes para quedar irreconocible.
+
+### Por qué en el navegador
+
+**El archivo original nunca sale del dispositivo.** Lo que se sube es un canvas
+re-codificado. Eso tiene un segundo efecto que importa: la recodificación
+**elimina todos los metadatos EXIF**, incluido el GPS, que en una foto de móvil
+puede llevar las coordenadas del laboratorio o de la casa de un estudiante.
+
+Por eso **toda** imagen pasa por el editor, tenga caras o no: si el borrado de
+metadatos dependiera de que alguien se acuerde de pedirlo, algún día no se
+acordaría.
+
+### La puerta
+
+Una imagen no se puede subir «sin decidir». O se tapó al menos una cara, o
+alguien marcó expresamente que en esa imagen no aparece ninguna. No hay tercera
+opción, y el botón de subir lo impide.
+
+La detección automática (`FaceDetector`) se ofrece **solo si el navegador la
+trae**, y nunca sustituye a la revisión manual: lo que encuentra se añade como
+recuadros normales, editables y borrables. Se ensancha un 18 % lo que detecta,
+porque los detectores ajustan al rostro y dejan fuera frente, orejas y mentón,
+que también identifican.
+
+> [!warning] En vídeo no hay tapado automático
+> Cubrir caras en vídeo exige procesar y recodificar cada fotograma, y eso no
+> es viable con las bibliotecas disponibles en este portal. El formulario lo
+> dice de forma explícita y pide grabar manos, planos generales o de espalda.
+> **No se ofrece una función que aparente funcionar y no lo haga.**
 
 ---
 

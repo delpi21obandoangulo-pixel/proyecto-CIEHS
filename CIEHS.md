@@ -54,7 +54,7 @@ está cada cosa.
 | Identidad | Escudo, sello y mural oficiales · **blanco por capas** con capa de movimiento |
 | Portada | Hero con **fondo animado de brisa** + galería «El CIEHS en acción», administrable desde el panel |
 | Infraestructura | **15 módulos DWC activos sin bomba de aire**; NFT y vertical solo como proyección |
-| Privacidad | Protocolo **aprobado por la Dirección el 2026-09-09** · bloqueo levantado |
+| Privacidad | **Rostros tapados en origen**: toda imagen se pixela en el navegador antes de subirse |
 | Seguridad | CSP sin `unsafe-inline` (scripts ni estilos) · pentest sin hallazgos explotables en el CIEHS |
 | Arena | 5 niveles, 150 retos, 2 expediciones diarias |
 
@@ -62,10 +62,9 @@ está cada cosa.
 
 ## Lo que falta, por orden de importancia
 
-1. **Subir las quince fotografías con estudiantes** desde la pestaña
-   «Evidencias» del panel. Están clasificadas y sin metadatos; hay autorización
-   del apoderado y aprobación de la Dirección. Anotar el respaldo en
-   `consent_ref` → [[CIEHS-Privacidad-Menores]]
+1. **Subir las quince fotografías con estudiantes** desde el panel, tapando
+   las caras con el editor. Están clasificadas y sin metadatos
+   → [[CIEHS-Privacidad-Menores]]
 2. **Archivos descargables**: la carpeta de campo y el espacio docente ya tienen
    panel de carga; faltan los archivos reales (empezando por el audio-cuento
    «El viaje de una gota de agua»).

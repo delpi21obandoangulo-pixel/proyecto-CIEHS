@@ -88,7 +88,7 @@
   var COLS_EVIDENCIA = 'id, storage_path, title, eyebrow, body, alt, width, height, ' +
                        'consent_ref, position, published';
   var COLS_APORTE    = 'id, kind, title, description, equipo, grado, storage_path, ' +
-                       'mime, size_bytes, published, created_at';
+                       'mime, size_bytes, rol, published, created_at';
   var COLS_REGISTRO  = 'id, module_code, equipo, grado, medido_en, ph, ce, temp_c, ' +
                        'altura_cm, hojas, nota, published, created_at';
   // Los pedidos llevan nombre y contacto de familias: no hay politica de lectura
@@ -450,7 +450,7 @@
   CIEHSData.registrarAporte = function (a) {
     var fila = {
       kind: a.kind, title: a.title, description: vacio(a.description),
-      equipo: vacio(a.equipo), grado: vacio(a.grado),
+      equipo: vacio(a.equipo), grado: vacio(a.grado), rol: vacio(a.rol),
       storage_path: a.storagePath, mime: vacio(a.mime),
       size_bytes: a.sizeBytes == null ? null : Number(a.sizeBytes)
       // published no se envia: la RLS solo admite el alta en cuarentena.
