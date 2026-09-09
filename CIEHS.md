@@ -39,6 +39,7 @@ está cada cosa.
 | [[CIEHS-Voz-DUA]] | Voz, simuladores PhET y Diseño Universal del Aprendizaje |
 | [[CIEHS-Tienda-Escolar]] | Catálogo, reservas de cosecha y transparencia en porcentaje |
 | [[CIEHS-Pentest-2026-09]] | Auto-evaluación de ciberseguridad: 14 ataques, resultado |
+| [[CIEHS-Informe-Analisis-2026-09]] | Análisis integral: errores, 21 ataques, accesibilidad, PWA y backlog |
 
 ---
 
