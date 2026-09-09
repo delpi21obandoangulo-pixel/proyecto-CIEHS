@@ -2265,85 +2265,61 @@
       </div>
 
       <div class="comunidad-grid">
-        <!-- ---------- Pedidos ---------- -->
-        <div class="card comunidad-card" id="pedidos">
+        <!-- ---------- Tienda: catálogo y carrito ---------- -->
+        <div class="card comunidad-card tienda-card" id="pedidos">
           <p class="eyebrow">Reservas y pedidos</p>
           <h3>Reserva la cosecha de la semana</h3>
-          <p class="comunidad-lede">Deja tu reserva y el equipo de Ventas te confirma disponibilidad y día de entrega. La cosecha se corta el mismo día en que se entrega.</p>
+          <p class="comunidad-lede">Elige lo que quieras y cuántas unidades: el total se va sumando solo. El equipo de Ventas te confirma el día de entrega, y la cosecha se corta el mismo día en que se entrega.</p>
 
-          <form class="pedido-form" id="pedidoForm" novalidate>
-            <div class="form-grid">
-              <label class="form-field">
-                <span>Nombre</span>
-                <input type="text" id="pedNombre" name="nombre" maxlength="80" autocomplete="name" placeholder="Cómo te llamamos" required>
-              </label>
-              <label class="form-field">
-                <span>Contacto (teléfono o correo)</span>
-                <input type="text" id="pedContacto" name="contacto" maxlength="120" placeholder="Para confirmarte la entrega" required>
-              </label>
+          <p class="tienda-estado" id="tiendaEstado" role="status" aria-live="polite">Cargando el catálogo…</p>
+          <div class="tienda-grid" id="tiendaGrid"></div>
+
+          <!-- El carrito solo aparece cuando hay algo dentro: un carrito vacío
+               permanente es ruido que empuja el catálogo hacia abajo. -->
+          <div class="carrito" id="carrito" hidden>
+            <div class="carrito-cab">
+              <p class="eyebrow">Tu reserva</p>
+              <button type="button" class="carrito-vaciar" id="carritoVaciar">Vaciar</button>
             </div>
-            <div class="form-grid">
-              <label class="form-field">
-                <span>Cultivo</span>
-                <select id="pedCultivo" class="trace-select">
-                  <option value="Lechuga crespa">Lechuga crespa</option>
-                  <option value="Lechuga americana">Lechuga americana</option>
-                  <option value="Espinaca">Espinaca</option>
-                  <option value="Cebolla china">Cebolla china</option>
-                  <option value="Albahaca">Albahaca</option>
-                  <option value="Acelga">Acelga</option>
-                  <option value="Lo que haya disponible">Lo que haya disponible</option>
-                </select>
-              </label>
-              <label class="form-field">
-                <span>Cantidad aproximada (kg)</span>
-                <input type="number" id="pedKg" min="0.5" max="100" step="0.5" placeholder="Ej. 2">
-              </label>
+            <ul class="carrito-lista" id="carritoLista"></ul>
+            <div class="carrito-total">
+              <span>Total</span>
+              <b id="carritoTotal" class="tabular">—</b>
             </div>
-            <label class="form-field">
-              <span>Comentario (opcional)</span>
-              <textarea id="pedNota" rows="2" maxlength="500" placeholder="Día que te viene mejor, o cualquier detalle"></textarea>
-            </label>
-            <p class="pedido-hp" aria-hidden="true"><label>No llenar<input type="text" id="pedTrampa" tabindex="-1" autocomplete="off"></label></p>
-            <button type="submit" class="btn btn-primary">Enviar reserva</button>
-            <p class="form-status" id="pedStatus" role="status" aria-live="polite"></p>
-          </form>
+
+            <form class="pedido-form" id="pedidoForm" novalidate>
+              <div class="form-grid">
+                <label class="form-field">
+                  <span>Nombre <b class="req" aria-hidden="true">*</b></span>
+                  <input type="text" id="pedNombre" name="nombre" maxlength="80" autocomplete="name" placeholder="Cómo te llamamos" required>
+                </label>
+                <label class="form-field">
+                  <span>Contacto <b class="req" aria-hidden="true">*</b></span>
+                  <input type="text" id="pedContacto" name="contacto" maxlength="120" placeholder="Teléfono o correo" required>
+                </label>
+              </div>
+              <label class="form-field">
+                <span>Comentario (opcional)</span>
+                <textarea id="pedNota" rows="2" maxlength="500" placeholder="Día que te viene mejor, o cualquier detalle"></textarea>
+              </label>
+              <p class="pedido-hp" aria-hidden="true"><label>No llenar<input type="text" id="pedTrampa" tabindex="-1" autocomplete="off"></label></p>
+              <button type="submit" class="btn btn-primary" id="pedEnviar">Reservar mi pedido</button>
+              <p class="form-status" id="pedStatus" role="status" aria-live="polite"></p>
+            </form>
+          </div>
 
           <p class="comunidad-privacidad"><b>Qué pasa con tus datos.</b> Tu nombre y contacto llegan solo al equipo coordinador para poder entregarte el pedido: <b>no se publican en el portal</b> ni los ve ningún otro visitante. Se conservan lo que dure la entrega.</p>
         </div>
 
-        <!-- ---------- Transparencia ---------- -->
+        <!-- ---------- Transparencia: destino en porcentaje ---------- -->
         <div class="card comunidad-card" id="transparencia">
           <p class="eyebrow">Transparencia</p>
-          <h3>A dónde va el dinero</h3>
-          <p class="comunidad-lede">Lo que se recauda vendiendo la cosecha vuelve al laboratorio. El equipo de Tesorería publica aquí cada ingreso y cada egreso, con su fecha y su concepto.</p>
+          <h3>A dónde va lo que se obtiene</h3>
+          <p class="comunidad-lede">Lo que se recauda vendiendo la cosecha vuelve al laboratorio. Aquí no se publican importes ni cuánto se vende: se publica <b>la proporción</b> en que se reparte, que es lo que de verdad dice en qué cree este proyecto.</p>
 
-          <div class="transp-resumen">
-            <div class="transp-tile ingreso">
-              <p class="label">Ingresos publicados</p>
-              <p class="value tabular" id="transpIngresos">—</p>
-            </div>
-            <div class="transp-tile egreso">
-              <p class="label">Egresos publicados</p>
-              <p class="value tabular" id="transpEgresos">—</p>
-            </div>
-            <div class="transp-tile saldo">
-              <p class="label">Saldo disponible</p>
-              <p class="value tabular" id="transpSaldo">—</p>
-            </div>
-          </div>
-
-          <p class="transp-estado" id="transpEstado" role="status" aria-live="polite">Cargando el registro de caja…</p>
-          <div class="scrollx">
-            <table class="transp-tabla">
-              <caption class="sr-heading">Registro de ingresos y egresos del CIEHS</caption>
-              <thead>
-                <tr><th scope="col">Fecha</th><th scope="col">Concepto</th><th scope="col">Tipo</th><th scope="col">Monto (S/)</th></tr>
-              </thead>
-              <tbody id="transpCuerpo"><tr><td colspan="4"><div class="skeleton skeleton-fila"></div><div class="skeleton skeleton-fila"></div></td></tr></tbody>
-            </table>
-          </div>
-          <p class="comunidad-privacidad">La cifra que aparece arriba es la suma de lo publicado en esta tabla. Cualquier discrepancia se puede reclamar escribiendo a <span class="mono">ciehs.olaya@gmail.com</span>.</p>
+          <p class="transp-estado" id="transpEstado" role="status" aria-live="polite">Cargando el reparto…</p>
+          <div class="destino" id="destinoLista"></div>
+          <p class="comunidad-privacidad">Los porcentajes se calculan solos a partir del registro de egresos que lleva el equipo de Tesorería. Cualquier discrepancia se puede reclamar escribiendo a <span class="mono">ciehs.olaya@gmail.com</span>.</p>
         </div>
       </div>
 
@@ -2443,6 +2419,55 @@
         <button type="button" role="tab" data-tab="registros" aria-selected="false" aria-controls="tab-registros">Registros</button>
         <button type="button" role="tab" data-tab="aportes" aria-selected="false" aria-controls="tab-aportes">Aportes</button>
         <button type="button" role="tab" data-tab="resultados" aria-selected="false" aria-controls="tab-resultados">Resultados</button>
+        <button type="button" role="tab" data-tab="catalogo" aria-selected="false" aria-controls="tab-catalogo">Catálogo</button>
+      </div>
+
+      <!-- ---------- Catálogo de la tienda ---------- -->
+      <div id="tab-catalogo" role="tabpanel" data-tabpanel="catalogo" hidden>
+        <div class="inv-lista-head">
+          <p class="admin-divider u-margin-0 u-border-top-none u-padding-top-0">Lo que se ofrece</p>
+          <button type="button" class="inv-nueva" id="proNuevoBtn">+ Nuevo producto</button>
+        </div>
+        <p class="u-font-size-12p5px u-color-ink-soft u-line-height-1p55 u-margin-top-8px">Solo se puede reservar lo que está <b>Disponible ahora</b>. Lo que está en crecimiento se muestra igual, apagado y con su fecha: saber que la albahaca llega en dos semanas es justo lo que hace volver a la gente. La foto se sube antes desde la pestaña <b>Evidencias</b> y aquí se pega su nombre de archivo.</p>
+
+        <div id="proAdminLista" class="inv-admin-lista"></div>
+
+        <form id="proForm" class="inv-form" hidden>
+          <p class="admin-divider u-margin-top-22px"><span id="proFormTitulo">Nuevo producto</span></p>
+          <div class="admin-field-group">
+            <div class="admin-grid-2">
+              <label class="form-field"><span>Nombre</span><input type="text" id="proNombre" maxlength="80" required></label>
+              <label class="form-field"><span>Nombre científico</span><input type="text" id="proCientifico" maxlength="80" placeholder="Lactuca sativa"></label>
+            </div>
+            <label class="form-field"><span>Descripción</span><textarea id="proDesc" rows="2" maxlength="400"></textarea></label>
+            <div class="admin-grid-2">
+              <label class="form-field">
+                <span>Estado</span>
+                <select id="proEstado">
+                  <option value="disponible">Disponible ahora</option>
+                  <option value="en_crecimiento">En crecimiento</option>
+                  <option value="agotado">Agotado</option>
+                </select>
+              </label>
+              <label class="form-field"><span>Se podrá reservar desde</span><input type="date" id="proDesde"></label>
+            </div>
+            <div class="admin-grid-2">
+              <label class="form-field"><span>Precio (S/)</span><input type="number" id="proPrecio" min="0" max="999" step="0.10"></label>
+              <label class="form-field"><span>Unidad</span><input type="text" id="proUnidad" maxlength="20" placeholder="unidad, kg, atado" value="unidad"></label>
+            </div>
+            <div class="admin-grid-2">
+              <label class="form-field"><span>Archivo de la foto</span><input type="text" id="proFoto" maxlength="120" placeholder="productos/lechuga-crespa.jpg"></label>
+              <label class="form-field"><span>Orden</span><input type="number" id="proPos" min="0" max="99" step="1" value="0"></label>
+            </div>
+            <label class="admin-checkbox-row"><input type="checkbox" id="proPublicado"> Mostrar en la tienda</label>
+          </div>
+          <div class="inv-form-acciones">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <button type="button" class="btn btn-ghost" id="proCancelarBtn">Cancelar</button>
+            <button type="button" class="inv-borrar" id="proBorrarBtn" hidden>Eliminar</button>
+          </div>
+          <p class="form-status" id="proStatusMsg" role="status" aria-live="polite"></p>
+        </form>
       </div>
 
       <!-- ---------- Resultados y conclusiones ---------- -->

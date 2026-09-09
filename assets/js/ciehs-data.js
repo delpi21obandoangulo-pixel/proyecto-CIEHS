@@ -89,6 +89,8 @@
                        'consent_ref, position, published';
   var COLS_APORTE    = 'id, kind, title, description, equipo, grado, storage_path, ' +
                        'mime, size_bytes, rol, published, created_at';
+  var COLS_PRODUCTO  = 'id, nombre, cientifico, descripcion, unidad, precio_pen, estado, ' +
+                       'disponible_desde, stock_estimado, foto_path, position, published';
   var COLS_RESULTADO = 'id, investigation_code, tratamiento, medido_en, variable, valor, ' +
                        'unidad, n_muestras, equipo, grado, nota, published, created_at';
   var COLS_REGISTRO  = 'id, module_code, equipo, grado, medido_en, ph, ce, temp_c, ' +
@@ -128,7 +130,8 @@
       cliente.from('aportes').select(COLS_APORTE)
              .order('created_at', { ascending: false }).limit(60),
       cliente.from('resultados').select(COLS_RESULTADO)
-             .order('medido_en', { ascending: true }).limit(800)
+             .order('medido_en', { ascending: true }).limit(800),
+      cliente.from('productos').select(COLS_PRODUCTO).order('position', { ascending: true })
     ]).then(function (r) {
       var err = r.find(function (x) { return x.error; });
       if (err) {
@@ -152,7 +155,8 @@
         evidencias: r[10].data || [],
         registros: r[11].data || [],
         aportes: r[12].data || [],
-        resultados: r[13].data || []
+        resultados: r[13].data || [],
+        productos: r[14].data || []
       };
     }).catch(function (e) {
       CIEHSData.conectado = false;
@@ -431,6 +435,98 @@
   };
   CIEHSData.eliminarRegistro = function (id) { return eliminar('registros_campo', 'id', id); };
 
+  /* ------------------------------- tienda --------------------------------
+     El pedido se guarda en dos pasos porque son dos tablas: primero la
+     cabecera en orders, y con su id las lineas. No hay transaccion desde el
+     navegador, asi que si el segundo paso falla la cabecera queda huerfana; se
+     avisa al usuario en vez de fingir que se guardo entero. */
+  // El id se genera AQUI, no se pide de vuelta. `orders` no tiene politica de
+  // lectura publica a proposito —lleva nombre y contacto de una persona—, asi
+  // que un insert().select() dispararia el RETURNING contra una tabla que el
+  // visitante no puede leer y fallaria con un "violates row-level security"
+  // que parece un problema de escritura sin serlo. Generando el uuid en el
+  // cliente no hace falta leer nada, y ademas hace la operacion reintentable.
+  function uuid() {
+    if (global.crypto && typeof global.crypto.randomUUID === 'function') {
+      return global.crypto.randomUUID();
+    }
+    // Respaldo para navegadores sin randomUUID (Safari anterior a la 15.4).
+    var b = new Uint8Array(16);
+    (global.crypto || {}).getRandomValues
+      ? global.crypto.getRandomValues(b)
+      : b.forEach(function (_, i) { b[i] = Math.floor(Math.random() * 256); });
+    b[6] = (b[6] & 0x0f) | 0x40;
+    b[8] = (b[8] & 0x3f) | 0x80;
+    var h = [].map.call(b, function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+    return h.slice(0,8)+'-'+h.slice(8,12)+'-'+h.slice(12,16)+'-'+h.slice(16,20)+'-'+h.slice(20);
+  }
+
+  CIEHSData.crearPedido = function (p) {
+    var id = uuid();
+    return cliente.from('orders')
+      .insert({
+        id: id,
+        requester_name: p.nombre,
+        contact: p.contacto,
+        notes: vacio(p.nota),
+        status: 'pendiente'   // lo exige la politica RLS de orders
+        // crop y qty_kg quedan nulos: en un pedido con lineas el detalle vive
+        // en pedido_lineas, y duplicarlo aqui solo crearia dos verdades.
+      })
+      .then(function (r) {
+        if (r.error) throw r.error;
+        var lineas = p.lineas.map(function (l) {
+          return {
+            order_id: id, producto_id: l.id || null,
+            nombre: l.nombre, unidad: vacio(l.unidad),
+            precio_pen: l.precio == null ? null : Number(l.precio),
+            cantidad: Number(l.cantidad)
+          };
+        });
+        return cliente.from('pedido_lineas').insert(lineas).then(function (x) {
+          if (x.error) throw x.error;
+          return id;
+        });
+      });
+  };
+
+  CIEHSData.listarProductos = function () {
+    return cliente.from('productos').select(COLS_PRODUCTO).order('position', { ascending: true })
+      .then(function (r) { if (r.error) throw r.error; return r.data || []; });
+  };
+  CIEHSData.guardarProducto = function (p) {
+    return guardar('productos', COLS_PRODUCTO, {
+      id: p.id || undefined,
+      nombre: p.nombre, cientifico: vacio(p.cientifico), descripcion: vacio(p.descripcion),
+      unidad: p.unidad || 'unidad',
+      precio_pen: p.precio === '' || p.precio == null ? null : Number(p.precio),
+      estado: p.estado || 'en_crecimiento',
+      disponible_desde: vacio(p.desde),
+      stock_estimado: p.stock === '' || p.stock == null ? null : Number(p.stock),
+      foto_path: vacio(p.fotoPath),
+      position: Number(p.position || 0), published: !!p.published
+    });
+  };
+  CIEHSData.eliminarProducto = function (id) { return eliminar('productos', 'id', id); };
+
+  // Todas las lineas de una tacada, agrupadas por pedido. Una consulta por
+  // pedido seria N+1 y con veinte reservas ya se nota en una tablet del
+  // laboratorio. Solo con sesion de administrador: el pedido lleva nombre y
+  // contacto de una persona.
+  CIEHSData.lineasPorPedido = function () {
+    return cliente.from('pedido_lineas')
+      .select('order_id, nombre, unidad, precio_pen, cantidad')
+      .limit(1000)
+      .then(function (r) {
+        if (r.error) throw r.error;
+        var mapa = {};
+        (r.data || []).forEach(function (l) {
+          (mapa[l.order_id] = mapa[l.order_id] || []).push(l);
+        });
+        return mapa;
+      });
+  };
+
   /* ---------------- resultados de las investigaciones --------------------
      Mismo patron que los registros de campo: alta publica en borrador y el
      panel valida. Sin .select() encadenado, por la misma razon — el RETURNING
@@ -572,13 +668,8 @@
   };
   CIEHSData.eliminarMovimiento = function (id) { return eliminar('transparency_entries', 'id', id); };
 
-  /* pedidos de cosecha — alta abierta, lectura solo para administracion */
-  CIEHSData.crearPedido = function (p) {
-    return cliente.from('orders').insert({
-      requester_name: p.nombre, contact: p.contacto, crop: vacio(p.cultivo),
-      qty_kg: vacio(p.kg), notes: vacio(p.notas), status: 'pendiente'
-    }).then(function (r) { if (r.error) throw r.error; return true; });
-  };
+  /* pedidos de cosecha — el alta la hace ahora la tienda (ver crearPedido,
+     mas arriba), que ademas guarda las lineas del carrito. */
   CIEHSData.listarPedidos = function () { return listar('orders', COLS_PEDIDO, 'created_at', false); };
   CIEHSData.cambiarEstadoPedido = function (id, estado) {
     return cliente.from('orders').update({ status: estado }).eq('id', id)

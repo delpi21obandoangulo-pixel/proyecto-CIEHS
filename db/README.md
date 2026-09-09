@@ -80,11 +80,13 @@ rechaza y RLS también.
 | `registros_campo` | Carpeta de campo digital: mediciones de los estudiantes | solo `published` |
 | `aportes` | Fotos, vídeos y trabajos que suben los equipos; bucket privado en cuarentena | solo `published` |
 | `resultados` | Mediciones de resultado por tratamiento de cada investigación | solo `published` |
+| `productos` | Catálogo de la tienda, con estado y fecha de disponibilidad | solo `published` |
+| `pedido_lineas` | Detalle de cada reserva | **no** — solo administración |
 | `admins` | Quién puede escribir | no |
 
 La escritura exige sesión iniciada **y** figurar en `ciehs.admins`, con tres
 excepciones deliberadas: cualquiera puede **insertar** en `orders`, en
-`community_comments`, en `registros_campo`, en `aportes` y en `resultados`, porque son los formularios
+`community_comments`, en `registros_campo`, en `aportes`, en `resultados` y en `pedido_lineas`, porque son los formularios
 abiertos de la comunidad y de los estudiantes. Ni
 una ni otra queda expuesta por ello — `orders` no tiene ninguna política de
 lectura pública, y un comentario nace forzado a `published = false`, de modo que
@@ -104,7 +106,8 @@ infraestructura real (15 módulos DWC, sin bomba de aire) y las tablas de las
 secciones nuevas; `03_evidencias.sql` crea el bucket `ciehs-evidencias` y la
 tabla de la galería de la portada; `04_registros_campo.sql` crea la carpeta de
 campo digital; `05_aportes.sql` la bandeja de aportes en cuarentena; y
-`06_resultados.sql` los resultados por tratamiento. Todos son idempotentes y se aplican
+`06_resultados.sql` los resultados por tratamiento; y `07_tienda.sql` el
+catálogo y las líneas de pedido. Todos son idempotentes y se aplican
 **de forma aislada** (SQL
 Editor o `execute_sql`), nunca con `supabase db push` ni `apply_migration`: el
 historial `supabase_migrations.schema_migrations` es global en esta instancia

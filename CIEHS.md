@@ -49,14 +49,15 @@ está cada cosa.
 | Repositorio | `proyecto-CIEHS` en GitHub, **público**, sincronizado con producción |
 | Enrutado | 14 rutas con URL propia, agrupadas en **4 familias** tras un menú de tres rayas |
 | Códigos QR | 9 reales, verificados con un lector independiente |
-| Base de datos | Esquema `ciehs` conectado, **16 tablas**, RLS probado por rol · 2 buckets |
-| Panel | Supabase Auth + comprobación de administrador · **11 pestañas** |
+| Base de datos | Esquema `ciehs` conectado, **18 tablas**, RLS probado por rol · 2 buckets |
+| Panel | Supabase Auth + comprobación de administrador · **12 pestañas** |
 | Identidad | Escudo, sello y mural oficiales · **blanco por capas** con capa de movimiento |
 | Portada | Hero con **fondo animado de brisa** + galería «El CIEHS en acción», administrable desde el panel |
 | Infraestructura | **15 módulos DWC activos sin bomba de aire**; NFT y vertical solo como proyección |
 | Privacidad | **Rostros tapados en origen**: toda imagen se pixela en el navegador antes de subirse |
 | Seguridad | CSP sin `unsafe-inline` (scripts ni estilos) · pentest sin hallazgos explotables en el CIEHS |
 | Investigación | Carpeta de campo digital, aportes en cuarentena y **resultados por tratamiento con gráfica automática** |
+| Tienda | Catálogo con estado de cultivo, carrito que suma solo y reserva · **transparencia en porcentaje, sin importes** |
 | Arena | 5 niveles, 150 retos, 2 expediciones diarias |
 
 ---

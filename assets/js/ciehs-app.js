@@ -996,6 +996,7 @@
       if(window.CIEHS && window.CIEHS.refrescarCampo) window.CIEHS.refrescarCampo();
       if(window.CIEHS && window.CIEHS.refrescarAportes) window.CIEHS.refrescarAportes();
       if(window.CIEHS && window.CIEHS.refrescarFormResultados) window.CIEHS.refrescarFormResultados();
+      if(window.CIEHS && window.CIEHS.refrescarTienda) window.CIEHS.refrescarTienda();
       if(window.CIEHS && window.CIEHS.escalonar) window.CIEHS.escalonar();
     })["catch"](function(err){
       // Un rechazo (red caida, CORS, token invalido) tiene que terminar igual
@@ -1226,39 +1227,12 @@
   var transpCuerpo = el('transpCuerpo');
   var transpEstado = el('transpEstado');
 
+  // La transparencia dejo de mostrar importes: ahora se publica el REPARTO en
+  // porcentaje, que es lo que dice en que cree el proyecto. Lo pinta el modulo
+  // de la tienda, que ya tiene la caja a mano; aqui solo se delega para no
+  // duplicar el calculo en dos sitios que puedan discrepar.
   function pintarTransparencia(){
-    if(!transpCuerpo) return;
-    var filas = (datos && datos.caja) || [];
-    var ingresos = 0, egresos = 0;
-    filas.forEach(function(f){
-      var n = Number(f.amount_pen || 0);
-      if(f.kind === 'ingreso') ingresos += n; else egresos += n;
-    });
-    var ti = el('transpIngresos'), te = el('transpEgresos'), ts = el('transpSaldo');
-    if(ti) ti.textContent = soles(ingresos);
-    if(te) te.textContent = soles(egresos);
-    if(ts) ts.textContent = soles(ingresos - egresos);
-
-    if(!filas.length){
-      transpCuerpo.innerHTML = '';
-      if(transpEstado){
-        transpEstado.hidden = false;
-        transpEstado.textContent = D && D.conectado
-          ? 'Todavía no hay movimientos publicados. El equipo de Tesorería registra aquí cada venta y cada compra de insumos.'
-          : 'No se pudo conectar con la base del CIEHS: el registro de caja no se puede mostrar ahora mismo.';
-      }
-      return;
-    }
-    if(transpEstado) transpEstado.hidden = true;
-    transpCuerpo.innerHTML = filas.map(function(f){
-      return '<tr class="transp-fila ' + esc(f.kind) + '">'
-        + '<td>' + fmtDia(f.occurred_on) + '</td>'
-        + '<td>' + esc(f.concept) + (f.note ? '<br><span class="transp-nota">' + esc(f.note) + '</span>' : '') + '</td>'
-        + '<td><span class="chip ' + (f.kind === 'ingreso' ? 'status-activo' : 'status-plan') + '">'
-        +   (f.kind === 'ingreso' ? 'Ingreso' : 'Egreso') + '</span></td>'
-        + '<td class="tabular transp-monto">' + (f.kind === 'egreso' ? '−' : '') + num(f.amount_pen, 2) + '</td>'
-        + '</tr>';
-    }).join('');
+    if(window.CIEHS && window.CIEHS.refrescarTienda) window.CIEHS.refrescarTienda();
   }
 
   /* --------------------- comentarios de la comunidad ------------------- */
@@ -1364,15 +1338,9 @@
     });
   }
 
-  conectarEnvio(el('pedidoForm'), 'pedTrampa', 'pedStatus', function(){
-    return D.crearPedido({
-      nombre: (el('pedNombre').value || '').trim(),
-      contacto: (el('pedContacto').value || '').trim(),
-      cultivo: el('pedCultivo') ? el('pedCultivo').value : null,
-      kg: el('pedKg').value,
-      notas: (el('pedNota').value || '').trim()
-    });
-  }, 'Reserva recibida. El equipo de Ventas te confirmará la disponibilidad y el día de entrega.');
+  // El formulario de pedidos lo maneja ahora el modulo de la tienda, que suma
+  // el carrito y guarda las lineas. Tenerlo tambien aqui hacia que un solo
+  // envio disparara DOS manejadores sobre el mismo formulario.
 
   conectarEnvio(el('comentarioForm'), 'comTrampa', 'comStatus', function(){
     return D.crearComentario({
@@ -2005,18 +1973,28 @@
   function cargarPedidos(){
     if(!pedLista) return;
     pedLista.innerHTML = '<p class="inv-vacia">Cargando…</p>';
-    D.listarPedidos().then(function(filas){
+    Promise.all([D.listarPedidos(), D.lineasPorPedido()]).then(function(par){
+      var filas = par[0], porPedido = par[1] || {};
       if(!filas.length){
         pedLista.innerHTML = '<p class="inv-vacia">No hay pedidos registrados.</p>';
         return;
       }
       pedLista.innerHTML = filas.map(function(p){
+        // El detalle vive en las lineas. crop y qty_kg solo tienen valor en los
+        // pedidos antiguos de un solo cultivo; se usan como respaldo.
+        var lineas = porPedido[p.id] || [];
+        var detalle = lineas.length
+          ? lineas.map(function(l){ return l.cantidad + '× ' + l.nombre; }).join(' · ')
+          : (p.crop || 'sin especificar') + (p.qty_kg ? ' · ' + p.qty_kg + ' kg' : '');
+        var total = lineas.reduce(function(t, l){
+          return t + (l.precio_pen != null ? Number(l.precio_pen) * l.cantidad : 0);
+        }, 0);
         return '<div class="inv-item">'
           + '<div class="txt">'
-          +   '<span class="cod">' + esc(p.requester_name) + '</span>'
-          +   '<span class="tit">' + esc(p.contact) + ' · ' + esc(p.crop || 'sin especificar')
-          +     (p.qty_kg ? ' · ' + esc(p.qty_kg) + ' kg' : '')
-          +     (p.notes ? ' — ' + esc(p.notes) : '') + '</span>'
+          +   '<span class="cod">' + esc(p.requester_name) + ' · ' + esc(p.contact) + '</span>'
+          +   '<span class="tit">' + esc(detalle)
+          +     (total > 0 ? ' — ' + soles(total) : '') + '</span>'
+          +   (p.notes ? '<span class="tit u-color-ink-mute">' + esc(p.notes) + '</span>' : '')
           + '</div>'
           + '<span class="estado ' + (p.status === 'entregado' ? 'pub' : 'bor') + '">' + esc(p.status) + '</span>'
           + '<button type="button" class="editar" data-avanzar="' + esc(p.id) + '" data-estado="'
@@ -2465,7 +2443,46 @@
   var resRecargar = el('resRecargarBtn');
   if(resRecargar) resRecargar.addEventListener('click', cargarResultadosAdmin);
 
+  /* ---------------------------- catalogo --------------------------------- */
+  var ETIQ_ESTADO_PROD = {
+    disponible:'disponible ahora', en_crecimiento:'en crecimiento', agotado:'agotado'
+  };
+  var edProductos = crearEditor({
+    lista:'proAdminLista', form:'proForm', titulo:'proFormTitulo', nuevo:'proNuevoBtn',
+    cancelar:'proCancelarBtn', borrar:'proBorrarBtn', msg:'proStatusMsg',
+    tituloNuevo:'Nuevo producto', tituloEditar:'Editar producto',
+    vacio:'Todavía no hay nada en el catálogo.',
+    clave: function(p){ return p.id; },
+    etiqueta: function(p){
+      return p.nombre + ' · ' + (ETIQ_ESTADO_PROD[p.estado] || p.estado)
+           + (p.precio_pen != null ? ' · ' + soles(p.precio_pen) : '');
+    },
+    listar: function(){ return D.listarProductos(); },
+    eliminar: function(id){ return D.eliminarProducto(id); },
+    rellenar: function(p){
+      p = p || {};
+      txt('proNombre', p.nombre); txt('proCientifico', p.cientifico);
+      txt('proDesc', p.descripcion); txt('proEstado', p.estado || 'en_crecimiento');
+      txt('proDesde', p.disponible_desde); txt('proPrecio', p.precio_pen);
+      txt('proUnidad', p.unidad || 'unidad'); txt('proFoto', p.foto_path);
+      txt('proPos', p.position == null ? 0 : p.position);
+      marcar('proPublicado', p.published);
+      edProductos._id = p.id || null;
+    },
+    guardar: function(){
+      return D.guardarProducto({
+        id: edProductos._id,
+        nombre: leer('proNombre').trim(), cientifico: leer('proCientifico').trim(),
+        descripcion: leer('proDesc').trim(), estado: leer('proEstado'),
+        desde: leer('proDesde'), precio: leer('proPrecio'),
+        unidad: leer('proUnidad').trim() || 'unidad', fotoPath: leer('proFoto').trim(),
+        position: leer('proPos'), published: leerMarca('proPublicado')
+      });
+    }
+  });
+
   window.CIEHS.cargarPestanaAdmin = function(nombre){
+    if(nombre === 'catalogo')  edProductos.cargar();
     if(nombre === 'resultados'){ llenarConcInv(); cargarResultadosAdmin(); }
     if(nombre === 'aportes')   cargarAportes();
     if(nombre === 'bitacora')  edBitacora.cargar();
@@ -4121,4 +4138,291 @@
   llenarInvestigaciones();
   window.CIEHS = window.CIEHS || {};
   window.CIEHS.refrescarFormResultados = llenarInvestigaciones;
+})();
+
+/* ===========================================================================
+   15. TIENDA: catalogo, carrito y destino de los recursos en porcentaje
+   =========================================================================== */
+(function(){
+  var grid = document.getElementById('tiendaGrid');
+  if(!grid) return;
+
+  var D = window.CIEHSData;
+  var elEstado  = document.getElementById('tiendaEstado');
+  var carrito   = document.getElementById('carrito');
+  var carLista  = document.getElementById('carritoLista');
+  var carTotal  = document.getElementById('carritoTotal');
+  var carVaciar = document.getElementById('carritoVaciar');
+  var form      = document.getElementById('pedidoForm');
+  var pedStatus = document.getElementById('pedStatus');
+  var pedEnviar = document.getElementById('pedEnviar');
+  var destino   = document.getElementById('destinoLista');
+  var transpEst = document.getElementById('transpEstado');
+
+  // El carrito vive solo en memoria. No se guarda en localStorage a proposito:
+  // los equipos del laboratorio son compartidos y nadie deberia encontrarse el
+  // pedido a medio hacer de la persona anterior.
+  var cesta = [];
+
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+  function soles(n){ return 'S/ ' + Number(n).toFixed(2); }
+  function fmtDia(v){
+    if(!v) return '';
+    var d = new Date(v + 'T12:00:00');
+    if(isNaN(d.getTime())) return v;
+    return d.toLocaleDateString('es-PE', { day:'2-digit', month:'long' });
+  }
+
+  var ETIQUETA_ESTADO = {
+    disponible:     { txt:'Disponible ahora', cls:'est-disp' },
+    en_crecimiento: { txt:'En crecimiento',   cls:'est-crec' },
+    agotado:        { txt:'Agotado',          cls:'est-ago'  }
+  };
+
+  /* ------------------------------------------------------- el catalogo ----*/
+  function productos(){
+    var snap = (window.CIEHS && window.CIEHS.snapshot && window.CIEHS.snapshot()) || null;
+    return (snap && snap.productos) || [];
+  }
+
+  function pintarCatalogo(){
+    var lista = productos();
+    if(!lista.length){
+      grid.innerHTML = '';
+      if(elEstado){
+        elEstado.hidden = false;
+        elEstado.textContent = (D && D.conectado)
+          ? 'El catálogo todavía está vacío. El equipo de Ventas publica aquí lo que se va cosechando.'
+          : 'No se pudo conectar con la base del CIEHS, así que el catálogo no se puede mostrar ahora mismo.';
+      }
+      return;
+    }
+    if(elEstado) elEstado.hidden = true;
+
+    grid.innerHTML = lista.map(function(p){
+      var e = ETIQUETA_ESTADO[p.estado] || ETIQUETA_ESTADO.en_crecimiento;
+      var foto = p.foto_path && D && D.urlEvidencia ? D.urlEvidencia(p.foto_path) : '';
+      var enCesta = cesta.filter(function(c){ return c.id === p.id; })[0];
+      var puede = p.estado === 'disponible';
+
+      return '<article class="prod' + (puede ? '' : ' is-off') + '" data-prod="' + esc(p.id) + '">'
+        + '<div class="prod-foto">'
+        +   (foto
+              ? '<img src="' + esc(foto) + '" alt="' + esc(p.nombre) + ' cultivada en el CIEHS" loading="lazy" decoding="async">'
+              : '<span class="prod-sinfoto" aria-hidden="true">🌱</span>')
+        +   '<span class="prod-estado ' + e.cls + '">' + esc(e.txt) + '</span>'
+        + '</div>'
+        + '<div class="prod-cuerpo">'
+        +   '<h4>' + esc(p.nombre) + '</h4>'
+        +   (p.cientifico ? '<p class="prod-cient"><i>' + esc(p.cientifico) + '</i></p>' : '')
+        +   (p.descripcion ? '<p class="prod-desc">' + esc(p.descripcion) + '</p>' : '')
+        +   (!puede && p.disponible_desde
+              ? '<p class="prod-cuando">Se podrá reservar desde el <b>' + esc(fmtDia(p.disponible_desde)) + '</b></p>'
+              : '')
+        +   '<div class="prod-pie">'
+        +     '<span class="prod-precio tabular">' + (p.precio_pen != null ? soles(p.precio_pen) : '—')
+        +       '<small> / ' + esc(p.unidad || 'unidad') + '</small></span>'
+        +     (puede
+                ? (enCesta
+                    ? '<div class="prod-cant" role="group" aria-label="Unidades de ' + esc(p.nombre) + '">'
+                      + '<button type="button" data-menos="' + esc(p.id) + '" aria-label="Quitar una unidad">−</button>'
+                      + '<b class="tabular">' + enCesta.cantidad + '</b>'
+                      + '<button type="button" data-mas="' + esc(p.id) + '" aria-label="Añadir una unidad">+</button>'
+                      + '</div>'
+                    : '<button type="button" class="prod-add" data-add="' + esc(p.id) + '">Añadir</button>')
+                : '<span class="prod-nodisp">No disponible</span>')
+        +   '</div>'
+        + '</div>'
+        + '</article>';
+    }).join('');
+
+    grid.querySelectorAll('[data-add]').forEach(function(b){
+      b.addEventListener('click', function(){ sumar(b.getAttribute('data-add'), 1); });
+    });
+    grid.querySelectorAll('[data-mas]').forEach(function(b){
+      b.addEventListener('click', function(){ sumar(b.getAttribute('data-mas'), 1); });
+    });
+    grid.querySelectorAll('[data-menos]').forEach(function(b){
+      b.addEventListener('click', function(){ sumar(b.getAttribute('data-menos'), -1); });
+    });
+  }
+
+  /* --------------------------------------------------------- el carrito ---*/
+  function sumar(id, delta){
+    var p = productos().filter(function(x){ return x.id === id; })[0];
+    if(!p || p.estado !== 'disponible') return;
+    var linea = cesta.filter(function(c){ return c.id === id; })[0];
+    if(!linea){
+      if(delta < 0) return;
+      linea = { id:p.id, nombre:p.nombre, unidad:p.unidad, precio:p.precio_pen, cantidad:0 };
+      cesta.push(linea);
+    }
+    linea.cantidad += delta;
+    // El tope no es decorativo: la restriccion de la base rechaza mas de 999, y
+    // un pedido de tres digitos en un huerto escolar es casi siempre un dedazo.
+    if(linea.cantidad > 99) linea.cantidad = 99;
+    if(linea.cantidad <= 0) cesta = cesta.filter(function(c){ return c.id !== id; });
+    pintarCatalogo();
+    pintarCarrito();
+  }
+
+  function totalCesta(){
+    return cesta.reduce(function(s, c){
+      return s + (c.precio != null ? Number(c.precio) * c.cantidad : 0);
+    }, 0);
+  }
+  function unidadesCesta(){
+    return cesta.reduce(function(s, c){ return s + c.cantidad; }, 0);
+  }
+
+  function pintarCarrito(){
+    if(!carrito) return;
+    carrito.hidden = cesta.length === 0;
+    if(!cesta.length) return;
+
+    carLista.innerHTML = cesta.map(function(c){
+      return '<li>'
+        + '<span class="car-n tabular">' + c.cantidad + '×</span>'
+        + '<span class="car-nom">' + esc(c.nombre) + '</span>'
+        + '<span class="car-sub tabular">' + (c.precio != null ? soles(Number(c.precio) * c.cantidad) : '—') + '</span>'
+        + '<button type="button" class="car-quitar" data-quitar="' + esc(c.id) + '" aria-label="Quitar ' + esc(c.nombre) + '">×</button>'
+        + '</li>';
+    }).join('');
+
+    carLista.querySelectorAll('[data-quitar]').forEach(function(b){
+      b.addEventListener('click', function(){
+        cesta = cesta.filter(function(c){ return c.id !== b.getAttribute('data-quitar'); });
+        pintarCatalogo(); pintarCarrito();
+      });
+    });
+
+    var u = unidadesCesta();
+    var conPrecio = cesta.some(function(c){ return c.precio != null; });
+    carTotal.textContent = (conPrecio ? soles(totalCesta()) + ' · ' : '')
+      + u + (u === 1 ? ' unidad' : ' unidades');
+  }
+
+  if(carVaciar) carVaciar.addEventListener('click', function(){
+    cesta = []; pintarCatalogo(); pintarCarrito();
+    if(pedStatus) pedStatus.textContent = '';
+  });
+
+  /* --------------------------------------------------------- el pedido ----*/
+  function aviso(t, error){
+    if(!pedStatus) return;
+    pedStatus.classList.toggle('error', !!error);
+    pedStatus.textContent = t || '';
+  }
+
+  if(form){
+    form.addEventListener('submit', function(ev){
+      ev.preventDefault();
+      // Trampa para robots: un campo oculto que una persona nunca rellena.
+      var trampa = document.getElementById('pedTrampa');
+      if(trampa && trampa.value){ aviso('Reserva enviada.'); return; }
+
+      if(!D || !D.listo){ aviso('No hay conexión con la base del CIEHS, así que la reserva no se puede enviar ahora mismo.', true); return; }
+      if(!cesta.length){ aviso('Añade al menos un producto a tu reserva.', true); return; }
+
+      var nombre   = (document.getElementById('pedNombre')   || {}).value || '';
+      var contacto = (document.getElementById('pedContacto') || {}).value || '';
+      if(nombre.trim().length < 2){ aviso('Escribe tu nombre para poder entregarte el pedido.', true); return; }
+      if(contacto.trim().length < 5){ aviso('Deja un teléfono o correo: sin eso no podemos confirmarte la entrega.', true); return; }
+
+      if(pedEnviar) pedEnviar.disabled = true;
+      aviso('Reservando…');
+      D.crearPedido({
+        nombre: nombre.trim(), contacto: contacto.trim(),
+        nota: (document.getElementById('pedNota') || {}).value || '',
+        lineas: cesta
+      }).then(function(){
+        var u = unidadesCesta();
+        aviso('Reserva registrada: ' + u + (u === 1 ? ' unidad' : ' unidades') +
+              '. El equipo de Ventas te escribirá para confirmar el día de entrega.');
+        cesta = [];
+        form.reset();
+        pintarCatalogo(); pintarCarrito();
+      }).catch(function(e){
+        aviso('No se pudo reservar: ' + ((e && e.message) || 'error desconocido'), true);
+      }).then(function(){
+        if(pedEnviar) pedEnviar.disabled = false;
+      });
+    });
+  }
+
+  /* ------------------------------------ destino de los recursos, en % -----
+     Se calcula a partir del registro de egresos que ya lleva Tesoreria, en vez
+     de teclear porcentajes a mano: asi la cifra no puede desmentir a la
+     contabilidad. No se muestra ningun importe ni cuanto se ha vendido — lo que
+     dice en que cree el proyecto es la PROPORCION, no el monto. */
+  var COLORES = ['var(--leaf-500)', 'var(--azure-500)', 'var(--sun-500)', '#7c3aed', '#c2410c', '#0f766e'];
+
+  function pintarDestino(){
+    if(!destino) return;
+    var snap = (window.CIEHS && window.CIEHS.snapshot && window.CIEHS.snapshot()) || null;
+    var caja = (snap && snap.caja) || [];
+    var egresos = caja.filter(function(e){ return e.kind === 'egreso' && Number(e.amount_pen) > 0; });
+
+    if(!egresos.length){
+      destino.innerHTML = '';
+      if(transpEst){
+        transpEst.hidden = false;
+        transpEst.textContent = (D && D.conectado)
+          ? 'Todavía no hay egresos publicados. En cuanto Tesorería registre el primero, aquí aparecerá el reparto.'
+          : 'No se pudo conectar con la base del CIEHS, así que el reparto no se puede mostrar ahora mismo.';
+      }
+      return;
+    }
+    if(transpEst) transpEst.hidden = true;
+
+    var porConcepto = {};
+    egresos.forEach(function(e){
+      var c = (e.concept || 'Otros').trim();
+      porConcepto[c] = (porConcepto[c] || 0) + Number(e.amount_pen);
+    });
+    var total = Object.keys(porConcepto).reduce(function(s, k){ return s + porConcepto[k]; }, 0);
+    var filas = Object.keys(porConcepto).map(function(k){
+      return { concepto:k, pct: (porConcepto[k] / total) * 100 };
+    }).sort(function(a, b){ return b.pct - a.pct; });
+
+    // Barra apilada: se ve de un vistazo cual se lleva la mayor parte, que es
+    // justo la pregunta que hace quien mira esto.
+    var apilada = '<div class="destino-barra" role="img" aria-label="'
+      + esc('Reparto de los egresos: ' + filas.map(function(f){
+          return f.concepto + ' ' + f.pct.toFixed(0) + ' %'; }).join(', ') + '.')
+      + '">' + filas.map(function(f, i){
+          return '<span style="width:' + f.pct.toFixed(2) + '%;background:' + COLORES[i % COLORES.length] + '"></span>';
+        }).join('') + '</div>';
+
+    var detalle = '<ul class="destino-lista">' + filas.map(function(f, i){
+      return '<li>'
+        + '<i style="background:' + COLORES[i % COLORES.length] + '"></i>'
+        + '<span class="destino-con">' + esc(f.concepto) + '</span>'
+        + '<b class="destino-pct tabular">' + f.pct.toFixed(1) + ' %</b>'
+        + '</li>';
+    }).join('') + '</ul>';
+
+    destino.innerHTML = apilada + detalle;
+  }
+
+  window.CIEHS = window.CIEHS || {};
+  window.CIEHS.refrescarTienda = function(){
+    // Un producto puede haberse agotado mientras alguien tenia el carrito
+    // abierto: se depura la cesta contra el catalogo nuevo antes de repintar,
+    // o se enviaria un pedido de algo que ya no se ofrece.
+    var vivos = productos();
+    cesta = cesta.filter(function(c){
+      return vivos.some(function(p){ return p.id === c.id && p.estado === 'disponible'; });
+    });
+    pintarCatalogo();
+    pintarCarrito();
+    pintarDestino();
+  };
+
+  pintarCatalogo();
+  pintarDestino();
 })();
