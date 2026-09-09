@@ -51,7 +51,7 @@ está cada cosa.
 | Códigos QR | 9 reales, verificados con un lector independiente |
 | Base de datos | Esquema `ciehs` conectado, **12 tablas**, RLS probado por rol |
 | Panel | Supabase Auth + comprobación de administrador · **7 pestañas** |
-| Identidad | Escudo, sello y mural oficiales · **línea gráfica luminosa** (fondo claro) |
+| Identidad | Escudo, sello y mural oficiales · **blanco por capas** con capa de movimiento |
 | Infraestructura | **15 módulos DWC activos sin bomba de aire**; NFT y vertical solo como proyección |
 | Privacidad | Página publicada, **pendiente de aprobación por dirección** |
 | Seguridad | CSP sin `unsafe-inline` (scripts ni estilos) · pentest sin hallazgos explotables en el CIEHS |

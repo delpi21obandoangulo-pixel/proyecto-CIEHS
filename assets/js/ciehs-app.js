@@ -550,6 +550,9 @@
       });
     }
     pintarAviso(c);
+    // Los KPI acaban de cambiar de valor: se vuelven a contar para que el
+    // visitante vea que el dato es nuevo, no un numero que ya estaba ahi.
+    if(window.CIEHS && window.CIEHS.recontar) window.CIEHS.recontar();
   }
 
   function avisoDescartado(){
@@ -608,6 +611,10 @@
       f.style.left = f.getAttribute('data-left') + '%';
       f.style.width = f.getAttribute('data-width') + '%';
     });
+    // Filas recien creadas: la capa de diseno las numera y las vuelve a dibujar
+    // desde cero. Sin esto los rangos que vienen de la base aparecerian ya
+    // completos, sin la animacion que si tienen los del HTML estatico.
+    if(window.CIEHS && window.CIEHS.dibujarBarras) window.CIEHS.dibujarBarras();
   }
 
   /* --------------------------- telemetria ---------------------------- */
@@ -754,14 +761,19 @@
 
   /* ------------------------------ carga ------------------------------- */
 
+  // Deja las cuatro secciones que arrancan con esqueleto en su estado "sin
+  // base": cada pintor ya sabe explicar por que no hay nada. Sin esto el
+  // esqueleto se quedaria brillando para siempre.
+  function rendirseConLasSeccionesDeRed(){
+    pintarCarpeta(); pintarBitacora(); pintarTransparencia(); pintarComentarios();
+  }
+
   function refrescar(){
-    if(!D || !D.listo) return Promise.resolve();
+    if(!D || !D.listo){ rendirseConLasSeccionesDeRed(); return Promise.resolve(); }
     return D.cargarPortal().then(function(res){
       if(!res) {
         pintarSync(); pintarTelemetria();
-        // Sin base tampoco hay carpeta ni bitacora: mejor decirlo que dejar
-        // los "Cargando..." colgados para siempre.
-        pintarCarpeta(); pintarBitacora(); pintarTransparencia(); pintarComentarios();
+        rendirseConLasSeccionesDeRed();
         return;
       }
       datos = res;
@@ -779,6 +791,13 @@
       pintarRecursos();
       pintarTransparencia();
       pintarComentarios();
+      if(window.CIEHS && window.CIEHS.escalonar) window.CIEHS.escalonar();
+    })["catch"](function(err){
+      // Un rechazo (red caida, CORS, token invalido) tiene que terminar igual
+      // que una respuesta vacia: con un mensaje, no con un esqueleto eterno.
+      if(window.console && console.warn) console.warn("CIEHS: no se pudo cargar el portal", err);
+      pintarSync(); pintarTelemetria();
+      rendirseConLasSeccionesDeRed();
     });
   }
   /* ================= SECCIONES 2026: carpeta, bitácora, comunidad ==========
@@ -920,7 +939,10 @@
     }).join('');
   }
 
-  if(bitSelect) bitSelect.addEventListener('change', pintarBitacora);
+  if(bitSelect) bitSelect.addEventListener("change", function(){
+    pintarBitacora();
+    if(window.CIEHS && window.CIEHS.escalonar) window.CIEHS.escalonar();
+  });
 
   /* -------------------- espacio docente: recursos --------------------- */
 
@@ -1921,68 +1943,298 @@
 })();
 
 /* ===========================================================================
-   9. DISEÑO: scroll-reveal, glow de header y aura interactiva del hero
+   9. DISEÑO: movimiento — reveal, contadores, brillo, ondas y progreso
+
+   Con una paleta casi monocroma el movimiento deja de ser adorno: es lo que
+   jerarquiza. Todo lo de aquí comprueba `prefers-reduced-motion` y se apaga
+   entero si el visitante lo pide.
    =========================================================================== */
 (function(){
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var puedeHover  = window.matchMedia && window.matchMedia('(hover: hover)').matches;
 
-  // ---- scroll reveal: fade-up al entrar en viewport (IntersectionObserver) ----
+  /* ------------------------------------------------ 1. reveal escalonado ---
+     El indice se cuenta DENTRO de cada contenedor, no sobre la lista global:
+     antes una tarjeta heredaba el turno de otra rejilla y se quedaba esperando
+     medio segundo sin ninguna razon visible. */
   var revealSelectors = [
     '.section-head', '.hub-card', '.card', '.qr-card', '.hero-kpi',
     '.stat-tile', '.viz-card', '.badge-card', '.not-only .card',
     '.climate-block', '.mural-panel', '.qr-panel', '.ruta-fase', '.cneb-card',
-    '.contact-card', '.contact-form', '.problem-block'
+    '.contact-card', '.contact-form', '.problem-block', '.problema-card',
+    '.hpos-card', '.mvp-card', '.modulo-chip', '.pasaporte-porque article',
+    '.destacado-card', '.dwc-aviso', '.carpeta-como', '.comunidad-card'
   ];
-  var revealEls = document.querySelectorAll(revealSelectors.join(','));
-  revealEls.forEach(function(el, i){
+  var revealEls = [].slice.call(document.querySelectorAll(revealSelectors.join(',')));
+  var conteoPorPadre = new Map();
+  revealEls.forEach(function(el){
     el.classList.add('reveal');
-    el.style.transitionDelay = reduceMotion ? '0ms' : (Math.min(i % 6, 5) * 70) + 'ms';
+    var padre = el.parentNode;
+    var n = conteoPorPadre.get(padre) || 0;
+    conteoPorPadre.set(padre, n + 1);
+    el.style.setProperty('--i', reduceMotion ? 0 : Math.min(n, 7));
   });
 
+  function mostrar(el){ el.classList.add('is-visible'); }
+
+  // Red de seguridad. El navegador estrangula IntersectionObserver en pestanas
+  // sin foco o en ahorro de energia: si eso pasa, .reveal se queda en opacity:0
+  // y la pagina entera aparece en blanco. Contenido invisible es un fallo, no
+  // una animacion perdida, asi que a los 3 s sin una sola entrega se da el
+  // observador por muerto y se muestra todo de golpe.
+  var ioVivo = false;
+  var io = null;
   if('IntersectionObserver' in window && !reduceMotion){
-    var io = new IntersectionObserver(function(entries){
+    io = new IntersectionObserver(function(entries){
+      ioVivo = true;
       entries.forEach(function(entry){
-        if(entry.isIntersecting){
-          entry.target.classList.add('is-visible');
-          io.unobserve(entry.target);
-        }
+        if(entry.isIntersecting){ mostrar(entry.target); io.unobserve(entry.target); }
       });
     }, { threshold:0.12, rootMargin:'0px 0px -8% 0px' });
     revealEls.forEach(function(el){ io.observe(el); });
+    setTimeout(function(){
+      if(ioVivo) return;
+      io.disconnect();
+      revealEls.forEach(mostrar);
+      document.querySelectorAll('.range-row').forEach(function(f){ f.classList.add('is-drawn'); });
+    }, 3000);
   } else {
-    revealEls.forEach(function(el){ el.classList.add('is-visible'); });
+    revealEls.forEach(mostrar);
   }
 
-  // when a route becomes visible, reveal anything already in view on that page
-  // (covers elements inside sections that were [hidden] when first observed)
+  /* --------------------------------------------------- 2. cifras que ruedan --
+     Se anima solo el primer nodo de texto: asi el <small> con la unidad (%, kg)
+     se queda intacto y no hay que reconstruir el marcado. */
+  function leerCifra(el){
+    var nodo = el.firstChild;
+    while(nodo && nodo.nodeType !== 3) nodo = nodo.nextSibling;
+    if(!nodo) return null;
+    var bruto = nodo.nodeValue;
+    var m = bruto.match(/-?\d+(?:[.,]\d+)?/);
+    if(!m) return null;
+    var crudo = m[0];
+    var decs = (crudo.split(/[.,]/)[1] || '').length;
+    return {
+      nodo: nodo,
+      destino: parseFloat(crudo.replace(',', '.')),
+      decs: decs,
+      antes: bruto.slice(0, m.index),
+      despues: bruto.slice(m.index + crudo.length)
+    };
+  }
+
+  // Contadores en vuelo. Un numero a medias se lee como si fuera el definitivo:
+  // "48 estudiantes" en lugar de 280. Por eso cada cuenta se puede rematar de
+  // golpe, y hay que poder rematarlas todas cuando el navegador deje de dar
+  // fotogramas (pestana en segundo plano, ahorro de energia, bfcache).
+  var cifrasEnVuelo = [];
+
+  function rematar(el){
+    if(el._rafCifra){ cancelAnimationFrame(el._rafCifra); el._rafCifra = null; }
+    if(el._finCifra){ el._finCifra(); el._finCifra = null; }
+    var i = cifrasEnVuelo.indexOf(el);
+    if(i > -1) cifrasEnVuelo.splice(i, 1);
+  }
+
+  function rematarTodas(){
+    cifrasEnVuelo.slice().forEach(rematar);
+  }
+
+  function animarCifra(el){
+    if(reduceMotion) return;
+    // Rematar ANTES de leer. Si hubiera una cuenta en vuelo sobre este mismo
+    // elemento, el texto de ahora seria un valor intermedio y arrancariamos la
+    // nueva animacion hacia un destino inventado.
+    rematar(el);
+    var d = leerCifra(el);
+    if(!d || !isFinite(d.destino)) return;
+    var final = d.antes + d.destino.toFixed(d.decs) + d.despues;
+    el._finCifra = function(){ d.nodo.nodeValue = final; };
+    // Sin pestana visible no hay fotogramas: se escribe el valor final y ya.
+    if(document.hidden){ el._finCifra(); el._finCifra = null; return; }
+    var desde = 0, dur = 1100, t0 = 0;
+    el.classList.add('is-counting');
+    cifrasEnVuelo.push(el);
+    function paso(ts){
+      if(!t0) t0 = ts;
+      var p = Math.min((ts - t0) / dur, 1);
+      var e = 1 - Math.pow(1 - p, 4);           // easeOutQuart
+      var v = desde + (d.destino - desde) * e;
+      d.nodo.nodeValue = d.antes + v.toFixed(d.decs) + d.despues;
+      if(p < 1){ el._rafCifra = requestAnimationFrame(paso); }
+      else { el._rafCifra = null; rematar(el); }
+    }
+    el._rafCifra = requestAnimationFrame(paso);
+  }
+
+  // Al ocultarse la pestana se rematan las cuentas en curso: si se dejaran, al
+  // volver el visitante encontraria la cifra congelada donde murio el rAF.
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden) rematarTodas();
+  });
+  window.addEventListener('pagehide', rematarTodas);
+
+  var cifras = [].slice.call(document.querySelectorAll('.hero-kpi .n, .stat-tile .value'));
+  if('IntersectionObserver' in window && !reduceMotion){
+    var ioCifra = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){ animarCifra(en.target); ioCifra.unobserve(en.target); }
+      });
+    }, { threshold:0.5 });
+    cifras.forEach(function(c){ ioCifra.observe(c); });
+  }
+
+  // La capa de datos llama aqui despues de reescribir los KPI desde la base.
+  window.CIEHS = window.CIEHS || {};
+  window.CIEHS.recontar = function(){
+    if(reduceMotion) return;
+    document.querySelectorAll('.js-kpi-ahorro, .js-kpi-ahorro-neg, .js-kpi-cosecha')
+      .forEach(function(el){
+        var r = el.getBoundingClientRect();
+        if(r.width > 0 && r.top < window.innerHeight && r.bottom > 0) animarCifra(el);
+      });
+  };
+
+  /* ------------------------------------------- 3. barras que se dibujan -----
+     El ancho puede venir de dos sitios: la clase de utilidad del HTML estatico
+     (u-width-26p7pct) o el data-width que escribe la capa de datos al repintar
+     los rangos de pH desde la base. Se traduce a --w y solo entonces se marca
+     .is-anim: si este script no llegara a correr, la barra se ve completa.
+
+     `prepararBarras` es idempotente a proposito: la base reescribe esas filas
+     despues de la carga inicial, asi que hay que poder volver a pasar por aqui
+     sobre nodos nuevos sin tocar los que ya estaban dibujados. */
+  function anchoDeBarra(el){
+    var d = el.getAttribute("data-width");
+    if(d) return parseFloat(d) + "%";
+    var m = /u-width-(\d+)(?:p(\d+))?pct/.exec(el.className);
+    if(!m) return null;
+    return m[1] + (m[2] ? "." + m[2] : "") + "%";
+  }
+
+  var ioBarra = null;
+  if(!reduceMotion && "IntersectionObserver" in window){
+    ioBarra = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){ en.target.classList.add("is-drawn"); ioBarra.unobserve(en.target); }
+      });
+    }, { threshold:0.25 });
+  }
+
+  function prepararBarras(){
+    if(reduceMotion) return;
+    document.querySelectorAll(".range-row").forEach(function(fila, i){
+      var fill = fila.querySelector(".range-fill");
+      if(!fill || fill.classList.contains("is-anim")) return;
+      var w = anchoDeBarra(fill);
+      if(!w) return;
+      fill.style.setProperty("--w", w);
+      fill.style.setProperty("--i", Math.min(i % 8, 7));
+      fill.classList.add("is-anim");
+      if(ioBarra) ioBarra.observe(fila); else fila.classList.add("is-drawn");
+    });
+  }
+  prepararBarras();
+  window.CIEHS = window.CIEHS || {};
+  window.CIEHS.dibujarBarras = prepararBarras;
+
+  /* ------------------------------------- 4. cambio de ruta: revelar y redibujar
+     Al mostrarse una seccion que estaba [hidden], lo que ya cae en pantalla se
+     revela de inmediato y las barras de esa seccion se dibujan. */
   var mainEl = document.querySelector('main');
   if(mainEl && 'MutationObserver' in window){
     var mo = new MutationObserver(function(){
       requestAnimationFrame(function(){
         document.querySelectorAll('.reveal:not(.is-visible)').forEach(function(el){
           var r = el.getBoundingClientRect();
-          if(r.top < window.innerHeight && r.bottom > 0 && r.width > 0){
-            el.classList.add('is-visible');
-          }
+          if(r.top < window.innerHeight && r.bottom > 0 && r.width > 0) mostrar(el);
         });
+        if(!reduceMotion){
+          document.querySelectorAll('.range-row:not(.is-drawn)').forEach(function(f){
+            var r = f.getBoundingClientRect();
+            if(r.top < window.innerHeight && r.bottom > 0 && r.width > 0) f.classList.add('is-drawn');
+          });
+          if(window.CIEHS.recontar) window.CIEHS.recontar();
+        }
       });
     });
     mo.observe(mainEl, { attributes:true, attributeFilter:['hidden'], subtree:true });
   }
 
-  // ---- header: glass intensifies on scroll ----
+  /* ----------------------------------------- 5. header: vidrio y compactado --*/
   var header = document.querySelector('header.site');
-  if(header){
-    var onScroll = function(){ header.classList.toggle('is-scrolled', window.scrollY > 12); };
-    window.addEventListener('scroll', onScroll, { passive:true });
-    onScroll();
+  var barra = document.querySelector('.scroll-progress i');
+
+  function alHacerScroll(){
+    if(header) header.classList.toggle('is-scrolled', window.scrollY > 12);
+    if(barra){
+      var alto = document.documentElement.scrollHeight - window.innerHeight;
+      var p = alto > 0 ? Math.min(window.scrollY / alto, 1) : 0;
+      barra.style.setProperty('--p', p.toFixed(4));
+    }
+  }
+  window.addEventListener('scroll', alHacerScroll, { passive:true });
+  window.addEventListener('resize', alHacerScroll, { passive:true });
+  alHacerScroll();
+
+  /* --------------------------------- 6. brillo especular siguiendo al cursor --
+     Solo con raton: en tactil no hay puntero al que seguir y encenderlo al
+     tocar quedaria pegado hasta el siguiente toque. */
+  if(puedeHover && !reduceMotion){
+    var brillables = '.card, .hub-card, .stat-tile, .viz-card, .modulo-chip, .problema-card';
+    document.addEventListener('pointermove', function(e){
+      var t = e.target && e.target.closest ? e.target.closest(brillables) : null;
+      if(!t) return;
+      var r = t.getBoundingClientRect();
+      t.style.setProperty('--cx', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
+      t.style.setProperty('--cy', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
+      t.style.setProperty('--sheen', '1');
+    }, { passive:true });
+    document.addEventListener('pointerout', function(e){
+      var t = e.target && e.target.closest ? e.target.closest(brillables) : null;
+      if(t && (!e.relatedTarget || !t.contains(e.relatedTarget))) t.style.setProperty('--sheen', '0');
+    }, { passive:true });
   }
 
-  // ---- hero: aura sigue el cursor (deshabilitado con reduced-motion) ----
+  /* ------------------------------------------------ 7. onda al pulsar boton --*/
+  if(!reduceMotion){
+    document.addEventListener('pointerdown', function(e){
+      var btn = e.target && e.target.closest ? e.target.closest('.btn') : null;
+      if(!btn) return;
+      var r = btn.getBoundingClientRect();
+      var onda = document.createElement('span');
+      onda.className = 'ripple';
+      var d = Math.max(r.width, r.height) * 2.2;
+      onda.style.width = d + 'px';
+      onda.style.height = d + 'px';
+      onda.style.left = (e.clientX - r.left) + 'px';
+      onda.style.top  = (e.clientY - r.top) + 'px';
+      btn.appendChild(onda);
+      setTimeout(function(){ if(onda.parentNode) onda.parentNode.removeChild(onda); }, 650);
+    }, { passive:true });
+  }
+
+  /* ------------------------- 8. cascada para lo que llega por red ------------
+     Las filas de la bitacora, la caja y los comentarios se pintan despues de
+     que responda la base. Se les numera al vuelo para que entren en cascada en
+     vez de aparecer todas de golpe. */
+  function numerar(sel){
+    document.querySelectorAll(sel).forEach(function(cont){
+      [].slice.call(cont.children).forEach(function(hijo, i){
+        hijo.style.setProperty('--i', Math.min(i, 11));
+      });
+    });
+  }
+  window.CIEHS.escalonar = function(){
+    if(reduceMotion) return;
+    numerar('#bitacoraCuerpo, #transpCuerpo, #carpetaGrid, #comentariosLista');
+  };
+
+  /* --------------------------------------- 9. aura del hero sigue al cursor --*/
   var hero = document.querySelector('.hero');
-  if(hero && !reduceMotion && window.matchMedia && window.matchMedia('(hover: hover)').matches){
+  if(hero && !reduceMotion && puedeHover){
     var ticking = false, lastX = 50, lastY = 10;
-    hero.addEventListener('mousemove', function(e){
+    hero.addEventListener('pointermove', function(e){
       var rect = hero.getBoundingClientRect();
       lastX = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
       lastY = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
@@ -1994,7 +2246,7 @@
         });
         ticking = true;
       }
-    });
+    }, { passive:true });
   }
 })();
 

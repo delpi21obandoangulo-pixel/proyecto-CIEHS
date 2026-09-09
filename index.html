@@ -70,6 +70,7 @@
 
 <body>
 
+<div class="scroll-progress" aria-hidden="true"><i></i></div>
 <div class="mesh-aura" aria-hidden="true"><span></span><span></span><span></span></div>
 
 <header class="site">
@@ -600,7 +601,7 @@
         </div>
 
         <p class="carpeta-estado" id="carpetaEstado" role="status" aria-live="polite">Cargando la carpeta de campo…</p>
-        <div class="carpeta-grid" id="carpetaGrid"></div>
+        <div class="carpeta-grid" id="carpetaGrid"><div class="skeleton skeleton-tarjeta"></div><div class="skeleton skeleton-tarjeta"></div><div class="skeleton skeleton-tarjeta"></div></div>
 
         <div class="carpeta-como">
           <h3>Cómo se publica aquí</h3>
@@ -1058,7 +1059,7 @@
                 <th scope="col">Cosecha</th>
               </tr>
             </thead>
-            <tbody id="bitacoraCuerpo"></tbody>
+            <tbody id="bitacoraCuerpo"><tr><td colspan="9"><div class="skeleton skeleton-fila"></div><div class="skeleton skeleton-fila"></div><div class="skeleton skeleton-fila"></div></td></tr></tbody>
           </table>
         </div>
 
@@ -2007,7 +2008,7 @@
               <thead>
                 <tr><th scope="col">Fecha</th><th scope="col">Concepto</th><th scope="col">Tipo</th><th scope="col">Monto (S/)</th></tr>
               </thead>
-              <tbody id="transpCuerpo"></tbody>
+              <tbody id="transpCuerpo"><tr><td colspan="4"><div class="skeleton skeleton-fila"></div><div class="skeleton skeleton-fila"></div></td></tr></tbody>
             </table>
           </div>
           <p class="comunidad-privacidad">La cifra que aparece arriba es la suma de lo publicado en esta tabla. Cualquier discrepancia se puede reclamar escribiendo a <span class="mono">ciehs.olaya@gmail.com</span>.</p>
@@ -2051,7 +2052,7 @@
 
           <div class="comentarios-lista-wrap">
             <p class="comentarios-estado" id="comentariosEstado" role="status" aria-live="polite">Cargando comentarios…</p>
-            <div class="comentarios-lista" id="comentariosLista"></div>
+            <div class="comentarios-lista" id="comentariosLista"><div class="skeleton skeleton-fila"></div><div class="skeleton skeleton-fila"></div></div>
           </div>
         </div>
       </div>
