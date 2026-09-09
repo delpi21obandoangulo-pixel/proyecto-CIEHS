@@ -21,6 +21,39 @@
 (function (global) {
   'use strict';
 
+  /* -------------------------------------------------------------------------
+     Orden ESTABLE de las opciones.
+
+     En el banco la respuesta correcta va siempre primero, asi que hay que
+     barajarlas. Pero un barajado al azar rompe la locucion pregrabada: el
+     audio diria "Opcion 1: CIEHS" mientras en pantalla la 1 es otra cosa, que
+     es peor que no tener audio.
+
+     La solucion es una permutacion DETERMINISTA a partir del id: siempre la
+     misma para una pregunta dada, distinta entre preguntas y con la correcta
+     repartida. La usan el portal y el generador del guion, y por eso vive
+     aqui: dos copias acabarian discrepando.
+     ------------------------------------------------------------------------- */
+  function semilla(txt) {
+    var h = 2166136261;                       // FNV-1a, corto y suficiente
+    for (var i = 0; i < txt.length; i++) {
+      h ^= txt.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+  }
+
+  global.CIEHS_ORDEN_OPCIONES = function (id, ops) {
+    var r = semilla(String(id));
+    var a = ops.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      r = (Math.imul(r, 1103515245) + 12345) >>> 0;   // congruencial lineal
+      var j = r % (i + 1);
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  };
+
   global.CIEHS_PREGUNTAS = {
 
     /* ===================== INICIAL · Ciclo II (3 a 5 años) =====================

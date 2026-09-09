@@ -15,3 +15,6 @@ CNAME
 # Material en bruto con fotografias de menores identificables: nunca se sube al
 # alojamiento, aunque ninguna pagina lo enlace. Ver CIEHS-Privacidad-Menores.md.
 fotos y videos inicio/
+
+# Guion de locucion: material de trabajo, no forma parte del sitio.
+guion-voz.*

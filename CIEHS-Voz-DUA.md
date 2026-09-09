@@ -97,7 +97,43 @@ Pregrabar tiene además tres ventajas sobre llamar en vivo: se paga una vez y no
 por reproducción, funciona sin conexión una vez cacheado, y la calidad es la
 máxima posible porque no hay prisa de tiempo real.
 
-El paso a paso está en [[CIEHS-Portal-Educativo]] y en el propio panel.
+### El guion
+
+```bash
+node tools/guion-voz.js          # guion-voz.md  — para leer y grabar
+node tools/guion-voz.js --csv    # guion-voz.csv — para pegar en lote
+node tools/guion-voz.js --json   # guion-voz.json
+```
+
+**72 pistas · 10 794 caracteres.** Se generan del banco real, así que si el
+banco cambia se vuelve a ejecutar y no queda una segunda copia desfasada.
+
+Cada archivo se nombra , se sube desde
+*Administración → Aportes* como **Audio** y se aprueba. El portal lo usa solo.
+
+> [!warning] El orden de las opciones tuvo que dejar de ser aleatorio
+> El portal barajaba las opciones en cada ronda. Con una locución pregrabada
+> eso es un fallo grave: el audio diría «Opción 1: CIEHS» mientras en pantalla
+> la 1 es otra cosa. **Peor que no tener audio.**
+>
+> Tampoco se podía dejar el orden del banco, porque allí la correcta va
+> siempre primero. La solución es : una permutación
+> **determinista a partir del id**, la misma siempre para una pregunta y
+> distinta entre preguntas. La correcta queda repartida (26 / 24 / 22 de 72).
+> Vive en el propio banco porque la usan el portal y el generador: dos copias
+> acabarían discrepando.
+
+Comprobado sobre el portal en marcha: las **24 pistas de una ronda** (ocho por
+nivel, los tres niveles) coinciden carácter a carácter con lo que el portal
+pronuncia. Las 48 restantes salen del mismo camino de código, pero no se han
+reproducido una por una.
+
+### Qué NO se graba
+
+La **explicación** se sintetiza siempre. El veredicto que la precede
+(«Correcto» / «No es esa») depende de lo que haya respondido cada estudiante,
+así que se sintetizaría igual, y encadenar una palabra sintética con una frase
+grabada suena a fallo, no a voz.
 
 ---
 

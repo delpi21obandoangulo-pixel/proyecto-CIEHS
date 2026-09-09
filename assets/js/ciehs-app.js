@@ -317,7 +317,14 @@
     var ronda = elegirRonda(nivel);
     cont.innerHTML = ronda.map(function(p){
       var repaso = !!state.correct[p.id];
-      var opciones = barajar(p.ops).map(function(o){
+      // Orden ESTABLE, no aleatorio: una locucion pregrabada dice "Opcion 1:"
+      // y tiene que coincidir con lo que hay en pantalla. Barajar en cada
+      // ronda haria que el audio nombrara la opcion equivocada, que es peor
+      // que no tener audio. El reparto sigue existiendo: la permutacion es
+      // distinta para cada pregunta.
+      var ordenar = window.CIEHS_ORDEN_OPCIONES;
+      var opsOrdenadas = ordenar ? ordenar(p.id, p.ops) : barajar(p.ops);
+      var opciones = opsOrdenadas.map(function(o){
         return '<button type="button" class="quiz-opt" data-correct="' + (o[1] ? 'true' : 'false') + '">'
              + esc(o[0]) + '</button>';
       }).join('');
@@ -394,6 +401,11 @@
       // verificación" y eso no explica nada. El acierto o el fallo se dice con
       // palabras, que además es lo que se recuerda.
       if(window.CIEHS && window.CIEHS.voz){
+        // La explicacion NO usa grabacion, y es deliberado: el veredicto de
+        // delante ("Correcto" / "No es esa") depende de lo que haya respondido
+        // esta persona, asi que tendria que sintetizarse igual. Encadenar una
+        // palabra sintetica con una frase grabada suena a fallo, no a voz. Se
+        // sintetiza entera, con una sola voz.
         window.CIEHS.voz.hablar(
           (isCorrect ? 'Correcto. ' : 'No es esa. ') + (q.getAttribute('data-explain') || '')
         );
@@ -423,7 +435,12 @@
     var ops = [].slice.call(q.querySelectorAll('.quiz-opt')).map(function(o, i){
       return 'Opción ' + (i + 1) + ': ' + o.textContent.trim() + '.';
     }).join(' ');
-    window.CIEHS.voz.hablar((enunciado || '').trim() + ' ' + ops);
+    // La clave es el id de la pregunta, que ya es estable (con el se guarda el
+    // progreso del Pasaporte). Asi una grabacion subida como voz/<id>-p.mp3
+    // sustituye a la sintesis sin tocar nada mas.
+    var qid = q.getAttribute('data-qid');
+    window.CIEHS.voz.hablar((enunciado || '').trim() + ' ' + ops,
+                            qid ? { clave: qid + '-p' } : null);
   }
 
   function conectarPreguntas(raiz){
