@@ -2,9 +2,9 @@
 title: CIEHS · Privacidad y uso de imagen de menores
 aliases: [Privacidad CIEHS, Protocolo de imagen, Ley 29733 CIEHS]
 tags: [ciehs, privacidad, menores, legal, ley-29733]
-estado: publicado · PENDIENTE DE APROBACION POR DIRECCION
+estado: publicado · PENDIENTE DE APROBACION — bloquea 15 fotografias
 publicado-en: https://ciehs.vercel.app/#/privacidad
-actualizado: 2026-09-04
+actualizado: 2026-09-08
 ---
 
 # CIEHS · Privacidad y uso de imagen de menores
@@ -12,11 +12,20 @@ actualizado: 2026-09-04
 Protocolo de qué se publica y qué no. Parte de [[CIEHS]]; el riesgo que lo
 motiva está registrado en [[CIEHS-Auditoria-Seguridad-Auth]].
 
-> [!danger] Bloqueo activo
+> [!danger] Bloqueo activo — **hoy retiene quince fotografías**
 > Esta página está publicada, pero **no ha sido aprobada por la dirección de la
 > institución**. Hasta que lo esté, **no debe publicarse ninguna fotografía de
 > un estudiante**. El propio texto lo dice en el portal: es un documento en
 > validación y no sustituye asesoría legal.
+>
+> **Estado a 2026-09-08.** La coordinación aportó diecinueve fotografías del
+> laboratorio. Se publicaron **cuatro** —solo infraestructura y cultivo, sin
+> ninguna persona— en la galería «El CIEHS en acción» de la portada. Las otras
+> **quince muestran rostros identificables** y quedan fuera.
+>
+> Ojo con un detalle que no es obvio: el repositorio es **público**, así que
+> esas quince tampoco se copiaron a `assets/`. Dejarlas ahí sin enlazarlas
+> desde ninguna página las publicaría igual.
 
 ---
 
@@ -115,8 +124,9 @@ obstáculo.
 - [ ] Redactar y distribuir la **ficha de autorización de imagen** para
       apoderados.
 - [ ] Definir **quién archiva y custodia** las autorizaciones firmadas.
-- [ ] Procedimiento para **retirar metadatos** de las fotografías antes de
-      subirlas.
+- [x] Procedimiento para **retirar metadatos** de las fotografías antes de
+      subirlas. Hecho: hay un limpiador propio que descarta todos los segmentos
+      APPn y de comentario de cada JPEG. Se aplicó a las cuatro publicadas.
 - [ ] Decidir sobre las tipografías propias para eliminar la llamada a Google.
 - [ ] Revisar la contradicción de licencia del repositorio
       → [[CIEHS-Auditoria-Seguridad-Auth]]

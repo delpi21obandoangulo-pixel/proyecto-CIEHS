@@ -262,28 +262,86 @@
   .brand-text b{ display:block; font-family:var(--font-academic); font-weight:600; font-size:17.5px; letter-spacing:0.02em; color:var(--ink); }
   .brand-text span{ display:block; font-family:var(--font-mono); font-size:10.5px; color:var(--ink-mute); letter-spacing:0.04em; white-space:nowrap; }
 
-  .navlinks{ display:flex; align-items:center; gap:19px; flex-wrap:nowrap; list-style:none; margin:0; padding:0; }
-  .navlinks button{
-    text-decoration:none; font-size:13.5px; font-weight:600; color:var(--ink-soft);
-    white-space:nowrap;
-    padding:6px 2px; border-bottom:2px solid transparent; cursor:pointer;
-    transition:color .2s ease, border-color .2s ease;
+  /* ---------------------------------------------------- botón de tres rayas
+     Único en todos los anchos. Antes había una barra de diez enlaces que solo
+     cabía por encima de 1080 px y desaparecía por debajo: dos navegaciones que
+     mantener y ninguna que agrupara nada. */
+  .navtoggle{
+    display:inline-flex; align-items:center; gap:10px;
+    padding:9px 15px 9px 13px; border-radius:999px;
+    border:1px solid var(--line-strong); background:var(--surface); color:var(--ink);
+    font-size:13.5px; font-weight:600; cursor:pointer;
+    box-shadow:var(--shadow-1);
+    transition:border-color .25s var(--ease-soft), box-shadow .3s var(--ease-out), transform .3s var(--ease-out);
   }
-  .navlinks button:hover{ color:var(--ink); border-color:var(--leaf-300); }
-  .navtoggle{ display:none; }
-
-  /* El menú se pliega antes que antes: son diez apartados, no nueve. */
-  @media (max-width: 1080px){
-    .navlinks{ display:none; }
-    /* En móvil el nombre completo de la institución no cabe en una línea y,
-       con nowrap, empujaba la página entera a scroll horizontal. El escudo y
-       la sigla bastan: el nombre completo está en el pie. */
+  .navtoggle:hover{ border-color:rgba(5,150,105,0.28); box-shadow:var(--shadow-2), var(--ring-accent); }
+  .navtoggle-rayas{ display:block; width:17px; }
+  .navtoggle-rayas i{
+    display:block; height:1.8px; border-radius:2px; background:currentColor;
+    transition:transform .32s var(--ease-spring), opacity .2s var(--ease-soft);
+  }
+  .navtoggle-rayas i + i{ margin-top:4px; }
+  /* Abierto, las tres rayas se convierten en aspa: el mismo botón cierra. */
+  .navtoggle[aria-expanded="true"] .navtoggle-rayas i:nth-child(1){ transform:translateY(5.8px) rotate(45deg); }
+  .navtoggle[aria-expanded="true"] .navtoggle-rayas i:nth-child(2){ opacity:0; }
+  .navtoggle[aria-expanded="true"] .navtoggle-rayas i:nth-child(3){ transform:translateY(-5.8px) rotate(-45deg); }
+  @media (max-width: 620px){
     .brand-text span{ display:none; }
-    .navtoggle{
-      display:inline-flex; align-items:center; justify-content:center;
-      width:38px; height:38px; border-radius:8px; border:1px solid var(--line-strong);
-      background:var(--glass); color:var(--ink);
-    }
+    .navtoggle-texto{ display:none; }
+    .navtoggle{ padding:10px; }
+  }
+
+  /* ------------------------------------------------------------ el panel --*/
+  .menu-velo{
+    position:fixed; inset:0; z-index:48;
+    background:rgba(13,17,23,0.34); backdrop-filter:blur(3px);
+    opacity:0; transition:opacity .32s var(--ease-soft);
+  }
+  .menu-velo.is-abierto{ opacity:1; }
+  .menu-panel{
+    position:fixed; top:0; right:0; bottom:0; z-index:49;
+    width:min(430px, 92vw); overflow-y:auto; overscroll-behavior:contain;
+    background:var(--surface); border-left:1px solid var(--line);
+    box-shadow:var(--shadow-3);
+    transform:translateX(100%);
+    transition:transform .42s var(--ease-out);
+  }
+  .menu-panel.is-abierto{ transform:none; }
+  .menu-panel-cab{
+    position:sticky; top:0; z-index:1;
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:20px 24px 14px;
+    background:var(--surface); border-bottom:1px solid var(--line);
+  }
+  .menu-cerrar{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:36px; height:36px; border-radius:9px; flex:none;
+    border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-soft);
+    cursor:pointer; transition:color .2s ease, border-color .2s ease;
+  }
+  .menu-cerrar:hover{ color:var(--ink); border-color:rgba(5,150,105,0.28); }
+  .menu-grupos{ padding:8px 16px 32px; }
+  .menu-grupo{ padding:18px 8px 6px; }
+  .menu-grupo + .menu-grupo{ border-top:1px solid var(--line); }
+  .menu-grupo h2{
+    font-family:var(--font-display); font-size:12px; font-weight:700;
+    letter-spacing:0.13em; text-transform:uppercase; color:var(--leaf-300);
+  }
+  .menu-grupo-sub{ margin-top:5px; font-size:12.5px; color:var(--ink-mute); line-height:1.5; }
+  .menu-grupo button{
+    display:block; width:100%; text-align:left; cursor:pointer;
+    margin-top:8px; padding:11px 13px; border-radius:var(--radius-s);
+    border:1px solid transparent; background:transparent;
+    transition:background .22s var(--ease-soft), border-color .22s var(--ease-soft), transform .22s var(--ease-out);
+  }
+  .menu-grupo button b{ display:block; font-size:15px; font-weight:600; color:var(--ink); }
+  .menu-grupo button span{ display:block; margin-top:2px; font-size:12.5px; color:var(--ink-soft); line-height:1.45; }
+  .menu-grupo button:hover{ background:var(--veil); border-color:var(--line); transform:translateX(3px); }
+  .menu-grupo button.is-active{ background:var(--leaf-100); border-color:rgba(5,150,105,0.24); }
+  .menu-grupo button.is-active b{ color:var(--leaf-300); }
+  @media (prefers-reduced-motion: reduce){
+    .menu-panel{ transition:none; }
+    .menu-grupo button:hover{ transform:none; }
   }
 
   /* ============ ROUTER / PAGES ============ */
@@ -295,14 +353,7 @@
     transition:color .2s ease;
   }
   .breadcrumb:hover{ color:var(--leaf-300); }
-  .navlinks button.is-active{ color:var(--ink); border-color:var(--leaf-500); }
-  #mobileNav button{
-    display:block; width:100%; text-align:left;
-    font-size:16px; font-weight:600; color:var(--ink); padding:4px 0;
-  }
-  #mobileNav button.is-active{ color:var(--leaf-300); }
-
-  /* ============ HOME HUB ============ */
+  /* ============ HOME ============ */
   .mission-lede{ max-width:64ch; margin:22px auto 0; text-align:center; font-size:17px; color:var(--ink-soft); line-height:1.7; }
   .hub-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:18px; margin-top:44px; }
   .hub-card{
@@ -2706,3 +2757,92 @@
   .transp-tabla tbody tr:has(.skeleton) td{ padding:14px; }
   .bitacora-tabla tbody tr:has(.skeleton),
   .transp-tabla tbody tr:has(.skeleton){ animation:none; }
+
+  /* ============================================================================
+     PORTADA 2026 — brisa del hero y galería de evidencias
+     ========================================================================== */
+
+  /* ------------------------------------------------------------ brisa -----
+     El canvas se apoya sobre el degradado del hero y por debajo del contenido.
+     Sin JS no se dibuja nada y la portada se ve exactamente como antes. */
+  .hero-brisa{
+    position:absolute; inset:0; width:100%; height:100%;
+    z-index:0; pointer-events:none;
+    opacity:0; transition:opacity 1.1s var(--ease-soft);
+  }
+  .hero-brisa.is-lista{ opacity:1; }
+  .hero .wrap{ position:relative; z-index:1; }
+  @media (prefers-reduced-motion: reduce){ .hero-brisa{ display:none; } }
+
+  /* ---------------------------------------------------------- galería -----
+     Carrusel de una lámina por vez. La pista es un scroller nativo con
+     scroll-snap: así el gesto táctil y la rueda del trackpad funcionan solos,
+     el teclado llega por tabulación y, si el JS fallara, las fotografías
+     siguen siendo desplazables a mano. */
+  .galeria{ margin-top:40px; }
+  .galeria-visor{ position:relative; }
+  .galeria-pista{
+    display:flex; gap:20px; list-style:none; margin:0; padding:4px;
+    overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth;
+    scrollbar-width:none;
+  }
+  .galeria-pista::-webkit-scrollbar{ display:none; }
+  @media (prefers-reduced-motion: reduce){ .galeria-pista{ scroll-behavior:auto; } }
+
+  .galeria-lam{
+    flex:0 0 100%; scroll-snap-align:center;
+    display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius-l); overflow:hidden; box-shadow:var(--shadow-2);
+  }
+  .galeria-lam img{
+    display:block; width:100%; height:100%; min-height:320px; max-height:520px;
+    object-fit:cover; background:var(--surface-2);
+  }
+  .galeria-pie{ padding:32px 34px; display:flex; flex-direction:column; justify-content:center; gap:9px; }
+  .galeria-pie h3{ font-family:var(--font-display); font-size:22px; font-weight:700; color:var(--ink); letter-spacing:-0.01em; }
+  .galeria-pie p{ font-size:14.5px; line-height:1.65; color:var(--ink-soft); }
+
+  @media (max-width: 860px){
+    .galeria-lam{ grid-template-columns:1fr; }
+    .galeria-lam img{ max-height:300px; }
+    .galeria-pie{ padding:24px 22px 28px; }
+  }
+
+  .galeria-flecha{
+    position:absolute; top:50%; transform:translateY(-50%); z-index:2;
+    display:inline-flex; align-items:center; justify-content:center;
+    width:44px; height:44px; border-radius:50%; cursor:pointer;
+    border:1px solid var(--line-strong); background:var(--glass-strong); color:var(--ink);
+    backdrop-filter:blur(10px); box-shadow:var(--shadow-2);
+    transition:border-color .25s var(--ease-soft), box-shadow .3s var(--ease-out), opacity .25s ease;
+  }
+  .galeria-flecha:hover{ border-color:rgba(5,150,105,0.3); box-shadow:var(--shadow-3), var(--ring-accent); }
+  .galeria-flecha.prev{ left:-14px; }
+  .galeria-flecha.next{ right:-14px; }
+  .galeria-flecha[disabled]{ opacity:0; pointer-events:none; }
+  @media (max-width: 980px){
+    .galeria-flecha.prev{ left:6px; }
+    .galeria-flecha.next{ right:6px; }
+  }
+
+  .galeria-puntos{ display:flex; justify-content:center; gap:9px; margin-top:22px; }
+  .galeria-puntos button{
+    width:34px; height:5px; border-radius:999px; cursor:pointer;
+    border:none; background:var(--surface-3);
+    transition:background .3s var(--ease-soft), transform .3s var(--ease-spring);
+  }
+  .galeria-puntos button:hover{ background:var(--ink-mute); }
+  .galeria-puntos button[aria-selected="true"]{ background:var(--leaf-500); transform:scaleX(1.25); }
+
+  .galeria-nota{
+    max-width:74ch; margin:30px auto 0; padding:16px 20px;
+    background:var(--veil); border:1px dashed var(--surface-3); border-radius:var(--radius-m);
+    font-size:13.5px; line-height:1.65; color:var(--ink-soft); text-align:center;
+  }
+  .link-inline{
+    background:none; border:none; padding:0; cursor:pointer;
+    font:inherit; color:var(--leaf-300); font-weight:600;
+    text-decoration:underline; text-underline-offset:2px;
+  }
+  .link-inline:hover{ color:var(--leaf-600); }

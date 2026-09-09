@@ -1,6 +1,11 @@
 .vercel
 node_modules
 .DS_Store
-
-.vercel
 .env*
+
+# Material en bruto aportado por la coordinacion. NO se versiona: contiene
+# fotografias con rostros identificables de estudiantes menores de edad y este
+# repositorio es PUBLICO, asi que un commit equivale a publicarlas.
+# Lo que puede publicarse se copia a mano, ya clasificado y sin metadatos, a
+# assets/img/evidencias/. Ver CIEHS-Privacidad-Menores.md.
+/fotos y videos inicio/

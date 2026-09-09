@@ -34,6 +34,23 @@ nombran.
 | `mural-ciehs.jpg` | Mural completo, 1280 px | Sección Mural |
 | `icon-32/180/512.png` | Iconos derivados del escudo | Pestaña del navegador, pantalla de inicio |
 | `ciehs-og.png` | Tarjeta 1200×630 al compartir | Open Graph y Twitter Card |
+| `evidencias/invernadero-dwc.jpg` | Invernadero de madera con malla raschel y mesas DWC | Galería «El CIEHS en acción», portada |
+| `evidencias/mesas-dwc.jpg` | Módulos de raíz flotante en batería | Galería, portada |
+| `evidencias/almacigo-trasplante.jpg` | Mesa recién trasplantada, plántulas separadas | Galería, portada |
+| `evidencias/cosecha-empaque.jpg` | Lechugas cosechadas y embolsadas | Galería, portada |
+
+> [!danger] Las cuatro fotografías publicadas no son las únicas que existen
+> De las diecinueve que aportó la coordinación, **quince muestran rostros
+> identificables de estudiantes** y no se publican. El bloqueo no es estético:
+> lo impone [[CIEHS-Privacidad-Menores]] hasta que la dirección apruebe el
+> protocolo de imagen. Además **el repositorio es público**, así que copiar
+> esas fotografías a `assets/` las publicaría igual que subirlas al portal,
+> aunque no se enlazaran desde ninguna página.
+>
+> Las cuatro que sí están cumplen la regla por sí solas: solo infraestructura y
+> cultivo, sin ninguna persona. Todas pasaron por un limpiador de metadatos
+> propio antes de entrar (WhatsApp ya había retirado EXIF y GPS, pero eso no se
+> da por supuesto).
 
 > [!tip] Cómo se hizo la transparencia
 > El fondo se elimina por **inundación desde los bordes hacia dentro**, no
@@ -126,6 +143,7 @@ Vive al final de `assets/css/ciehs.css` y en el bloque 9 de
 
 | Pieza | Qué hace |
 |---|---|
+| Brisa del hero | Escena en canvas: luz tamizada por la malla, hojas que cruzan y motas de polen |
 | Barra de progreso | Línea de 2,5 px sobre el encabezado, marca lo leído |
 | Reveal escalonado | Las tarjetas entran en cascada; el turno (`--i`) se cuenta **dentro de cada rejilla**, no sobre la lista global |
 | Cifras que ruedan | Los KPI se cuentan al entrar en pantalla y al llegar dato nuevo de la base |
@@ -152,6 +170,45 @@ Las filas que la base repinta —rangos de pH, bitácora, caja, comentarios— s
 vuelven a numerar y a preparar al vuelo: `window.CIEHS.escalonar()`,
 `window.CIEHS.recontar()` y `window.CIEHS.dibujarBarras()` son idempotentes
 justamente para eso.
+
+
+---
+
+## 3 ter. La navegación: un solo inventario
+
+Hasta 2026-09-08 los catorce apartados se listaban **tres veces**: una barra de
+diez enlaces para escritorio, otra lista igual para móvil y una rejilla de doce
+tarjetas en la portada. Tres sitios que actualizar y ninguno que agrupara nada.
+
+Ahora hay **un botón de tres rayas** en todos los anchos y **un panel** con
+cuatro familias:
+
+| Familia | Apartados |
+|---|---|
+| **El CIEHS** | Inicio · Metodología y HPOS · Equipos de gestión · Nuestro mural |
+| **Investigación** | Investigaciones · Módulos · Trazabilidad · Datos |
+| **Participa** | Juega y aprende · Espacio docente · Comunidad y pedidos · Eureka 2026 |
+| **Información** | Contacto · Privacidad y uso de imagen |
+
+> [!warning] Las catorce rutas no se tocan
+> Agrupar es cosa del menú, no de las URL. **Nueve códigos QR impresos** del
+> laboratorio apuntan a `#/modulos`, `#/trazabilidad` y compañía: renombrar una
+> ruta rompería un cartel que ya está pegado en una pared. La agrupación es
+> solo una capa de presentación por encima del router.
+
+El panel es un cajón lateral y no un desplegable porque así cabe una línea de
+descripción bajo cada apartado — que es lo que hace legible un menú agrupado.
+Tiene trampa de foco, cierra con `Escape`, con el velo y al elegir destino.
+
+### Qué se fue de la portada
+
+La portada termina en **«Ingresa como: Estudiante · Docente · Comunidad»**, y
+debajo solo queda la galería de evidencias. Lo que había después se movió:
+
+- **¿Quiénes somos?** (misión, visión, propósito, problemática y HPOS) → pasó a
+  la ruta `metodologia`, que es donde encaja: HPOS es su enfoque rector.
+- **La rejilla «Cada apartado, un espacio propio»** → se eliminó. Era el menú
+  disfrazado de contenido; el panel de tres rayas hace ya ese trabajo.
 
 ---
 

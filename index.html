@@ -90,40 +90,70 @@
         <span>I.E. N.° 80033 José Olaya Balandra · Huanchaco</span>
       </span>
     </button>
-    <ul class="navlinks">
-      <li><button type="button" data-route="metodologia">Metodología</button></li>
-      <li><button type="button" data-route="investigaciones">Investigaciones</button></li>
-      <li><button type="button" data-route="equipos">Equipos</button></li>
-      <li><button type="button" data-route="modulos">Módulos</button></li>
-      <li><button type="button" data-route="trazabilidad">Trazabilidad</button></li>
-      <li><button type="button" data-route="datos">Datos</button></li>
-      <li><button type="button" data-route="juega">Juega</button></li>
-      <li><button type="button" data-route="docentes">Docentes</button></li>
-      <li><button type="button" data-route="comunidad">Comunidad</button></li>
-      <li><button type="button" data-route="contacto">Contacto</button></li>
-    </ul>
-    <button class="navtoggle" id="navToggle" aria-expanded="false" aria-controls="mobileNav" aria-label="Abrir menú">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 5h14M2 9h14M2 13h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <!-- Antes habia diez enlaces sueltos repetidos en dos listas (una de
+         escritorio y otra de movil) mas una rejilla de doce tarjetas en la
+         portada: tres inventarios distintos de lo mismo. Ahora hay uno solo,
+         el panel de abajo, agrupado en cuatro familias. Las catorce rutas
+         siguen existiendo con su URL intacta porque los codigos QR impresos
+         del laboratorio apuntan a ellas. -->
+    <button class="navtoggle" id="navToggle" aria-expanded="false" aria-controls="menuPanel">
+      <span class="navtoggle-rayas" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="navtoggle-texto">Menú</span>
     </button>
   </nav>
-  <ul id="mobileNav" class="wrap u-display-none u-list-style-none u-padding-0-0-18px u-margin-0 u-flex-direction-column u-gap-14px">
-    <li><button type="button" data-route="metodologia">Metodología</button></li>
-    <li><button type="button" data-route="investigaciones">Investigaciones</button></li>
-    <li><button type="button" data-route="equipos">Equipos</button></li>
-    <li><button type="button" data-route="modulos">Módulos</button></li>
-    <li><button type="button" data-route="trazabilidad">Trazabilidad</button></li>
-    <li><button type="button" data-route="datos">Datos</button></li>
-    <li><button type="button" data-route="juega">Juega y aprende</button></li>
-    <li><button type="button" data-route="docentes">Espacio docente</button></li>
-    <li><button type="button" data-route="comunidad">Comunidad y pedidos</button></li>
-    <li><button type="button" data-route="contacto">Contacto</button></li>
-  </ul>
 </header>
+
+<div class="menu-velo" id="menuVelo" hidden></div>
+<nav class="menu-panel" id="menuPanel" aria-label="Secciones del portal" hidden>
+  <div class="menu-panel-cab">
+    <p class="eyebrow">Explora el CIEHS</p>
+    <button type="button" class="menu-cerrar" id="menuCerrar" aria-label="Cerrar menú">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="menu-grupos">
+    <section class="menu-grupo">
+      <h2>El CIEHS</h2>
+      <p class="menu-grupo-sub">Qué es, cómo enseña y quiénes lo sostienen.</p>
+      <button type="button" data-route="inicio"><b>Inicio</b><span>Portada y evidencias del laboratorio</span></button>
+      <button type="button" data-route="metodologia"><b>Metodología y HPOS</b><span>Identidad, problemática y ruta de indagación</span></button>
+      <button type="button" data-route="equipos"><b>Equipos de gestión</b><span>Los diez equipos que operan el CIEHS</span></button>
+      <button type="button" data-route="mural"><b>Nuestro mural</b><span>La pieza gráfica institucional, interactiva</span></button>
+    </section>
+    <section class="menu-grupo">
+      <h2>Investigación</h2>
+      <p class="menu-grupo-sub">La ciencia escolar y sus datos verificables.</p>
+      <button type="button" data-route="investigaciones"><b>Investigaciones</b><span>Estudios en curso y carpeta de campo</span></button>
+      <button type="button" data-route="modulos"><b>Módulos</b><span>Los quince módulos de raíz flotante</span></button>
+      <button type="button" data-route="trazabilidad"><b>Trazabilidad</b><span>Bitácora agronómica y códigos QR</span></button>
+      <button type="button" data-route="datos"><b>Datos</b><span>Métricas, rangos de pH y ahorro hídrico</span></button>
+    </section>
+    <section class="menu-grupo">
+      <h2>Participa</h2>
+      <p class="menu-grupo-sub">Lo que puedes hacer según quién seas.</p>
+      <button type="button" data-route="juega"><b>Juega y aprende</b><span>Retos, arena y pasaporte del investigador</span></button>
+      <button type="button" data-route="docentes"><b>Espacio docente</b><span>Recursos, CNEB y material descargable</span></button>
+      <button type="button" data-route="comunidad"><b>Comunidad y pedidos</b><span>Cosecha, transparencia y comentarios</span></button>
+      <button type="button" data-route="eureka"><b>Rumbo a Eureka 2026</b><span>La feria nacional de ciencia escolar</span></button>
+    </section>
+    <section class="menu-grupo">
+      <h2>Información</h2>
+      <p class="menu-grupo-sub">Cómo contactarnos y qué hacemos con los datos.</p>
+      <button type="button" data-route="contacto"><b>Contacto</b><span>Escríbenos o propón una visita</span></button>
+      <button type="button" data-route="privacidad"><b>Privacidad y uso de imagen</b><span>Qué se publica de los estudiantes y qué no</span></button>
+    </section>
+  </div>
+</nav>
 
 <main>
 
   <!-- ============ HERO ============ -->
   <section id="inicio" class="hero u-padding-top-64px" data-page="inicio">
+    <!-- Escena de brisa: sol tamizado por la malla raschel, hojas que cruzan y
+         motas de luz. Es un canvas y no un video porque pesa cero, no depende
+         de la red y se apaga solo cuando el hero sale de pantalla. Si el JS no
+         corre, queda el degradado del CSS y no falta nada. -->
+    <canvas class="hero-brisa" id="heroBrisa" aria-hidden="true"></canvas>
     <div class="wrap hero-grid">
       <div>
         <div class="hero-eyebrow-row">
@@ -167,8 +197,87 @@
       </div>
     </div>
   </section>
-  <!-- ============ INICIO: ¿QUIÉNES SOMOS? ============ -->
-  <section id="quienes-somos" class="alt" data-page="inicio">
+  <!-- ============ INICIO: EL CIEHS EN ACCIÓN ============
+       Fotografías reales del laboratorio. Solo entran aquí las que cumplen el
+       protocolo de imagen de menores: infraestructura y cultivo, sin ningún
+       rostro identificable. Las fotografías con estudiantes existen y están
+       clasificadas, pero no se publican hasta que la dirección apruebe el
+       protocolo — ver la página de Privacidad. -->
+  <section id="evidencias" class="alt" data-page="inicio">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">El CIEHS en acción</p>
+        <h2>El laboratorio, tal como es</h2>
+        <p>Un invernadero de madera con malla raschel, mesas de raíz flotante construidas con lo que había y quince módulos que hoy funcionan <b>sin bomba de aire</b>. Estas son fotografías del CIEHS real, no ilustraciones.</p>
+      </div>
+
+      <div class="galeria" id="galeria">
+        <div class="galeria-visor">
+          <button type="button" class="galeria-flecha prev" id="galeriaPrev" aria-label="Fotografía anterior">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M13.5 4.5L7 11l6.5 6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+
+          <ul class="galeria-pista" id="galeriaPista">
+            <li class="galeria-lam is-activa">
+              <img src="/assets/img/evidencias/invernadero-dwc.jpg" width="900" height="1600"
+                   decoding="async" fetchpriority="high"
+                   alt="Interior del invernadero del CIEHS: paredes de madera, techo de malla raschel verde y varias mesas escalonadas de raíz flotante con lechuga crespa en plena cosecha.">
+              <div class="galeria-pie">
+                <p class="eyebrow">Espacio de cultivo</p>
+                <h3>El invernadero de madera</h3>
+                <p>Estructura de madera y malla raschel que tamiza el sol de Huanchaco. Debajo, las mesas de raíz flotante forradas en geomembrana: el agua queda encerrada y se reaprovecha en lugar de infiltrarse.</p>
+              </div>
+            </li>
+            <li class="galeria-lam">
+              <img src="/assets/img/evidencias/mesas-dwc.jpg" width="1600" height="900"
+                   loading="lazy" decoding="async"
+                   alt="Batería de mesas de raíz flotante del CIEHS vistas en fila, con planchas de tecnopor perforadas y lechugas en distintos estados de crecimiento.">
+              <div class="galeria-pie">
+                <p class="eyebrow">Infraestructura</p>
+                <h3>Quince módulos en batería</h3>
+                <p>Cada plancha de tecnopor perforada sostiene las plantas mientras la raíz cuelga en la solución nutritiva. Los módulos operan hoy <b>sin bomba de aire</b>: conseguirlas es la primera mejora planificada.</p>
+              </div>
+            </li>
+            <li class="galeria-lam">
+              <img src="/assets/img/evidencias/almacigo-trasplante.jpg" width="1200" height="1600"
+                   loading="lazy" decoding="async"
+                   alt="Mesa de raíz flotante recién trasplantada: plántulas pequeñas de lechuga distribuidas con separación regular sobre la plancha blanca de tecnopor.">
+              <div class="galeria-pie">
+                <p class="eyebrow">Indagación</p>
+                <h3>Almácigo y trasplante</h3>
+                <p>El módulo 15 se reserva para almácigo y rotación. La separación entre plántulas no es estética: es una variable que los equipos miden contra el peso final de la planta.</p>
+              </div>
+            </li>
+            <li class="galeria-lam">
+              <img src="/assets/img/evidencias/cosecha-empaque.jpg" width="1600" height="900"
+                   loading="lazy" decoding="async"
+                   alt="Lechugas cosechadas del CIEHS ya embolsadas y ordenadas sobre una mesa de madera, junto a los módulos de cultivo todavía en producción.">
+              <div class="galeria-pie">
+                <p class="eyebrow">Cosecha</p>
+                <h3>De la mesa a la comunidad</h3>
+                <p>Lo cosechado se acondiciona y se registra: veinte kilogramos acumulados hasta hoy. Lo que entra por la venta se publica íntegro en la sección de transparencia.</p>
+              </div>
+            </li>
+          </ul>
+
+          <button type="button" class="galeria-flecha next" id="galeriaNext" aria-label="Fotografía siguiente">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8.5 4.5L15 11l-6.5 6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+
+        <div class="galeria-puntos" id="galeriaPuntos" role="tablist" aria-label="Elegir fotografía"></div>
+      </div>
+
+      <p class="galeria-nota">
+        Las fotografías en las que aparecen estudiantes no se publican todavía: el
+        <button type="button" class="link-inline" data-route="privacidad">protocolo de uso de imagen</button>
+        está pendiente de aprobación por la dirección de la institución. El portal difunde el trabajo científico, no la identidad de quien lo hace.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ METODOLOGÍA · IDENTIDAD (antes vivia suelta en la portada) ============ -->
+  <section id="quienes-somos" class="alt" data-page="metodologia" hidden>
     <div class="wrap">
       <div class="section-head">
         <p class="eyebrow">Identidad institucional</p>
@@ -251,92 +360,6 @@
           </article>
         </div>
         <p class="hpos-nota">Las competencias citadas son las oficiales del área de <b>Ciencia y Tecnología</b> del Currículo Nacional de la Educación Básica (CNEB), junto con el <b>enfoque ambiental</b> transversal. Su correspondencia con cada actividad del laboratorio es una propuesta de programación del equipo docente del CIEHS.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ INICIO: HUB DE APARTADOS ============ -->
-  <section data-page="inicio">
-    <div class="wrap u-text-align-center">
-      <div class="section-head u-max-width-100pct u-text-align-center u-margin-left-auto u-margin-right-auto">
-        <p class="eyebrow u-justify-content-center">Explora el CIEHS</p>
-        <h2>Cada apartado, un espacio propio</h2>
-      </div>
-      <p class="mission-lede">El CIEHS usa el cultivo hidropónico como fenómeno de estudio, no como fin en sí mismo: lo que se persigue es que el estudiante analice, evalúe y cree. Recorre la metodología HPOS, las investigaciones y la carpeta de campo, los diez equipos de gestión, los quince módulos, la bitácora agronómica, los datos, los retos de aprendizaje, el espacio docente, la comunidad y el mural — cada uno con su propia información.</p>
-
-      <div class="hub-grid">
-        <button type="button" class="hub-card" data-route="metodologia">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.7-5.7M20 12a8 8 0 0 1-13.7 5.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M17 3v4h-4M7 21v-4h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <h3>Metodología</h3>
-          <p>El ciclo de indagación científica que sigue cada equipo, de observar a comunicar.</p>
-          <span class="stat">8 etapas <span class="arrow">→</span></span>
-        </button>
-        <button type="button" class="hub-card" data-route="investigaciones">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="6" stroke="currentColor" stroke-width="1.6"/><path d="M15 15l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-          <h3>Investigaciones</h3>
-          <p>Proyectos Eureka 2026 y la carpeta de campo digital: artículos, informes, fotos y evidencias.</p>
-          <span class="stat">2 proyectos · repositorio <span class="arrow">→</span></span>
-        </button>
-        <button type="button" class="hub-card" data-route="equipos">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="9" r="2.4" stroke="currentColor" stroke-width="1.6"/><path d="M3 20c0-3.5 2.5-6 5.5-6s5.5 2.5 5.5 6M14.5 20c0-2.8 1.8-5 4-5.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-          <h3>Equipos</h3>
-          <p>280 estudiantes de 1.° a 5.° de secundaria, organizados por función dentro del laboratorio.</p>
-          <span class="stat">10 equipos <span class="arrow">→</span></span>
-        </button>
-        <button type="button" class="hub-card" data-route="modulos">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3c4 3 6 6.5 6 10a6 6 0 1 1-12 0c0-3.5 2-7 6-10Z" stroke="currentColor" stroke-width="1.6"/></svg>
-          <h3>Módulos</h3>
-          <p>Quince módulos de raíz flotante (DWC), hoy sin bomba de aire, y las seis especies que cultivamos.</p>
-          <span class="stat">15 módulos DWC <span class="arrow">→</span></span>
-        </button>
-        <button type="button" class="hub-card" data-route="trazabilidad">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="14" width="3" height="3" fill="currentColor"/><rect x="18" y="18" width="3" height="3" fill="currentColor"/></svg>
-          <h3>Trazabilidad</h3>
-          <p>La bitácora agronómica de cada lote: siembra, semana, pH y cosecha, más las ocho estaciones QR.</p>
-          <span class="stat">Bitácora + 8 QR <span class="arrow">→</span></span>
-        </button>
-        <button type="button" class="hub-card" data-route="datos">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20V10M11 20V4M18 20v-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          <h3>Datos</h3>
-          <p>Rangos objetivo por especie, ahorro hídrico y las lecturas de pH y CE que registran los equipos.</p>
-          <span class="stat">2 paneles <span class="arrow">→</span></span>
-        </button>
-        <button type="button" class="hub-card" data-route="juega">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 10l2 2-2 2M13 14h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <h3>Juega y aprende</h3>
-          <p>Retos por nivel, mini-juegos de residuos y solución nutritiva, y el Pasaporte CIEHS con insignias.</p>
-          <span class="stat">3 niveles · 3 juegos <span class="arrow">→</span></span>
-        </button>
-        <button type="button" class="hub-card" data-route="docentes">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4h12l4 4v12H4V4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M16 4v4h4" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-          <h3>Espacio docente</h3>
-          <p>Fichas, guías, rúbricas e infografías filtrables por nivel y área.</p>
-          <span class="stat">Repositorio <span class="arrow">→</span></span>
-          <p>Recursos reproducibles en el aula: audio-cuento, guías de laboratorio, fichas y rúbricas.</p>
-        <button type="button" class="hub-card" data-route="mural">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 15l5-4 4 3 4-4 5 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="9" r="1.4" fill="currentColor"/></svg>
-          <h3>Nuestro Mural</h3>
-          <p>Espacio interactivo: agua, fitohormonas, los 17 ODS y nuestra identidad.</p>
-          <span class="stat">4 puntos <span class="arrow">→</span></span>
-        </button>
-        <button type="button" class="hub-card" data-route="eureka">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="12" r="3.4" stroke="currentColor" stroke-width="1.6"/></svg>
-          <h3>Rumbo a Eureka 2026</h3>
-          <p>Ficha técnica de divulgación científica para la feria escolar nacional.</p>
-          <span class="stat">Ver ficha <span class="arrow">→</span></span>
-        </button>
-        <button type="button" class="hub-card" data-route="comunidad">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 15a3 3 0 0 1-3 3H8l-4 3V6a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 9h8M8 12.5h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-          <h3>Comunidad y pedidos</h3>
-          <p>Reserva la cosecha, deja tu comentario y revisa en qué se convierte cada sol recaudado.</p>
-          <span class="stat">Pedidos · transparencia <span class="arrow">→</span></span>
-        </button>
-        <button type="button" class="hub-card" data-route="contacto">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M4 7l8 6 8-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <h3>Contacto</h3>
-          <p>Escribe al equipo coordinador del CIEHS para proponer o visitar.</p>
-          <span class="stat">Escríbenos <span class="arrow">→</span></span>
-        </button>
       </div>
     </div>
   </section>

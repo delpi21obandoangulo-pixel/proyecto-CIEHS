@@ -80,7 +80,7 @@
       // Antes lo recibian los 13 elementos que apuntan a inicio (la marca mas
       // un breadcrumb "<- Inicio" por seccion) y un lector de pantalla
       // anunciaba trece veces "pagina actual".
-      var isNav = el.closest('.nav, #mobileNav');
+      var isNav = el.closest('.nav, .menu-panel');
       if(active && isNav){ el.setAttribute('aria-current','page'); }
       else { el.removeAttribute('aria-current'); }
     });
@@ -137,17 +137,77 @@
   };
   window.CIEHS.currentRoute = function(){ return currentRoute; };
 
-  // mobile nav
-  var toggle = document.getElementById('navToggle');
-  var mobileNav = document.getElementById('mobileNav');
-  if(toggle && mobileNav){
+  /* ------------------------------- menu de tres rayas -------------------
+     Un solo panel para los catorce apartados, agrupados en cuatro familias.
+     Es un cajon lateral, no un desplegable: cabe la descripcion de cada
+     apartado, que es lo que hace que un menu agrupado se entienda. */
+  var toggle   = document.getElementById('navToggle');
+  var panel    = document.getElementById('menuPanel');
+  var velo     = document.getElementById('menuVelo');
+  var cerrarBtn= document.getElementById('menuCerrar');
+
+  if(toggle && panel && velo){
+    var abierto = false;
+    var focoPrevio = null;
+
+    function foco(){ return panel.querySelectorAll('button'); }
+
+    function abrirMenu(){
+      if(abierto) return;
+      abierto = true;
+      focoPrevio = document.activeElement;
+      panel.hidden = false; velo.hidden = false;
+      // Un fotograma entre mostrar y animar: sin el, el navegador aplica el
+      // estado final de golpe y el cajon aparece sin deslizarse.
+      requestAnimationFrame(function(){
+        panel.classList.add('is-abierto');
+        velo.classList.add('is-abierto');
+      });
+      toggle.setAttribute('aria-expanded','true');
+      document.body.style.overflow = 'hidden';
+      var primero = foco()[0];
+      if(primero) primero.focus();
+    }
+
+    function cerrarMenu(devolverFoco){
+      if(!abierto) return;
+      abierto = false;
+      panel.classList.remove('is-abierto');
+      velo.classList.remove('is-abierto');
+      toggle.setAttribute('aria-expanded','false');
+      document.body.style.overflow = '';
+      // Se oculta al terminar la transicion para que no desaparezca de golpe;
+      // el temporizador es la red por si transitionend no llega.
+      setTimeout(function(){
+        if(!abierto){ panel.hidden = true; velo.hidden = true; }
+      }, 430);
+      if(devolverFoco && focoPrevio && focoPrevio.focus) focoPrevio.focus();
+    }
+
     toggle.addEventListener('click', function(){
-      var open = mobileNav.style.display === 'flex';
-      mobileNav.style.display = open ? 'none' : 'flex';
-      toggle.setAttribute('aria-expanded', String(!open));
+      if(abierto) cerrarMenu(true); else abrirMenu();
     });
-    mobileNav.querySelectorAll('button').forEach(function(b){
-      b.addEventListener('click', function(){ mobileNav.style.display = 'none'; toggle.setAttribute('aria-expanded','false'); });
+    velo.addEventListener('click', function(){ cerrarMenu(true); });
+    if(cerrarBtn) cerrarBtn.addEventListener('click', function(){ cerrarMenu(true); });
+
+    // Elegir un apartado cierra el cajon, pero el foco lo mueve el router al
+    // titulo de la seccion nueva: devolverlo al boton de menu seria pelearse
+    // con el.
+    panel.querySelectorAll('[data-route]').forEach(function(b){
+      b.addEventListener('click', function(){ cerrarMenu(false); });
+    });
+
+    document.addEventListener('keydown', function(e){
+      if(!abierto) return;
+      if(e.key === 'Escape'){ cerrarMenu(true); return; }
+      if(e.key !== 'Tab') return;
+      // Trampa de foco: con el cajon abierto el resto de la pagina esta
+      // tapada por el velo, asi que tabular hasta ella deja el foco invisible.
+      var f = foco();
+      if(!f.length) return;
+      var primero = f[0], ultimo = f[f.length - 1];
+      if(e.shiftKey && document.activeElement === primero){ e.preventDefault(); ultimo.focus(); }
+      else if(!e.shiftKey && document.activeElement === ultimo){ e.preventDefault(); primero.focus(); }
     });
   }
 
@@ -2350,4 +2410,250 @@
   window.CIEHS = window.CIEHS || {};
   window.CIEHS.qrSvg = function(route){ return svgCache[route]; };
   window.CIEHS.qrRoutes = Object.keys(svgCache);
+})();
+
+/* ===========================================================================
+   10. PORTADA: brisa del hero y galeria de evidencias
+   =========================================================================== */
+(function(){
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* --------------------------------------------------------- 1. la brisa ---
+     Un huerto escolar de Huanchaco visto a traves de la malla raschel: luz
+     tamizada, hojas que cruzan empujadas por el viento de la costa y motas de
+     polen. Se dibuja en canvas y no en video porque no pesa nada, no depende
+     de la red y se puede apagar por completo.
+
+     Tres cosas la mantienen barata:
+     - se detiene cuando el hero sale de pantalla o la pestana se oculta;
+     - el lienzo se limita a 2x de densidad aunque la pantalla ofrezca mas;
+     - el numero de hojas se calcula segun el ancho, no fijo. */
+  var lienzo = document.getElementById('heroBrisa');
+  if(lienzo && !reduceMotion){
+    var ctx = lienzo.getContext('2d', { alpha:true });
+    var hojas = [], motas = [], ancho = 0, alto = 0, dpr = 1, raf = null, t = 0;
+    var corriendo = false;
+
+    var VERDES = ['rgba(5,150,105,', 'rgba(16,140,90,', 'rgba(4,120,87,', 'rgba(101,163,13,'];
+
+    function medir(){
+      var r = lienzo.getBoundingClientRect();
+      if(!r.width || !r.height) return false;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      ancho = r.width; alto = r.height;
+      lienzo.width  = Math.round(ancho * dpr);
+      lienzo.height = Math.round(alto  * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return true;
+    }
+
+    function nuevaHoja(inicial){
+      return {
+        x: inicial ? Math.random() * ancho : -40,
+        y: Math.random() * alto * 0.92,
+        tam: 7 + Math.random() * 11,
+        v: 0.18 + Math.random() * 0.42,          // deriva horizontal
+        vaiven: 12 + Math.random() * 26,         // amplitud del balanceo
+        ritmo: 0.006 + Math.random() * 0.011,
+        fase: Math.random() * 6.28,
+        giro: (Math.random() - 0.5) * 0.012,
+        ang: Math.random() * 6.28,
+        color: VERDES[(Math.random() * VERDES.length) | 0],
+        op: 0.20 + Math.random() * 0.30
+      };
+    }
+
+    function poblar(){
+      var nHojas = Math.max(7, Math.min(18, Math.round(ancho / 90)));
+      var nMotas = Math.max(10, Math.min(34, Math.round(ancho / 46)));
+      hojas = []; motas = [];
+      for(var i = 0; i < nHojas; i++) hojas.push(nuevaHoja(true));
+      for(var j = 0; j < nMotas; j++){
+        motas.push({
+          x: Math.random() * ancho,
+          y: Math.random() * alto,
+          r: 1 + Math.random() * 2.2,
+          v: 0.06 + Math.random() * 0.16,
+          fase: Math.random() * 6.28,
+          op: 0.16 + Math.random() * 0.3
+        });
+      }
+    }
+
+    // Una hoja simple: dos curvas espejadas y el nervio central. Dibujarla es
+    // mas barato que cargar un sprite y escala sin pixelarse.
+    function pintarHoja(h){
+      ctx.save();
+      ctx.translate(h.x, h.y + Math.sin(t * h.ritmo + h.fase) * h.vaiven);
+      ctx.rotate(h.ang);
+      ctx.beginPath();
+      ctx.moveTo(0, -h.tam);
+      ctx.quadraticCurveTo( h.tam * 0.78, 0, 0, h.tam);
+      ctx.quadraticCurveTo(-h.tam * 0.78, 0, 0, -h.tam);
+      ctx.fillStyle = h.color + h.op.toFixed(2) + ')';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(0, -h.tam); ctx.lineTo(0, h.tam);
+      ctx.strokeStyle = 'rgba(255,255,255,' + (h.op * 0.5).toFixed(2) + ')';
+      ctx.lineWidth = 0.9;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Haces de luz que entran por la malla: franjas muy tenues que respiran.
+    function pintarLuz(){
+      for(var i = 0; i < 3; i++){
+        var base = ancho * (0.16 + i * 0.3);
+        var desliz = Math.sin(t * 0.0007 + i) * 26;
+        var fuerza = Math.max(0.05 + Math.sin(t * 0.0011 + i * 1.7) * 0.022, 0);
+        var g = ctx.createLinearGradient(base + desliz, 0, base + desliz + 120, alto);
+        g.addColorStop(0,   'rgba(255,255,255,0)');
+        g.addColorStop(0.4, 'rgba(214,240,224,' + fuerza.toFixed(3) + ')');
+        g.addColorStop(1,   'rgba(255,255,255,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.moveTo(base + desliz - 60, 0);
+        ctx.lineTo(base + desliz + 130, 0);
+        ctx.lineTo(base + desliz + 250, alto);
+        ctx.lineTo(base + desliz + 60,  alto);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+
+    function arrancar(){ if(raf === null && corriendo) raf = requestAnimationFrame(cuadro); }
+    function parar(){ if(raf !== null){ cancelAnimationFrame(raf); raf = null; } }
+
+    function cuadro(){
+      raf = null;
+      t += 16;
+      ctx.clearRect(0, 0, ancho, alto);
+      pintarLuz();
+
+      for(var i = 0; i < motas.length; i++){
+        var m = motas[i];
+        m.x += m.v; m.y -= m.v * 0.35;
+        if(m.x > ancho + 6 || m.y < -6){ m.x = -6; m.y = alto * (0.3 + Math.random() * 0.7); }
+        ctx.beginPath();
+        ctx.arc(m.x, m.y + Math.sin(t * 0.002 + m.fase) * 5, m.r, 0, 6.2832);
+        ctx.fillStyle = 'rgba(255,255,255,' + m.op.toFixed(2) + ')';
+        ctx.fill();
+      }
+
+      for(var j = 0; j < hojas.length; j++){
+        var h = hojas[j];
+        h.x += h.v; h.ang += h.giro;
+        if(h.x > ancho + 40) hojas[j] = nuevaHoja(false);
+        pintarHoja(h);
+      }
+      arrancar();
+    }
+
+    function fijarEstado(activo){
+      if(activo === corriendo) return;
+      corriendo = activo;
+      if(activo) arrancar(); else parar();
+    }
+
+    if(medir()){
+      poblar();
+      lienzo.classList.add('is-lista');
+      fijarEstado(true);
+    }
+
+    var remedir = null;
+    window.addEventListener('resize', function(){
+      clearTimeout(remedir);
+      remedir = setTimeout(function(){ if(medir()) poblar(); }, 180);
+    }, { passive:true });
+
+    // Fuera de pantalla o pestana oculta: no se gastan fotogramas en algo que
+    // nadie esta mirando.
+    if('IntersectionObserver' in window){
+      new IntersectionObserver(function(entradas){
+        fijarEstado(entradas[0].isIntersecting && !document.hidden);
+      }, { threshold:0.01 }).observe(lienzo);
+    }
+    document.addEventListener('visibilitychange', function(){
+      if(document.hidden) fijarEstado(false);
+      else if(lienzo.getBoundingClientRect().bottom > 0) fijarEstado(true);
+    });
+  }
+
+  /* ------------------------------------------------------- 2. la galeria ---
+     La pista es un scroller nativo con scroll-snap: el gesto tactil, la rueda
+     del trackpad y la tabulacion ya funcionan sin codigo. Esto solo anade las
+     flechas, los puntos y el teclado, y lee la posicion del scroll en vez de
+     llevar un indice propio: asi nunca se desincroniza de lo que se ve. */
+  var galeria = document.getElementById('galeria');
+  if(galeria){
+    var pista  = document.getElementById('galeriaPista');
+    var prev   = document.getElementById('galeriaPrev');
+    var next   = document.getElementById('galeriaNext');
+    var puntos = document.getElementById('galeriaPuntos');
+    var lams   = [].slice.call(pista.querySelectorAll('.galeria-lam'));
+
+    var indiceActual = function(){
+      var centro = pista.scrollLeft + pista.clientWidth / 2;
+      var mejor = 0, dist = Infinity;
+      lams.forEach(function(lam, i){
+        var c = lam.offsetLeft + lam.offsetWidth / 2;
+        var d = Math.abs(c - centro);
+        if(d < dist){ dist = d; mejor = i; }
+      });
+      return mejor;
+    };
+
+    var ir = function(i){
+      var lam = lams[Math.max(0, Math.min(i, lams.length - 1))];
+      pista.scrollTo({
+        left: lam.offsetLeft - (pista.clientWidth - lam.offsetWidth) / 2,
+        behavior: reduceMotion ? 'auto' : 'smooth'
+      });
+    };
+
+    var sincronizar = function(){
+      var i = indiceActual();
+      [].forEach.call(puntos.children, function(b, j){
+        b.setAttribute('aria-selected', String(j === i));
+      });
+      lams.forEach(function(lam, j){ lam.classList.toggle('is-activa', j === i); });
+      // Las flechas se esconden en los extremos en vez de quedarse muertas: un
+      // boton visible que no hace nada es peor que uno ausente.
+      if(prev) prev.disabled = (i === 0);
+      if(next) next.disabled = (i === lams.length - 1);
+    };
+
+    if(lams.length > 1){
+      lams.forEach(function(lam, i){
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.setAttribute('role', 'tab');
+        b.setAttribute('aria-label', 'Fotografía ' + (i + 1) + ' de ' + lams.length);
+        b.addEventListener('click', function(){ ir(i); });
+        puntos.appendChild(b);
+      });
+
+      if(prev) prev.addEventListener('click', function(){ ir(indiceActual() - 1); });
+      if(next) next.addEventListener('click', function(){ ir(indiceActual() + 1); });
+
+      var tick = null;
+      pista.addEventListener('scroll', function(){
+        if(tick) return;
+        tick = requestAnimationFrame(function(){ tick = null; sincronizar(); });
+      }, { passive:true });
+
+      galeria.addEventListener('keydown', function(e){
+        if(e.key === 'ArrowLeft'){ e.preventDefault(); ir(indiceActual() - 1); }
+        else if(e.key === 'ArrowRight'){ e.preventDefault(); ir(indiceActual() + 1); }
+      });
+
+      window.addEventListener('resize', sincronizar, { passive:true });
+      sincronizar();
+    } else {
+      if(puntos) puntos.hidden = true;
+      if(prev) prev.hidden = true;
+      if(next) next.hidden = true;
+    }
+  }
 })();
