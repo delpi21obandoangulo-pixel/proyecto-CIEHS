@@ -89,6 +89,8 @@
                        'consent_ref, position, published';
   var COLS_APORTE    = 'id, kind, title, description, equipo, grado, storage_path, ' +
                        'mime, size_bytes, rol, published, created_at';
+  var COLS_RESULTADO = 'id, investigation_code, tratamiento, medido_en, variable, valor, ' +
+                       'unidad, n_muestras, equipo, grado, nota, published, created_at';
   var COLS_REGISTRO  = 'id, module_code, equipo, grado, medido_en, ph, ce, temp_c, ' +
                        'altura_cm, hojas, nota, published, created_at';
   // Los pedidos llevan nombre y contacto de familias: no hay politica de lectura
@@ -101,7 +103,7 @@
       cliente.from('modules').select('*').order('position', { ascending: true }),
       cliente.from('qr_codes').select('*').order('slot', { ascending: true }),
       cliente.from('investigations')
-             .select('code, title, question, hypothesis, var_independent, var_dependent, var_control, method, status, tags, position, updated_at')
+             .select('code, title, question, hypothesis, var_independent, var_dependent, var_control, method, status, tags, position, updated_at, conclusion, hipotesis_estado')
              .order('position', { ascending: true }),
       cliente.from('telemetry_readings')
              .select('module_id, measured_at, ph, ce, water_temp_c')
@@ -124,7 +126,9 @@
       cliente.from('registros_campo').select(COLS_REGISTRO)
              .order('medido_en', { ascending: true }).limit(600),
       cliente.from('aportes').select(COLS_APORTE)
-             .order('created_at', { ascending: false }).limit(60)
+             .order('created_at', { ascending: false }).limit(60),
+      cliente.from('resultados').select(COLS_RESULTADO)
+             .order('medido_en', { ascending: true }).limit(800)
     ]).then(function (r) {
       var err = r.find(function (x) { return x.error; });
       if (err) {
@@ -147,7 +151,8 @@
         caja: r[9].data || [],
         evidencias: r[10].data || [],
         registros: r[11].data || [],
-        aportes: r[12].data || []
+        aportes: r[12].data || [],
+        resultados: r[13].data || []
       };
     }).catch(function (e) {
       CIEHSData.conectado = false;
@@ -425,6 +430,44 @@
       .then(function (r) { if (r.error) throw r.error; return true; });
   };
   CIEHSData.eliminarRegistro = function (id) { return eliminar('registros_campo', 'id', id); };
+
+  /* ---------------- resultados de las investigaciones --------------------
+     Mismo patron que los registros de campo: alta publica en borrador y el
+     panel valida. Sin .select() encadenado, por la misma razon — el RETURNING
+     evaluaria la politica de lectura sobre una fila que aun no es legible. */
+  CIEHSData.registrarResultado = function (r) {
+    var fila = {
+      investigation_code: r.code,
+      tratamiento: r.tratamiento,
+      medido_en: r.medidoEn,
+      variable: r.variable,
+      valor: Number(r.valor),
+      unidad: vacio(r.unidad),
+      n_muestras: r.n === '' || r.n == null ? null : Number(r.n),
+      equipo: vacio(r.equipo), grado: vacio(r.grado), nota: vacio(r.nota)
+    };
+    return cliente.from('resultados').insert(fila)
+      .then(function (x) { if (x.error) throw x.error; return fila; });
+  };
+
+  CIEHSData.listarResultados = function () {
+    return cliente.from('resultados').select(COLS_RESULTADO)
+      .order('created_at', { ascending: false }).limit(400)
+      .then(function (x) { if (x.error) throw x.error; return x.data || []; });
+  };
+  CIEHSData.validarResultado = function (id, publicado) {
+    return cliente.from('resultados').update({ published: !!publicado }).eq('id', id)
+      .then(function (x) { if (x.error) throw x.error; return true; });
+  };
+  CIEHSData.eliminarResultado = function (id) { return eliminar('resultados', 'id', id); };
+
+  // La conclusion y el estado de la hipotesis van en la propia investigacion.
+  CIEHSData.guardarConclusion = function (code, conclusion, estado) {
+    return cliente.from('investigations')
+      .update({ conclusion: vacio(conclusion), hipotesis_estado: vacio(estado) })
+      .eq('code', code)
+      .then(function (x) { if (x.error) throw x.error; return true; });
+  };
 
   /* ------------------ aportes: fotos, videos, articulos ------------------
      Bucket PRIVADO y en cuarentena. Un anonimo puede depositar un archivo pero

@@ -606,6 +606,96 @@
         </article>
       </div>
 
+      <!-- ============ AÑADIR UN RESULTADO ============
+           Lo que responde la pregunta de estos estudios es la comparación entre
+           tratamientos, así que el tratamiento es obligatorio: sin él la
+           medición no se puede graficar contra nada. Nace sin publicar y la
+           valida el panel, igual que los registros de campo. -->
+      <div class="res-alta" id="resAlta">
+        <div class="section-head u-margin-top-48px">
+          <p class="eyebrow">Suma un resultado</p>
+          <h3>¿Ya mediste? Añádelo y se grafica solo</h3>
+          <p>Cada medición entra comparada con su tratamiento, que es lo que permite responder la pregunta de la investigación. Si tu hipótesis no se cumple, anótalo igual: <b>una hipótesis refutada es un resultado válido</b> y enseña más que forzar la que gustaba.</p>
+        </div>
+
+        <form class="res-form card" id="resForm" novalidate>
+          <div class="admin-grid-2">
+            <label class="form-field">
+              <span>Investigación <b class="req" aria-hidden="true">*</b></span>
+              <select id="resInv" required></select>
+            </label>
+            <label class="form-field">
+              <span>Fecha de la medición <b class="req" aria-hidden="true">*</b></span>
+              <input type="date" id="resFecha" required>
+            </label>
+          </div>
+
+          <div class="admin-grid-2">
+            <label class="form-field">
+              <span>Tratamiento o grupo <b class="req" aria-hidden="true">*</b></span>
+              <input type="text" id="resTrat" maxlength="60" required placeholder="T2 = 100 %" list="resTratSugerencias">
+              <datalist id="resTratSugerencias">
+                <option value="T1 = 50 %"></option>
+                <option value="T2 = 100 %"></option>
+                <option value="T3 = 150 %"></option>
+                <option value="Control (sin bioestimulante)"></option>
+                <option value="Con bioestimulante"></option>
+              </datalist>
+            </label>
+            <label class="form-field">
+              <span>¿Qué mediste? <b class="req" aria-hidden="true">*</b></span>
+              <input type="text" id="resVar" maxlength="80" required placeholder="Biomasa fresca" list="resVarSugerencias">
+              <datalist id="resVarSugerencias">
+                <option value="Biomasa fresca"></option>
+                <option value="Altura de planta"></option>
+                <option value="Número de hojas"></option>
+                <option value="Longitud radicular"></option>
+              </datalist>
+            </label>
+          </div>
+
+          <div class="res-numeros">
+            <label class="form-field">
+              <span>Valor <b class="req" aria-hidden="true">*</b></span>
+              <input type="number" id="resValor" step="0.001" inputmode="decimal" required placeholder="42.5">
+            </label>
+            <label class="form-field">
+              <span>Unidad</span>
+              <input type="text" id="resUnidad" maxlength="20" placeholder="g" list="resUniSugerencias">
+              <datalist id="resUniSugerencias">
+                <option value="g"></option><option value="cm"></option>
+                <option value="hojas"></option><option value="mS/cm"></option>
+              </datalist>
+            </label>
+            <label class="form-field">
+              <span>N.º de plantas medidas</span>
+              <input type="number" id="resN" min="1" max="999" step="1" inputmode="numeric" placeholder="10">
+            </label>
+          </div>
+
+          <div class="admin-grid-2">
+            <label class="form-field">
+              <span>Equipo</span>
+              <input type="text" id="resEquipo" maxlength="80" placeholder="Equipo de Indagación">
+            </label>
+            <label class="form-field">
+              <span>Grado y sección</span>
+              <input type="text" id="resGrado" maxlength="40" placeholder="4.° A">
+            </label>
+          </div>
+
+          <label class="form-field">
+            <span>Observación</span>
+            <textarea id="resNota" rows="2" maxlength="400" placeholder="Las plantas del T3 mostraron bordes quemados en las hojas más viejas."></textarea>
+          </label>
+
+          <div class="inv-form-acciones">
+            <button type="submit" class="btn btn-primary" id="resEnviar">Añadir resultado</button>
+          </div>
+          <p class="form-status" id="resStatus" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+
       <!-- ---------- Carpeta de campo digital ---------- -->
       <div class="carpeta-block" id="carpeta-campo">
         <div class="section-head u-margin-top-0">
@@ -2352,6 +2442,49 @@
         <button type="button" role="tab" data-tab="evidencias" aria-selected="false" aria-controls="tab-evidencias">Evidencias</button>
         <button type="button" role="tab" data-tab="registros" aria-selected="false" aria-controls="tab-registros">Registros</button>
         <button type="button" role="tab" data-tab="aportes" aria-selected="false" aria-controls="tab-aportes">Aportes</button>
+        <button type="button" role="tab" data-tab="resultados" aria-selected="false" aria-controls="tab-resultados">Resultados</button>
+      </div>
+
+      <!-- ---------- Resultados y conclusiones ---------- -->
+      <div id="tab-resultados" role="tabpanel" data-tabpanel="resultados" hidden>
+        <div class="inv-lista-head">
+          <p class="admin-divider u-margin-0 u-border-top-none u-padding-top-0">Conclusión de la investigación</p>
+        </div>
+        <p class="u-font-size-12p5px u-color-ink-soft u-line-height-1p55 u-margin-top-8px">La conclusión es lo que cierra el ciclo de indagación. <b>Marcar «refutada» no es un fracaso</b>: una hipótesis que no se cumple es un resultado válido y enseña más que forzar la que gustaba.</p>
+        <form class="inv-form u-margin-top-8px" id="concForm">
+          <div class="admin-grid-2">
+            <label class="form-field">
+              <span>Investigación</span>
+              <select id="concInv"></select>
+            </label>
+            <label class="form-field">
+              <span>Qué pasó con la hipótesis</span>
+              <select id="concEstado">
+                <option value="">— sin definir —</option>
+                <option value="en_curso">Todavía en curso</option>
+                <option value="confirmada">Confirmada</option>
+                <option value="parcial">Confirmada en parte</option>
+                <option value="refutada">Refutada</option>
+              </select>
+            </label>
+          </div>
+          <label class="form-field">
+            <span>Conclusión</span>
+            <textarea id="concTexto" rows="4" maxlength="1200" placeholder="Con 100 % de concentración se obtuvo la mayor biomasa (42,5 g de media, n=10), por encima del 150 % (38,1 g), que además presentó bordes quemados."></textarea>
+          </label>
+          <div class="inv-form-acciones">
+            <button type="submit" class="btn btn-primary">Guardar conclusión</button>
+          </div>
+          <p class="form-status" id="concStatus" role="status" aria-live="polite"></p>
+        </form>
+
+        <div class="inv-lista-head u-margin-top-22px">
+          <p class="admin-divider u-margin-0 u-border-top-none u-padding-top-0">Mediciones de resultado</p>
+          <button type="button" class="inv-nueva" id="resRecargarBtn">Recargar</button>
+        </div>
+        <p class="u-font-size-12p5px u-color-ink-soft u-line-height-1p55 u-margin-top-8px">Cada medición que suman los equipos llega como borrador. Validar la incorpora a la gráfica pública de su investigación.</p>
+        <div id="resAdminLista" class="inv-admin-lista"></div>
+        <p class="form-status" id="resAdminMsg" role="status" aria-live="polite"></p>
       </div>
 
       <!-- ---------- Revisión de aportes ----------

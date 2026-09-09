@@ -3047,3 +3047,47 @@
   .rostros-aviso.error{ color:var(--status-danger); }
 
   .aporte-quien{ display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:12px; }
+
+  /* ============================================================================
+     RESULTADOS DE LAS INVESTIGACIONES
+     ========================================================================== */
+  .res-zona{
+    margin-top:20px; padding-top:18px; border-top:1px solid var(--line);
+    display:flex; flex-direction:column; gap:12px;
+  }
+  .res-cuenta{ font-size:11.5px; color:var(--ink-mute); }
+  .res-vacio{
+    margin-top:20px; padding:14px 16px;
+    background:var(--veil); border:1px dashed var(--surface-3); border-radius:var(--radius-s);
+    font-size:12.5px; line-height:1.55; color:var(--ink-mute);
+  }
+  .res-bloque{ display:flex; flex-direction:column; gap:8px; }
+  .res-var{ font-size:13.5px; font-weight:600; color:var(--ink); }
+  .res-var small{ color:var(--ink-mute); font-weight:400; }
+  .res-gr-wrap{ overflow-x:auto; }
+  .res-grafica{ display:block; width:100%; min-width:340px; height:auto; }
+  .res-leyenda{ display:flex; flex-wrap:wrap; gap:12px; }
+  .res-lg{ display:inline-flex; align-items:center; gap:6px; font-size:11.5px; color:var(--ink-soft); font-family:var(--font-mono); }
+  .res-lg i{ width:11px; height:11px; border-radius:3px; flex:none; }
+
+  .res-conclusion{
+    padding:14px 16px; background:var(--veil);
+    border:1px solid var(--surface-3); border-left:3px solid var(--leaf-500);
+    border-radius:var(--radius-s);
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .res-conclusion p{ font-size:13.5px; line-height:1.6; color:var(--ink-soft); }
+  .res-estado{
+    align-self:flex-start; padding:4px 11px; border-radius:999px;
+    font-family:var(--font-mono); font-size:11px; letter-spacing:0.04em; font-weight:600;
+  }
+  /* Refutada NO se pinta en rojo de error: una hipótesis que no se cumple es un
+     resultado válido, no un fallo. Se distingue por color, no por alarma. */
+  .est-confirmada{ background:rgba(5,150,105,0.12); color:var(--leaf-300); }
+  .est-refutada  { background:rgba(2,132,199,0.12); color:var(--azure-300); }
+  .est-parcial   { background:rgba(180,83,9,0.12);  color:var(--sun-300); }
+  .est-en_curso  { background:var(--surface-2);      color:var(--ink-mute); }
+
+  .res-form{ margin-top:24px; padding:26px; display:flex; flex-direction:column; gap:14px; }
+  .res-form .req{ color:var(--status-danger); font-weight:700; }
+  .res-numeros{ display:grid; grid-template-columns:repeat(auto-fit, minmax(130px,1fr)); gap:12px; }

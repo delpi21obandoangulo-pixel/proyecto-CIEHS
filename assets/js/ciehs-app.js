@@ -764,6 +764,144 @@
     return esc(texto).replace(/\*([^*]+)\*/g, '<em>$1</em>');
   }
 
+
+  /* ---------------------- resultados de una investigacion ------------------
+     Lo que responde la pregunta de estos estudios es la COMPARACION entre
+     tratamientos (50/100/150 % de solucion; con y sin bioestimulante), asi que
+     se grafica una serie por tratamiento sobre el mismo eje. Una sola linea
+     con todo mezclado no diria nada.
+
+     Si de una variable solo hay una fecha, la comparacion es de barras: unir
+     dos puntos que no forman serie temporal sugiere una tendencia inventada. */
+  var PALETA = ['var(--leaf-500)', 'var(--azure-500)', 'var(--sun-500)', '#7c3aed', '#c2410c'];
+
+  function resultadosDe(code){
+    return ((datos && datos.resultados) || []).filter(function(r){
+      return r.investigation_code === code;
+    });
+  }
+
+  function graficaResultados(filas, variable){
+    var propias = filas.filter(function(r){ return r.variable === variable; });
+    if(!propias.length) return '';
+
+    var unidad = (propias.find(function(r){ return r.unidad; }) || {}).unidad || '';
+    var trats = [];
+    propias.forEach(function(r){ if(trats.indexOf(r.tratamiento) === -1) trats.push(r.tratamiento); });
+    var fechas = [];
+    propias.forEach(function(r){ if(fechas.indexOf(r.medido_en) === -1) fechas.push(r.medido_en); });
+    fechas.sort();
+
+    var valores = propias.map(function(r){ return Number(r.valor); });
+    var vMax = Math.max.apply(null, valores);
+    var vMin = Math.min.apply(null, valores.concat([0]));
+    if(vMax === vMin) vMax = vMin + 1;
+
+    var W = 560, H = 210, ml = 46, mr = 12, mt = 14, mb = 40;
+    var iw = W - ml - mr, ih = H - mt - mb;
+    function py(v){ return mt + ih - ((v - vMin) / (vMax - vMin)) * ih; }
+
+    var partes = [];
+    for(var g = 0; g <= 3; g++){
+      var val = vMin + (vMax - vMin) * (g / 3);
+      var yy = py(val);
+      partes.push('<line x1="' + ml + '" y1="' + yy.toFixed(1) + '" x2="' + (W - mr) + '" y2="' + yy.toFixed(1)
+        + '" stroke="var(--chart-grid)" stroke-width="1"/>');
+      partes.push('<text x="' + (ml - 7) + '" y="' + (yy + 4).toFixed(1) + '" text-anchor="end" font-size="10"'
+        + ' fill="var(--chart-ink-2)" font-family="var(--font-mono)">' + val.toFixed(1) + '</text>');
+    }
+
+    if(fechas.length === 1){
+      // Una sola fecha: barras comparando tratamientos.
+      var ancho = iw / (trats.length * 2);
+      trats.forEach(function(t, k){
+        var r = propias.filter(function(x){ return x.tratamiento === t; })[0];
+        if(!r) return;
+        var x0 = ml + (k * 2 + 0.5) * ancho;
+        var y0 = py(Number(r.valor));
+        partes.push('<rect x="' + x0.toFixed(1) + '" y="' + y0.toFixed(1) + '" width="' + ancho.toFixed(1)
+          + '" height="' + (mt + ih - y0).toFixed(1) + '" rx="4" fill="' + PALETA[k % PALETA.length] + '" opacity="0.85">'
+          + '<title>' + esc(t + ': ' + r.valor + (unidad ? ' ' + unidad : '')
+          + (r.n_muestras ? ' · n=' + r.n_muestras : '')) + '</title></rect>');
+        partes.push('<text x="' + (x0 + ancho / 2).toFixed(1) + '" y="' + (H - 22)
+          + '" text-anchor="middle" font-size="10" fill="var(--chart-ink-2)" font-family="var(--font-mono)">'
+          + esc(t.length > 12 ? t.slice(0, 11) + '…' : t) + '</text>');
+      });
+    } else {
+      // Varias fechas: una linea por tratamiento.
+      trats.forEach(function(t, k){
+        var serie = propias.filter(function(x){ return x.tratamiento === t; })
+                           .sort(function(a, b){ return a.medido_en < b.medido_en ? -1 : 1; });
+        var pts = serie.map(function(r){
+          var i = fechas.indexOf(r.medido_en);
+          var x = ml + (fechas.length === 1 ? iw / 2 : (i / (fechas.length - 1)) * iw);
+          return { x: x, y: py(Number(r.valor)), r: r };
+        });
+        if(pts.length > 1){
+          partes.push('<polyline points="' + pts.map(function(p){ return p.x.toFixed(1) + ',' + p.y.toFixed(1); }).join(' ')
+            + '" fill="none" stroke="' + PALETA[k % PALETA.length] + '" stroke-width="2.2"'
+            + ' stroke-linecap="round" stroke-linejoin="round"/>');
+        }
+        pts.forEach(function(p){
+          partes.push('<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="4"'
+            + ' fill="' + PALETA[k % PALETA.length] + '" stroke="var(--surface)" stroke-width="1.8">'
+            + '<title>' + esc(t + ' · ' + p.r.medido_en + ': ' + p.r.valor + (unidad ? ' ' + unidad : '')) + '</title></circle>');
+        });
+      });
+      partes.push('<text x="' + ml + '" y="' + (H - 8) + '" font-size="10" fill="var(--chart-ink-2)"'
+        + ' font-family="var(--font-mono)">' + esc(fechas[0]) + '</text>');
+      partes.push('<text x="' + (W - mr) + '" y="' + (H - 8) + '" text-anchor="end" font-size="10"'
+        + ' fill="var(--chart-ink-2)" font-family="var(--font-mono)">' + esc(fechas[fechas.length - 1]) + '</text>');
+    }
+
+    var leyenda = trats.map(function(t, k){
+      return '<span class="res-lg"><i style="background:' + PALETA[k % PALETA.length] + '"></i>' + esc(t) + '</span>';
+    }).join('');
+
+    return '<div class="res-bloque">'
+      + '<p class="res-var">' + esc(variable) + (unidad ? ' <small>(' + esc(unidad) + ')</small>' : '') + '</p>'
+      + '<div class="res-gr-wrap"><svg class="res-grafica" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="'
+      +   esc('Comparación de ' + variable + ' entre ' + trats.length + ' tratamientos.') + '">'
+      +   partes.join('') + '</svg></div>'
+      + '<div class="res-leyenda">' + leyenda + '</div>'
+      + '</div>';
+  }
+
+  var ETIQUETA_HIP = {
+    confirmada: 'Hipótesis confirmada',
+    refutada:   'Hipótesis refutada',
+    parcial:    'Confirmada en parte',
+    en_curso:   'Todavía en curso'
+  };
+
+  function bloqueResultados(i){
+    var filas = resultadosDe(i.code);
+    var variables = [];
+    filas.forEach(function(r){ if(variables.indexOf(r.variable) === -1) variables.push(r.variable); });
+
+    if(!filas.length && !i.conclusion){
+      return '<div class="res-vacio">Todavía sin resultados publicados. Los equipos los van sumando a medida que miden.</div>';
+    }
+
+    var graficas = variables.map(function(v){ return graficaResultados(filas, v); }).join('');
+    var estado = i.hipotesis_estado
+      ? '<span class="res-estado est-' + esc(i.hipotesis_estado) + '">'
+        + esc(ETIQUETA_HIP[i.hipotesis_estado] || i.hipotesis_estado) + '</span>'
+      : '';
+    var conclusion = i.conclusion
+      ? '<div class="res-conclusion">' + estado
+        + '<p><b>Conclusión:</b> ' + enfasis(i.conclusion) + '</p></div>'
+      : (estado ? '<div class="res-conclusion">' + estado + '</div>' : '');
+
+    var n = filas.length;
+    return '<div class="res-zona">'
+      + '<p class="eyebrow">Resultados</p>'
+      + (n ? '<p class="res-cuenta mono">' + n + (n === 1 ? ' medición publicada' : ' mediciones publicadas') + '</p>' : '')
+      + graficas
+      + conclusion
+      + '</div>';
+  }
+
   function fichaInvestigacion(i){
     function fila(dt, dd){
       if(!dd) return '';
@@ -790,6 +928,7 @@
       + '</dl>'
       + parrafo('Metodología', i.method)
       + (chips ? '<div class="meta">' + chips + '</div>' : '')
+      + bloqueResultados(i)
       + '</article>';
   }
 
@@ -856,6 +995,7 @@
       // existen a partir de aqui: antes de esto su selector estaria vacio.
       if(window.CIEHS && window.CIEHS.refrescarCampo) window.CIEHS.refrescarCampo();
       if(window.CIEHS && window.CIEHS.refrescarAportes) window.CIEHS.refrescarAportes();
+      if(window.CIEHS && window.CIEHS.refrescarFormResultados) window.CIEHS.refrescarFormResultados();
       if(window.CIEHS && window.CIEHS.escalonar) window.CIEHS.escalonar();
     })["catch"](function(err){
       // Un rechazo (red caida, CORS, token invalido) tiene que terminar igual
@@ -2216,7 +2356,117 @@
   var apoRecargar = el('apoRecargarBtn');
   if(apoRecargar) apoRecargar.addEventListener('click', cargarAportes);
 
+  /* ------------------ resultados: validacion y conclusion ---------------- */
+  var resLista = el('resAdminLista');
+  var resMsg   = el('resAdminMsg');
+  var concForm = el('concForm');
+  var concInv  = el('concInv');
+
+  function resAviso(t, error){
+    if(!resMsg) return;
+    resMsg.classList.toggle('error', !!error);
+    resMsg.textContent = t || '';
+  }
+
+  function llenarConcInv(){
+    if(!concInv) return;
+    var inv = (datos && datos.investigaciones) || [];
+    if(!inv.length){ concInv.innerHTML = '<option value="">(sin investigaciones)</option>'; return; }
+    concInv.innerHTML = inv.map(function(i){
+      return '<option value="' + esc(i.code) + '">' + esc(i.code) + '</option>';
+    }).join('');
+    volcarConclusion();
+  }
+
+  // Al cambiar de investigacion se cargan SU conclusion y SU estado: si no, se
+  // editaria a ciegas y se pisaria lo que ya hubiera escrito otro.
+  function volcarConclusion(){
+    var inv = (datos && datos.investigaciones) || [];
+    var elegida = inv.filter(function(i){ return i.code === concInv.value; })[0];
+    txt('concTexto', elegida ? elegida.conclusion : '');
+    txt('concEstado', elegida && elegida.hipotesis_estado ? elegida.hipotesis_estado : '');
+  }
+  if(concInv) concInv.addEventListener('change', volcarConclusion);
+
+  if(concForm){
+    concForm.addEventListener('submit', function(ev){
+      ev.preventDefault();
+      var st = el('concStatus');
+      if(st){ st.classList.remove('error'); st.textContent = 'Guardando…'; }
+      D.guardarConclusion(concInv.value, leer('concTexto'), leer('concEstado')).then(function(){
+        if(st) st.textContent = 'Conclusión guardada.';
+        if(window.CIEHS && window.CIEHS.refrescarDatos) window.CIEHS.refrescarDatos();
+      }).catch(function(e){
+        if(st){ st.classList.add('error'); st.textContent = 'No se pudo guardar: ' + ((e && e.message) || 'error'); }
+      });
+    });
+  }
+
+  function cargarResultadosAdmin(){
+    if(!resLista) return;
+    resLista.innerHTML = '<p class="inv-vacia">Cargando…</p>';
+    D.listarResultados().then(function(filas){
+      if(!filas.length){
+        resLista.innerHTML = '<p class="inv-vacia">Todavía no hay mediciones de resultado.</p>';
+        return;
+      }
+      resLista.innerHTML = filas.map(function(r){
+        var quien = [r.equipo, r.grado].filter(Boolean).join(' · ') || 'Sin equipo indicado';
+        return '<div class="inv-item">'
+          + '<div class="txt">'
+          +   '<span class="cod">' + esc(r.investigation_code) + ' · ' + esc(r.tratamiento) + '</span>'
+          +   '<span class="tit">' + esc(r.variable) + ': ' + esc(r.valor) + (r.unidad ? ' ' + esc(r.unidad) : '')
+          +     (r.n_muestras ? ' (n=' + esc(r.n_muestras) + ')' : '') + ' · ' + esc(r.medido_en) + '</span>'
+          +   '<span class="tit u-color-ink-mute">' + esc(quien)
+          +     (r.nota ? ' — “' + esc(r.nota) + '”' : '') + '</span>'
+          + '</div>'
+          + '<span class="estado ' + (r.published ? 'pub' : 'bor') + '">'
+          +   (r.published ? 'validado' : 'pendiente') + '</span>'
+          + '<button type="button" class="editar" data-valres="' + esc(r.id) + '" data-a="'
+          +   (r.published ? '0' : '1') + '">' + (r.published ? 'Retirar' : 'Validar') + '</button>'
+          + '<button type="button" class="inv-borrar" data-delres="' + esc(r.id) + '">Eliminar</button>'
+          + '</div>';
+      }).join('');
+
+      resLista.querySelectorAll('[data-valres]').forEach(function(b){
+        b.addEventListener('click', function(){
+          b.disabled = true;
+          resAviso('Guardando…');
+          D.validarResultado(b.getAttribute('data-valres'), b.getAttribute('data-a') === '1')
+            .then(function(){
+              resAviso('Hecho.');
+              cargarResultadosAdmin();
+              if(window.CIEHS && window.CIEHS.refrescarDatos) window.CIEHS.refrescarDatos();
+            })
+            .catch(function(e){ b.disabled = false; resAviso('No se pudo: ' + ((e && e.message) || 'error'), true); });
+        });
+      });
+
+      resLista.querySelectorAll('[data-delres]').forEach(function(b){
+        b.addEventListener('click', function(){
+          if(!b.classList.contains('inv-confirmar')){
+            b.classList.add('inv-confirmar');
+            b.textContent = 'Pulsa otra vez';
+            setTimeout(function(){ b.classList.remove('inv-confirmar'); b.textContent = 'Eliminar'; }, 4000);
+            return;
+          }
+          D.eliminarResultado(b.getAttribute('data-delres')).then(function(){
+            resAviso('Medición descartada.');
+            cargarResultadosAdmin();
+            if(window.CIEHS && window.CIEHS.refrescarDatos) window.CIEHS.refrescarDatos();
+          }).catch(function(e){ resAviso('No se pudo eliminar: ' + ((e && e.message) || 'error'), true); });
+        });
+      });
+    }).catch(function(e){
+      resLista.innerHTML = '<p class="inv-vacia">No se pudo cargar: ' + esc((e && e.message) || 'error') + '</p>';
+    });
+  }
+
+  var resRecargar = el('resRecargarBtn');
+  if(resRecargar) resRecargar.addEventListener('click', cargarResultadosAdmin);
+
   window.CIEHS.cargarPestanaAdmin = function(nombre){
+    if(nombre === 'resultados'){ llenarConcInv(); cargarResultadosAdmin(); }
     if(nombre === 'aportes')   cargarAportes();
     if(nombre === 'bitacora')  edBitacora.cargar();
     if(nombre === 'carpeta')   edCarpeta.cargar();
@@ -3770,4 +4020,105 @@
 
   window.CIEHS = window.CIEHS || {};
   window.CIEHS.crearEditorRostros = crearEditorRostros;
+})();
+
+/* ===========================================================================
+   14. AÑADIR RESULTADOS A UNA INVESTIGACION
+
+   El tratamiento es obligatorio a proposito: estos estudios comparan grupos, y
+   una medicion sin grupo no se puede contrastar contra nada — entraria en la
+   base pero no diria nada en la grafica.
+   =========================================================================== */
+(function(){
+  var form = document.getElementById('resForm');
+  if(!form) return;
+
+  var D = window.CIEHSData;
+  var selInv   = document.getElementById('resInv');
+  var elFecha  = document.getElementById('resFecha');
+  var elStatus = document.getElementById('resStatus');
+  var elEnviar = document.getElementById('resEnviar');
+
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+  function aviso(t, error){
+    if(!elStatus) return;
+    elStatus.classList.toggle('error', !!error);
+    elStatus.textContent = t || '';
+  }
+  function hoy(){
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0')
+         + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  if(elFecha){ elFecha.value = hoy(); elFecha.max = hoy(); }
+
+  function llenarInvestigaciones(){
+    if(!selInv) return;
+    var snap = (window.CIEHS && window.CIEHS.snapshot && window.CIEHS.snapshot()) || null;
+    var inv = (snap && snap.investigaciones) || [];
+    if(!inv.length){
+      // Respaldo: las dos fichas oficiales viven tambien en el HTML, asi que el
+      // formulario sigue siendo usable aunque la base no conteste.
+      var estaticas = [].slice.call(document.querySelectorAll('#invGrid [data-inv-code]'));
+      inv = estaticas.map(function(a){
+        return { code: a.getAttribute('data-inv-code'),
+                 title: (a.querySelector('h3') || {}).textContent || a.getAttribute('data-inv-code') };
+      });
+    }
+    if(!inv.length){ selInv.innerHTML = '<option value="">(no hay investigaciones)</option>'; return; }
+    var previo = selInv.value;
+    selInv.innerHTML = inv.map(function(i){
+      var t = (i.title || '').replace(/\s+/g, ' ').trim();
+      if(t.length > 70) t = t.slice(0, 69) + '…';
+      return '<option value="' + esc(i.code) + '">' + esc(i.code) + ' · ' + esc(t) + '</option>';
+    }).join('');
+    if(previo) selInv.value = previo;
+  }
+
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    if(!D || !D.listo){
+      aviso('No hay conexión con la base del CIEHS, así que el resultado no se puede guardar ahora mismo.', true);
+      return;
+    }
+    function v(id){ var e = document.getElementById(id); return e ? e.value.trim() : ''; }
+
+    var datos = {
+      code: selInv.value,
+      tratamiento: v('resTrat'),
+      medidoEn: elFecha.value,
+      variable: v('resVar'),
+      valor: v('resValor'),
+      unidad: v('resUnidad'),
+      n: v('resN'),
+      equipo: v('resEquipo'), grado: v('resGrado'), nota: v('resNota')
+    };
+
+    if(!datos.code){ aviso('Elige la investigación.', true); return; }
+    if(!datos.tratamiento){ aviso('Indica el tratamiento o grupo: sin él la medición no se puede comparar con nada.', true); return; }
+    if(!datos.variable){ aviso('Escribe qué mediste.', true); return; }
+    if(datos.valor === '' || isNaN(Number(datos.valor))){ aviso('El valor tiene que ser un número.', true); return; }
+    if(!datos.medidoEn){ aviso('Pon la fecha de la medición.', true); return; }
+
+    if(elEnviar) elEnviar.disabled = true;
+    aviso('Guardando…');
+    D.registrarResultado(datos).then(function(){
+      aviso('Añadido. El equipo coordinador lo valida y entra en la gráfica de la investigación.');
+      ['resValor','resN','resNota'].forEach(function(id){
+        var e = document.getElementById(id); if(e) e.value = '';
+      });
+    }).catch(function(e){
+      aviso('No se pudo guardar: ' + ((e && e.message) || 'error desconocido'), true);
+    }).then(function(){
+      if(elEnviar) elEnviar.disabled = false;
+    });
+  });
+
+  llenarInvestigaciones();
+  window.CIEHS = window.CIEHS || {};
+  window.CIEHS.refrescarFormResultados = llenarInvestigaciones;
 })();

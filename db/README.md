@@ -78,11 +78,13 @@ rechaza y RLS también.
 | `transparency_entries` | Ingresos y egresos publicados | solo `published` |
 | `evidencias` | Galería «El CIEHS en acción»; imágenes en el bucket, no en git | solo `published` |
 | `registros_campo` | Carpeta de campo digital: mediciones de los estudiantes | solo `published` |
+| `aportes` | Fotos, vídeos y trabajos que suben los equipos; bucket privado en cuarentena | solo `published` |
+| `resultados` | Mediciones de resultado por tratamiento de cada investigación | solo `published` |
 | `admins` | Quién puede escribir | no |
 
 La escritura exige sesión iniciada **y** figurar en `ciehs.admins`, con tres
 excepciones deliberadas: cualquiera puede **insertar** en `orders`, en
-`community_comments` y en `registros_campo`, porque son los formularios
+`community_comments`, en `registros_campo`, en `aportes` y en `resultados`, porque son los formularios
 abiertos de la comunidad y de los estudiantes. Ni
 una ni otra queda expuesta por ello — `orders` no tiene ninguna política de
 lectura pública, y un comentario nace forzado a `published = false`, de modo que
@@ -101,8 +103,8 @@ sigue exactamente esa misma regla.
 infraestructura real (15 módulos DWC, sin bomba de aire) y las tablas de las
 secciones nuevas; `03_evidencias.sql` crea el bucket `ciehs-evidencias` y la
 tabla de la galería de la portada; `04_registros_campo.sql` crea la carpeta de
-campo digital, con alta pública en borrador y validación por el panel. Los
-cuatro son idempotentes y se aplican
+campo digital; `05_aportes.sql` la bandeja de aportes en cuarentena; y
+`06_resultados.sql` los resultados por tratamiento. Todos son idempotentes y se aplican
 **de forma aislada** (SQL
 Editor o `execute_sql`), nunca con `supabase db push` ni `apply_migration`: el
 historial `supabase_migrations.schema_migrations` es global en esta instancia
