@@ -279,3 +279,4 @@ proyectos.
 - [[CIEHS-Arena-Juego]] — un marcador entre clases necesitaría una tabla aquí.
 - [[CIEHS-Pentest-2026-09]] — el pentest y el argumento del proyecto propio.
 - [[CIEHS-Tienda-Escolar]] — catálogo, reservas de cosecha y transparencia.
+- [[CIEHS-Estados-UI-Async]] — carga, error y vacío: qué se ve cuando la base no responde todavía.
