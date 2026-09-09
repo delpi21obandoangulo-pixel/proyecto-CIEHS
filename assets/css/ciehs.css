@@ -1667,6 +1667,11 @@
     overflow:hidden; text-overflow:ellipsis; display:-webkit-box;
     -webkit-line-clamp:2; -webkit-box-orient:vertical;
   }
+  /* Insignia "publicado / borrador" del panel. OJO: esta clase se llama
+     .estado a secas y NO tiene nada que ver con el componente .estado-caja de
+     los estados de datos. Se llamaron igual una vez y el bloque .estado{} de
+     abajo le impuso display:flex y fondo blanco; por eso el componente se
+     renombro a .estado-caja. No volver a llamarlo .estado. */
   .inv-item .estado{
     flex:none; font-family:var(--font-mono); font-size:10px; letter-spacing:.06em;
     text-transform:uppercase; padding:3px 8px; border-radius:100px; border:1px solid currentColor;
@@ -2184,7 +2189,9 @@
     padding:9px 18px; border-radius:100px; border:1px solid var(--line-strong);
     background:var(--glass); color:var(--ink-mute); cursor:not-allowed;
   }
-  .res-empty{ margin-top:30px; padding:26px 20px; background:var(--veil); border:1px dashed var(--surface-3); border-radius:var(--radius-m); font-size:14px; color:var(--ink-mute); text-align:center; }
+  /* Ya no trae caja propia: envuelve al componente .estado-caja, que es quien
+     pinta. Con las dos, habria dos bordes discontinuos uno dentro de otro. */
+  .res-empty{ margin-top:30px; }
 
   /* ============ EUREKA ============ */
   .problem-block{
@@ -2687,17 +2694,31 @@
   /* ------------------------------------------------------------- esqueletos.
      Mientras la base responde, un bloque que respira dice "viene algo" mucho
      mejor que la palabra "Cargando…". */
+  /* Vidrio, no gris macizo: desde que el portal tiene plano ambiental detras, un
+     bloque opaco abre un agujero gris en la composicion justo donde va a
+     aparecer una tarjeta traslucida. Asi el esqueleto tiene ya el material de lo
+     que sustituye, y el cambio al llegar los datos no da un salto de color. */
   .skeleton{
     position:relative; overflow:hidden;
-    background:var(--surface-2); border-radius:var(--radius-s);
-    border:1px solid var(--line);
+    background:rgba(255,255,255,0.42); border-radius:var(--radius-s);
+    border:1px solid rgba(255,255,255,0.55);
+    -webkit-backdrop-filter:blur(8px) saturate(120%);
+    backdrop-filter:blur(8px) saturate(120%);
   }
+  /* Dos capas de movimiento, cada una diciendo una cosa: el barrido dice "esto
+     se esta llenando" y tiene direccion; el latido de fondo dice "sigue vivo"
+     aunque el barrido este fuera de cuadro. Las dos se apagan con
+     prefers-reduced-motion por la regla global del principio del archivo. */
   .skeleton::after{
     content:""; position:absolute; inset:0;
     background:linear-gradient(90deg, transparent, rgba(255,255,255,.85), transparent);
     transform:translateX(-100%);
     animation:brilloEsqueleto 1.45s ease-in-out infinite;
   }
+  @media (prefers-reduced-motion:no-preference){
+    .skeleton{ animation:latidoEsqueleto 2.2s var(--ease-soft) infinite; }
+  }
+  @keyframes latidoEsqueleto{ 0%,100%{ opacity:1; } 50%{ opacity:.62; } }
   @keyframes brilloEsqueleto{ to{ transform:translateX(100%); } }
   .skeleton-fila{ height:52px; margin-bottom:10px; }
   .skeleton-lista{ margin-top:8px; }
@@ -2927,11 +2948,9 @@
   .campo-grafica circle{ transition:r .2s var(--ease-out); }
   .campo-grafica circle:hover{ r:7; }
 
-  .campo-vacio{
-    padding:14px 16px; background:var(--veil);
-    border:1px dashed var(--surface-3); border-radius:var(--radius-s);
-    font-size:13px; line-height:1.55; color:var(--ink-soft); text-align:center;
-  }
+  /* Ya no trae caja propia: envuelve al componente .estado-caja, que es quien
+     pinta. Con las dos habria dos bordes discontinuos, uno dentro de otro. */
+  .campo-vacio{ margin-top:12px; }
   .campo-leyenda{
     display:flex; flex-wrap:wrap; align-items:center; gap:8px;
     font-size:12px; color:var(--ink-mute);
@@ -3715,16 +3734,22 @@ footer{
    segunda se puede reintentar.
 
    Las tres variantes comparten caja y se separan por color e icono:
-     .estado--cargando  neutro, con esqueleto o pulso — "viene algo"
-     .estado--vacio     neutro, borde discontinuo    — "no hay nada, y está bien"
-     .estado--error     ámbar, borde continuo        — "algo falló, prueba otra vez"
+     .estado-caja--cargando  neutro, con esqueleto o pulso — "viene algo"
+     .estado-caja--vacio     neutro, borde discontinuo    — "no hay nada, y está bien"
+     .estado-caja--error     ámbar, borde continuo        — "algo falló, prueba otra vez"
 
    El ámbar y no el rojo: en un laboratorio escolar la conexión se cae a todas
    horas y no es una catástrofe ni culpa de nadie. El rojo se reserva para lo
    que el visitante ha hecho mal y puede corregir (validación de formularios).
    ========================================================================== */
-.estado{
-  display:flex; align-items:flex-start; gap:14px;
+/* flex-wrap + una base de 16rem para el texto, en vez de una media query:
+   la caja tiene que reaccionar al ancho de SU CONTENEDOR, no al de la ventana.
+   Vive tanto a lo ancho de una seccion como dentro del panel de administracion,
+   que mide 410 px con el viewport a 1440 — ahi una media query no se entera y el
+   texto quedaba estrangulado en una columna de cinco lineas junto al boton.
+   Cuando no caben texto y boton en la misma fila, el boton baja solo. */
+.estado-caja{
+  display:flex; align-items:flex-start; gap:14px; flex-wrap:wrap;
   padding:18px 20px; border-radius:var(--radius-m);
   background:var(--glass); border:1px dashed var(--line-strong);
   font-size:14px; line-height:1.6; color:var(--ink-soft);
@@ -3735,14 +3760,14 @@ footer{
   display:grid; place-items:center; font-size:16px; line-height:1;
   background:var(--surface-2); border:1px solid var(--line);
 }
-.estado-txt{ min-width:0; flex:1; }
+.estado-txt{ min-width:0; flex:1 1 16rem; }
 .estado-txt b{
   display:block; font-family:var(--font-display); font-weight:600;
   font-size:15px; color:var(--ink); letter-spacing:-.01em; margin-bottom:4px;
 }
 .estado-txt p{ margin:0; font-size:13.5px; line-height:1.6; color:var(--ink-soft); }
 .estado-accion{
-  flex:none; align-self:center;
+  flex:0 0 auto; align-self:center; margin-left:auto;
   display:inline-flex; align-items:center; gap:7px;
   padding:9px 16px; border-radius:999px; cursor:pointer;
   font-family:inherit; font-size:13px; font-weight:600;
@@ -3754,22 +3779,22 @@ footer{
 .estado-accion[disabled]{ opacity:.55; cursor:progress; transform:none; box-shadow:var(--shadow-1); }
 
 /* --- vacío: es un estado normal, no un fallo. Se dice sin alarma. --- */
-.estado--vacio .estado-ico{ background:var(--leaf-100); border-color:rgba(5,150,105,.22); }
+.estado-caja--vacio .estado-ico{ background:var(--leaf-100); border-color:rgba(5,150,105,.22); }
 
 /* --- error: ámbar, borde continuo y botón de reintento --- */
-.estado--error{
+.estado-caja--error{
   background:rgba(251,191,36,.10);
   border-style:solid; border-color:rgba(180,83,9,.28);
   color:var(--sun-300);
 }
-.estado--error .estado-txt b{ color:var(--sun-300); }
-.estado--error .estado-txt p{ color:var(--sun-300); }
-.estado--error .estado-ico{ background:rgba(251,191,36,.20); border-color:rgba(180,83,9,.24); }
-.estado--error .estado-accion{ border-color:rgba(180,83,9,.30); color:var(--sun-300); }
-.estado--error .estado-accion:hover{ border-color:var(--sun-300); box-shadow:var(--shadow-2); }
+.estado-caja--error .estado-txt b{ color:var(--sun-300); }
+.estado-caja--error .estado-txt p{ color:var(--sun-300); }
+.estado-caja--error .estado-ico{ background:rgba(251,191,36,.20); border-color:rgba(180,83,9,.24); }
+.estado-caja--error .estado-accion{ border-color:rgba(180,83,9,.30); color:var(--sun-300); }
+.estado-caja--error .estado-accion:hover{ border-color:var(--sun-300); box-shadow:var(--shadow-2); }
 
 /* --- cargando: el punto late para que se note que la espera es activa --- */
-.estado--cargando .estado-ico{ background:var(--surface-2); }
+.estado-caja--cargando .estado-ico{ background:var(--surface-2); }
 .estado-pulso{
   display:block; width:9px; height:9px; border-radius:50%;
   background:var(--leaf-500);
@@ -3778,10 +3803,10 @@ footer{
   .estado-pulso{ animation:livepulse-scale 1.4s var(--ease-soft) infinite; }
 }
 
-/* En pantallas estrechas el boton se va debajo en lugar de estrangular el texto. */
+/* En movil, ademas, ocupa todo el ancho: un boton pequeño alineado a la
+   derecha en una pantalla de 390 px es un objetivo tactil incomodo. */
 @media (max-width:560px){
-  .estado{ flex-wrap:wrap; }
-  .estado-accion{ align-self:stretch; justify-content:center; width:100%; }
+  .estado-accion{ align-self:stretch; justify-content:center; width:100%; margin-left:0; }
 }
 
 /* Los seis contenedores heredados dejan de traer caja propia: ahora solo
@@ -3801,7 +3826,7 @@ footer{
 
 /* Al imprimir, un estado de carga o de error no aporta nada al papel. */
 @media print{
-  .estado--cargando, .skeleton{ display:none !important; }
+  .estado-caja--cargando, .skeleton{ display:none !important; }
 }
 
 /* --- Barra de datos caducados ---

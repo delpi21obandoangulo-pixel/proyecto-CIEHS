@@ -1425,7 +1425,12 @@
                 <p class="u-visually-hidden" id="campoGraficaDesc">Gráfica de la evolución de la variable elegida en el módulo seleccionado.</p>
               </div>
 
-              <p class="campo-vacio" id="campoVacio">Todavía no hay mediciones validadas de este módulo. La primera puede ser la tuya.</p>
+              <!-- Octava caja hecha a mano que se retira. Ahora la rellena dibujar()
+                   con el componente .estado-caja, que separa los cuatro casos:
+                   cargando, sin conexion, sin modulo elegido y modulo sin mediciones. -->
+              <div class="campo-vacio" id="campoVacio" role="status" aria-live="polite">
+                <div class="estado-caja estado-caja--cargando"><span class="estado-ico" aria-hidden="true"><span class="estado-pulso"></span></span><div class="estado-txt"><p>Consultando los registros del módulo…</p></div></div>
+              </div>
               <p class="campo-leyenda">
                 <span class="lg lg-val"></span> Validado por el equipo coordinador
                 <span class="lg lg-pend"></span> Tu registro, pendiente de validar
@@ -2124,7 +2129,18 @@
           <button type="button" class="res-btn" disabled title="Disponible cuando el administrador cargue el archivo">Ver / Descargar</button>
         </article>
       </div>
-      <p id="resEmpty" class="res-empty" hidden>No hay recursos con esta combinación de filtros todavía.</p>
+      <!-- Septima caja hecha a mano que se retira: este vacio es del FILTRO, no
+           de la base, asi que ofrece deshacerlo en vez de reintentar nada. -->
+      <div id="resEmpty" class="res-empty" role="status" aria-live="polite" hidden>
+        <div class="estado-caja estado-caja--vacio">
+          <span class="estado-ico" aria-hidden="true">🔍</span>
+          <div class="estado-txt">
+            <b>Ningún recurso con esos filtros</b>
+            <p>El repositorio tiene material, pero nada que cumpla las tres condiciones a la vez. Prueba a soltar alguna.</p>
+          </div>
+          <button type="button" class="estado-accion" id="resLimpiarFiltros">Quitar los filtros</button>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -2456,7 +2472,7 @@
           <h3>Reserva la cosecha de la semana</h3>
           <p class="comunidad-lede">Elige lo que quieras y cuántas unidades: el total se va sumando solo. El equipo de Ventas te confirma el día de entrega, y la cosecha se corta el mismo día en que se entrega.</p>
 
-          <div class="tienda-estado" id="tiendaEstado" role="status" aria-live="polite"><div class="estado estado--cargando"><span class="estado-ico" aria-hidden="true"><span class="estado-pulso"></span></span><div class="estado-txt"><p>Consultando el catálogo de la semana…</p></div></div></div>
+          <div class="tienda-estado" id="tiendaEstado" role="status" aria-live="polite"><div class="estado-caja estado-caja--cargando"><span class="estado-ico" aria-hidden="true"><span class="estado-pulso"></span></span><div class="estado-txt"><p>Consultando el catálogo de la semana…</p></div></div></div>
           <!-- El contenido de abajo es el RESPALDO: lo sustituye la base en
                cuanto responde. Si no responde, esto es lo que se ve. -->
           <div class="tienda-grid" id="tiendaGrid">
@@ -2594,7 +2610,7 @@
           <p class="eyebrow">Transparencia</p>
           <h3>A dónde va lo que se obtiene</h3>
           <p class="comunidad-lede">Lo que se recauda vendiendo la cosecha vuelve al laboratorio. Aquí no se publican importes ni cuánto se vende: se publica <b>la proporción</b> en que se reparte, que es lo que de verdad dice en qué cree este proyecto.</p>
-          <div class="transp-estado" id="transpEstado" role="status" aria-live="polite"><div class="estado estado--cargando"><span class="estado-ico" aria-hidden="true"><span class="estado-pulso"></span></span><div class="estado-txt"><p>Consultando la caja del CIEHS…</p></div></div></div>
+          <div class="transp-estado" id="transpEstado" role="status" aria-live="polite"><div class="estado-caja estado-caja--cargando"><span class="estado-ico" aria-hidden="true"><span class="estado-pulso"></span></span><div class="estado-txt"><p>Consultando la caja del CIEHS…</p></div></div></div>
           <!-- Respaldo: el reparto PREVISTO. En cuanto Tesorería registre
                egresos, la base lo sustituye por el reparto real. -->
           <div class="destino" id="destinoLista">

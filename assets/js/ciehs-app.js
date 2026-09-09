@@ -520,6 +520,20 @@
     if(emptyEl) emptyEl.hidden = visible !== 0;
   }
 
+  // "Quitar los filtros" del estado vacio: devuelve los tres grupos a "todos".
+  // Un vacio de filtro sin forma de deshacerlo obliga a buscar a mano cual de
+  // las tres condiciones sobra, que es justo lo que el visitante no sabe.
+  var limpiar = document.getElementById('resLimpiarFiltros');
+  if(limpiar) limpiar.addEventListener('click', function(){
+    active = { nivel:'todos', area:'todos', tipo:'todos' };
+    groups.forEach(function(group){
+      group.querySelectorAll('.res-chip').forEach(function(c){
+        c.classList.toggle('is-active', c.getAttribute('data-value') === 'todos');
+      });
+    });
+    applyFilters();
+  });
+
   applyFilters();
 
   // Gancho para la capa de datos: al repintar la rejilla desde la base hay que
@@ -652,7 +666,7 @@
   var reintentando = false;
 
   function caja(variante, ico, titulo, texto, accion){
-    return '<div class="estado estado--' + variante + '">'
+    return '<div class="estado-caja estado-caja--' + variante + '">'
       + '<span class="estado-ico" aria-hidden="true">' + ico + '</span>'
       + '<div class="estado-txt">'
       +   (titulo ? '<b>' + esc(titulo) + '</b>' : '')
@@ -685,15 +699,22 @@
     /* El unico con boton. `detalle` es el motivo tecnico: se enseña porque en un
        laboratorio escolar quien mira la pantalla suele ser tambien quien puede
        avisar de que la base esta caida, y "no se pudo cargar" a secas no le
-       sirve para eso. */
-    error: function(texto, detalle){
+       sirve para eso.
+
+       `local` cambia a quien obedece el boton. Por defecto lleva
+       data-reintentar y lo recoge el listener global, que recarga el portal
+       entero. Con local:true sale sin ese atributo y marcado con
+       .js-reintento-local, para que quien lo pinto le enchufe su propio
+       reintento: en el panel de administracion recargar el portal entero
+       obligaria a repintar doce listas para arreglar una. */
+    error: function(texto, detalle, local){
       var t = texto || 'No se pudo conectar con la base del CIEHS.';
       if(detalle) t += ' (' + detalle + ')';
-      return caja('error', '⚠',
-        'No se pudo cargar',
-        t,
-        '<button type="button" class="estado-accion" data-reintentar>'
-          + (reintentando ? 'Reintentando…' : 'Reintentar') + '</button>');
+      var boton = local
+        ? '<button type="button" class="estado-accion js-reintento-local">Reintentar</button>'
+        : '<button type="button" class="estado-accion" data-reintentar>'
+            + (reintentando ? 'Reintentando…' : 'Reintentar') + '</button>';
+      return caja('error', '⚠', 'No se pudo cargar', t, boton);
     },
 
     /* Azucar: elige la variante segun la fase, para que cada pintor no repita
@@ -925,9 +946,18 @@
     }).join('');
   }
 
+  /* Los rangos de pH de #phModulosChart tampoco se sustituyen por un esqueleto:
+     el HTML trae los rangos de referencia de cada cultivo y son correctos con
+     base o sin ella —son objetivos fijados por el equipo, no lecturas—. Quien
+     dice de donde vienen los numeros es esta linea, y por eso tiene que separar
+     los tres casos en vez de dar "sin conexion" tambien mientras carga. */
   function pintarSync(){
     if(!syncLabel) return;
-    if(!D || !D.conectado){
+    if(fase === 'cargando'){
+      syncLabel.textContent = 'Consultando la base del CIEHS…';
+      return;
+    }
+    if(fase === 'error' || !D || !D.conectado){
       syncLabel.textContent = 'Sin conexión · valores de referencia publicados';
       return;
     }
@@ -1140,17 +1170,35 @@
       + '</article>';
   }
 
+  // `inv` es opcional: sin argumento se lee del ultimo snapshot. Hace falta
+  // porque ahora tambien se llama al empezar a cargar y al fallar, momentos en
+  // los que no hay ninguna respuesta que pasarle.
   function pintarInvestigaciones(inv){
     var grid = el('invGrid');
     var origen = el('invOrigen');
     if(!grid) return;
+    if(inv === undefined) inv = (datos && datos.investigaciones) || [];
 
     if(!inv || !inv.length){
-      // Sin filas publicadas se conserva el HTML de respaldo: dejar la seccion
-      // vacia seria peor que mostrar el contenido que ya trae la pagina.
+      // Sin filas publicadas se conserva el HTML de respaldo: las dos fichas
+      // oficiales ya estan en la pagina y se leen perfectamente. Por eso aqui NO
+      // va un esqueleto: cambiar contenido legible por un brillo mientras carga
+      // seria empeorar la seccion, no mejorarla. Lo que tiene que decir la
+      // verdad es la linea de procedencia, que antes daba el mismo mensaje de
+      // "sin conexion" en los tres casos: mientras cargaba (todavia no se sabia),
+      // cuando fallaba (cierto) y cuando la base respondia sin investigaciones
+      // publicadas (falso: la conexion iba bien).
       if(origen){
-        origen.className = 'inv-origen local';
-        origen.innerHTML = '<span class="punto"></span>Mostrando la ficha publicada en el portal · sin conexión con la base';
+        if(fase === 'cargando'){
+          origen.className = 'inv-origen local';
+          origen.innerHTML = '<span class="punto"></span>Consultando las investigaciones publicadas…';
+        } else if(fase === 'error'){
+          origen.className = 'inv-origen local';
+          origen.innerHTML = '<span class="punto"></span>Mostrando la ficha publicada en el portal · sin conexión con la base';
+        } else {
+          origen.className = 'inv-origen local';
+          origen.innerHTML = '<span class="punto"></span>Mostrando la ficha publicada en el portal · la base todavía no tiene investigaciones publicadas';
+        }
       }
       return;
     }
@@ -1175,6 +1223,11 @@
   // reintento, y sin la del fallo se quedaria brillando para siempre a secas.
   function repintarSeccionesDeRed(){
     pintarCarpeta(); pintarBitacora(); pintarTransparencia(); pintarComentarios();
+    // Investigaciones y la sincronizacion de Datos no repintan su contenido
+    // (conservan el respaldo estatico), pero si su linea de procedencia, que es
+    // la que distingue "cargando" de "sin conexion" de "la base esta vacia".
+    pintarInvestigaciones(); pintarSync();
+    if(window.CIEHS && window.CIEHS.refrescarCampo) window.CIEHS.refrescarCampo();
   }
 
   function refrescar(){
@@ -1856,6 +1909,46 @@
     b.addEventListener('click', function(){ abrirPestana(b.getAttribute('data-tab')); });
   });
 
+  /* ---- los tres estados de cualquier listado del panel ----
+     Seis listados de aqui (investigaciones, pedidos, comentarios, registros,
+     aportes y resultados) repetian el mismo triple: "Cargando…", un texto de
+     vacio y "No se pudo cargar: <motivo>", los tres como parrafo plano y
+     ninguno con forma de reintentar. Se unifican en estas tres funciones, que
+     usan el mismo componente que el portal publico.
+
+     El reintento es LOCAL —recarga solo ese listado— porque en el panel
+     recargar el portal entero para arreglar una lista obligaria a repintar las
+     otras once y podria cerrar el formulario que el equipo tenga abierto. */
+  function listaCargando(caja){
+    if(!caja) return;
+    var E = window.CIEHS && window.CIEHS.estado;
+    caja.innerHTML = E ? E.esqueleto(3, 'fila') : '<p class="inv-vacia">Cargando…</p>';
+  }
+  function listaVacia(caja, texto){
+    if(!caja) return;
+    var E = window.CIEHS && window.CIEHS.estado;
+    caja.innerHTML = E ? E.vacio(null, texto, '📋') : '<p class="inv-vacia">' + esc(texto) + '</p>';
+  }
+  function listaError(caja, err, recargar){
+    if(!caja) return;
+    var motivo = (err && err.message) || 'error';
+    var E = window.CIEHS && window.CIEHS.estado;
+    if(!E){
+      caja.innerHTML = '<p class="inv-vacia">No se pudo cargar: ' + esc(motivo) + '</p>';
+      return;
+    }
+    caja.innerHTML = E.error('Este listado no se pudo cargar. El resto del panel sigue '
+                           + 'funcionando y no has perdido nada de lo que tuvieras escrito.',
+                             motivo, true);
+    var boton = caja.querySelector('.js-reintento-local');
+    if(boton && typeof recargar === 'function'){
+      boton.addEventListener('click', function(){
+        boton.disabled = true; boton.textContent = 'Reintentando…';
+        recargar();
+      });
+    }
+  }
+
   /* ================ EDITOR DE INVESTIGACIONES ================ */
 
   var invLista     = el('invAdminLista');
@@ -1872,11 +1965,11 @@
 
   function cargarListaInvestigaciones(){
     if(!invLista) return;
-    invLista.innerHTML = '<p class="inv-vacia">Cargando…</p>';
+    listaCargando(invLista);
     D.listarInvestigaciones().then(function(filas){
       invCache = filas;
       if(!filas.length){
-        invLista.innerHTML = '<p class="inv-vacia">Todavía no hay ninguna investigación registrada.</p>';
+        listaVacia(invLista, 'Todavía no hay ninguna investigación registrada.');
         return;
       }
       invLista.innerHTML = filas.map(function(f){
@@ -1894,7 +1987,7 @@
         b.addEventListener('click', function(){ abrirFicha(b.getAttribute('data-editar')); });
       });
     }).catch(function(e){
-      invLista.innerHTML = '<p class="inv-vacia">No se pudo cargar la lista: ' + esc((e && e.message) || 'error') + '</p>';
+      listaError(invLista, e, cargarListaInvestigaciones);
     });
   }
 
@@ -2041,12 +2134,26 @@
       msg.textContent = texto || '';
     }
 
+    /* Los doce listados del panel usan los mismos tres estados que el portal
+       publico, y por las mismas razones. Aqui pesan incluso mas: quien esta
+       delante es el equipo registrando datos con la conexion del colegio, y si
+       la lista falla necesita poder reintentar sin recargar la pagina entera y
+       perder lo que tuviera a medio escribir en el formulario de al lado.
+       El boton llama a cargar(), no a refrescar(): solo recarga ESTA lista. */
+    var E = function(){ return window.CIEHS && window.CIEHS.estado; };
+
     function cargar(){
-      lista.innerHTML = '<p class="inv-vacia">Cargando…</p>';
+      var e = E();
+      lista.innerHTML = e
+        ? e.esqueleto(3, 'fila')
+        : '<p class="inv-vacia">Cargando…</p>';
+
       cfg.listar().then(function(filas){
         cache = filas;
         if(!filas.length){
-          lista.innerHTML = '<p class="inv-vacia">' + esc(cfg.vacio) + '</p>';
+          lista.innerHTML = e
+            ? e.vacio(null, cfg.vacio, '📋')
+            : '<p class="inv-vacia">' + esc(cfg.vacio) + '</p>';
           return;
         }
         lista.innerHTML = filas.map(function(f){
@@ -2063,9 +2170,19 @@
         lista.querySelectorAll('[data-editar]').forEach(function(b){
           b.addEventListener('click', function(){ abrir(b.getAttribute('data-editar')); });
         });
-      }).catch(function(e){
-        lista.innerHTML = '<p class="inv-vacia">No se pudo cargar la lista: '
-          + esc((e && e.message) || 'error') + '</p>';
+      }).catch(function(err){
+        var motivo = (err && err.message) || 'error';
+        if(!e){
+          lista.innerHTML = '<p class="inv-vacia">No se pudo cargar la lista: ' + esc(motivo) + '</p>';
+          return;
+        }
+        lista.innerHTML = e.error('Esta lista no se pudo cargar. El formulario de al lado sigue '
+                                + 'funcionando: lo que tengas escrito no se ha perdido.', motivo, true);
+        var boton = lista.querySelector('.js-reintento-local');
+        if(boton) boton.addEventListener('click', function(){
+          boton.disabled = true; boton.textContent = 'Reintentando…';
+          cargar();
+        });
       });
     }
 
@@ -2269,11 +2386,11 @@
 
   function cargarPedidos(){
     if(!pedLista) return;
-    pedLista.innerHTML = '<p class="inv-vacia">Cargando…</p>';
+    listaCargando(pedLista);
     Promise.all([D.listarPedidos(), D.lineasPorPedido()]).then(function(par){
       var filas = par[0], porPedido = par[1] || {};
       if(!filas.length){
-        pedLista.innerHTML = '<p class="inv-vacia">No hay pedidos registrados.</p>';
+        listaVacia(pedLista, 'Todavía no hay ningún pedido. Los que llegan por la tienda aparecen aquí para prepararlos.');
         return;
       }
       pedLista.innerHTML = filas.map(function(p){
@@ -2313,16 +2430,16 @@
         });
       });
     }).catch(function(e){
-      pedLista.innerHTML = '<p class="inv-vacia">No se pudo cargar: ' + esc((e && e.message) || 'error') + '</p>';
+      listaError(pedLista, e, cargarPedidos);
     });
   }
 
   function cargarComentariosAdmin(){
     if(!comLista) return;
-    comLista.innerHTML = '<p class="inv-vacia">Cargando…</p>';
+    listaCargando(comLista);
     D.listarComentarios().then(function(filas){
       if(!filas.length){
-        comLista.innerHTML = '<p class="inv-vacia">No hay comentarios.</p>';
+        listaVacia(comLista, 'Todavía no hay comentarios que moderar. Los que envía la comunidad llegan aquí antes de publicarse.');
         return;
       }
       comLista.innerHTML = filas.map(function(c){
@@ -2359,7 +2476,7 @@
         });
       });
     }).catch(function(e){
-      comLista.innerHTML = '<p class="inv-vacia">No se pudo cargar: ' + esc((e && e.message) || 'error') + '</p>';
+      listaError(comLista, e, cargarComentarios);
     });
   }
 
@@ -2478,10 +2595,10 @@
 
   function cargarRegistros(){
     if(!regLista) return;
-    regLista.innerHTML = '<p class="inv-vacia">Cargando…</p>';
+    listaCargando(regLista);
     D.listarRegistros().then(function(filas){
       if(!filas.length){
-        regLista.innerHTML = '<p class="inv-vacia">Todavía no hay mediciones registradas por los estudiantes.</p>';
+        listaVacia(regLista, 'Todavía no hay mediciones registradas por los estudiantes. Las que envíen desde la carpeta de campo llegan aquí para validarlas.');
         return;
       }
       regLista.innerHTML = filas.map(function(r){
@@ -2533,7 +2650,7 @@
         });
       });
     }).catch(function(e){
-      regLista.innerHTML = '<p class="inv-vacia">No se pudo cargar: ' + esc((e && e.message) || 'error') + '</p>';
+      listaError(regLista, e, cargarRegistros);
     });
   }
 
@@ -2558,10 +2675,10 @@
 
   function cargarAportes(){
     if(!apoLista) return;
-    apoLista.innerHTML = '<p class="inv-vacia">Cargando…</p>';
+    listaCargando(apoLista);
     D.listarAportes().then(function(filas){
       if(!filas.length){
-        apoLista.innerHTML = '<p class="inv-vacia">Todavía no hay aportes subidos.</p>';
+        listaVacia(apoLista, 'Todavía no hay aportes subidos. Lo que envíen estudiantes y docentes llega aquí para aprobarlo.');
         return;
       }
       apoLista.innerHTML = filas.map(function(a){
@@ -2624,7 +2741,7 @@
         });
       });
     }).catch(function(e){
-      apoLista.innerHTML = '<p class="inv-vacia">No se pudo cargar: ' + esc((e && e.message) || 'error') + '</p>';
+      listaError(apoLista, e, cargarAportes);
     });
   }
 
@@ -2679,10 +2796,10 @@
 
   function cargarResultadosAdmin(){
     if(!resLista) return;
-    resLista.innerHTML = '<p class="inv-vacia">Cargando…</p>';
+    listaCargando(resLista);
     D.listarResultados().then(function(filas){
       if(!filas.length){
-        resLista.innerHTML = '<p class="inv-vacia">Todavía no hay mediciones de resultado.</p>';
+        listaVacia(resLista, 'Todavía no hay mediciones de resultado. Las que suman los equipos aparecen aquí para revisarlas.');
         return;
       }
       resLista.innerHTML = filas.map(function(r){
@@ -2733,7 +2850,7 @@
         });
       });
     }).catch(function(e){
-      resLista.innerHTML = '<p class="inv-vacia">No se pudo cargar: ' + esc((e && e.message) || 'error') + '</p>';
+      listaError(resLista, e, cargarResultadosAdmin);
     });
   }
 
@@ -3621,7 +3738,14 @@
     // existen fisicamente, asi que nadie puede medirlos.
     mods = mods.filter(function(m){ return m.code && m.code.indexOf('PROY-') !== 0; });
     if(!mods.length){
-      selModulo.innerHTML = '<option value="">(no se pudo cargar la lista)</option>';
+      // La misma distincion de siempre: "(no se pudo cargar)" era falso mientras
+      // la peticion seguia en vuelo y tambien si la base responde sin modulos.
+      var faseD = (window.CIEHS && window.CIEHS.faseDatos) ? window.CIEHS.faseDatos() : 'listo';
+      var texto = faseD === 'cargando' ? '(cargando los módulos…)'
+                : faseD === 'error'    ? '(no se pudo cargar la lista)'
+                : '(todavía no hay módulos registrados)';
+      selModulo.innerHTML = '<option value="">' + texto + '</option>';
+      dibujar();   // para que el estado de la grafica acompañe al del selector
       return;
     }
     var previo = selModulo.value;
@@ -3673,8 +3797,38 @@
     var puntos = datosDe(codigo, v.clave);
 
     if(elTitulo) elTitulo.textContent = codigo ? (codigo + ' · ' + v.etiqueta) : 'Elige un módulo';
-    if(elVacio) elVacio.hidden = puntos.length > 0;
-    if(!puntos.length){ svg.innerHTML = ''; return; }
+
+    /* Cuatro situaciones sin grafica, y hasta ahora las cuatro daban el mismo
+       parrafo ("todavia no hay mediciones de este modulo"), que solo era cierto
+       en una de ellas. Un estudiante que abre la seccion sin conexion leia que
+       su modulo no tiene datos, y eso es mentira: lo que pasa es que no se han
+       podido consultar. */
+    if(!puntos.length){
+      svg.innerHTML = '';
+      if(elVacio){
+        elVacio.hidden = false;
+        var E = window.CIEHS && window.CIEHS.estado;
+        var faseD = (window.CIEHS && window.CIEHS.faseDatos) ? window.CIEHS.faseDatos() : 'listo';
+        if(!E){
+          elVacio.textContent = 'Todavía no hay mediciones validadas de este módulo.';
+        } else if(faseD === 'cargando'){
+          elVacio.innerHTML = E.cargando('Consultando los registros del módulo…');
+        } else if(faseD === 'error'){
+          elVacio.innerHTML = E.error('No se pudieron consultar los registros de este módulo. '
+            + 'El formulario de abajo sigue abierto: puedes anotar tu medición y se enviará '
+            + 'cuando vuelva la conexión.', D && D.motivo);
+        } else if(!codigo){
+          elVacio.innerHTML = E.vacio('Elige un módulo',
+            'Arriba, en el selector, escoge el módulo cuya evolución quieres ver dibujada.', '📈');
+        } else {
+          elVacio.innerHTML = E.vacio('Este módulo todavía no tiene mediciones',
+            'Nadie ha registrado aún ' + v.etiqueta.toLowerCase() + ' en ' + codigo
+            + '. La primera puede ser la tuya: anótala en el formulario de abajo.', '📏');
+        }
+      }
+      return;
+    }
+    if(elVacio) elVacio.hidden = true;
 
     var W = 640, H = 260, ml = 48, mr = 16, mt = 18, mb = 34;
     var iw = W - ml - mr, ih = H - mt - mb;
