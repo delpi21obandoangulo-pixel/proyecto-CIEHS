@@ -106,8 +106,9 @@ infraestructura real (15 módulos DWC, sin bomba de aire) y las tablas de las
 secciones nuevas; `03_evidencias.sql` crea el bucket `ciehs-evidencias` y la
 tabla de la galería de la portada; `04_registros_campo.sql` crea la carpeta de
 campo digital; `05_aportes.sql` la bandeja de aportes en cuarentena; y
-`06_resultados.sql` los resultados por tratamiento; y `07_tienda.sql` el
-catálogo y las líneas de pedido. Todos son idempotentes y se aplican
+`06_resultados.sql` los resultados por tratamiento; `07_tienda.sql` el catálogo y
+las líneas de pedido; y `08_tienda_estados.sql` el estado «próximo a cosecha» y
+el destino canónico del gasto. Todos son idempotentes y se aplican
 **de forma aislada** (SQL
 Editor o `execute_sql`), nunca con `supabase db push` ni `apply_migration`: el
 historial `supabase_migrations.schema_migrations` es global en esta instancia

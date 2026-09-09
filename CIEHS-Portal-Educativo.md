@@ -216,3 +216,4 @@ Los valores de respaldo del HTML se mantienen sincronizados con los de la base
 - [[CIEHS-Privacidad-Menores]] — qué se publica de los estudiantes.
 - [[CIEHS-Arena-Juego]] — el modo de juego a pantalla completa.
 - [[CIEHS]] — índice general.
+- [[CIEHS-Tienda-Escolar]] — catálogo, reservas de cosecha y transparencia.

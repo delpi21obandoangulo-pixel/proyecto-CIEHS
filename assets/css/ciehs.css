@@ -3311,3 +3311,12 @@
   }
   .quiz-oir svg{ width:15px; height:15px; }
   .quiz-oir:hover{ color:var(--leaf-300); border-color:rgba(5,150,105,0.3); transform:scale(1.1); }
+  /* Próximo a cosecha: ámbar de aviso, distinto del naranja de "en crecimiento".
+     Son estados vecinos y confundirlos hace volver a la gente el día que no es. */
+  .est-prox{ background:rgba(217,119,6,0.92); color:#fff; }
+  .destino-previsto{
+    padding:11px 14px; margin-bottom:14px;
+    background:var(--surface-2); border-radius:var(--radius-s);
+    font-size:12.5px; line-height:1.55; color:var(--ink-soft);
+  }
+  .destino-con small{ display:block; margin-top:2px; font-size:11.5px; color:var(--ink-mute); line-height:1.45; }

@@ -84,7 +84,7 @@
                      'harvest_on, harvest_kg, notes, position, published, updated_at';
   var COLS_RECURSO = 'id, title, description, level, area, kind, file_url, file_kind, duration, ' +
                      'featured, position, published, updated_at';
-  var COLS_CAJA    = 'id, occurred_on, period, concept, kind, amount_pen, note, published';
+  var COLS_CAJA    = 'id, occurred_on, period, concept, kind, amount_pen, note, categoria, published';
   var COLS_EVIDENCIA = 'id, storage_path, title, eyebrow, body, alt, width, height, ' +
                        'consent_ref, position, published';
   var COLS_APORTE    = 'id, kind, title, description, equipo, grado, storage_path, ' +
@@ -663,6 +663,7 @@
       id: m.id || undefined,
       occurred_on: m.occurredOn, period: vacio(m.period), concept: m.concept,
       kind: m.kind, amount_pen: Number(m.amount || 0), note: vacio(m.note),
+      categoria: vacio(m.categoria),
       published: !!m.published
     });
   };

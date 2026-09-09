@@ -278,3 +278,4 @@ proyectos.
 - [[CIEHS-Metodologia-Pedagogica]] — qué contenido pedagógico consume estos datos.
 - [[CIEHS-Arena-Juego]] — un marcador entre clases necesitaría una tabla aquí.
 - [[CIEHS-Pentest-2026-09]] — el pentest y el argumento del proyecto propio.
+- [[CIEHS-Tienda-Escolar]] — catálogo, reservas de cosecha y transparencia.

@@ -2334,7 +2334,100 @@
           <p class="comunidad-lede">Elige lo que quieras y cuántas unidades: el total se va sumando solo. El equipo de Ventas te confirma el día de entrega, y la cosecha se corta el mismo día en que se entrega.</p>
 
           <p class="tienda-estado" id="tiendaEstado" role="status" aria-live="polite">Cargando el catálogo…</p>
-          <div class="tienda-grid" id="tiendaGrid"></div>
+          <!-- El contenido de abajo es el RESPALDO: lo sustituye la base en
+               cuanto responde. Si no responde, esto es lo que se ve. -->
+          <div class="tienda-grid" id="tiendaGrid">
+            <article class="prod">
+              <div class="prod-foto">
+                <span class="prod-sinfoto" aria-hidden="true">🌱</span>
+                <span class="prod-estado est-disp">Disponible ahora</span>
+              </div>
+              <div class="prod-cuerpo">
+                <h4>Lechuga crespa</h4>
+                <p class="prod-cient"><i>Lactuca sativa</i></p>
+                <p class="prod-desc">Hoja rizada y tierna, cortada el mismo día de la entrega.</p>
+                <div class="prod-pie">
+                  <span class="prod-precio tabular">—<small> / unidad</small></span>
+                  <span class="prod-nodisp">Reserva no disponible sin conexión</span>
+                </div>
+              </div>
+            </article>
+            <article class="prod">
+              <div class="prod-foto">
+                <span class="prod-sinfoto" aria-hidden="true">🌱</span>
+                <span class="prod-estado est-disp">Disponible ahora</span>
+              </div>
+              <div class="prod-cuerpo">
+                <h4>Lechuga americana</h4>
+                <p class="prod-cient"><i>Lactuca sativa var. capitata</i></p>
+                <p class="prod-desc">Cogollo compacto, ideal para ensaladas.</p>
+                <div class="prod-pie">
+                  <span class="prod-precio tabular">—<small> / unidad</small></span>
+                  <span class="prod-nodisp">Reserva no disponible sin conexión</span>
+                </div>
+              </div>
+            </article>
+            <article class="prod">
+              <div class="prod-foto">
+                <span class="prod-sinfoto" aria-hidden="true">🌱</span>
+                <span class="prod-estado est-disp">Disponible ahora</span>
+              </div>
+              <div class="prod-cuerpo">
+                <h4>Cebolla china</h4>
+                <p class="prod-cient"><i>Allium fistulosum</i></p>
+                <p class="prod-desc">Se cosecha por manojo, con la raíz limpia.</p>
+                <div class="prod-pie">
+                  <span class="prod-precio tabular">—<small> / manojo</small></span>
+                  <span class="prod-nodisp">Reserva no disponible sin conexión</span>
+                </div>
+              </div>
+            </article>
+            <article class="prod is-off">
+              <div class="prod-foto">
+                <span class="prod-sinfoto" aria-hidden="true">🌱</span>
+                <span class="prod-estado est-prox">Próximo a cosecha</span>
+              </div>
+              <div class="prod-cuerpo">
+                <h4>Albahaca</h4>
+                <p class="prod-cient"><i>Ocimum basilicum</i></p>
+                <p class="prod-desc">Aroma intenso. Se corta en atados pequeños.</p>
+                <div class="prod-pie">
+                  <span class="prod-precio tabular">—<small> / atado</small></span>
+                  <span class="prod-nodisp">Reserva no disponible sin conexión</span>
+                </div>
+              </div>
+            </article>
+            <article class="prod is-off">
+              <div class="prod-foto">
+                <span class="prod-sinfoto" aria-hidden="true">🌱</span>
+                <span class="prod-estado est-prox">Próximo a cosecha</span>
+              </div>
+              <div class="prod-cuerpo">
+                <h4>Acelga</h4>
+                <p class="prod-cient"><i>Beta vulgaris var. cicla</i></p>
+                <p class="prod-desc">Hoja grande de penca blanca.</p>
+                <div class="prod-pie">
+                  <span class="prod-precio tabular">—<small> / atado</small></span>
+                  <span class="prod-nodisp">Reserva no disponible sin conexión</span>
+                </div>
+              </div>
+            </article>
+            <article class="prod is-off">
+              <div class="prod-foto">
+                <span class="prod-sinfoto" aria-hidden="true">🌱</span>
+                <span class="prod-estado est-crec">En crecimiento</span>
+              </div>
+              <div class="prod-cuerpo">
+                <h4>Espinaca</h4>
+                <p class="prod-cient"><i>Spinacia oleracea</i></p>
+                <p class="prod-desc">Hoja joven, muy suave.</p>
+                <div class="prod-pie">
+                  <span class="prod-precio tabular">—<small> / atado</small></span>
+                  <span class="prod-nodisp">Reserva no disponible sin conexión</span>
+                </div>
+              </div>
+            </article>
+          </div>
 
           <!-- El carrito solo aparece cuando hay algo dentro: un carrito vacío
                permanente es ruido que empuja el catálogo hacia abajo. -->
@@ -2378,9 +2471,30 @@
           <p class="eyebrow">Transparencia</p>
           <h3>A dónde va lo que se obtiene</h3>
           <p class="comunidad-lede">Lo que se recauda vendiendo la cosecha vuelve al laboratorio. Aquí no se publican importes ni cuánto se vende: se publica <b>la proporción</b> en que se reparte, que es lo que de verdad dice en qué cree este proyecto.</p>
-
           <p class="transp-estado" id="transpEstado" role="status" aria-live="polite">Cargando el reparto…</p>
-          <div class="destino" id="destinoLista"></div>
+          <!-- Respaldo: el reparto PREVISTO. En cuanto Tesorería registre
+               egresos, la base lo sustituye por el reparto real. -->
+          <div class="destino" id="destinoLista">
+            <p class="destino-previsto">Reparto <b>previsto</b>. Todavía sin egresos registrados: en cuanto los haya, aquí se verá el reparto real.</p>
+            <ul class="destino-lista">
+              <li>
+                <i style="background:var(--leaf-500)"></i>
+                <span class="destino-con">Nutrientes y solución<small>Sales, correctores de pH y reposición de la solución nutritiva</small></span>
+              </li>
+              <li>
+                <i style="background:var(--azure-500)"></i>
+                <span class="destino-con">Semillas y almácigo<small>Semilla certificada y sustrato de germinación</small></span>
+              </li>
+              <li>
+                <i style="background:var(--sun-500)"></i>
+                <span class="destino-con">Mantenimiento de los módulos<small>Geomembrana, tecnopor, reparación de mesas DWC y bombas de aire</small></span>
+              </li>
+              <li>
+                <i style="background:#7c3aed"></i>
+                <span class="destino-con">Materiales de investigación<small>Instrumentos de medición y reactivos de los equipos estudiantiles</small></span>
+              </li>
+            </ul>
+          </div>
           <p class="comunidad-privacidad">Los porcentajes se calculan solos a partir del registro de egresos que lleva el equipo de Tesorería. Cualquier discrepancia se puede reclamar escribiendo a <span class="mono">ciehs.olaya@gmail.com</span>.</p>
         </div>
       </div>
@@ -2986,6 +3100,17 @@
               <label class="form-field"><span>Monto (S/)</span><input type="number" id="traMonto" min="0" step="0.10" required></label>
               <label class="form-field"><span>Periodo</span><input type="text" id="traPeriodo" maxlength="40" placeholder="II bimestre 2026"></label>
             </div>
+            <label class="form-field">
+              <span>Destino del gasto <small>(solo en egresos: es lo que se publica en porcentaje)</small></span>
+              <select id="traCategoria">
+                <option value="">— sin clasificar —</option>
+                <option value="nutrientes">Nutrientes y solución</option>
+                <option value="semillas">Semillas y almácigo</option>
+                <option value="modulos">Mantenimiento de los módulos DWC</option>
+                <option value="investigacion">Materiales de investigación</option>
+                <option value="otros">Otros destinos</option>
+              </select>
+            </label>
             <label class="form-field"><span>Nota</span><textarea id="traNota" rows="2" maxlength="300"></textarea></label>
             <label class="admin-checkbox-row"><input type="checkbox" id="traPublicado" checked> Publicar en el panel de transparencia</label>
           </div>

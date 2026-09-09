@@ -37,6 +37,7 @@ está cada cosa.
 | [[CIEHS-Privacidad-Menores]] | Qué se publica de los estudiantes y qué nunca |
 | [[CIEHS-Arena-Juego]] | El modo de juego: niveles, expediciones, animación y voz |
 | [[CIEHS-Voz-DUA]] | Cómo suena el portal: voz, acento y Diseño Universal del Aprendizaje |
+| [[CIEHS-Tienda-Escolar]] | Catálogo, reservas de cosecha y transparencia en porcentaje |
 | [[CIEHS-Pentest-2026-09]] | Auto-evaluación de ciberseguridad: 14 ataques, resultado |
 
 ---
@@ -58,7 +59,7 @@ está cada cosa.
 | Privacidad | **Rostros tapados en origen**: toda imagen se pixela en el navegador antes de subirse |
 | Seguridad | CSP sin `unsafe-inline` (scripts ni estilos) · pentest sin hallazgos explotables en el CIEHS |
 | Investigación | Carpeta de campo digital, aportes en cuarentena y **resultados por tratamiento con gráfica automática** |
-| Tienda | Catálogo con estado de cultivo, carrito que suma solo y reserva · **transparencia en porcentaje, sin importes** |
+| Tienda | **6 especies publicadas** con estado de lote · carrito, reserva y transparencia en porcentaje · respaldo estático sin conexión |
 | Arena | 5 niveles, 150 retos, 2 expediciones diarias |
 | DUA | Preguntas, opciones y explicaciones **en voz alta**, con acento latinoamericano |
 

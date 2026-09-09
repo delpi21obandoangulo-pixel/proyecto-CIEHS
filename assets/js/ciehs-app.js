@@ -1993,6 +1993,7 @@
       txt('traFecha', f.occurred_on || new Date().toISOString().slice(0,10));
       txt('traTipo', f.kind || 'ingreso'); txt('traConcepto', f.concept);
       txt('traMonto', f.amount_pen); txt('traPeriodo', f.period); txt('traNota', f.note);
+      txt('traCategoria', f.categoria || '');
       marcar('traPublicado', f.id ? f.published : true);
     },
     guardar: function(){
@@ -2000,6 +2001,7 @@
         id: traEditandoId, occurredOn: leer('traFecha'), kind: leer('traTipo'),
         concept: leer('traConcepto').trim(), amount: leer('traMonto'),
         period: leer('traPeriodo').trim(), note: leer('traNota').trim(),
+        categoria: leer('traCategoria'),
         published: leerMarca('traPublicado')
       });
     }
@@ -4221,9 +4223,11 @@
   }
 
   var ETIQUETA_ESTADO = {
-    disponible:     { txt:'Disponible ahora', cls:'est-disp' },
-    en_crecimiento: { txt:'En crecimiento',   cls:'est-crec' },
-    agotado:        { txt:'Agotado',          cls:'est-ago'  }
+    disponible:        { txt:'Disponible ahora',  cls:'est-disp' },
+    // El estado mas util para una familia: le dice cuando volver.
+    proximo_a_cosecha: { txt:'Próximo a cosecha', cls:'est-prox' },
+    en_crecimiento:    { txt:'En crecimiento',    cls:'est-crec' },
+    agotado:           { txt:'Agotado',           cls:'est-ago'  }
   };
 
   /* ------------------------------------------------------- el catalogo ----*/
@@ -4235,12 +4239,15 @@
   function pintarCatalogo(){
     var lista = productos();
     if(!lista.length){
-      grid.innerHTML = '';
+      // NO se vacia la rejilla: el HTML trae un catalogo de respaldo con las seis
+      // especies y su estado. Borrarlo dejaria la seccion en blanco justo a
+      // quien peor conexion tiene, que es a quien mas falta le hace saber que
+      // se cultiva. Solo se explica que no se puede reservar todavia.
       if(elEstado){
         elEstado.hidden = false;
         elEstado.textContent = (D && D.conectado)
-          ? 'El catálogo todavía está vacío. El equipo de Ventas publica aquí lo que se va cosechando.'
-          : 'No se pudo conectar con la base del CIEHS, así que el catálogo no se puede mostrar ahora mismo.';
+          ? 'El catálogo todavía está vacío. Abajo, lo que el CIEHS cultiva habitualmente.'
+          : 'Sin conexión con la base del CIEHS: se muestra el catálogo habitual, pero la reserva en línea no está disponible.';
       }
       return;
     }
@@ -4403,6 +4410,15 @@
      contabilidad. No se muestra ningun importe ni cuanto se ha vendido — lo que
      dice en que cree el proyecto es la PROPORCION, no el monto. */
   var COLORES = ['var(--leaf-500)', 'var(--azure-500)', 'var(--sun-500)', '#7c3aed', '#c2410c', '#0f766e'];
+  // Las cuatro lineas en que el CIEHS reinvierte. Fijas a proposito: son las
+  // que el proyecto se compromete a sostener, no una lista que crece sola.
+  var NOMBRE_CATEGORIA = {
+    nutrientes:    'Nutrientes y solución',
+    semillas:      'Semillas y almácigo',
+    modulos:       'Mantenimiento de los módulos',
+    investigacion: 'Materiales de investigación',
+    otros:         'Otros destinos'
+  };
 
   function pintarDestino(){
     if(!destino) return;
@@ -4411,20 +4427,27 @@
     var egresos = caja.filter(function(e){ return e.kind === 'egreso' && Number(e.amount_pen) > 0; });
 
     if(!egresos.length){
-      destino.innerHTML = '';
+      // Igual que el catalogo: se conserva el respaldo, que muestra el reparto
+      // PREVISTO y lo dice con esas palabras. Ensenar un plan como si fuera
+      // gasto ya ejecutado seria mentir; ensenarlo etiquetado como plan es lo
+      // que una familia quiere saber antes de comprar.
       if(transpEst){
         transpEst.hidden = false;
         transpEst.textContent = (D && D.conectado)
-          ? 'Todavía no hay egresos publicados. En cuanto Tesorería registre el primero, aquí aparecerá el reparto.'
-          : 'No se pudo conectar con la base del CIEHS, así que el reparto no se puede mostrar ahora mismo.';
+          ? 'Todavía no hay egresos registrados. Abajo, el reparto previsto.'
+          : 'Sin conexión con la base del CIEHS: se muestra el reparto previsto.';
       }
       return;
     }
     if(transpEst) transpEst.hidden = true;
 
+    // Se agrupa por CATEGORIA canonica, no por el concepto en texto libre:
+    // "solucion nutritiva", "Solucion Nutritiva" y "nutrientes" son el mismo
+    // gasto, y agrupar por texto daba tantas porciones como formas de
+    // escribirlo. Los egresos antiguos sin categoria caen en "Otros".
     var porConcepto = {};
     egresos.forEach(function(e){
-      var c = (e.concept || 'Otros').trim();
+      var c = NOMBRE_CATEGORIA[e.categoria] || 'Otros destinos';
       porConcepto[c] = (porConcepto[c] || 0) + Number(e.amount_pen);
     });
     var total = Object.keys(porConcepto).reduce(function(s, k){ return s + porConcepto[k]; }, 0);
