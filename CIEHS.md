@@ -5,7 +5,7 @@ tags: [ciehs, moc, indice]
 institucion: I.E. N.° 80033 “José Olaya Balandra” — Huanchaco, La Libertad, Perú
 produccion: https://ciehs.vercel.app
 estado: en produccion
-actualizado: 2026-09-08
+actualizado: 2026-09-09
 ---
 
 # CIEHS · Índice
@@ -54,7 +54,7 @@ está cada cosa.
 | Identidad | Escudo, sello y mural oficiales · **blanco por capas** con capa de movimiento |
 | Portada | Hero con **fondo animado de brisa** + galería «El CIEHS en acción», administrable desde el panel |
 | Infraestructura | **15 módulos DWC activos sin bomba de aire**; NFT y vertical solo como proyección |
-| Privacidad | Página publicada, **pendiente de aprobación por dirección** — hoy bloquea 15 fotografías |
+| Privacidad | Protocolo **aprobado por la Dirección el 2026-09-09** · bloqueo levantado |
 | Seguridad | CSP sin `unsafe-inline` (scripts ni estilos) · pentest sin hallazgos explotables en el CIEHS |
 | Arena | 5 niveles, 150 retos, 2 expediciones diarias |
 
@@ -62,22 +62,20 @@ está cada cosa.
 
 ## Lo que falta, por orden de importancia
 
-1. **Aprobar el protocolo de imagen** antes de publicar la primera fotografía de
-   un estudiante → [[CIEHS-Privacidad-Menores]]
-2. **Subir las quince fotografías con estudiantes** desde la pestaña
-   «Evidencias» del panel. Están clasificadas y sin metadatos; el apoderado ya
-   autorizó por escrito. Falta la **aprobación de la dirección**, que el
-   protocolo marca como bloqueante → [[CIEHS-Privacidad-Menores]]
-3. **Archivos descargables**: la carpeta de campo y el espacio docente ya tienen
+1. **Subir las quince fotografías con estudiantes** desde la pestaña
+   «Evidencias» del panel. Están clasificadas y sin metadatos; hay autorización
+   del apoderado y aprobación de la Dirección. Anotar el respaldo en
+   `consent_ref` → [[CIEHS-Privacidad-Menores]]
+2. **Archivos descargables**: la carpeta de campo y el espacio docente ya tienen
    panel de carga; faltan los archivos reales (empezando por el audio-cuento
    «El viaje de una gota de agua»).
-4. **Primeras entradas de la carpeta de campo** y de la bitácora agronómica
+3. **Primeras entradas de la carpeta de campo** y de la bitácora agronómica
    (los seis lotes existen, sin fechas ni mediciones todavía).
-5. **Bombas de aire** para los quince módulos: primera mejora planificada.
-6. **Marcador entre clases** de la Arena: hoy el récord es solo local → [[CIEHS-Arena-Juego]]
-7. **Despliegue automático** desde GitHub: solo falta instalar la Vercel GitHub
+4. **Bombas de aire** para los quince módulos: primera mejora planificada.
+5. **Marcador entre clases** de la Arena: hoy el récord es solo local → [[CIEHS-Arena-Juego]]
+6. **Despliegue automático** desde GitHub: solo falta instalar la Vercel GitHub
    App desde el navegador; el resto ya está configurado → [[CIEHS-Portal-Educativo]]
-8. Resolver la contradicción de licencia (MIT vs. «todos los derechos
+7. Resolver la contradicción de licencia (MIT vs. «todos los derechos
    reservados») → [[CIEHS-Auditoria-Seguridad-Auth]]
 
 ---

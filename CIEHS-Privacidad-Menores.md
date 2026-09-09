@@ -2,9 +2,9 @@
 title: CIEHS · Privacidad y uso de imagen de menores
 aliases: [Privacidad CIEHS, Protocolo de imagen, Ley 29733 CIEHS]
 tags: [ciehs, privacidad, menores, legal, ley-29733]
-estado: publicado · PENDIENTE DE APROBACION — bloquea 15 fotografias
+estado: publicado · APROBADO POR DIRECCION 2026-09-09
 publicado-en: https://ciehs.vercel.app/#/privacidad
-actualizado: 2026-09-08
+actualizado: 2026-09-09
 ---
 
 # CIEHS · Privacidad y uso de imagen de menores
@@ -12,20 +12,28 @@ actualizado: 2026-09-08
 Protocolo de qué se publica y qué no. Parte de [[CIEHS]]; el riesgo que lo
 motiva está registrado en [[CIEHS-Auditoria-Seguridad-Auth]].
 
-> [!danger] Bloqueo activo — **hoy retiene quince fotografías**
-> Esta página está publicada, pero **no ha sido aprobada por la dirección de la
-> institución**. Hasta que lo esté, **no debe publicarse ninguna fotografía de
-> un estudiante**. El propio texto lo dice en el portal: es un documento en
-> validación y no sustituye asesoría legal.
+> [!success] Bloqueo levantado — **aprobado por la Dirección el 2026-09-09**
+> La Dirección de la I.E. N.° 80033 «José Olaya Balandra» aprobó formalmente
+> este protocolo. Con eso decae el bloqueo general que impedía publicar
+> cualquier fotografía de un estudiante.
 >
-> **Estado a 2026-09-08.** La coordinación aportó diecinueve fotografías del
-> laboratorio. Se publicaron **cuatro** —solo infraestructura y cultivo, sin
-> ninguna persona— en la galería «El CIEHS en acción» de la portada. Las otras
-> **quince muestran rostros identificables** y quedan fuera.
+> **Lo que sigue vigente, y no depende de esa aprobación:** una fotografía con
+> rostro identificable necesita además **autorización escrita del apoderado**,
+> vigente y archivada (§2 y §3). La aprobación de la Dirección habilita el
+> marco; no sustituye el consentimiento de cada familia.
 >
-> Ojo con un detalle que no es obvio: el repositorio es **público**, así que
-> esas quince tampoco se copiaron a `assets/`. Dejarlas ahí sin enlazarlas
-> desde ninguna página las publicaría igual.
+> Este documento sigue sin ser asesoría legal.
+
+> [!important] Dónde viven las fotografías, y por qué importa
+> Las que muestran personas **no van al repositorio**: van al bucket
+> `ciehs-evidencias` de Supabase Storage. El repositorio es **público** y el
+> historial de git es permanente, así que un commit con la cara de un menor no
+> se deshace ni borrando el archivo después.
+>
+> Como el §3 promete que la autorización es **revocable en cualquier momento** y
+> el §6 que el contenido se retira sin pedir explicaciones, esa promesa solo se
+> puede cumplir si el archivo se puede borrar de verdad. Desde el panel,
+> eliminar una evidencia borra **la ficha y el objeto**.
 
 ---
 
@@ -120,10 +128,13 @@ obstáculo.
 
 ## 7. Pendientes
 
-- [ ] **Aprobación formal de la dirección.** Bloquea todo lo demás.
+- [x] **Aprobación formal de la Dirección.** Obtenida el 2026-09-09. Era el
+      bloqueo que retenía todo lo demás.
 - [ ] Redactar y distribuir la **ficha de autorización de imagen** para
       apoderados.
-- [ ] Definir **quién archiva y custodia** las autorizaciones firmadas.
+- [ ] Definir **quién archiva y custodia** las autorizaciones firmadas. Ahora
+      es lo más urgente: las autorizaciones ya existen y el campo `consent_ref`
+      de cada evidencia debe apuntar a un sitio concreto y localizable.
 - [x] Procedimiento para **retirar metadatos** de las fotografías antes de
       subirlas. Hecho: hay un limpiador propio que descarta todos los segmentos
       APPn y de comentario de cada JPEG. Se aplicó a las cuatro publicadas.
