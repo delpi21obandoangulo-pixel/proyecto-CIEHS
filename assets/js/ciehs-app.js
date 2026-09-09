@@ -324,7 +324,11 @@
       return '<div class="quiz-q' + (repaso ? ' ya-acertada' : '') + '" data-qid="' + esc(p.id)
            + '" data-category="' + esc(p.cat) + '" data-explain="' + esc(p.exp) + '">'
            + (repaso ? '<span class="quiz-repaso">Repaso · ya acertada</span>' : '')
-           + '<p class="quiz-q-text">' + esc(p.q) + '</p>'
+           + '<p class="quiz-q-text">' + esc(p.q)
+           +   '<button type="button" class="quiz-oir" data-oir aria-label="Escuchar esta pregunta">'
+           +     '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16.5 8.8a4.5 4.5 0 0 1 0 6.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'
+           +   '</button>'
+           + '</p>'
            + '<div class="quiz-opts">' + opciones + '</div>'
            + '<p class="quiz-feedback" hidden></p>'
            + '</div>';
@@ -386,6 +390,14 @@
       feedback.hidden = false;
       feedback.textContent = (isCorrect ? '✓ ' : '✗ ') + q.getAttribute('data-explain');
       feedback.classList.toggle('is-correct', isCorrect);
+      // Se lee la explicación, no el "✓" o la "✗": un lector diría "marca de
+      // verificación" y eso no explica nada. El acierto o el fallo se dice con
+      // palabras, que además es lo que se recuerda.
+      if(window.CIEHS && window.CIEHS.voz){
+        window.CIEHS.voz.hablar(
+          (isCorrect ? 'Correcto. ' : 'No es esa. ') + (q.getAttribute('data-explain') || '')
+        );
+      }
     }
     if(isCorrect){
       var qid = q.getAttribute('data-qid');
@@ -402,10 +414,24 @@
     persist(); updateScore(); updateBadges(); actualizarRonda();
   }
 
+  // Lee la pregunta con sus opciones. Se enumeran ("Opcion 1...") porque sin
+  // numerar, oidas seguidas, no hay forma de saber cual es cual.
+  function leerPregunta(q){
+    if(!window.CIEHS || !window.CIEHS.voz) return;
+    var texto = q.querySelector('.quiz-q-text');
+    var enunciado = texto ? (texto.childNodes[0] ? texto.childNodes[0].nodeValue : texto.textContent) : '';
+    var ops = [].slice.call(q.querySelectorAll('.quiz-opt')).map(function(o, i){
+      return 'Opción ' + (i + 1) + ': ' + o.textContent.trim() + '.';
+    }).join(' ');
+    window.CIEHS.voz.hablar((enunciado || '').trim() + ' ' + ops);
+  }
+
   function conectarPreguntas(raiz){
     raiz.querySelectorAll('.quiz-q').forEach(function(q){
       var opts = [].slice.call(q.querySelectorAll('.quiz-opt'));
       var feedback = q.querySelector('.quiz-feedback');
+      var oir = q.querySelector('[data-oir]');
+      if(oir) oir.addEventListener('click', function(){ leerPregunta(q); });
       opts.forEach(function(o){
         o.addEventListener('click', function(){
           if(q.classList.contains('is-answered')) return;
@@ -4425,4 +4451,222 @@
 
   pintarCatalogo();
   pintarDestino();
+})();
+
+/* ===========================================================================
+   16. VOZ — Diseño Universal para el Aprendizaje (DUA)
+
+   El CNEB pide ofrecer el contenido por más de una vía. Aquí eso significa que
+   todo lo que hay que leer para jugar se puede ESCUCHAR: la pregunta, las
+   opciones y la explicación de por qué una respuesta era la correcta.
+
+   TRES DECISIONES QUE CAMBIAN CÓMO SUENA
+   --------------------------------------
+   1. Acento. Se prefieren las variantes LATINOAMERICANAS (es-US, es-MX, es-419,
+      es-PE) sobre es-ES. El castellano de España cecea, y a un estudiante de
+      Huanchaco eso le suena a persona de fuera leyendo su examen.
+
+   2. Voz de mujer. Se busca por nombre entre las conocidas (Sabina, Paulina,
+      Laura, Helena, Mónica…) porque la API no expone el género. Si ninguna
+      coincide, se usa la primera en español antes que una en inglés.
+
+   3. Frase a frase, no de un tirón. Un párrafo entero leído sin pausas suena a
+      máquina; además Chrome corta la locución a los ~15 segundos. Partirlo por
+      frases resuelve las dos cosas a la vez.
+
+   SUBIR DE CALIDAD SIN TOCAR ESTE CÓDIGO
+   --------------------------------------
+   Si existe un archivo de audio para una clave dada en el bucket de aportes, se
+   reproduce ESE en lugar de sintetizar. Así se puede pregrabar el banco de
+   preguntas con una voz de gama alta y el portal la usará sola, sin claves de
+   API en el navegador (que además serían públicas: el repositorio lo es).
+   =========================================================================== */
+(function(){
+  var soporta = 'speechSynthesis' in window && typeof window.SpeechSynthesisUtterance === 'function';
+
+  var CLAVE = 'ciehs_voz_v1';
+  var activa = false;
+  try { activa = localStorage.getItem(CLAVE) === '1'; } catch(e){ activa = false; }
+
+  var vozElegida = null;
+  var audioActual = null;
+
+  /* ----------------------------------------------- elegir la mejor voz -----*/
+  var NOMBRES_MUJER = /sabina|paulina|laura|helena|m[oó]nica|esperanza|lupe|marisol|luciana|camila|female|mujer|google espa/i;
+  // Orden de preferencia de acento: primero lo latinoamericano.
+  var PRIORIDAD_LANG = ['es-us','es-mx','es-419','es-pe','es-co','es-ar','es-cl','es-es','es'];
+
+  function puntuar(v){
+    var lang = (v.lang || '').toLowerCase().replace('_', '-');
+    var idx = PRIORIDAD_LANG.findIndex(function(p){ return lang.indexOf(p) === 0; });
+    if(idx === -1) return -1;                       // no es español: descartada
+    var p = (PRIORIDAD_LANG.length - idx) * 10;
+    if(NOMBRES_MUJER.test(v.name)) p += 25;         // voz de mujer: lo pedido
+    // Las de red suelen sonar bastante mejor que las locales del sistema.
+    if(!v.localService) p += 8;
+    return p;
+  }
+
+  function elegirVoz(){
+    if(!soporta) return null;
+    var voces = speechSynthesis.getVoices() || [];
+    var mejor = null, mejorP = -1;
+    voces.forEach(function(v){
+      var p = puntuar(v);
+      if(p > mejorP){ mejorP = p; mejor = v; }
+    });
+    vozElegida = mejorP > -1 ? mejor : null;
+    return vozElegida;
+  }
+
+  if(soporta){
+    elegirVoz();
+    // En Chrome la lista llega vacía y se rellena después: sin esto, la primera
+    // locución usaría la voz por defecto del sistema, casi siempre en inglés.
+    speechSynthesis.addEventListener('voiceschanged', elegirVoz);
+  }
+
+  /* ------------------------------------------------------------- hablar ----*/
+  // Se parte por frases SIN lookbehind. No es purismo: `(?<=...)` es un error
+  // de SINTAXIS en Safari anterior a la 16.4, y un error de sintaxis no rompe
+  // solo la voz — impide que se evalúe este archivo entero y tumba el portal
+  // completo en los iPad viejos de un colegio.
+  function frasear(texto){
+    var limpio = String(texto || '').replace(/\s+/g, ' ').trim();
+    if(!limpio) return [];
+    var frases = [], actual = '';
+    for(var i = 0; i < limpio.length; i++){
+      var c = limpio[i];
+      actual += c;
+      if('.!?…'.indexOf(c) > -1){
+        // Se corta solo si lo siguiente es un espacio: así "6.5" o "MOD-DWC-01"
+        // no se parten por la mitad.
+        if(i + 1 >= limpio.length || limpio[i + 1] === ' '){
+          frases.push(actual.trim());
+          actual = '';
+        }
+      }
+    }
+    if(actual.trim()) frases.push(actual.trim());
+    return frases;
+  }
+
+  function parar(){
+    if(soporta){ try { speechSynthesis.cancel(); } catch(e){} }
+    if(audioActual){ try { audioActual.pause(); } catch(e){} audioActual = null; }
+  }
+
+  function sintetizar(texto){
+    if(!soporta) return;
+    var frases = frasear(texto);
+    if(!frases.length) return;
+    if(!vozElegida) elegirVoz();
+
+    frases.forEach(function(f, i){
+      var u = new SpeechSynthesisUtterance(f);
+      if(vozElegida){ u.voice = vozElegida; u.lang = vozElegida.lang; }
+      else { u.lang = 'es-PE'; }
+      // Algo más lenta y algo más aguda: es lo que separa "lectura de robot" de
+      // "alguien explicando". Pasarse de tono la vuelve chillona.
+      u.rate  = 0.95;
+      u.pitch = 1.08;
+      u.volume = 1;
+      // Un respiro entre frases. La API no tiene pausas, así que se simula
+      // retrasando cada frase con un silencio previo.
+      if(i > 0) u.text = ' ' + u.text;
+      speechSynthesis.speak(u);
+    });
+  }
+
+  // Si hay pista pregrabada, manda esa. La clave es libre: la usa quien haya
+  // subido el audio con ese nombre al bucket de aportes.
+  function reproducirPista(clave){
+    var D = window.CIEHSData;
+    if(!clave || !D || typeof D.urlAporte !== 'function') return Promise.reject();
+    return D.urlAporte('voz/' + clave + '.mp3', 600).then(function(url){
+      return new Promise(function(res, rej){
+        var a = new Audio(url);
+        audioActual = a;
+        a.onended = function(){ audioActual = null; res(); };
+        a.onerror = rej;
+        a.play().catch(rej);
+      });
+    });
+  }
+
+  function hablar(texto, opciones){
+    if(!activa) return;
+    opciones = opciones || {};
+    parar();
+    if(opciones.clave){
+      reproducirPista(opciones.clave).catch(function(){ sintetizar(texto); });
+    } else {
+      sintetizar(texto);
+    }
+  }
+
+  /* --------------------------------------------------- el interruptor ------*/
+  function pintarBoton(btn){
+    btn.setAttribute('aria-pressed', String(activa));
+    btn.classList.toggle('is-on', activa);
+    btn.querySelector('[data-voz-txt]').textContent = activa ? 'Voz activada' : 'Escuchar';
+    btn.title = activa
+      ? 'La voz está activada: se leerán en voz alta las preguntas y las explicaciones.'
+      : 'Activa la voz para escuchar las preguntas y las explicaciones.';
+  }
+
+  function montarBoton(){
+    var host = document.getElementById('vozControl');
+    if(!host) return;
+    if(!soporta){
+      host.innerHTML = '<p class="voz-nosoporta">Este navegador no puede leer en voz alta. '
+        + 'En Chrome o Edge sí funciona.</p>';
+      return;
+    }
+    host.innerHTML =
+      '<button type="button" class="voz-btn" id="vozBtn" aria-pressed="false">'
+      + '<span class="voz-ico" aria-hidden="true">'
+      +   '<svg viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/>'
+      +   '<path class="onda1" d="M16.5 8.8a4.5 4.5 0 0 1 0 6.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>'
+      +   '<path class="onda2" d="M19.2 6a8.2 8.2 0 0 1 0 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'
+      + '</span>'
+      + '<span data-voz-txt>Escuchar</span>'
+      + '</button>'
+      + '<p class="voz-nota">Diseño Universal para el Aprendizaje: lo que hay que leer, también se puede escuchar.</p>';
+
+    var btn = document.getElementById('vozBtn');
+    pintarBoton(btn);
+    btn.addEventListener('click', function(){
+      activa = !activa;
+      try { localStorage.setItem(CLAVE, activa ? '1' : '0'); } catch(e){}
+      pintarBoton(btn);
+      if(activa){
+        // La primera locución tiene que salir del propio clic: los navegadores
+        // bloquean el audio que no nace de un gesto de la persona.
+        sintetizar('Voz activada. Te leeré las preguntas y las explicaciones.');
+      } else {
+        parar();
+      }
+    });
+  }
+
+  // Al cambiar de sección se corta lo que se estuviera leyendo: seguir narrando
+  // una pregunta que ya no está en pantalla desorienta.
+  window.addEventListener('hashchange', parar);
+  document.addEventListener('visibilitychange', function(){ if(document.hidden) parar(); });
+
+  window.CIEHS = window.CIEHS || {};
+  window.CIEHS.voz = {
+    hablar: hablar,
+    parar: parar,
+    activa: function(){ return activa; },
+    soporta: soporta,
+    vozActual: function(){ return vozElegida ? (vozElegida.name + ' · ' + vozElegida.lang) : null; }
+  };
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', montarBoton);
+  } else {
+    montarBoton();
+  }
 })();

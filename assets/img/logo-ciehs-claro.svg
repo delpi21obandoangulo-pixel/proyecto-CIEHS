@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 72" role="img" aria-labelledby="logoTituloClaro">
+  <title id="logoTituloClaro">CIEHS · Centro de Investigación Escolar Hidropónico Sostenible (versión para fondo oscuro)</title>
+  <!--
+    Logo completo: isotipo + logotipo. Mismo emblema que el mural, redibujado.
+    El texto va como TRAZADO no, sino como <text> con la familia del portal y un
+    respaldo genérico: si la fuente no carga, el logo sigue siendo legible en
+    lugar de descuadrarse.
+  -->
+  <defs>
+    <clipPath id="logoCirculoClaro"><circle cx="36" cy="36" r="28"/></clipPath>
+    <linearGradient id="logoHojaClaro" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#10b981"/>
+      <stop offset="1" stop-color="#047857"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="36" cy="36" r="28" fill="#ffffff"/>
+  <g clip-path="url(#logoCirculoClaro)">
+    <path d="M8 46c5 0 5-3.4 10-3.4S23 46 28 46s5-3.4 10-3.4S43 46 48 46s5-3.4 10-3.4S63 46 68 46v22H8z" fill="#0284c7"/>
+    <path d="M8 51c5 0 5-3 10-3s5 3 10 3 5-3 10-3 5 3 10 3 5-3 10-3 5 3 10 3v17H8z" fill="#075985"/>
+    <g stroke="#e8d9b5" stroke-width="1.5" stroke-linecap="round" fill="none" opacity=".95">
+      <path d="M36 44v10"/>
+      <path d="M36 47c-3 2-4.5 3.5-5.5 6"/>
+      <path d="M36 47c3 2 4.5 3.5 5.5 6"/>
+      <path d="M36 50c-1.8 2-2.6 3.4-3 5"/>
+      <path d="M36 50c1.8 2 2.6 3.4 3 5"/>
+    </g>
+    <path d="M36 45V25" stroke="#065f46" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M35 35c-3.6-6.8-10.4-8-15.6-6.2 1 5.4 5.8 10.6 13 9.6 1.2-.2 2-1.6 2.6-3.4z" fill="url(#logoHojaClaro)"/>
+    <path d="M37 29c3.2-6.4 9.6-7.6 14.4-6 -.8 5-5.2 9.8-11.8 9-1.2-.2-2-1.4-2.6-3z" fill="url(#logoHojaClaro)"/>
+    <path d="M33.4 36.6c-4-3.4-8.2-5.2-12.6-5.8" stroke="#ffffff" stroke-width="1.1" stroke-linecap="round" fill="none" opacity=".65"/>
+    <path d="M38.6 30.8c3.6-3 7.4-4.6 11.4-5.2" stroke="#ffffff" stroke-width="1.1" stroke-linecap="round" fill="none" opacity=".65"/>
+  </g>
+  <circle cx="36" cy="36" r="28" fill="none" stroke="#ffffff" stroke-width="3.2"/>
+
+  <text x="78" y="36" font-family="'Space Grotesk', system-ui, sans-serif" font-size="30" font-weight="700" letter-spacing="1" fill="#ffffff">CIEHS</text>
+  <text x="79" y="50" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="8.4" letter-spacing=".55" fill="#7dd3fc">CENTRO DE INVESTIGACIÓN ESCOLAR</text>
+  <text x="79" y="61" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="8.4" letter-spacing=".55" fill="#7dd3fc">HIDROPÓNICO SOSTENIBLE</text>
+</svg>

@@ -36,6 +36,7 @@ está cada cosa.
 | [[CIEHS-Identidad-Visual]] | Escudo, sello, mural, paleta e iconos |
 | [[CIEHS-Privacidad-Menores]] | Qué se publica de los estudiantes y qué nunca |
 | [[CIEHS-Arena-Juego]] | El modo de juego: niveles, expediciones, animación y voz |
+| [[CIEHS-Voz-DUA]] | Cómo suena el portal: voz, acento y Diseño Universal del Aprendizaje |
 | [[CIEHS-Pentest-2026-09]] | Auto-evaluación de ciberseguridad: 14 ataques, resultado |
 
 ---
@@ -51,7 +52,7 @@ está cada cosa.
 | Códigos QR | 9 reales, verificados con un lector independiente |
 | Base de datos | Esquema `ciehs` conectado, **18 tablas**, RLS probado por rol · 2 buckets |
 | Panel | Supabase Auth + comprobación de administrador · **12 pestañas** |
-| Identidad | Escudo, sello y mural oficiales · **blanco por capas** con capa de movimiento |
+| Identidad | Escudo institucional + **logo propio del CIEHS** derivado del mural · blanco por capas |
 | Portada | Hero con **fondo animado de brisa** + galería «El CIEHS en acción», administrable desde el panel |
 | Infraestructura | **15 módulos DWC activos sin bomba de aire**; NFT y vertical solo como proyección |
 | Privacidad | **Rostros tapados en origen**: toda imagen se pixela en el navegador antes de subirse |
@@ -59,6 +60,7 @@ está cada cosa.
 | Investigación | Carpeta de campo digital, aportes en cuarentena y **resultados por tratamiento con gráfica automática** |
 | Tienda | Catálogo con estado de cultivo, carrito que suma solo y reserva · **transparencia en porcentaje, sin importes** |
 | Arena | 5 niveles, 150 retos, 2 expediciones diarias |
+| DUA | Preguntas, opciones y explicaciones **en voz alta**, con acento latinoamericano |
 
 ---
 

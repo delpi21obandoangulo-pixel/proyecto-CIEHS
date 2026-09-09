@@ -34,6 +34,9 @@ nombran.
 | `mural-ciehs.jpg` | Mural completo, 1280 px | Sección Mural |
 | `icon-32/180/512.png` | Iconos derivados del escudo | Pestaña del navegador, pantalla de inicio |
 | `ciehs-og.png` | Tarjeta 1200×630 al compartir | Open Graph y Twitter Card |
+| `logo-ciehs.svg` | **Logo del proyecto**: isotipo + logotipo | Hero, sección Mural, descargable |
+| `logo-ciehs-claro.svg` | El mismo, para fondos oscuros | Arena y cualquier fondo oscuro |
+| `isotipo-ciehs.svg` | Solo el emblema | Pie, usos pequeños |
 | `evidencias/invernadero-dwc.jpg` | Invernadero de madera con malla raschel y mesas DWC | Galería «El CIEHS en acción», portada |
 | `evidencias/mesas-dwc.jpg` | Módulos de raíz flotante en batería | Galería, portada |
 | `evidencias/almacigo-trasplante.jpg` | Mesa recién trasplantada, plántulas separadas | Galería, portada |
@@ -70,6 +73,54 @@ de un recuadro.
 El mural aparece además **en el propio hero**, bajo el escudo y el sello, como
 acceso directo a su versión interactiva: es la primera cosa que un visitante ve
 del laboratorio, y el QR 02 del laboratorio físico lleva al mismo sitio.
+
+
+---
+
+## 2 ter. El logo del CIEHS
+
+Hasta 2026-09-09 el proyecto no tenía marca propia: usaba el escudo del colegio
+para todo. Son dos cosas distintas y conviene no confundirlas.
+
+> **El escudo es de la institución. El logo es del proyecto.**
+> El logo **no sustituye** al escudo en ningún sitio.
+
+### De dónde sale
+
+El mural ya traía su propio emblema —una planta sobre ondas de agua, junto al
+nombre CIEHS—. Se **redibujó en SVG** en lugar de recortarlo, porque en el mural
+mide 85 px: escalado a la cabecera o a un favicon se deshacía.
+
+Se le añadió una cosa que el emblema original no tenía: **la raíz sumergida**.
+El mural la dibuja en su propia ilustración del módulo DWC, y es lo que
+distingue este isotipo de cualquier logo de planta — dice *hidroponía*, no
+*huerto*.
+
+| Elemento | Qué significa |
+|---|---|
+| La hoja | Lo que se cultiva; de ahí el verde institucional |
+| El agua | El azul de Huanchaco y el recurso que el proyecto aprende a no desperdiciar |
+| La raíz sumergida | Raíz flotante (DWC): sin suelo, con la raíz en la solución |
+
+### Los tres archivos
+
+| Archivo | Cuándo |
+|---|---|
+| `logo-ciehs.svg` | Uso normal, sobre fondo claro |
+| `logo-ciehs-claro.svg` | Sobre fondo oscuro (la Arena) |
+| `isotipo-ciehs.svg` | Solo el emblema: pie, usos pequeños |
+
+Es vector: se escala sin perder nitidez y **nunca hay que pedir «otro tamaño»**.
+
+### Reglas
+
+- Sobre fondo oscuro se usa la versión clara. **El emblema nunca cambia de
+  dibujo** — solo el color del texto y el aro. Un logo que se redibuja según el
+  fondo deja de ser el mismo logo.
+- El isotipo pierde legibilidad por debajo de 24 px: ahí va el escudo, que ya es
+  el favicon.
+- Se descarga desde la propia sección **Nuestro Mural**, para que nadie tenga
+  que pedirlo por correo.
 
 ---
 

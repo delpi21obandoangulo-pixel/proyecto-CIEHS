@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="isotipoTitulo">
+  <title id="isotipoTitulo">Isotipo del CIEHS: una planta con la raíz sumergida en agua</title>
+  <!--
+    Redibujo del emblema que ya existía en el mural institucional (hoja verde
+    sobre ondas de agua). Se hace en SVG y no recortando el mural porque allí
+    mide 85 px: escalado a la cabecera o a un favicon se deshacía.
+
+    Añadido respecto al original: las RAÍCES bajo la línea de agua. El mural las
+    tiene en su propia ilustración del módulo DWC, y son lo que distingue este
+    isotipo de cualquier logo de planta — dicen "hidroponía", no "huerto".
+  -->
+  <defs>
+    <clipPath id="isoCirculo"><circle cx="32" cy="32" r="28"/></clipPath>
+    <linearGradient id="isoHoja" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#10b981"/>
+      <stop offset="1" stop-color="#047857"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="32" cy="32" r="28" fill="#ffffff"/>
+
+  <g clip-path="url(#isoCirculo)">
+    <!-- agua: dos capas para dar profundidad sin usar transparencias -->
+    <path d="M4 42c5 0 5-3.4 10-3.4S19 42 24 42s5-3.4 10-3.4S39 42 44 42s5-3.4 10-3.4S59 42 64 42v22H4z" fill="#0284c7"/>
+    <path d="M4 47c5 0 5-3 10-3s5 3 10 3 5-3 10-3 5 3 10 3 5-3 10-3 5 3 10 3v17H4z" fill="#075985"/>
+
+    <!-- raíces: bajo la línea de agua, finas y abiertas -->
+    <g stroke="#e8d9b5" stroke-width="1.5" stroke-linecap="round" fill="none" opacity=".95">
+      <path d="M32 40v10"/>
+      <path d="M32 43c-3 2-4.5 3.5-5.5 6"/>
+      <path d="M32 43c3 2 4.5 3.5 5.5 6"/>
+      <path d="M32 46c-1.8 2-2.6 3.4-3 5"/>
+      <path d="M32 46c1.8 2 2.6 3.4 3 5"/>
+    </g>
+
+    <!-- tallo -->
+    <path d="M32 41V21" stroke="#065f46" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+    <!-- hojas: la izquierda baja y grande, la derecha alta, como en el mural -->
+    <path d="M31 31c-3.6-6.8-10.4-8-15.6-6.2 1 5.4 5.8 10.6 13 9.6 1.2-.2 2-1.6 2.6-3.4z" fill="url(#isoHoja)"/>
+    <path d="M33 25c3.2-6.4 9.6-7.6 14.4-6 -.8 5-5.2 9.8-11.8 9-1.2-.2-2-1.4-2.6-3z" fill="url(#isoHoja)"/>
+    <!-- nervios -->
+    <path d="M29.4 32.6c-4-3.4-8.2-5.2-12.6-5.8" stroke="#ffffff" stroke-width="1.1" stroke-linecap="round" fill="none" opacity=".65"/>
+    <path d="M34.6 26.8c3.6-3 7.4-4.6 11.4-5.2" stroke="#ffffff" stroke-width="1.1" stroke-linecap="round" fill="none" opacity=".65"/>
+  </g>
+
+  <circle cx="32" cy="32" r="28" fill="none" stroke="#065f46" stroke-width="3.2"/>
+</svg>
