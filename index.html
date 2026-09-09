@@ -1633,6 +1633,28 @@
            tiene la pregunta, las opciones y la explicación en voz alta. -->
       <div class="voz-control" id="vozControl"></div>
 
+      <details class="dua">
+        <summary>Cómo aplica este espacio el Diseño Universal del Aprendizaje</summary>
+        <div class="dua-cuerpo">
+          <p>El DUA no es poner audio y ya: es ofrecer <b>más de una vía</b> para representar lo que se aprende, para implicarse y para demostrar lo aprendido. Aquí está cada una, y dónde.</p>
+          <dl class="dua-lista">
+            <div>
+              <dt>Representación · varias formas de recibir</dt>
+              <dd>Cada reto se puede <b>leer o escuchar</b>. Los simuladores muestran el mismo concepto <b>manipulándolo</b> en vez de leyéndolo. La escala de pH está en versión <b>básica y completa</b>: el mismo contenido, dos puertas de entrada.</dd>
+            </div>
+            <div>
+              <dt>Implicación · varias formas de engancharse</dt>
+              <dd>Quiz por niveles, Arena con cronómetro y vidas para quien busca reto, simuladores sin puntuación para quien prefiere explorar sin presión, y datos del propio laboratorio para quien necesita que sirva para algo real.</dd>
+            </div>
+            <div>
+              <dt>Acción y expresión · varias formas de demostrar</dt>
+              <dd>Responder retos, registrar mediciones en la carpeta de campo, subir una fotografía o un audio, o añadir un resultado a una investigación. No todo pasa por escribir.</dd>
+            </div>
+          </dl>
+          <p class="dua-nota">Marco: Currículo Nacional de la Educación Básica. El portal no evalúa ni guarda nada de quien juega: el progreso vive solo en su navegador.</p>
+        </div>
+      </details>
+
       <div class="arena-cta">
         <div>
           <p class="eyebrow u-color-c4b5fd">Modo inmersivo</p>
@@ -1752,6 +1774,69 @@
             <div class="calc-result" id="calcResult" aria-live="polite"></div>
           </div>
         </div>
+      </div>
+
+      <!-- ============ LABORATORIO VIRTUAL (PhET) ============
+           Simuladores de la Universidad de Colorado, en español. Se cargan solo
+           al pulsar: son varios megas y el visitante de un colegio suele estar
+           con datos móviles. Además así el portal no contacta con un tercero
+           hasta que la persona lo decide. -->
+      <div class="phet" id="phet">
+        <div class="section-head u-margin-top-56px">
+          <p class="eyebrow">Laboratorio virtual</p>
+          <h3>Prueba lo que en el módulo no puedes arriesgar</h3>
+          <p>En el laboratorio real, subir la concentración de la solución para ver qué pasa cuesta un lote entero. Aquí puedes pasarte, equivocarte y volver atrás. Son simuladores de la <b>Universidad de Colorado</b>, usados en aulas de todo el mundo.</p>
+        </div>
+
+        <div class="phet-grid">
+          <article class="phet-card" data-sim="ph-scale-basics" data-nivel="Primaria">
+            <div class="phet-cab">
+              <span class="phet-nivel">Primaria</span>
+              <h4>Escala de pH · básica</h4>
+            </div>
+            <p>Echa limón, leche o agua de mar y mira cómo se mueve el número. Es la misma escala que tu equipo anota en la bitácora.</p>
+            <p class="phet-liga"><b>Llévalo al CIEHS:</b> nuestros módulos van entre <b>5.5 y 6.5</b>. Busca en el simulador algo que caiga en ese rango.</p>
+            <div class="phet-marco" data-marco></div>
+            <button type="button" class="btn btn-primary phet-abrir" data-abrir>Abrir simulador</button>
+          </article>
+
+          <article class="phet-card" data-sim="ph-scale" data-nivel="Secundaria">
+            <div class="phet-cab">
+              <span class="phet-nivel">Secundaria</span>
+              <h4>Escala de pH · completa</h4>
+            </div>
+            <p>La misma idea, con volumen, dilución y concentración de iones. Para quien ya domina la versión básica.</p>
+            <p class="phet-liga"><b>Llévalo al CIEHS:</b> diluye una solución ácida y observa cuánto sube el pH. Es exactamente lo que haces al corregir un módulo.</p>
+            <div class="phet-marco" data-marco></div>
+            <button type="button" class="btn btn-primary phet-abrir" data-abrir>Abrir simulador</button>
+          </article>
+
+          <article class="phet-card" data-sim="concentration" data-nivel="Secundaria">
+            <div class="phet-cab">
+              <span class="phet-nivel">Secundaria</span>
+              <h4>Concentración</h4>
+            </div>
+            <p>Añade soluto, añade agua, evapora. El medidor te dice la concentración en todo momento.</p>
+            <p class="phet-liga"><b>Llévalo al CIEHS:</b> es el mecanismo de <span class="mono">INV-2026-01</span>. Al 50 %, 100 % y 150 % de solución nutritiva, ¿qué cambia?</p>
+            <div class="phet-marco" data-marco></div>
+            <button type="button" class="btn btn-primary phet-abrir" data-abrir>Abrir simulador</button>
+          </article>
+
+          <article class="phet-card" data-sim="acid-base-solutions" data-nivel="Secundaria">
+            <div class="phet-cab">
+              <span class="phet-nivel">Secundaria</span>
+              <h4>Conductividad</h4>
+            </div>
+            <p>Mete el probador en la solución y mira la bombilla: cuantos más iones disueltos, más brilla.</p>
+            <p class="phet-liga"><b>Llévalo al CIEHS:</b> eso es la <b>CE</b> que mides con el conductímetro. La bombilla es lo que el aparato traduce a mS/cm.</p>
+            <div class="phet-marco" data-marco></div>
+            <button type="button" class="btn btn-primary phet-abrir" data-abrir>Abrir simulador</button>
+          </article>
+        </div>
+
+        <p class="phet-aviso">
+          Los simuladores se cargan <b>solo cuando pulsas</b>: pesan varios megas y, hasta entonces, el portal no contacta con ningún servidor ajeno. Al abrirlos, tu conexión llega a <span class="mono">phet.colorado.edu</span>. Son gratuitos y de uso educativo abierto (licencia CC-BY).
+        </p>
       </div>
 
 

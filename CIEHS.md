@@ -36,7 +36,7 @@ está cada cosa.
 | [[CIEHS-Identidad-Visual]] | Escudo, sello, mural, paleta e iconos |
 | [[CIEHS-Privacidad-Menores]] | Qué se publica de los estudiantes y qué nunca |
 | [[CIEHS-Arena-Juego]] | El modo de juego: niveles, expediciones, animación y voz |
-| [[CIEHS-Voz-DUA]] | Cómo suena el portal: voz, acento y Diseño Universal del Aprendizaje |
+| [[CIEHS-Voz-DUA]] | Voz, simuladores PhET y Diseño Universal del Aprendizaje |
 | [[CIEHS-Tienda-Escolar]] | Catálogo, reservas de cosecha y transparencia en porcentaje |
 | [[CIEHS-Pentest-2026-09]] | Auto-evaluación de ciberseguridad: 14 ataques, resultado |
 
@@ -61,7 +61,7 @@ está cada cosa.
 | Investigación | Carpeta de campo digital, aportes en cuarentena y **resultados por tratamiento con gráfica automática** |
 | Tienda | **6 especies publicadas** con estado de lote · carrito, reserva y transparencia en porcentaje · respaldo estático sin conexión |
 | Arena | 5 niveles, 150 retos, 2 expediciones diarias |
-| DUA | Preguntas, opciones y explicaciones **en voz alta**, con acento latinoamericano |
+| DUA | Voz en **todos** los juegos · 4 simuladores PhET en español · los tres principios documentados |
 
 ---
 

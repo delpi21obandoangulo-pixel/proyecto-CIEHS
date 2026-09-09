@@ -3320,3 +3320,85 @@
     font-size:12.5px; line-height:1.55; color:var(--ink-soft);
   }
   .destino-con small{ display:block; margin-top:2px; font-size:11.5px; color:var(--ink-mute); line-height:1.45; }
+
+  /* ============================================================================
+     LABORATORIO VIRTUAL (PhET)
+     ========================================================================== */
+  .phet-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr));
+    gap:18px; margin-top:28px;
+  }
+  .phet-card{
+    display:flex; flex-direction:column; gap:10px; padding:22px;
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius-m); box-shadow:var(--shadow-1);
+    transition:box-shadow .35s var(--ease-out), border-color .3s var(--ease-soft);
+  }
+  .phet-card:hover{ box-shadow:var(--shadow-2); border-color:rgba(5,150,105,0.2); }
+  /* Con el simulador abierto la tarjeta ocupa toda la fila: un simulador de
+     PhET dentro de 300 px es inservible. */
+  .phet-card:has(.is-abierto){ grid-column:1 / -1; }
+  .phet-cab{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .phet-nivel{
+    padding:3px 10px; border-radius:999px; background:var(--leaf-100);
+    font-family:var(--font-mono); font-size:10.5px; font-weight:600;
+    letter-spacing:0.04em; color:var(--leaf-300);
+  }
+  .phet-card h4{ font-family:var(--font-display); font-size:17px; font-weight:700; color:var(--ink); }
+  .phet-card p{ font-size:13.5px; line-height:1.6; color:var(--ink-soft); }
+  .phet-liga{
+    padding:11px 13px; background:var(--veil);
+    border-left:3px solid var(--azure-500); border-radius:var(--radius-s);
+    font-size:12.5px !important; line-height:1.55 !important;
+  }
+  .phet-marco:empty{ display:none; }
+  .phet-marco{ margin-top:6px; }
+  .phet-marco iframe{
+    display:block; width:100%; aspect-ratio:4/3; min-height:340px;
+    border:1px solid var(--line-strong); border-radius:var(--radius-s);
+    background:var(--surface-2);
+  }
+  .phet-fallo{
+    padding:16px; background:var(--veil);
+    border:1px dashed var(--surface-3); border-radius:var(--radius-s);
+    font-size:13px !important; color:var(--ink-soft);
+  }
+  .phet-abrir{ align-self:flex-start; margin-top:auto; }
+  .phet-aviso{
+    max-width:70ch; margin:24px auto 0; padding:14px 18px;
+    background:var(--veil); border:1px dashed var(--surface-3);
+    border-radius:var(--radius-m);
+    font-size:12.5px; line-height:1.65; color:var(--ink-soft); text-align:center;
+  }
+
+  /* ---------------------------------------------- encuadre DUA (plegado) --
+     Va en <details> a propósito: al estudiante no le sirve y le estorba; al
+     docente que documenta su programación, le hace falta entero. */
+  .dua{
+    margin-top:16px; border:1px solid var(--line);
+    background:var(--surface); border-radius:var(--radius-m);
+    box-shadow:var(--shadow-1);
+  }
+  .dua summary{
+    padding:14px 18px; cursor:pointer; list-style:none;
+    font-size:13.5px; font-weight:600; color:var(--ink-soft);
+    display:flex; align-items:center; gap:9px;
+    transition:color .2s var(--ease-soft);
+  }
+  .dua summary::-webkit-details-marker{ display:none; }
+  .dua summary::before{
+    content:"›"; font-size:17px; color:var(--leaf-300);
+    transition:transform .3s var(--ease-spring);
+  }
+  .dua[open] summary::before{ transform:rotate(90deg); }
+  .dua summary:hover{ color:var(--ink); }
+  .dua-cuerpo{ padding:0 18px 20px; display:flex; flex-direction:column; gap:14px; }
+  .dua-cuerpo p{ font-size:13.5px; line-height:1.65; color:var(--ink-soft); }
+  .dua-lista{ display:flex; flex-direction:column; gap:12px; margin:0; }
+  .dua-lista > div{
+    padding:13px 15px; background:var(--veil);
+    border-left:3px solid var(--leaf-500); border-radius:var(--radius-s);
+  }
+  .dua-lista dt{ font-size:13px; font-weight:700; color:var(--ink); }
+  .dua-lista dd{ margin:5px 0 0; font-size:13px; line-height:1.6; color:var(--ink-soft); }
+  .dua-nota{ font-size:12px !important; color:var(--ink-mute) !important; }

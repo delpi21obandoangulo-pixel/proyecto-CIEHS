@@ -165,12 +165,17 @@ Inventario real, verificado en el código y no supuesto:
 | Sesión de administración (`ciehs-auth`) | `localStorage` del coordinador | Sí, a Supabase |
 | Contenido y mediciones | Base de datos `ciehs` | Público, sin datos personales |
 | Tipografías | Google Fonts | **Sí — la IP del visitante llega a Google** |
+| Simuladores PhET | phet.colorado.edu | **Solo si el visitante pulsa «Abrir simulador»**; hasta entonces, no |
 
 Sin registro de visitantes, sin cookies de seguimiento, sin analítica. El
 formulario de contacto no almacena nada: abre el cliente de correo del visitante.
 
-> [!note] La dependencia de Google Fonts
-> Es el único tercero al que el portal expone al visitante. Alojar las fuentes
+> [!note] Los dos terceros del portal
+> **Google Fonts** carga con la página y expone la IP del visitante sin que él
+> pueda evitarlo. **PhET** solo se contacta si alguien pulsa «Abrir simulador»,
+> y el aviso lo dice antes de pulsar.
+>
+> Google Fonts es el que conviene quitar: Alojar las fuentes
 > en el propio dominio lo eliminaría por completo, igual que se hizo con las
 > bibliotecas de JavaScript. Queda como pendiente, no como decisión cerrada.
 

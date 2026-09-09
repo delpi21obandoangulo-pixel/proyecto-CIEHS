@@ -680,7 +680,16 @@
   }
 
   var vozTimer = null;
-  function leerEnVoz(texto){
+  function leerEnVoz(texto, opciones){
+    // Se delega en la capa de voz del portal cuando esta cargada. Antes habia
+    // DOS motores con ajustes distintos (tono 1.25 aqui, 1.08 en el quiz), asi
+    // que la misma aplicacion sonaba a dos personas segun donde estuvieras.
+    // El motor de abajo queda como respaldo por si el orden de carga cambia.
+    var V = global.CIEHS && global.CIEHS.voz;
+    if(V && typeof V.hablar === 'function'){
+      V.hablar(texto, opciones || { forzar: true });
+      return true;
+    }
     var ss = global.speechSynthesis;
     if(!ss) return false;
     try{
@@ -878,9 +887,18 @@
     arrancarTemporizador(segundos, r);
 
     if(esEscucha){
-      leerEnVoz(r.q);
+      // Aqui el audio ES el enunciado: suena tenga o no la voz activada.
+      leerEnVoz(r.q, { forzar: true });
       var rep = document.getElementById('arRepetir');
-      if(rep) rep.addEventListener('click', function(){ leerEnVoz(r.q); });
+      if(rep) rep.addEventListener('click', function(){ leerEnVoz(r.q, { forzar: true }); });
+    } else {
+      // El resto de retos tambien se leen, con sus opciones numeradas, pero
+      // solo si el estudiante ha pedido la voz.
+      var partes = [r.q];
+      capa.querySelectorAll('.ar-op').forEach(function(o, i){
+        partes.push('Opción ' + (i + 1) + ': ' + o.textContent.trim() + '.');
+      });
+      leerEnVoz(partes.join(' '), { forzar: false });
     }
   }
 

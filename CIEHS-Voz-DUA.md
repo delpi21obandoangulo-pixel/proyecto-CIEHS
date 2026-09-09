@@ -2,11 +2,11 @@
 title: CIEHS · Voz y Diseño Universal para el Aprendizaje
 aliases: [DUA CIEHS, Voz CIEHS, Audio CIEHS]
 tags: [ciehs, dua, accesibilidad, voz, cneb]
-estado: en produccion · voz del navegador
+estado: en produccion · voz del navegador + simuladores PhET
 actualizado: 2026-09-09
 ---
 
-# CIEHS · Voz y DUA
+# CIEHS · Voz, PhET y DUA
 
 Cómo suena el portal y por qué. Parte de [[CIEHS]]; el juego al que sirve está
 en [[CIEHS-Arena-Juego]].
@@ -135,12 +135,91 @@ La **explicación** se sintetiza siempre. El veredicto que la precede
 así que se sintetizaría igual, y encadenar una palabra sintética con una frase
 grabada suena a fallo, no a voz.
 
+
 ---
 
-## 5. Pendientes
+## 5. El laboratorio virtual (PhET)
+
+Cuatro simuladores de la **Universidad de Colorado**, en español, dentro de la
+página *Juega y aprende*. En el módulo real, subir la concentración para ver qué
+pasa cuesta un lote entero; aquí el estudiante puede pasarse y volver atrás.
+
+| Simulador | Nivel | Puente con el CIEHS |
+|---|---|---|
+| **Escala de pH · básica** | Primaria | Nuestros módulos van entre 5.5 y 6.5 |
+| **Escala de pH · completa** | Secundaria | Diluir para corregir un módulo |
+| **Concentración** | Secundaria | El mecanismo de `INV-2026-01` (50/100/150 %) |
+| **Conductividad** (`acid-base-solutions`) | Secundaria | La bombilla es lo que el conductímetro traduce a mS/cm |
+
+Cada tarjeta lleva un párrafo **«Llévalo al CIEHS»**: sin eso el simulador es una
+actividad suelta de química, no parte de esta investigación.
+
+> [!note] `sugar-and-salt-solutions` no existe en HTML5
+> Era el candidato obvio para conductividad, pero devuelve **404**: sigue siendo
+> Flash/Java heredado. El que sirve es `acid-base-solutions`, que trae el
+> probador con bombilla. Comprobado consultando las URL antes de escribir nada.
+
+### Se cargan solo al pulsar
+
+Dos razones que apuntan al mismo sitio:
+
+- **Datos móviles.** Un simulador pesa varios megas y quien abre esto suele
+  estar con el móvil en un colegio.
+- **Privacidad.** Hasta que alguien pulsa, el portal **no contacta con ningún
+  servidor ajeno**. [[CIEHS-Privacidad-Menores]] enumera a los terceros uno por
+  uno, y este es el segundo después de Google Fonts.
+
+El iframe va con `referrerpolicy="no-referrer"` y sin permisos que no necesita:
+un simulador no tiene por qué pedir cámara, micrófono ni ubicación.
+
+Si PhET no responde en 15 s —hay colegios que filtran dominios— se dice con esas
+palabras y se ofrece reintentar. Un marco en blanco parecería un fallo del
+portal.
+
+> Hubo que ampliar la CSP con `frame-src https://phet.colorado.edu`. Acotada a
+> ese host: **nada más puede meterse en un iframe** del portal.
+
+---
+
+## 6. Los tres principios del DUA, y dónde están
+
+El DUA no es poner audio y ya. Es ofrecer más de una vía en tres frentes:
+
+| Principio | Dónde está en el portal |
+|---|---|
+| **Representación** | Cada reto se lee **o se escucha**. Los simuladores muestran el concepto **manipulándolo**. La escala de pH está en versión básica y completa: el mismo contenido, dos puertas. |
+| **Implicación** | Quiz por niveles · Arena con cronómetro para quien busca reto · simuladores sin puntuación para quien explora sin presión · datos reales del laboratorio para quien necesita que sirva. |
+| **Acción y expresión** | Responder retos · registrar mediciones · subir una fotografía o un audio · añadir un resultado. **No todo pasa por escribir.** |
+
+Está resumido en la propia página, plegado en un `<details>`: al estudiante le
+estorba, al docente que redacta su programación le hace falta entero.
+
+---
+
+## 7. Una sola voz en toda la aplicación
+
+Había **dos motores de síntesis** con ajustes distintos: la Arena hablaba a tono
+1.25 y el quiz a 1.08, así que la misma aplicación sonaba a **dos personas**
+según dónde estuvieras. La Arena delega ahora en la capa de voz del portal y
+conserva su motor propio solo como respaldo.
+
+Con eso, el audio llega a todos los juegos: quiz, Arena, simulador de cultivo y
+calculadora de agua. Los dos últimos leen su resultado en cuanto aparece, sin
+botón aparte — ahí el resultado *es* la respuesta a lo que la persona acaba de
+hacer.
+
+> [!important] Los retos de escucha suenan aunque la voz esté apagada
+> En ese formato el audio **no es una ayuda: es el enunciado**. Si se callara
+> con el interruptor apagado, el reto sería imposible de resolver. Por eso
+> `hablar()` admite `forzar`, y es el único caso que lo usa.
+
+---
+
+## 8. Pendientes
 
 - [ ] Pregrabar el banco de preguntas con voz de gama alta.
-- [ ] Audio también en la Arena, que hoy solo tiene el quiz.
+- [x] Audio en la Arena y en los minijuegos. Hecho: un solo motor para toda
+      la aplicación.
 - [ ] Subtítulos en los vídeos que suban los equipos.
 
 ---

@@ -4635,8 +4635,11 @@
   }
 
   function hablar(texto, opciones){
-    if(!activa) return;
     opciones = opciones || {};
+    // 'forzar' existe para los retos de escucha de la Arena: ahi el audio NO es
+    // una ayuda, es el enunciado. Si se callara con la voz apagada, el reto
+    // seria imposible de resolver.
+    if(!activa && !opciones.forzar) return;
     parar();
     if(opciones.clave){
       reproducirPista(opciones.clave).catch(function(){ sintetizar(texto); });
@@ -4709,4 +4712,97 @@
   } else {
     montarBoton();
   }
+})();
+
+/* ===========================================================================
+   17. LABORATORIO VIRTUAL (PhET) y voz en el resto de los juegos
+
+   Los simuladores se cargan BAJO DEMANDA por dos razones que apuntan al mismo
+   sitio: pesan varios megas —y quien abre esto suele estar con datos móviles de
+   un colegio— y, hasta que alguien pulsa, el portal no contacta con ningún
+   servidor ajeno. La privacidad aquí no es un extra: la nota de privacidad del
+   CIEHS enumera a los terceros uno por uno, y este es el segundo.
+   =========================================================================== */
+(function(){
+  var zona = document.getElementById('phet');
+
+  if(zona){
+    // Se comprueba el idioma del navegador: PhET publica cada simulador por
+    // idioma en una URL distinta, y en un aula peruana el español es lo
+    // esperable, pero si alguien navega en ingles no hay razon para forzarle.
+    var idioma = (navigator.language || 'es').toLowerCase().indexOf('en') === 0 ? 'en' : 'es';
+
+    zona.querySelectorAll('[data-abrir]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var card  = btn.closest('.phet-card');
+        var marco = card.querySelector('[data-marco]');
+        var sim   = card.getAttribute('data-sim');
+        var titulo = (card.querySelector('h4') || {}).textContent || 'Simulador';
+
+        if(marco.querySelector('iframe')){          // ya abierto: se cierra
+          marco.innerHTML = '';
+          marco.classList.remove('is-abierto');
+          btn.textContent = 'Abrir simulador';
+          return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Cargando…';
+
+        var f = document.createElement('iframe');
+        f.src = 'https://phet.colorado.edu/sims/html/' + sim + '/latest/' + sim + '_' + idioma + '.html';
+        f.title = titulo + ' — simulador de PhET, Universidad de Colorado';
+        f.loading = 'lazy';
+        f.allowFullscreen = true;
+        // Sin permisos que no necesita. Un simulador no tiene por que pedir
+        // camara, microfono ni geolocalizacion.
+        f.setAttribute('allow', 'fullscreen');
+        f.setAttribute('referrerpolicy', 'no-referrer');
+
+        f.addEventListener('load', function(){
+          btn.disabled = false;
+          btn.textContent = 'Cerrar simulador';
+          marco.classList.add('is-abierto');
+        });
+        // Si PhET no responde (aula sin salida a internet, filtro del colegio),
+        // hay que decirlo: un marco en blanco parece un fallo del portal.
+        var aviso = setTimeout(function(){
+          if(!marco.classList.contains('is-abierto')){
+            btn.disabled = false;
+            btn.textContent = 'Reintentar';
+            marco.innerHTML = '<p class="phet-fallo">No se pudo cargar el simulador. '
+              + 'Puede que la red del colegio bloquee <span class="mono">phet.colorado.edu</span>, '
+              + 'o que la conexión se haya caído.</p>';
+          }
+        }, 15000);
+        f.addEventListener('load', function(){ clearTimeout(aviso); });
+
+        marco.innerHTML = '';
+        marco.appendChild(f);
+      });
+    });
+  }
+
+  /* ------------------------------------- voz en el resto de los juegos ----
+     El quiz ya hablaba. Estos dos devolvian su resultado solo por escrito, que
+     es justo la barrera que el DUA pide quitar. Se lee el resultado en cuanto
+     aparece, sin boton aparte: aqui el resultado ES la respuesta a lo que la
+     persona acaba de hacer, no un texto que este ahi de antes. */
+  function leerResultado(nodo){
+    if(!nodo || !window.CIEHS || !window.CIEHS.voz) return;
+    var t = (nodo.textContent || '').replace(/\s+/g, ' ').trim();
+    if(t) window.CIEHS.voz.hablar(t);
+  }
+
+  ['simResult', 'calcResult'].forEach(function(id){
+    var nodo = document.getElementById(id);
+    if(!nodo || !('MutationObserver' in window)) return;
+    var previo = '';
+    new MutationObserver(function(){
+      var t = (nodo.textContent || '').trim();
+      // Solo cuando el texto CAMBIA: el observador tambien se dispara al
+      // repintar lo mismo, y repetir la locucion identica molesta.
+      if(t && t !== previo){ previo = t; leerResultado(nodo); }
+    }).observe(nodo, { childList:true, subtree:true, characterData:true });
+  });
 })();
