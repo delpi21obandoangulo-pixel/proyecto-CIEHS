@@ -74,3 +74,9 @@ create trigger frenar_flood before insert on ciehs.resultados
 drop trigger if exists frenar_flood on ciehs.aportes;
 create trigger frenar_flood before insert on ciehs.aportes
   for each row execute function ciehs.frenar_alta_masiva();
+
+-- Endurecimiento (advisor 0028): una función de disparador no debe ser
+-- invocable como RPC. Revocar EXECUTE no afecta al disparador — Postgres no
+-- comprueba EXECUTE al ejecutar un trigger. Verificado: el RPC directo pasa a
+-- 404 y el trigger sigue frenando (12 aceptadas, resto topadas).
+revoke execute on function ciehs.frenar_alta_masiva() from anon, authenticated, public;

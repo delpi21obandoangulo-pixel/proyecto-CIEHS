@@ -182,7 +182,27 @@ Verificado en producción tras aplicarlo:
 > Para ese residuo la vía correcta es un **CAPTCHA/Turnstile** en los formularios
 > o una **limpieza periódica de huérfanos**. Queda en el backlog (§6).
 
-### 3.4 Cabeceras HTTP — posición muy fuerte
+### 3.4 Auditoría automática (advisors de Supabase)
+
+Se corrieron los *advisors* de seguridad. Filtrando lo que es del CIEHS (el
+informe también lista decenas de objetos de Aura y Safari, externos):
+
+- **`ciehs.frenar_alta_masiva` era invocable como RPC** (WARN). Es la función de
+  disparador recién creada; una función de trigger no debe poder llamarse
+  directamente. **Corregido:** `REVOKE EXECUTE` a `anon`/`authenticated`. No
+  afecta al disparador (Postgres no comprueba `EXECUTE` al ejecutar un trigger).
+  Verificado: el RPC directo pasa a **404** y el freno sigue activo.
+- **`ciehs.admins` con RLS y sin política** (INFO). Es el estado **seguro**:
+  RLS activa sin política = nadie lee ni escribe por la API. La lee solo
+  `is_admin()`, que es `SECURITY DEFINER`. Sin acción.
+- **`ciehs.is_admin` invocable por autenticados** (WARN). **Intencional**: el
+  modal la llama para decidir el acceso y solo devuelve un booleano del propio
+  llamante.
+- **Instancia (afecta a los tres proyectos):** protección de contraseñas
+  filtradas (HaveIBeenPwned) **desactivada** y **pocas opciones de MFA**. Se
+  recomienda activarlas desde el panel; refuerzan además el login del admin.
+
+### 3.5 Cabeceras HTTP — posición muy fuerte
 
 Verificadas en producción, todas presentes y correctas:
 
@@ -269,17 +289,19 @@ recursos, manifest con 3 iconos, datos vivos intactos. La confirmación final
 2. **Poner los precios** de la tienda desde el panel → [[CIEHS-Tienda-Escolar]].
 3. **CAPTCHA/Turnstile** en los formularios públicos: cierra el residuo de A17.
 4. **Aviso al coordinador** ante nuevas reservas y aportes.
-5. **Que Aura endurezca la RLS de `public.profiles`** (A8): fuera del CIEHS,
+5. **Activar la protección de contraseñas filtradas y MFA** en Supabase (§3.4):
+   ajuste de panel que refuerza el login del admin.
+6. **Que Aura endurezca la RLS de `public.profiles`** (A8): fuera del CIEHS,
    pero conviene trasladarlo.
-6. **Fuentes propias** para eliminar la llamada a Google Fonts.
-7. Fotos reales de cada especie y de los módulos, con las caras tapadas
+7. **Fuentes propias** para eliminar la llamada a Google Fonts.
+8. Fotos reales de cada especie y de los módulos, con las caras tapadas
    → [[CIEHS-Privacidad-Menores]].
 
 ---
 
 ## 8. Qué cambió en esta revisión
 
-- **Corregido A17:** disparador anti-inundación en 5 tablas (`db/09_antiflood.sql`).
+- **Corregido A17:** disparador anti-inundación en 5 tablas, con `EXECUTE` revocado (`db/09_antiflood.sql`).
 - **Añadido PWA:** `sw.js`, `manifest.json`, registro del SW, enlace del manifest.
 - **Corregido `theme-color`** obsoleto.
 - **`tools/fijar-clave-admin.js`** dejado listo para el arreglo del login.
