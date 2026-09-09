@@ -1601,11 +1601,11 @@
      vertical hacia que se perdiera el hilo. Con pestañas cada tarea cabe
      entera en pantalla. */
   .admin-tabs{
-    display:flex; gap:4px; margin-top:18px; padding-bottom:2px;
+    display:flex; flex-wrap:wrap; gap:5px 6px; margin-top:18px; padding-bottom:6px;
     border-bottom:1px solid var(--line);
   }
   .admin-tabs button{
-    flex:1; cursor:pointer; padding:9px 8px; border:none; background:none;
+    flex:0 1 auto; white-space:nowrap; cursor:pointer; padding:8px 11px; border:none; background:none;
     font-family:var(--font-mono); font-size:11px; letter-spacing:.05em;
     color:var(--ink-mute); border-bottom:2px solid transparent;
     transition:color .2s ease, border-color .2s ease;
