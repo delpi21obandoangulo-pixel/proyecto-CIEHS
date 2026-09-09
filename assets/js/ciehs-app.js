@@ -72,6 +72,9 @@
     opts = opts || {};
     route = normalize(route);
     currentRoute = route;
+    // La ruta actual queda en <body data-route> para que el CSS adapte la
+    // cabecera sobre el hero oscuro de #inicio (transparente + texto blanco).
+    document.body.setAttribute('data-route', route);
     pageEls.forEach(function(el){ el.hidden = el.getAttribute('data-page') !== route; });
     routeEls.forEach(function(el){
       var active = el.getAttribute('data-route') === route;
@@ -1483,6 +1486,10 @@
   }
 
   if(adminOpen)  adminOpen.addEventListener('click', abrirPanel);
+  // Otros disparadores del modal (p. ej. la píldora "Administración" del header).
+  document.querySelectorAll('.js-abrir-admin').forEach(function(b){
+    b.addEventListener('click', abrirPanel);
+  });
   if(adminClose) adminClose.addEventListener('click', cerrarPanel);
   if(adminBack)  adminBack.addEventListener('click', cerrarPanel);
   document.addEventListener('keydown', function(e){
@@ -4825,4 +4832,135 @@
       if(window.console && console.warn) console.warn('CIEHS: no se pudo registrar el service worker', e);
     });
   });
+})();
+
+/* ============================================================================
+   Hero interactivo #inicio: foco del cursor que revela el modulo DWC, parallax
+   de la rejilla, cabecera solida al bajar e indicador de scroll. Los estilos
+   dinamicos se fijan por CSSOM (permitido por la CSP), nunca por atributos
+   inline. Assets locales. Respeta prefers-reduced-motion.
+   ========================================================================== */
+(function(){
+  'use strict';
+  var doc = document;
+
+  /* 1) Cabecera: fondo solido al bajar (is-scrolled). Sobre el hero de #inicio,
+        el CSS la deja transparente con texto blanco cuando NO tiene esa clase. */
+  var header = doc.querySelector('header.site');
+  if(header){
+    var aplicarScroll = function(){
+      if(window.scrollY > 40) header.classList.add('is-scrolled');
+      else header.classList.remove('is-scrolled');
+    };
+    aplicarScroll();
+    // Altura real de la cabecera -> el hero puede medir 100svh menos eso, para
+    // llenar exactamente el viewport sin que su base caiga bajo el pliegue.
+    var medirHeader = function(){
+      doc.documentElement.style.setProperty('--hdr-h', header.offsetHeight + 'px');
+    };
+    medirHeader();
+    window.addEventListener('scroll', aplicarScroll, { passive:true });
+    window.addEventListener('resize', medirHeader);
+    window.addEventListener('hashchange', function(){ setTimeout(function(){ aplicarScroll(); medirHeader(); }, 0); });
+  }
+
+  /* 2) Indicador de scroll: baja a las evidencias del laboratorio. */
+  var hmScroll = doc.getElementById('hmScroll');
+  if(hmScroll){
+    hmScroll.addEventListener('click', function(){
+      var destino = doc.getElementById('evidencias');
+      if(destino) destino.scrollIntoView({ behavior:'smooth', block:'start' });
+      else window.scrollTo({ top: window.innerHeight, behavior:'smooth' });
+    });
+  }
+
+  /* 3) Foco del cursor + parallax de la rejilla. */
+  var seccion = doc.getElementById('inicio');
+  var lienzo  = doc.getElementById('hmMask');
+  var reveal  = doc.getElementById('hmReveal');
+  var rejilla = doc.getElementById('hmGrid');
+  if(!(seccion && lienzo && reveal)) return;
+
+  var ctx = lienzo.getContext('2d');
+  if(!ctx) return;
+
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var RADIO = 230;
+  var LERP_FOCO = reduce ? 1 : 0.1;
+  var LERP_REJILLA = 0.06;
+  var DESPL = 16;
+
+  var objetivo = { x:-9999, y:-9999 }, suave = { x:-9999, y:-9999 };
+  var rejObjetivo = { x:0, y:0 }, rejSuave = { x:0, y:0 };
+  var movido = false, ultX = -9999, ultY = -9999, raf = 0;
+
+  function medir(){
+    var r = seccion.getBoundingClientRect();
+    if(r.width < 2 || r.height < 2) return null;   // seccion oculta (otra ruta)
+    var w = Math.round(r.width), h = Math.round(r.height);
+    if(lienzo.width !== w || lienzo.height !== h){ lienzo.width = w; lienzo.height = h; }
+    return r;
+  }
+
+  function aplicarMascara(){
+    var url = lienzo.toDataURL();
+    reveal.style.setProperty('-webkit-mask-image', 'url(' + url + ')');
+    reveal.style.setProperty('mask-image', 'url(' + url + ')');
+  }
+
+  function dibujar(vacia){
+    var w = lienzo.width, h = lienzo.height;
+    if(!w || !h) return;
+    ctx.clearRect(0, 0, w, h);
+    if(!vacia && movido){
+      var g = ctx.createRadialGradient(suave.x, suave.y, 0, suave.x, suave.y, RADIO);
+      g.addColorStop(0,    'rgba(255,255,255,1)');
+      g.addColorStop(0.40, 'rgba(255,255,255,1)');
+      g.addColorStop(0.60, 'rgba(255,255,255,0.75)');
+      g.addColorStop(0.75, 'rgba(255,255,255,0.4)');
+      g.addColorStop(0.88, 'rgba(255,255,255,0.12)');
+      g.addColorStop(1,    'rgba(255,255,255,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, w, h);
+    }
+    aplicarMascara();
+  }
+
+  medir();
+  dibujar(true);   // mascara vacia: la vitrina queda oculta hasta pasar el cursor
+
+  function bucle(){
+    suave.x += (objetivo.x - suave.x) * LERP_FOCO;
+    suave.y += (objetivo.y - suave.y) * LERP_FOCO;
+    if(rejilla && !reduce){
+      rejSuave.x += (rejObjetivo.x - rejSuave.x) * LERP_REJILLA;
+      rejSuave.y += (rejObjetivo.y - rejSuave.y) * LERP_REJILLA;
+      rejilla.style.setProperty('transform',
+        'translate3d(' + rejSuave.x.toFixed(2) + 'px,' + rejSuave.y.toFixed(2) + 'px,0)');
+    }
+    if(movido && (Math.abs(suave.x - ultX) > 0.3 || Math.abs(suave.y - ultY) > 0.3)){
+      dibujar(false); ultX = suave.x; ultY = suave.y;
+    }
+    raf = requestAnimationFrame(bucle);
+  }
+  raf = requestAnimationFrame(bucle);
+
+  seccion.addEventListener('mousemove', function(e){
+    var r = medir();
+    if(!r) return;
+    var x = e.clientX - r.left, y = e.clientY - r.top;
+    objetivo.x = x; objetivo.y = y;
+    if(!movido){ movido = true; suave.x = x; suave.y = y; }
+    var cx = r.width / 2, cy = r.height / 2;
+    rejObjetivo.x = ((x - cx) / cx) * DESPL;
+    rejObjetivo.y = ((y - cy) / cy) * DESPL;
+  });
+
+  seccion.addEventListener('mouseleave', function(){
+    movido = false;
+    rejObjetivo.x = 0; rejObjetivo.y = 0;
+    dibujar(true);
+  });
+
+  window.addEventListener('resize', function(){ if(medir()) dibujar(!movido); });
 })();
