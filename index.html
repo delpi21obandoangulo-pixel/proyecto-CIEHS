@@ -749,7 +749,7 @@
           <button type="button" class="res-chip" data-carpeta-filtro="bitacora">Bitácoras</button>
         </div>
 
-        <p class="carpeta-estado" id="carpetaEstado" role="status" aria-live="polite">Cargando la carpeta de campo…</p>
+        <div class="carpeta-estado" id="carpetaEstado" role="status" aria-live="polite" hidden></div>
         <div class="carpeta-grid" id="carpetaGrid"><div class="skeleton skeleton-tarjeta"></div><div class="skeleton skeleton-tarjeta"></div><div class="skeleton skeleton-tarjeta"></div></div>
 
 
@@ -1312,10 +1312,13 @@
               <option value="todos">Todos los cultivos</option>
             </select>
           </label>
-          <p class="bitacora-estado" id="bitacoraEstado" role="status" aria-live="polite">Cargando la bitácora…</p>
         </div>
 
-        <div class="scrollx">
+        <!-- El estado va FUERA de la barra de filtros: dentro competia por el
+             ancho con el selector y la caja quedaba estrangulada a la derecha. -->
+        <div class="bitacora-estado" id="bitacoraEstado" role="status" aria-live="polite" hidden></div>
+
+        <div class="scrollx" id="bitacoraTablaWrap">
           <table class="bitacora-tabla" id="bitacoraTabla">
             <caption class="sr-heading">Bitácora agronómica por lote: fecha de siembra, semana, pH, fase y cosecha</caption>
             <thead>
@@ -1623,9 +1626,12 @@
           <div class="tele-block" id="telemetriaBloque">
             <div class="tele-head">
               <h4>Registro por módulo</h4>
-              <span class="tele-state" id="telemetriaEstado">Cargando…</span>
+              <span class="tele-state" id="telemetriaEstado">consultando…</span>
             </div>
-            <div id="telemetriaLista"></div>
+            <!-- El esqueleto viene ya en el HTML y no lo pone el JS: si el
+                 script tarda o falla, esta zona debe verse "esperando" y no como
+                 un hueco vacio. Al primer repintado lo sustituye pintarTelemetria(). -->
+            <div id="telemetriaLista"><div class="skeleton skeleton-tele"></div><div class="skeleton skeleton-tele"></div><div class="skeleton skeleton-tele"></div></div>
           </div>
 
           <p class="viz-note">Los rangos del panel superior son los <b>objetivos</b> fijados por el equipo del CIEHS para cada
@@ -2450,7 +2456,7 @@
           <h3>Reserva la cosecha de la semana</h3>
           <p class="comunidad-lede">Elige lo que quieras y cuántas unidades: el total se va sumando solo. El equipo de Ventas te confirma el día de entrega, y la cosecha se corta el mismo día en que se entrega.</p>
 
-          <p class="tienda-estado" id="tiendaEstado" role="status" aria-live="polite">Cargando el catálogo…</p>
+          <div class="tienda-estado" id="tiendaEstado" role="status" aria-live="polite"><div class="estado estado--cargando"><span class="estado-ico" aria-hidden="true"><span class="estado-pulso"></span></span><div class="estado-txt"><p>Consultando el catálogo de la semana…</p></div></div></div>
           <!-- El contenido de abajo es el RESPALDO: lo sustituye la base en
                cuanto responde. Si no responde, esto es lo que se ve. -->
           <div class="tienda-grid" id="tiendaGrid">
@@ -2588,7 +2594,7 @@
           <p class="eyebrow">Transparencia</p>
           <h3>A dónde va lo que se obtiene</h3>
           <p class="comunidad-lede">Lo que se recauda vendiendo la cosecha vuelve al laboratorio. Aquí no se publican importes ni cuánto se vende: se publica <b>la proporción</b> en que se reparte, que es lo que de verdad dice en qué cree este proyecto.</p>
-          <p class="transp-estado" id="transpEstado" role="status" aria-live="polite">Cargando el reparto…</p>
+          <div class="transp-estado" id="transpEstado" role="status" aria-live="polite"><div class="estado estado--cargando"><span class="estado-ico" aria-hidden="true"><span class="estado-pulso"></span></span><div class="estado-txt"><p>Consultando la caja del CIEHS…</p></div></div></div>
           <!-- Respaldo: el reparto PREVISTO. En cuanto Tesorería registre
                egresos, la base lo sustituye por el reparto real. -->
           <div class="destino" id="destinoLista">
@@ -2652,7 +2658,7 @@
           </form>
 
           <div class="comentarios-lista-wrap">
-            <p class="comentarios-estado" id="comentariosEstado" role="status" aria-live="polite">Cargando comentarios…</p>
+            <div class="comentarios-estado" id="comentariosEstado" role="status" aria-live="polite" hidden></div>
             <div class="comentarios-lista" id="comentariosLista"><div class="skeleton skeleton-fila"></div><div class="skeleton skeleton-fila"></div></div>
           </div>
         </div>

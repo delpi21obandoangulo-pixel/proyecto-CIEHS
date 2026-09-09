@@ -628,6 +628,153 @@
       .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
+  /* ================= ESTADOS DE DATOS: cargando · error · vacío =============
+     Toda seccion que dependa de la base tiene tres momentos en los que NO puede
+     enseñar lo que promete, y son tres cosas distintas:
+
+       cargando  la peticion esta en vuelo. Se responde con esqueleto, no con la
+                 palabra "Cargando", porque un bloque con la forma de lo que va a
+                 llegar dice ademas CUANTO va a llegar.
+       vacio     la base respondio y no hay nada. Es un estado NORMAL: la carpeta
+                 de campo recien abierta esta legitimamente vacia. Se explica sin
+                 alarma y, cuando toca, se dice quien la va a llenar.
+       error     la base no respondio. Es lo unico de los tres que el visitante
+                 puede intentar arreglar, asi que es lo unico que lleva boton.
+
+     Antes esto vivia repartido en cada pintor, con seis cajas distintas y sin
+     separar las dos ultimas: "no hay comentarios" y "no se pudo cargar" se veian
+     igual. Aqui hay un solo inventario, como con la navegacion.
+
+     El reintento se enchufa desde fuera (CIEHS.estado.alReintentar) para que este
+     bloque no necesite conocer a refrescar(), que se define mucho mas abajo.
+     ------------------------------------------------------------------------- */
+  var alReintentar = null;
+  var reintentando = false;
+
+  function caja(variante, ico, titulo, texto, accion){
+    return '<div class="estado estado--' + variante + '">'
+      + '<span class="estado-ico" aria-hidden="true">' + ico + '</span>'
+      + '<div class="estado-txt">'
+      +   (titulo ? '<b>' + esc(titulo) + '</b>' : '')
+      +   '<p>' + esc(texto) + '</p>'
+      + '</div>'
+      + (accion || '')
+      + '</div>';
+  }
+
+  var Estado = {
+    /* Esqueleto con la forma de lo que se espera. n = cuantas piezas. */
+    esqueleto: function(n, forma){
+      var clase = 'skeleton skeleton-' + (forma || 'fila');
+      var out = '';
+      for(var i = 0; i < (n || 3); i++) out += '<div class="' + clase + '"></div>';
+      return out;
+    },
+
+    cargando: function(texto){
+      return caja('cargando',
+        '<span class="estado-pulso"></span>',
+        null,
+        texto || 'Consultando la base del CIEHS…');
+    },
+
+    vacio: function(titulo, texto, ico){
+      return caja('vacio', ico || '🌱', titulo, texto);
+    },
+
+    /* El unico con boton. `detalle` es el motivo tecnico: se enseña porque en un
+       laboratorio escolar quien mira la pantalla suele ser tambien quien puede
+       avisar de que la base esta caida, y "no se pudo cargar" a secas no le
+       sirve para eso. */
+    error: function(texto, detalle){
+      var t = texto || 'No se pudo conectar con la base del CIEHS.';
+      if(detalle) t += ' (' + detalle + ')';
+      return caja('error', '⚠',
+        'No se pudo cargar',
+        t,
+        '<button type="button" class="estado-accion" data-reintentar>'
+          + (reintentando ? 'Reintentando…' : 'Reintentar') + '</button>');
+    },
+
+    /* Azucar: elige la variante segun la fase, para que cada pintor no repita
+       el mismo if de tres ramas. */
+    segunFase: function(opts){
+      if(fase === 'cargando') return Estado.cargando(opts.cargando);
+      if(fase === 'error')    return Estado.error(opts.error, D && D.motivo);
+      return Estado.vacio(opts.vacioTitulo, opts.vacio, opts.ico);
+    },
+
+    /* Pinta dentro de un contenedor y lo revela; si no hay nada que decir, lo
+       oculta. Devuelve true si pinto algo, para poder encadenar. */
+    en: function(elemento, html){
+      if(!elemento) return false;
+      if(!html){ elemento.innerHTML = ''; elemento.hidden = true; return false; }
+      elemento.innerHTML = html;
+      elemento.hidden = false;
+      return true;
+    },
+
+    alReintentar: function(fn){ alReintentar = fn; }
+  };
+
+  /* fase: 'cargando' mientras la peticion esta en vuelo, 'error' si fallo,
+     'listo' si respondio (aunque venga vacia). Es lo que permite a los pintores
+     distinguir "todavia no ha llegado" de "llego y no habia nada", que antes se
+     confundian porque D.conectado vale false en los dos casos. */
+  var fase = 'cargando';
+  function faseActual(){ return fase; }
+
+  /* ---- aviso de datos caducados ----
+     Caso aparte y facil de pasar por alto: la carga falla PERO ya habia datos
+     buenos en pantalla de un intento anterior. Borrarlos para enseñar un error
+     seria absurdo —se tiraria informacion valida—, pero dejarlos sin decir nada
+     es peor: el visitante lee cifras viejas creyendo que son de ahora.
+
+     Asi que los datos se quedan y encima aparece una barra que dice desde
+     cuando son y ofrece reintentar. Solo sale en este caso: en la primera carga
+     fallida no hay nada viejo que advertir y hablan los estados de seccion. */
+  var barraCaducado = null;
+  var horaBuena = null;
+
+  function avisarDatosCaducados(hayDatos){
+    if(fase === 'error' && hayDatos){
+      if(!barraCaducado){
+        barraCaducado = document.createElement('div');
+        barraCaducado.className = 'datos-caducados';
+        barraCaducado.setAttribute('role', 'status');
+        barraCaducado.setAttribute('aria-live', 'polite');
+        document.body.appendChild(barraCaducado);
+      }
+      barraCaducado.innerHTML =
+          '<span class="estado-ico" aria-hidden="true">⚠</span>'
+        // Sin punto final propio cuando lleva hora: en es-PE la hora ya termina
+        // en punto ("05:28 p. m.") y quedaba un "p. m..".
+        + '<p>Sin conexión con la base. Lo que ves es lo último que se pudo cargar'
+        +   (horaBuena ? ', de las ' + esc(horaBuena) : '.') + '</p>'
+        + '<button type="button" class="estado-accion" data-reintentar>'
+        +   (reintentando ? 'Reintentando…' : 'Reintentar') + '</button>';
+      barraCaducado.hidden = false;
+    } else if(barraCaducado){
+      barraCaducado.hidden = true;
+    }
+  }
+
+  /* Un solo listener delegado para todos los botones de reintento, presentes y
+     futuros: los estados se repintan enteros y un listener por boton se habria
+     perdido en cada repintado. */
+  document.addEventListener('click', function(ev){
+    var b = ev.target.closest ? ev.target.closest('[data-reintentar]') : null;
+    if(!b || reintentando || typeof alReintentar !== 'function') return;
+    reintentando = true;
+    // Se marcan TODOS los botones a la vez: si fallo la carga del portal,
+    // fallaron todas las secciones y todas se estan reintentando juntas.
+    document.querySelectorAll('[data-reintentar]').forEach(function(o){
+      o.disabled = true; o.textContent = 'Reintentando…';
+    });
+    Promise.resolve(alReintentar())["catch"](function(){})
+      .then(function(){ reintentando = false; });
+  });
+
   /* ---------------------- portada, KPIs y aviso ---------------------- */
 
   function pintarConfig(c){
@@ -733,10 +880,19 @@
   function pintarTelemetria(){
     if(!teleLista || !teleEstado) return;
 
-    if(!D || !D.conectado){
+    if(fase === 'cargando'){
+      teleEstado.textContent = 'consultando…';
+      // Esqueleto con la forma de las filas que van a llegar, no un texto: dice
+      // ademas cuantas, que es la mitad de la informacion de una espera.
+      teleLista.innerHTML = Estado.esqueleto(3, 'tele');
+      return;
+    }
+
+    if(fase === 'error' || !D || !D.conectado){
       teleEstado.textContent = 'sin conexión';
-      teleLista.innerHTML = '<p class="tele-empty">No se pudo consultar el registro de lecturas. '
-        + 'Se muestran los rangos de referencia que trae el portal.</p>';
+      teleLista.innerHTML = Estado.error(
+        'No se pudo consultar el registro de lecturas. Debajo siguen los rangos de referencia '
+        + 'que trae el portal, que no dependen de la red.', D && D.motivo);
       return;
     }
 
@@ -744,9 +900,10 @@
     if(!lecturas.length){
       teleEstado.textContent = '0 lecturas';
       // Estado vacio honesto: no se inventan mediciones que nadie ha tomado.
-      teleLista.innerHTML = '<p class="tele-empty">Todavía no hay lecturas registradas. '
-        + 'En cuanto el equipo anote la primera medición de pH y CE desde el panel de administración, '
-        + 'aparecerá aquí con su fecha.</p>';
+      teleLista.innerHTML = Estado.vacio(
+        'Todavía sin lecturas',
+        'En cuanto el equipo de Monitoreo anote la primera medición de pH y CE desde el panel '
+        + 'de administración, aparecerá aquí con su fecha.', '💧');
       return;
     }
 
@@ -926,7 +1083,12 @@
     filas.forEach(function(r){ if(variables.indexOf(r.variable) === -1) variables.push(r.variable); });
 
     if(!filas.length && !i.conclusion){
-      return '<div class="res-vacio">Todavía sin resultados publicados. Los equipos los van sumando a medida que miden.</div>';
+      // Una investigacion sin resultados no es un fallo: es una investigacion en
+      // curso. Lo que seria deshonesto es callarlo o insinuar que ya concluyo.
+      return Estado.vacio(
+        'Todavía sin resultados publicados',
+        'La investigación está en curso. Los equipos van sumando mediciones a medida que miden, '
+        + 'y aquí aparecerán con su gráfica en cuanto haya la primera.', '🔬');
     }
 
     var graficas = variables.map(function(v){ return graficaResultados(filas, v); }).join('');
@@ -1006,22 +1168,44 @@
 
   /* ------------------------------ carga ------------------------------- */
 
-  // Deja las cuatro secciones que arrancan con esqueleto en su estado "sin
-  // base": cada pintor ya sabe explicar por que no hay nada. Sin esto el
-  // esqueleto se quedaria brillando para siempre.
-  function rendirseConLasSeccionesDeRed(){
+  // Repinta las secciones que solo existen si la base responde. Se llama en los
+  // tres momentos —al empezar a cargar, al fallar y al terminar— porque cada
+  // pintor lee `fase` y ya sabe cual de los tres estados le toca. Sin la llamada
+  // inicial el esqueleto del HTML se quedaria brillando para siempre en un
+  // reintento, y sin la del fallo se quedaria brillando para siempre a secas.
+  function repintarSeccionesDeRed(){
     pintarCarpeta(); pintarBitacora(); pintarTransparencia(); pintarComentarios();
   }
 
   function refrescar(){
-    if(!D || !D.listo){ rendirseConLasSeccionesDeRed(); return Promise.resolve(); }
+    if(!D || !D.listo){
+      fase = 'error';
+      repintarSeccionesDeRed();
+      pintarTelemetria();
+      avisarDatosCaducados(!!datos);
+      return Promise.resolve();
+    }
+    // Cada intento —el primero y cada reintento— vuelve a poner las secciones en
+    // "cargando". Sin esto, al pulsar Reintentar el aviso de error se quedaria
+    // fijo hasta que la respuesta llegara, y no habria ninguna señal de que la
+    // pulsacion hizo algo.
+    fase = 'cargando';
+    avisarDatosCaducados(false);
+    repintarSeccionesDeRed();
+    pintarTelemetria();
+
     return D.cargarPortal().then(function(res){
       if(!res) {
+        fase = 'error';
         pintarSync(); pintarTelemetria();
-        rendirseConLasSeccionesDeRed();
+        repintarSeccionesDeRed();
+        avisarDatosCaducados(!!datos);
         return;
       }
+      fase = 'listo';
       datos = res;
+      horaBuena = new Date().toLocaleTimeString('es-PE', { hour:'2-digit', minute:'2-digit' });
+      avisarDatosCaducados(false);
       modulosPorId = {};
       res.modulos.forEach(function(m){ modulosPorId[m.id] = m; });
       pintarConfig(res.config);
@@ -1048,10 +1232,16 @@
       // Un rechazo (red caida, CORS, token invalido) tiene que terminar igual
       // que una respuesta vacia: con un mensaje, no con un esqueleto eterno.
       if(window.console && console.warn) console.warn("CIEHS: no se pudo cargar el portal", err);
+      fase = 'error';
       pintarSync(); pintarTelemetria();
-      rendirseConLasSeccionesDeRed();
+      repintarSeccionesDeRed();
+      avisarDatosCaducados(!!datos);
     });
   }
+
+  // El boton "Reintentar" de cualquier estado de error vuelve a lanzar la misma
+  // carga. Es la unica de las tres situaciones que el visitante puede arreglar.
+  Estado.alReintentar(refrescar);
   /* ================= SECCIONES 2026: carpeta, bitácora, comunidad ==========
      Todas siguen la misma regla que el resto del portal: si la base responde,
      mandan sus datos; si no responde, se queda el HTML estático que ya vino con
@@ -1087,23 +1277,40 @@
 
   function pintarCarpeta(){
     if(!carpetaGrid) return;
-    var filas = (datos && datos.carpeta) || [];
-    if(carpetaFiltro !== 'todos'){
-      filas = filas.filter(function(f){ return f.kind === carpetaFiltro; });
+
+    if(fase === 'cargando'){
+      Estado.en(carpetaEstado, null);
+      carpetaGrid.innerHTML = Estado.esqueleto(3, 'tarjeta');
+      return;
     }
+
+    var todas = (datos && datos.carpeta) || [];
+    var filas = (carpetaFiltro === 'todos')
+      ? todas
+      : todas.filter(function(f){ return f.kind === carpetaFiltro; });
+
     if(!filas.length){
       carpetaGrid.innerHTML = '';
-      if(carpetaEstado){
-        carpetaEstado.hidden = false;
-        carpetaEstado.textContent = (datos && datos.carpeta && datos.carpeta.length)
-          ? 'No hay entradas de ese tipo todavía.'
-          : (D && D.conectado
-              ? 'La carpeta de campo está abierta y todavía sin entradas publicadas. Las primeras las suben los equipos al cerrar el ciclo en curso.'
-              : 'No se pudo conectar con la base del CIEHS, así que la carpeta de campo no se puede mostrar ahora mismo.');
+      // Tres vacios distintos, y merecen tres frases distintas: el filtro no
+      // encuentra nada (culpa del filtro, y se ofrece deshacerlo), la carpeta
+      // esta recien abierta (normal), o la base no responde (reintentable).
+      if(todas.length){
+        Estado.en(carpetaEstado, Estado.vacio(
+          'Nada de ese tipo, todavía',
+          'La carpeta tiene ' + todas.length + (todas.length === 1 ? ' entrada' : ' entradas')
+          + ', pero ninguna de esta clase. Prueba con «Todos».', '🔍'));
+      } else {
+        Estado.en(carpetaEstado, Estado.segunFase({
+          error: 'La carpeta de campo no se puede mostrar ahora mismo.',
+          vacioTitulo: 'La carpeta está abierta y vacía',
+          vacio: 'Todavía sin entradas publicadas. Las primeras las suben los equipos al cerrar '
+               + 'el ciclo en curso.',
+          ico: '📓'
+        }));
       }
       return;
     }
-    if(carpetaEstado) carpetaEstado.hidden = true;
+    Estado.en(carpetaEstado, null);
     carpetaGrid.innerHTML = filas.map(function(f){
       var media = f.media_url
         ? '<a class="carpeta-link" href="' + esc(f.media_url) + '" target="_blank" rel="noopener noreferrer">Ver el archivo adjunto</a>'
@@ -1139,10 +1346,27 @@
   var bitCuerpo  = el('bitacoraCuerpo');
   var bitEstado  = el('bitacoraEstado');
   var bitSelect  = el('bitacoraCultivo');
+  var bitTabla   = el('bitacoraTablaWrap');
+
+  // Una tabla sin filas es solo una fila de encabezados flotando: no dice nada
+  // y encima parece rota. Cuando no hay nada que enseñar, la tabla se retira y
+  // habla el estado. Durante la carga si se queda, porque el esqueleto va dentro.
+  function verTabla(v){ if(bitTabla) bitTabla.hidden = !v; }
 
   function pintarBitacora(){
     if(!bitCuerpo) return;
-    var filas = (datos && datos.bitacora) || [];
+
+    if(fase === 'cargando'){
+      Estado.en(bitEstado, null);
+      verTabla(true);
+      // El esqueleto va DENTRO de la tabla, ocupando las nueve columnas: una
+      // tabla a la que se le meten divis sueltos rompe su propia rejilla.
+      bitCuerpo.innerHTML = '<tr><td colspan="9">' + Estado.esqueleto(4, 'fila') + '</td></tr>';
+      return;
+    }
+
+    var todas = (datos && datos.bitacora) || [];
+    var filas = todas;
 
     // El selector se llena con los cultivos que realmente hay registrados, no
     // con una lista fija: si mañana se siembra otra especie, aparece sola.
@@ -1164,15 +1388,25 @@
 
     if(!filas.length){
       bitCuerpo.innerHTML = '';
-      if(bitEstado){
-        bitEstado.hidden = false;
-        bitEstado.textContent = D && D.conectado
-          ? 'Todavía no hay lotes registrados para ese filtro.'
-          : 'No se pudo conectar con la base del CIEHS: la bitácora no se puede mostrar ahora mismo.';
+      verTabla(false);
+      if(todas.length){
+        Estado.en(bitEstado, Estado.vacio(
+          'Ningún lote con ese cultivo',
+          'La bitácora tiene ' + todas.length + (todas.length === 1 ? ' lote' : ' lotes')
+          + ' registrados, pero ninguno de esa especie. Prueba con «Todos los cultivos».', '🔍'));
+      } else {
+        Estado.en(bitEstado, Estado.segunFase({
+          error: 'La bitácora agronómica no se puede mostrar ahora mismo.',
+          vacioTitulo: 'Todavía sin lotes registrados',
+          vacio: 'Cada lote aparece aquí en cuanto el equipo lo siembra y lo anota desde el panel '
+               + 'de administración: qué día, en qué módulo y con qué solución.',
+          ico: '🌾'
+        }));
       }
       return;
     }
-    if(bitEstado) bitEstado.hidden = true;
+    Estado.en(bitEstado, null);
+    verTabla(true);
     bitCuerpo.innerHTML = filas.map(function(f){
       var cosecha = f.harvest_on
         ? fmtDia(f.harvest_on) + (f.harvest_kg ? ' · ' + num(f.harvest_kg, 2) + ' kg' : '')
@@ -1327,18 +1561,27 @@
 
   function pintarComentarios(){
     if(!comentariosLista) return;
+
+    if(fase === 'cargando'){
+      Estado.en(comentariosEstado, null);
+      comentariosLista.innerHTML = Estado.esqueleto(2, 'fila');
+      return;
+    }
+
     var filas = (datos && datos.comentarios) || [];
     if(!filas.length){
       comentariosLista.innerHTML = '';
-      if(comentariosEstado){
-        comentariosEstado.hidden = false;
-        comentariosEstado.textContent = D && D.conectado
-          ? 'Todavía no hay comentarios publicados. El tuyo puede ser el primero — pasará antes por la coordinación.'
-          : 'No se pudo conectar con la base del CIEHS: los comentarios no se pueden mostrar ahora mismo.';
-      }
+      Estado.en(comentariosEstado, Estado.segunFase({
+        error: 'Los comentarios de la comunidad no se pueden mostrar ahora mismo. '
+             + 'El formulario de abajo tampoco podrá enviarse hasta que vuelva la conexión.',
+        vacioTitulo: 'Sé el primero',
+        vacio: 'Todavía no hay comentarios publicados. El tuyo puede serlo — pasará antes por '
+             + 'la coordinación, como todos.',
+        ico: '💬'
+      }));
       return;
     }
-    if(comentariosEstado) comentariosEstado.hidden = true;
+    Estado.en(comentariosEstado, null);
     comentariosLista.innerHTML = filas.map(function(c){
       return '<article class="comentario">'
         + '<div class="comentario-head">'
@@ -2553,6 +2796,12 @@
   window.CIEHS = window.CIEHS || {};
   window.CIEHS.refrescarDatos = refrescar;
   window.CIEHS.snapshot = function(){ return datos; };
+  // Los modulos de mas abajo (tienda, transparencia, campo, aportes) pintan sus
+  // propias secciones a partir del mismo snapshot, asi que necesitan las mismas
+  // tres respuestas y la misma fase. Se exportan en vez de duplicarse: un solo
+  // inventario de estados, como uno solo de navegacion.
+  window.CIEHS.estado = Estado;
+  window.CIEHS.faseDatos = faseActual;
 })();
 
 /* ===========================================================================
@@ -3803,9 +4052,24 @@
 
   function pintarAprobados(){
     if(!elPubs) return;
+    var E = window.CIEHS && window.CIEHS.estado;
+    var faseD = (window.CIEHS && window.CIEHS.faseDatos) ? window.CIEHS.faseDatos() : 'listo';
     var snap = (window.CIEHS && window.CIEHS.snapshot && window.CIEHS.snapshot()) || null;
     var filas = (snap && snap.aportes) || [];
-    if(!filas.length){ elPubs.innerHTML = ''; return; }
+
+    if(!filas.length){
+      // Antes esto se vaciaba en silencio y la seccion quedaba en un hueco sin
+      // explicacion: el visitante no podia saber si es que no habia aportes o si
+      // es que algo habia fallado.
+      elPubs.innerHTML = !E ? ''
+        : faseD === 'cargando' ? E.cargando('Buscando los aportes ya aprobados…')
+        : faseD === 'error'    ? E.error('La lista de aportes publicados no se puede mostrar ahora mismo.',
+                                         window.CIEHSData && window.CIEHSData.motivo)
+        : E.vacio('Todavía sin aportes publicados',
+                  'Lo que se envía desde aquí pasa antes por la coordinación. En cuanto se apruebe '
+                  + 'el primero, aparecerá en esta lista.', '📎');
+      return;
+    }
 
     elPubs.innerHTML = '<h4 class="aporte-pub-titulo">Aportes publicados</h4>'
       + '<ul class="aporte-lista">' + filas.map(function(a){
@@ -4246,21 +4510,29 @@
   }
 
   function pintarCatalogo(){
+    var E = window.CIEHS && window.CIEHS.estado;
+    var faseD = (window.CIEHS && window.CIEHS.faseDatos) ? window.CIEHS.faseDatos() : 'listo';
     var lista = productos();
+
     if(!lista.length){
       // NO se vacia la rejilla: el HTML trae un catalogo de respaldo con las seis
       // especies y su estado. Borrarlo dejaria la seccion en blanco justo a
       // quien peor conexion tiene, que es a quien mas falta le hace saber que
       // se cultiva. Solo se explica que no se puede reservar todavia.
-      if(elEstado){
-        elEstado.hidden = false;
-        elEstado.textContent = (D && D.conectado)
-          ? 'El catálogo todavía está vacío. Abajo, lo que el CIEHS cultiva habitualmente.'
-          : 'Sin conexión con la base del CIEHS: se muestra el catálogo habitual, pero la reserva en línea no está disponible.';
+      if(elEstado && E){
+        E.en(elEstado,
+          faseD === 'cargando'
+            ? E.cargando('Consultando el catálogo de la semana… Debajo, mientras tanto, lo que el CIEHS cultiva habitualmente.')
+          : faseD === 'error'
+            ? E.error('Se muestra el catálogo habitual, pero la reserva en línea no está disponible '
+                    + 'hasta que vuelva la conexión.', D && D.motivo)
+            : E.vacio('Sin cosecha publicada esta semana',
+                      'El catálogo de reservas está vacío ahora mismo. Abajo, lo que el CIEHS '
+                      + 'cultiva habitualmente.', '🥬'));
       }
       return;
     }
-    if(elEstado) elEstado.hidden = true;
+    if(elEstado && E) E.en(elEstado, null);
 
     grid.innerHTML = lista.map(function(p){
       var e = ETIQUETA_ESTADO[p.estado] || ETIQUETA_ESTADO.en_crecimiento;
@@ -4440,15 +4712,22 @@
       // PREVISTO y lo dice con esas palabras. Ensenar un plan como si fuera
       // gasto ya ejecutado seria mentir; ensenarlo etiquetado como plan es lo
       // que una familia quiere saber antes de comprar.
-      if(transpEst){
-        transpEst.hidden = false;
-        transpEst.textContent = (D && D.conectado)
-          ? 'Todavía no hay egresos registrados. Abajo, el reparto previsto.'
-          : 'Sin conexión con la base del CIEHS: se muestra el reparto previsto.';
+      var E = window.CIEHS && window.CIEHS.estado;
+      var faseD = (window.CIEHS && window.CIEHS.faseDatos) ? window.CIEHS.faseDatos() : 'listo';
+      if(transpEst && E){
+        E.en(transpEst,
+          faseD === 'cargando'
+            ? E.cargando('Consultando la caja del CIEHS… Abajo, mientras tanto, el reparto previsto.')
+          : faseD === 'error'
+            ? E.error('No se pudo leer la caja, así que lo de abajo es el reparto PREVISTO, '
+                    + 'no lo ya gastado.', D && D.motivo)
+            : E.vacio('Todavía sin egresos registrados',
+                      'Abajo, el reparto previsto. En cuanto el equipo de Tesorería anote el primer '
+                      + 'gasto, esta rueda pasa a mostrar el reparto real.', '🧾'));
       }
       return;
     }
-    if(transpEst) transpEst.hidden = true;
+    if(transpEst && window.CIEHS && window.CIEHS.estado) window.CIEHS.estado.en(transpEst, null);
 
     // Se agrupa por CATEGORIA canonica, no por el concepto en texto libre:
     // "solucion nutritiva", "Solucion Nutritiva" y "nutrientes" son el mismo

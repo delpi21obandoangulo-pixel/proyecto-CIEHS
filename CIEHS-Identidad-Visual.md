@@ -198,6 +198,58 @@ propósito**: es un espacio inmersivo, no una página del portal.
 
 ---
 
+## 3 quinquies. Estados de datos: cargando · error · vacío
+
+Toda sección que dependa de Supabase tiene **tres** momentos en los que no puede
+enseñar lo que promete, y son tres cosas distintas:
+
+| Estado | Qué significa | Cómo se ve | ¿Botón? |
+|---|---|---|---|
+| **cargando** | La petición está en vuelo | Esqueleto con la forma de lo que va a llegar | No |
+| **vacío** | La base respondió y no hay nada | Caja neutra, borde discontinuo, icono verde | No |
+| **error** | La base no respondió | Caja ámbar, borde continuo, motivo técnico | **Sí, «Reintentar»** |
+
+Un solo componente (`.estado`, al final de `assets/css/ciehs.css`) y un solo
+helper (`CIEHS.estado`, en `ciehs-app.js`). Antes esto vivía repartido: seis
+clases distintas decían lo mismo con cajas distintas y **ninguna separaba las dos
+últimas** — «todavía no hay comentarios» y «no se pudo cargar» se veían igual,
+siendo lo opuesto la una de la otra.
+
+### Las tres decisiones
+
+**Ámbar y no rojo en el error.** En un laboratorio escolar la conexión se cae a
+todas horas y no es una catástrofe ni culpa de nadie. El rojo se reserva para lo
+que el visitante ha hecho mal y puede corregir (validación de formularios).
+
+**El botón solo en el error.** De los tres estados es el único que el visitante
+puede intentar arreglar. Poner «Reintentar» sobre un estado vacío sería prometer
+que insistir sirve de algo.
+
+**El motivo técnico se enseña.** «No se pudo cargar (TypeError: Failed to fetch)».
+Quien mira la pantalla en el laboratorio suele ser también quien puede avisar de
+que la base está caída, y un mensaje sin causa no le sirve para eso.
+
+### El cuarto caso: datos caducados
+
+Aparte, y fácil de pasar por alto: **la recarga falla pero ya había datos buenos
+en pantalla**. Borrarlos para enseñar un error tiraría información válida;
+dejarlos sin decir nada es peor, porque el visitante lee cifras viejas creyendo
+que son de ahora.
+
+Se resuelve con las dos cosas: los datos se quedan y aparece una barra anclada
+abajo —`.datos-caducados`— que dice **desde cuándo son** y ofrece reintentar. No
+es un modal: lo que hay en pantalla sigue siendo útil y se puede seguir leyendo.
+
+### La fase
+
+`CIEHS.faseDatos()` devuelve `'cargando' | 'listo' | 'error'`. Existe porque
+`CIEHSData.conectado` vale `false` **tanto mientras carga como cuando falla**, y
+sin distinguirlos no se puede elegir entre esqueleto y error. Cada reintento
+vuelve a poner la fase en `'cargando'`: si no, al pulsar el botón no habría
+ninguna señal de que la pulsación hizo algo.
+
+---
+
 ## 3 quater. El plano ambiental (2026-09-09)
 
 El portal dejó de apoyarse en blanco plano. Detrás de **toda** la página vive una
