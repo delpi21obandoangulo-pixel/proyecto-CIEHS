@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#f4f6f9">
+<meta name="theme-color" content="#eef2f6">
 
 <title>CIEHS · Centro de Investigación Escolar Hidropónico Sostenible</title>
 <meta name="description" content="Laboratorio de hidroponía escolar de la I.E. N.° 80033 “José Olaya Balandra”, Huanchaco: 280 estudiantes, 15 módulos de raíz flotante, carpeta de campo, bitácora agronómica y recursos docentes.">
@@ -11,8 +11,11 @@
 <meta name="author" content="I.E. N.° 80033 José Olaya Balandra — Huanchaco, La Libertad, Perú">
 <meta name="robots" content="index, follow, max-image-preview:large">
 
-<!-- Iconos. La marca es el marcador de posición del portal: sustituir por el
-     escudo institucional oficial cuando esté disponible, sin modificar su diseño. -->
+<!-- Iconos. La marca del portal es el ISOTIPO DEL CIEHS —el brote con las raíces
+     sumergidas—, no el escudo de la I.E. 80033: son dos marcas distintas y así lo
+     dice también la página de identidad. Los cuatro PNG derivados (32, 180, 512 y
+     la tarjeta al compartir) se rasterizan desde assets/img/isotipo-ciehs.svg con
+     `node tools/generar-marca.js`; no se editan a mano. -->
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/icon-32.png">
 <link rel="icon" type="image/png" sizes="512x512" href="/assets/img/icon-512.png">
@@ -72,6 +75,16 @@
 <body data-route="inicio">
 
 <div class="scroll-progress" aria-hidden="true"><i></i></div>
+
+<!-- Plano ambiental: una sola fotografia del laboratorio, fija respecto al
+     scroll y con un avance lento en bucle. Va en z-index:-1, por debajo de todo
+     el contenido, y el velo que lleva encima es lo que sostiene la legibilidad
+     de las secciones traslucidas. Puramente decorativo -> aria-hidden. -->
+<div class="amb" aria-hidden="true">
+  <div class="amb-img"></div>
+  <div class="amb-veil"></div>
+</div>
+
 <div class="mesh-aura" aria-hidden="true"><span></span><span></span><span></span></div>
 
 <header class="site">
@@ -2246,7 +2259,7 @@
           <div>
             <h4>Cómo se usa</h4>
             <ul>
-              <li>El <b>escudo institucional no se sustituye por este logo</b>: son dos marcas distintas. El escudo es del colegio; este, del proyecto.</li>
+              <li><b>Son dos marcas distintas</b>: el escudo es de la I.E. N.° 80033 y este isotipo es del CIEHS. Este portal es del proyecto, así que en él la marca es siempre el isotipo —cabecera, pie, iconos y tarjeta al compartir—, y la institución se nombra por escrito. En documentos oficiales del colegio manda el escudo, y este logo <b>no lo sustituye ahí</b>.</li>
               <li>Sobre fondo oscuro se usa la versión clara. El emblema nunca cambia de dibujo.</li>
               <li>Es vector: se escala sin perder nitidez y no hay que pedir «otro tamaño».</li>
             </ul>

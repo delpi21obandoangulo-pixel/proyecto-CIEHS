@@ -16,8 +16,14 @@
     /* ---- los cinco planos de blanco ----
        Se usan por ELEVACIÓN, no por gusto: cuanto más arriba está un elemento
        en la jerarquía, más cerca del blanco puro y más sombra tiene debajo. */
-    --paper:      #f4f6f9;   /* lienzo de la página — gris frío casi imperceptible */
-    --surface:    #ffffff;   /* tarjetas y paneles elevados */
+    --paper:      #eef2f6;   /* lienzo de la página — el color bajo la fotografía ambiental */
+    /* --surface ya no es blanco pleno: con el plano ambiental detrás, una
+       tarjeta opaca vuelve a abrir un agujero blanco en la composicion. A 0.88
+       el fondo respira sin que el texto pierda contraste (sobre la fotografia
+       ya velada, el blanco efectivo queda por encima de #f2f4f6). Las tarjetas
+       ya traian backdrop-filter:blur(18px): estaban disenadas para vidrio y
+       solo les faltaba dejar de ser opacas. */
+    --surface:    rgba(255,255,255,0.88);   /* tarjetas y paneles elevados */
     --surface-2:  #eff2f7;   /* pozos hundidos: cabeceras de tabla, campos */
     --surface-3:  #e4e9f0;   /* separadores macizos y estados vacíos */
     --veil:       #fafbfd;   /* secciones alternas: apenas un tono bajo el papel */
@@ -25,7 +31,12 @@
     /* ---- tinta ---- */
     --ink:        #0d1117;   /* titulares y cifras */
     --ink-soft:   #47505f;   /* texto corrido */
-    --ink-mute:   #8b95a7;   /* etiquetas, unidades, metadatos */
+    /* Se oscurece de #8b95a7 a #66707f. Aquel gris nunca llego a AA: sobre
+       blanco pleno daba 3.0:1, por debajo del 4.5 que pide el texto pequeno, y
+       con el plano ambiental detras habria bajado aun mas. Con #66707f la misma
+       etiqueta pasa a 4.7:1 dentro de una tarjeta —ya cumple— y sobre la
+       superficie de seccion se mantiene en el 3.0 que tenia antes. */
+    --ink-mute:   #66707f;   /* etiquetas, unidades, metadatos */
     --line:       rgba(13,17,23,0.07);
     --line-strong:rgba(13,17,23,0.13);
 
@@ -42,20 +53,29 @@
 
     /* ---- esmeralda institucional CIEHS ----
        leaf-300 es, en todo el CSS, "el verde con el que se escribe": sobre
-       blanco eso obliga al tono OSCURO. No invertir por el número del nombre. */
+       blanco eso obliga al tono OSCURO. No invertir por el número del nombre.
+
+       Los tres tonos -300 bajan un escalon respecto al diseno anterior
+       (#047857 / #0369a1 / #92400e). Motivo medido: son la tinta de las
+       antetitulos y de las etiquetas pequenas, que van directamente sobre la
+       superficie de seccion, y esa superficie ha dejado de ser blanco pleno
+       para volverse vidrio sobre el plano ambiental. Con los valores viejos el
+       94% del fondo dejaba esas etiquetas por debajo de 4.5:1; con estos, el
+       peor pixel del fondo se queda en ~4.9:1. Si algun dia se retira el plano
+       ambiental se pueden devolver, pero entonces hay que volver a medir. */
     --leaf-600:   #065f46;
     --leaf-500:   #059669;
-    --leaf-300:   #047857;
+    --leaf-300:   #045c40;
     --leaf-100:   rgba(5,150,105,0.09);
 
     /* azul mar de Huanchaco */
     --azure-600:  #075985;
     --azure-500:  #0284c7;
-    --azure-300:  #0369a1;
+    --azure-300:  #03527d;
 
     /* sol de Huanchaco */
     --sun-500:    #b45309;
-    --sun-300:    #92400e;
+    --sun-300:    #7c3606;
 
     --on-ocean:       var(--ink);
     --on-ocean-soft:  var(--ink-soft);
@@ -110,7 +130,12 @@
   }
   /* ============ RESET / BASE ============ */
   *,*::before,*::after{ box-sizing:border-box; }
-  html{ scroll-behavior:smooth; }
+  /* El color base vive en <html>, no en <body>. Es lo que permite que el plano
+     ambiental (.amb, al final de este archivo) se pinte en z-index:-1: el fondo
+     del elemento raiz se dibuja en el lienzo, por debajo de todo, y el resto de
+     la pagina flota encima con superficies traslucidas. Si <body> volviera a
+     tener fondo opaco, taparia la fotografia y no se veria nada. */
+  html{ scroll-behavior:smooth; background:var(--paper); }
   @media (prefers-reduced-motion: reduce){
     html{ scroll-behavior:auto; }
     *,*::before,*::after{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; }
@@ -118,7 +143,7 @@
   }
   body{
     margin:0;
-    background:var(--paper);
+    background:transparent;
     color:var(--ink);
     font-family:var(--font-body);
     font-size:16px;
@@ -241,14 +266,23 @@
   .btn-ghost:hover{ border-color:var(--leaf-300); color:var(--ink); }
 
   /* ============ HEADER ============ */
+  /* La cabecera es OPACA desde scroll 0, en todas las rutas.
+     Antes arrancaba a rgba(255,255,255,0.68) y solo se asentaba al bajar: la
+     marca quedaba lavada sobre lo que hubiera detras, y en la portada era peor
+     todavia (el hero oscuro empieza POR DEBAJO de la cabecera pegajosa, asi que
+     el texto blanco del tratamiento "sobre hero" caia sobre papel claro y se
+     volvia ilegible). La legibilidad del menu no puede depender de que el
+     usuario empiece a desplazarse. is-scrolled ya no cambia el color: solo
+     anade la sombra y compacta la altura. */
   header.site{
     position:sticky; top:0; z-index:40;
-    background:rgba(255,255,255,0.68);
-    backdrop-filter:blur(16px) saturate(140%);
+    background:rgba(255,255,255,0.95);
+    -webkit-backdrop-filter:blur(18px) saturate(150%);
+    backdrop-filter:blur(18px) saturate(150%);
     border-bottom:1px solid var(--line);
-    transition:background .3s ease, box-shadow .3s ease, border-color .3s ease;
+    transition:box-shadow .3s ease, border-color .3s ease;
   }
-  header.site.is-scrolled{ background:rgba(255,255,255,0.92); box-shadow:var(--shadow-2); border-color:var(--line); }
+  header.site.is-scrolled{ background:rgba(255,255,255,0.97); box-shadow:var(--shadow-2); border-color:var(--line-strong); }
   .nav{
     display:flex; align-items:center; justify-content:space-between;
     padding:14px 24px;
@@ -3519,28 +3553,31 @@
 /* Canvas de la mascara: fuera de pantalla, nunca visible */
 .hm-mask-canvas{ position:absolute; left:-9999px; top:0; width:1px; height:1px; opacity:0; pointer-events:none; }
 
-/* --- Cabecera global sobre el hero oscuro (transparente + texto blanco) --- */
-body[data-route="inicio"] header.site:not(.is-scrolled){
-  background:linear-gradient(180deg, rgba(7,11,10,0.66) 0%, rgba(7,11,10,0.10) 70%, rgba(7,11,10,0) 100%);
-  -webkit-backdrop-filter:none; backdrop-filter:none;
-  border-bottom-color:transparent;
-}
-body[data-route="inicio"] header.site:not(.is-scrolled) .brand-text b{ color:#fff; }
-body[data-route="inicio"] header.site:not(.is-scrolled) .brand-text span{ color:rgba(255,255,255,.82); }
-body[data-route="inicio"] header.site:not(.is-scrolled) .navtoggle{
-  background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.28); color:#fff;
-  box-shadow:inset 0 1px 1px rgba(255,255,255,.12);
-}
+/* --- Cabecera en la portada ---
+   Aqui vivia el tratamiento "transparente + texto blanco" para la portada. Se
+   retira: el hero arranca DEBAJO de la cabecera pegajosa, de modo que ese texto
+   blanco no caia sobre el hero oscuro sino sobre el papel claro de la pagina, y
+   la marca era practicamente invisible hasta que el usuario bajaba. La cabecera
+   usa ahora el mismo vidrio claro y opaco en todas las rutas y desde scroll 0
+   (ver el bloque HEADER). */
 
 /* Grupo derecho de la cabecera + pildora Administracion */
 .nav-right{ display:flex; align-items:center; gap:12px; flex:none; }
+/* La pildora vive sobre la cabecera clara en TODAS las rutas, asi que su tinta
+   es oscura siempre. Antes era blanca por defecto y solo se oscurecia fuera de
+   la portada o al bajar: en la portada a scroll 0 quedaba blanco sobre claro.
+   Tampoco usa ya el borde de .liquid-glass (pensado para fondo oscuro): sobre
+   blanco ese realce se pierde y hace falta un contorno real. */
 .nav-admin{
   display:inline-flex; align-items:center; gap:8px; padding:9px 16px; border-radius:999px;
-  color:#fff; font-family:inherit; font-size:13px; font-weight:500; cursor:pointer;
+  color:var(--ink); font-family:inherit; font-size:13px; font-weight:500; cursor:pointer;
+  background:var(--veil); border:1px solid var(--line-strong);
+  box-shadow:var(--shadow-1);
+  transition:border-color .25s var(--ease-soft), box-shadow .3s var(--ease-out), transform .3s var(--ease-out);
 }
-.nav-admin-dot{ width:8px; height:8px; border-radius:50%; background:#34d399; flex:none; box-shadow:0 0 8px rgba(52,211,153,.7); }
-body:not([data-route="inicio"]) .nav-admin,
-header.site.is-scrolled .nav-admin{ color:var(--ink); }
+.nav-admin:hover{ border-color:rgba(5,150,105,0.30); box-shadow:var(--shadow-2), var(--ring-accent); transform:translateY(-1px); }
+.nav-admin::before{ content:none; }
+.nav-admin-dot{ width:8px; height:8px; border-radius:50%; background:var(--leaf-500); flex:none; box-shadow:0 0 8px rgba(5,150,105,.5); }
 @media (max-width:720px){ .nav-admin{ display:none; } }
 
 /* El FAB de admin solo en movil: en escritorio lo cubre la pildora del header. */
@@ -3553,13 +3590,123 @@ header.site.is-scrolled .nav-admin{ color:var(--ink); }
 .brand-text span{ max-width:44ch; }
 .fbrand-ie{ display:block; font-weight:400; font-size:11.5px; color:var(--ink-mute); margin-top:2px; letter-spacing:0; }
 
-/* Garantía de legibilidad en la zona de transición: al bajar sobre el hero
-   (is-scrolled), la cabecera es blanca opaca con texto oscuro por defecto, para
-   que nunca queden textos oscuros sobre el hero oscuro mientras aparece. */
-body[data-route="inicio"] header.site.is-scrolled{
-  background:rgba(255,255,255,0.95);
-  -webkit-backdrop-filter:blur(16px) saturate(140%);
-  backdrop-filter:blur(16px) saturate(140%);
-  border-bottom:1px solid var(--line);
-  box-shadow:var(--shadow-2);
+/* (El caso especial de la portada al bajar ya no hace falta: la regla general
+   de header.site es identica en todas las rutas y en todo momento.) */
+
+/* ==========================================================================
+   PLANO AMBIENTAL CONTINUO
+   El portal ya no se apoya en un blanco plano. Detras de toda la pagina vive
+   una sola fotografia del laboratorio —las mesas de raiz flotante con lechuga—
+   fija respecto al scroll y con un avance muy lento en bucle (Ken Burns). Las
+   secciones dejan de ser bloques opacos y pasan a ser superficies traslucidas:
+   el fondo respira debajo sin que ningun texto pierda contraste.
+
+   Tres decisiones que conviene no deshacer sin medir:
+
+   1) z-index:-1 y no 0. El plano tiene que quedar por DEBAJO del contenido de
+      <main>, que en su mayoria son bloques sin position. Un elemento posicionado
+      con z-index:0 se pintaria por ENCIMA de esos fondos; con z-index negativo
+      cae al nivel del lienzo, justo sobre el fondo de <html>. Por eso <body> es
+      transparente y el color base se declaro en <html>.
+
+   2) El desenfoque y el velo van HORNEADOS en el propio plano (filter + una
+      capa de velo), no en cada seccion. Un backdrop-filter sobre superficies
+      del alto de la pagina cuesta caro al desplazar; aqui se paga una vez.
+      Las superficies pequenas (tarjetas, cabecera, menu) si conservan su
+      backdrop-filter, que ahi si se nota y no duele.
+
+   3) El bucle es 'alternate': la animacion vuelve por donde vino, asi que no
+      hay salto al reiniciar. Un bucle 'normal' con Ken Burns da un tiron cada
+      vez que cierra el ciclo.
+   ========================================================================== */
+.amb{
+  position:fixed; inset:0; z-index:-1;
+  overflow:hidden; pointer-events:none;
+  background:var(--paper);
+}
+.amb-img{
+  position:absolute; inset:-6%;
+  background:url('/assets/img/evidencias/mesas-dwc.jpg') center/cover no-repeat;
+  /* El orden importa y esta elegido, no copiado:
+       blur      - a este tamano el detalle fino solo es ruido;
+       saturate  - la lechuga es de un verde muy vivo y a plena saturacion tinta
+                   de verde todo el texto que caiga encima;
+       contrast  - LA CLAVE de la legibilidad. El plastico negro de las mesas
+                   baja a ~RGB(23) y, por muchos velos que se le pongan encima,
+                   una mancha asi de oscura hunde el contraste del texto de
+                   seccion por debajo de 4.5:1. Comprimido a 0.38 el negro sube
+                   a ~118 y el blanco del tecnopor baja a ~229: el fondo pasa a
+                   ser una acuarela sin negros, que es justo lo que debe ser un
+                   plano ambiental;
+       brightness- devuelve luz despues de comprimir.
+
+     Medido sobre el pixel MAS OSCURO de la fotografia, con el velo en su punto
+     mas fino y sobre la seccion menos densa (0.52), que es el peor caso posible:
+       --ink        11.4:1     --leaf-300   4.9:1
+       --ink-soft    4.9:1     --azure-300  5.1:1
+       --ink-mute    3.0:1     --sun-300    5.3:1
+     Todo por encima de AA salvo --ink-mute, que ya estaba en 3.0:1 antes de que
+     existiera este plano (dentro de una tarjeta sube a 4.7:1 y si cumple).
+     Si se toca contrast(), brightness(), el velo o la densidad de las secciones,
+     hay que volver a medir: son cuatro numeros que se sostienen entre si. */
+  filter:blur(3px) saturate(.8) contrast(.38) brightness(1.34);
+  transform:scale(1.06);
+  will-change:transform;
+}
+/* Velo: es lo que garantiza la legibilidad. Sin el, las secciones traslucidas
+   tendrian que subir a ~0.95 de blanco y volveriamos al blanco plano. */
+.amb-veil{
+  position:absolute; inset:0;
+  background:
+    radial-gradient(120% 85% at 50% 8%, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.24) 60%, rgba(255,255,255,0.34) 100%),
+    linear-gradient(180deg, rgba(240,246,245,0.22) 0%, rgba(247,250,251,0.14) 45%, rgba(238,244,245,0.26) 100%);
+}
+@media (prefers-reduced-motion:no-preference){
+  .amb-img{ animation:ambDeriva 72s ease-in-out infinite alternate; }
+}
+@keyframes ambDeriva{
+  from{ transform:scale(1.06) translate3d(0,0,0); }
+  to  { transform:scale(1.18) translate3d(-2.2%,-2.6%,0); }
+}
+/* En movil el plano SE QUEDA —es justo donde mas se nota que el portal dejo de
+   ser blanco plano, y la fotografia ya esta descargada por el hero— pero sin
+   animar. Lo caro de un fondo asi no es pintarlo: es repintar cada fotograma una
+   capa desenfocada del tamano de la pantalla mientras se hace scroll. Estatico,
+   se rasteriza una vez y no vuelve a costar nada. */
+@media (max-width:640px){
+  .amb-img{ animation:none !important; transform:scale(1.08); }
+}
+
+/* --- Secciones traslucidas ---
+   Antes: las pares transparentes (dejaban ver el papel) y las .alt con --veil
+   opaco. Ahora las dos son vidrio sobre el plano ambiental, y la alternancia se
+   mantiene por diferencia de densidad, no por color. */
+main > section{
+  background:rgba(255,255,255,0.52);
+  border-top:1px solid rgba(255,255,255,0.55);
+  border-bottom:1px solid rgba(13,17,23,0.045);
+}
+main > section.alt{
+  background:rgba(248,251,252,0.66);
+}
+/* El hero conserva su fondo oscuro propio: es una pieza opaca a proposito y el
+   plano ambiental no debe asomar por debajo. */
+main > section.hero-m{
+  background:#070b0a; border-top:none; border-bottom:none;
+}
+
+/* El pie tambien deja de ser una placa blanca. */
+footer{
+  background:rgba(255,255,255,0.72);
+  -webkit-backdrop-filter:blur(14px) saturate(130%);
+  backdrop-filter:blur(14px) saturate(130%);
+}
+
+/* Al imprimir no hay plano ambiental ni vidrio: papel blanco y tinta negra. */
+@media print{
+  .amb{ display:none !important; }
+  main > section, main > section.alt, footer{
+    background:#fff !important; border:none !important;
+    -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+  }
 }

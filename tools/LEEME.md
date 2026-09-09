@@ -68,3 +68,34 @@ dar por hecho justo lo que hay que demostrar.
 
 > Antes de tocar nada verifica que el UUID corresponde al correo esperado. Si no
 > coincide, aborta sin escribir.
+
+## `generar-marca.js`
+
+Rasteriza la identidad del CIEHS a PNG desde `assets/img/isotipo-ciehs.svg`.
+
+```bash
+node tools/generar-marca.js
+```
+
+Reescribe cuatro archivos:
+
+| Archivo | Qué es |
+|---|---|
+| `assets/img/icon-32.png` | Favicon |
+| `assets/img/icon-180.png` | Apple touch icon |
+| `assets/img/icon-512.png` | Icono de la PWA (`any` y `maskable`) |
+| `assets/img/ciehs-og.png` | Tarjeta 1200×630 al compartir (Open Graph / Twitter) |
+
+Hasta 2026-09-09 esos cuatro derivaban del **escudo de la I.E. 80033**. Son dos
+marcas distintas: el escudo es del colegio y el isotipo del brote hidropónico es
+del proyecto. El portal es una pieza del proyecto, así que ahora lleva el
+isotipo; la institución se nombra por escrito. Ver `CIEHS-Identidad-Visual.md`.
+
+**No editar los PNG a mano.** Se cambia el SVG y se vuelve a ejecutar: es lo que
+mantiene las cuatro piezas coincidiendo entre sí.
+
+> Sin dependencias: usa el Chrome que puppeteer ya dejó en caché
+> (`~/.cache/puppeteer/chrome`) y su modo `--screenshot`. Si no está, fija
+> `CHROME_PATH` a cualquier `chrome.exe` y repite. La tarjeta al compartir baja
+> las fuentes de Google en el momento de rasterizar, así que necesita red; los
+> iconos no.

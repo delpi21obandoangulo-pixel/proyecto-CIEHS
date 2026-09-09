@@ -2,8 +2,8 @@
 title: CIEHS · Identidad visual
 aliases: [Escudo CIEHS, Marca CIEHS, Paleta CIEHS, Mural CIEHS]
 tags: [ciehs, identidad, marca, diseno, mural]
-estado: escudo oficial en uso · blanco por capas + capa de movimiento
-actualizado: 2026-09-08
+estado: isotipo del CIEHS como marca del portal · plano ambiental + vidrio
+actualizado: 2026-09-09
 ---
 
 # CIEHS · Identidad visual
@@ -29,14 +29,14 @@ nombran.
 
 | Archivo | Qué es | Dónde se usa |
 |---|---|---|
-| `escudo-ie80033.png` | Escudo oficial de la I.E. N.° 80033, fondo transparente | Marca del encabezado, tarjeta del hero, pie, iconos, tarjeta social |
-| `sello-accion-clima.png` | Sello «Yo me sumo a la Acción por el Clima» | Hero, junto al escudo · tarjeta social |
+| `escudo-ie80033.png` | Escudo oficial de la I.E. N.° 80033, fondo transparente | **Ya no se usa en el portal** — se conserva para documentos del colegio |
+| `sello-accion-clima.png` | Sello «Yo me sumo a la Acción por el Clima» | Reservado; hoy no aparece en el portal |
 | `mural-ciehs.jpg` | Mural completo, 1280 px | Sección Mural |
-| `icon-32/180/512.png` | Iconos derivados del escudo | Pestaña del navegador, pantalla de inicio |
-| `ciehs-og.png` | Tarjeta 1200×630 al compartir | Open Graph y Twitter Card |
+| `icon-32/180/512.png` | Iconos derivados del **isotipo**, generados por `tools/generar-marca.js` | Pestaña del navegador, pantalla de inicio |
+| `ciehs-og.png` | Tarjeta 1200×630 al compartir, con el isotipo y el nombre completo; misma herramienta | Open Graph y Twitter Card |
 | `logo-ciehs.svg` | **Logo del proyecto**: isotipo + logotipo | Hero, sección Mural, descargable |
 | `logo-ciehs-claro.svg` | El mismo, para fondos oscuros | Arena y cualquier fondo oscuro |
-| `isotipo-ciehs.svg` | Solo el emblema | Pie, usos pequeños |
+| `isotipo-ciehs.svg` | Solo el emblema. **Fuente única de toda la marca del portal** | Cabecera, hero, pie, iconos, tarjeta social |
 | `evidencias/invernadero-dwc.jpg` | Invernadero de madera con malla raschel y mesas DWC | Galería «El CIEHS en acción», portada |
 | `evidencias/mesas-dwc.jpg` | Módulos de raíz flotante en batería | Galería, portada |
 | `evidencias/almacigo-trasplante.jpg` | Mesa recién trasplantada, plántulas separadas | Galería, portada |
@@ -83,7 +83,15 @@ Hasta 2026-09-09 el proyecto no tenía marca propia: usaba el escudo del colegio
 para todo. Son dos cosas distintas y conviene no confundirlas.
 
 > **El escudo es de la institución. El logo es del proyecto.**
-> El logo **no sustituye** al escudo en ningún sitio.
+
+Desde 2026-09-09 el portal —que es una pieza del proyecto, no del colegio— usa
+**solo el isotipo del CIEHS** en cabecera, hero, pie, favicons, iconos de la PWA
+y tarjeta al compartir. La institución sigue presente, pero **por escrito**:
+«Un proyecto de la I.E. N.° 80033 "José Olaya Balandra" · Huanchaco».
+
+Esto **no degrada al escudo**: en documentos, oficios y piezas oficiales del
+colegio el escudo manda y el logo del CIEHS no lo sustituye. Lo que cambia es
+que el proyecto deja de tomar prestada una marca ajena para nombrarse a sí mismo.
 
 ### De dónde sale
 
@@ -117,8 +125,11 @@ Es vector: se escala sin perder nitidez y **nunca hay que pedir «otro tamaño»
 - Sobre fondo oscuro se usa la versión clara. **El emblema nunca cambia de
   dibujo** — solo el color del texto y el aro. Un logo que se redibuja según el
   fondo deja de ser el mismo logo.
-- El isotipo pierde legibilidad por debajo de 24 px: ahí va el escudo, que ya es
-  el favicon.
+- Por debajo de 24 px el isotipo pierde el detalle de las raíces, pero **se
+  mantiene**: a ese tamaño lo que identifica es la silueta y el aro verde. Los
+  PNG pequeños salen del mismo SVG con `node tools/generar-marca.js`, que le
+  deja un 8 % de aire por lado para que el recorte circular de Android no se
+  coma el borde.
 - Se descarga desde la propia sección **Nuestro Mural**, para que nadie tenga
   que pedirlo por correo.
 
@@ -147,7 +158,7 @@ un elemento, más cerca del blanco puro y más sombra lleva debajo.
 
 | Token | Valor | Uso |
 |---|---|---|
-| `--paper` | `#f4f6f9` | Lienzo de la página |
+| `--paper` | `#eef2f6` | Color base bajo el plano ambiental |
 | `--veil` | `#fafbfd` | Secciones alternas y estados vacíos |
 | `--surface` | `#ffffff` | Tarjetas y paneles elevados |
 | `--surface-2` | `#eff2f7` | Pozos hundidos: cabeceras de tabla, campos, esqueletos |
@@ -159,10 +170,10 @@ un elemento, más cerca del blanco puro y más sombra lleva debajo.
 |---|---|---|
 | `--ink` | `#0d1117` | Titulares y cifras |
 | `--ink-soft` | `#47505f` | Texto corrido |
-| `--ink-mute` | `#8b95a7` | Etiquetas, unidades, metadatos |
+| `--ink-mute` | `#66707f` | Etiquetas, unidades, metadatos (era `#8b95a7`; no llegaba a AA) |
 | `--leaf-500` | `#059669` | Verde institucional, degradados y barras |
 | `--leaf-600` | `#065f46` | Verde más oscuro |
-| `--leaf-300` | `#047857` | **Acento de texto** — ver la nota de abajo |
+| `--leaf-300` | `#045c40` | **Acento de texto** — ver la nota de abajo (era `#047857`) |
 | `--azure-500` | `#0284c7` | Azul de Huanchaco |
 | `--sun-500` | `#b45309` | Acento cálido, avisos y eje climático |
 
@@ -184,6 +195,73 @@ Las curvas viven en `--ease-out` (lo que no debe llamar la atención),
 
 La Arena (capa de juego a pantalla completa) **conserva su fondo oscuro a
 propósito**: es un espacio inmersivo, no una página del portal.
+
+---
+
+## 3 quater. El plano ambiental (2026-09-09)
+
+El portal dejó de apoyarse en blanco plano. Detrás de **toda** la página vive una
+sola fotografía del laboratorio —`evidencias/mesas-dwc.jpg`, las mesas de raíz
+flotante— fija respecto al scroll y con un avance lento en bucle (Ken Burns de
+72 s, ida y vuelta para que no dé el tirón del reinicio). Las secciones dejaron
+de ser bloques opacos: ahora son superficies traslúcidas y el fondo respira
+debajo.
+
+Vive al final de `assets/css/ciehs.css`, en el bloque *PLANO AMBIENTAL CONTINUO*.
+
+### Cómo está montado
+
+| Capa | Qué hace |
+|---|---|
+| `html` | Lleva el color base (`--paper`). **`body` es transparente**: si vuelve a tener fondo, tapa la fotografía |
+| `.amb-img` | La fotografía, en `z-index:-1`, con `blur(3px) saturate(.8) contrast(.38) brightness(1.34)` |
+| `.amb-veil` | El velo que sostiene la legibilidad |
+| `main > section` | Vidrio al 0.52 · las `.alt` al 0.66 |
+| `.card` (`--surface`) | Blanco al 0.88 — ya traía `backdrop-filter`, solo le faltaba dejar de ser opaco |
+
+### Por qué `z-index:-1` y no `0`
+
+El contenido de `<main>` son bloques sin `position`. Un elemento posicionado con
+`z-index:0` se pintaría **por encima** de sus fondos; con z-index negativo cae al
+nivel del lienzo, justo sobre el fondo de `<html>`. Ese es el motivo, y el único,
+de que `body` sea transparente.
+
+### Por qué `contrast(.38)`
+
+Es la decisión que hace legible todo lo demás. El plástico negro de las mesas
+baja a ~RGB(23) y ninguna cantidad razonable de velo salva el contraste del texto
+sobre una mancha así. Comprimiendo el rango, el negro sube a ~118 y el blanco del
+tecnopor baja a ~229: el fondo pasa a ser una acuarela sin negros.
+
+Medido sobre el píxel **más oscuro** de la fotografía, con el velo en su punto más
+fino y sobre la sección menos densa —el peor caso posible—:
+
+| Tinta | Contraste | |
+|---|---|---|
+| `--ink` | 11.4:1 | ✅ |
+| `--ink-soft` | 4.9:1 | ✅ |
+| `--leaf-300` | 4.9:1 | ✅ |
+| `--azure-300` | 5.1:1 | ✅ |
+| `--sun-300` | 5.3:1 | ✅ |
+| `--ink-mute` | 3.0:1 | ⚠️ dentro de una tarjeta, 4.7:1 |
+
+Los tres tonos `-300` bajaron un escalón (`#047857`→`#045c40`, `#0369a1`→`#03527d`,
+`#92400e`→`#7c3606`) precisamente por esta medición: son la tinta de los
+antetítulos, que van directos sobre la superficie de sección. Con los valores
+viejos, el 94 % del fondo los dejaba por debajo de 4.5:1.
+
+`--ink-mute` queda como **pendiente conocido**: ya estaba en 3.0:1 sobre blanco
+pleno antes de que existiera este plano, así que no es una regresión, pero sigue
+sin llegar a AA cuando cae fuera de una tarjeta.
+
+> Si se toca `contrast()`, `brightness()`, el velo o la densidad de las secciones,
+> **hay que volver a medir**. Son números que se sostienen entre sí.
+
+### En móvil
+
+El plano se queda —es donde más se nota que el portal dejó de ser blanco— pero
+**sin animar**. Lo caro no es pintarlo: es repintar cada fotograma una capa
+desenfocada del tamaño de la pantalla mientras se hace scroll.
 
 ---
 
@@ -267,21 +345,29 @@ debajo solo queda la galería de evidencias. Lo que había después se movió:
 
 ## 4. Reglas de uso
 
-- El escudo **no se recolorea, no se recorta y no se deforma**. Si hace falta
-  otro tamaño, se reescala proporcionalmente desde el PNG original.
-- Nunca sustituir el escudo por una reinterpretación vectorial: la versión
-  provisional que existía antes se retiró precisamente por eso.
-- El sello del clima acompaña al escudo, nunca lo reemplaza.
-- En pantallas estrechas el escudo baja de 250 px a 190 px y el sello de 96 px
-  a 78 px; por debajo de eso el texto del escudo deja de leerse.
+- **La marca del portal es el isotipo del CIEHS**, en todas las páginas y en
+  todos los tamaños. La institución se nombra por escrito, no con el escudo.
+- Los cuatro PNG derivados (32, 180, 512 y la tarjeta al compartir) **no se
+  editan a mano**: salen de `isotipo-ciehs.svg` con `node tools/generar-marca.js`.
+  Editar el PNG y no el SVG es la forma segura de que las cuatro piezas dejen de
+  coincidir.
+- El isotipo **no se recolorea, no se recorta y no se deforma**. Sobre fondo
+  oscuro se usa `logo-ciehs-claro.svg`; el dibujo no cambia, solo el texto y el aro.
+- Si alguna pieza necesita el escudo del colegio (un oficio, una carátula), se
+  usa `escudo-ie80033.png` **tal cual**: no se recolorea, no se recorta y nunca se
+  sustituye por una reinterpretación vectorial.
 
 ---
 
 ## 5. Pendientes
 
-- [ ] Conseguir el escudo en **vector** (SVG o AI) si la institución lo tiene:
-      el actual procede de una ilustración rasterizada y a tamaños grandes
-      pierde definición.
+- [ ] Subir `--ink-mute` a AA (4.5:1) cuando cae fuera de una tarjeta. Hoy está
+      en 3.0:1; oscurecerlo más empieza a competir con `--ink-soft` y a borrar la
+      jerarquía entre texto corrido y metadato, así que la salida probablemente
+      sea densificar la superficie de sección, no la tinta.
+- [ ] Conseguir el escudo de la I.E. en **vector** (SVG o AI) si la institución lo
+      tiene, para las piezas oficiales del colegio: el PNG actual procede de una
+      ilustración rasterizada y a tamaños grandes pierde definición.
 - [ ] Fotografías reales del laboratorio y de los quince módulos DWC, sujetas al
       protocolo de [[CIEHS-Privacidad-Menores]].
 - [ ] Fotografía del mural físico instalado, para acompañar a la ilustración.
