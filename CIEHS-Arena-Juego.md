@@ -4,7 +4,7 @@ aliases: [Arena CIEHS, Expediciones CIEHS, Retos CIEHS]
 tags: [ciehs, arena, juego, gamificacion, animacion, accesibilidad]
 estado: en produccion
 publicado-en: https://ciehs.vercel.app/#/juega
-actualizado: 2026-09-04
+actualizado: 2026-09-10
 ---
 
 # CIEHS · Arena, el modo de juego
@@ -54,6 +54,49 @@ La institución llega hasta secundaria. Preuniversitario y universitario no son
 Cada expedición tiene su **antesala** — sello, lema y las cuatro reglas — antes
 de gastar la tirada, para que nadie entre sin saber qué arriesga. Superarla
 entera deja un sello permanente en la tarjeta del menú.
+
+---
+
+## 1 bis. La Arena, dentro de la ruta pedagógica
+
+Hasta el 2026-09-10 la Arena era un juego **al lado** de la ruta de 9 pasos, no
+dentro de ella: un estudiante podía jugar treinta retos sin saber qué parte de su
+propia indagación estaba practicando.
+
+### Cómo se alinea
+
+Cada reto ya llevaba una **ambientación** (`tema`) que clasificaba su
+contenido, así que la alineación se hace por ahí y **no reto a reto**:
+
+| Fase de la ruta | Temas | Por qué |
+|---|---|---|
+| **Indaga** · pasos 1–3 | `invernadero` · `abismo` | La planta y el agua son los dos objetos que hay que conocer antes de poder preguntar nada |
+| **Experimenta** · pasos 4–6 | `pociones` · `datos` | Preparar la solución y leer los propios datos es el trabajo experimental |
+| **Transforma** · pasos 7–9 | `taller` · `tormenta` | Mejorar el módulo y actuar por el clima es llevar el resultado a una acción |
+
+Reparto real de los 150 retos: **Indaga 58 · Experimenta 52 · Transforma 40**.
+Ningún reto queda sin fase.
+
+### Dónde se ve
+
+- **Durante el reto**, junto al nombre de la ambientación: *Ruta CIEHS · Indaga*.
+  Se oculta por debajo de 560 px, donde la cabecera ya va justa.
+- **Al terminar la partida**, un recuento por fase: *Experimenta · 3 de 5*. No es
+  decoración: es lo que convierte la partida en algo que el estudiante puede
+  llevar a su bitácora —«trabajé Experimenta y fallé la mitad»— en vez de un
+  número suelto.
+
+> [!important] Es una tabla de seis líneas, no un campo en 150 retos
+> Deliberado. Si el equipo docente decide que `abismo` pertenece a
+> *Experimenta* y no a *Indaga*, se cambia `FASE_POR_TEMA` en un sitio y no en
+> ciento cincuenta.
+
+> [!caution] Llega hasta la fase, no hasta el paso
+> Decir cuál de las **tres fases** practica un reto se sostiene con lo que el
+> proyecto ya tenía clasificado. Decir cuál de los **nueve pasos** sería
+> inventar programación: eso lo decide el equipo de área, y se recoge en
+> [[pendientes-coordinacion/04-validacion-cneb|04 · Validación CNEB]] junto con
+> el resto de la correspondencia.
 
 ---
 
@@ -190,6 +233,8 @@ contenido de `localStorage` lo controla quien usa el navegador.
 
 ## 8. Pendientes
 
+- [x] Alinear los retos con la ruta pedagógica. Hecho el 2026-09-10 **hasta la
+      fase** → §1 bis; el detalle paso a paso queda para la validación docente.
 - [ ] Ampliar el banco por encima de 150 retos si el uso lo pide.
 - [ ] Marcador entre clases: hoy el récord es solo local del navegador.
       Requeriría una tabla en [[CIEHS-Backend-Supabase]] y decidir antes qué se

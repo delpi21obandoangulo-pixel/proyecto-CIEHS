@@ -2350,6 +2350,37 @@
     border-radius:100px; border:1px solid var(--line-strong); background:transparent;
     color:var(--on-ocean-soft); cursor:pointer; transition:all .2s ease;
   }
+  /* ---- Arena: la fase de la ruta a la que pertenece el reto ---- */
+  .ar-fase{
+    display:inline-block; padding:3px 9px; border-radius:100px;
+    border:1px solid rgba(255,255,255,0.22); background:rgba(255,255,255,0.07);
+    font-family:var(--font-mono); font-size:10px; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--ar-acento, #fff); white-space:nowrap;
+  }
+  @media (max-width:560px){ .ar-fase{ display:none; } }
+
+  .ar-fin-ruta{
+    margin-top:26px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.14);
+    text-align:left; max-width:420px; margin-left:auto; margin-right:auto;
+  }
+  .ar-fin-ruta-tit{
+    font-family:var(--font-mono); font-size:10.5px; letter-spacing:.12em;
+    text-transform:uppercase; color:rgba(255,255,255,0.62);
+  }
+  .ar-fin-ruta ul{ list-style:none; margin:12px 0 0; padding:0; }
+  .ar-fin-ruta li{
+    display:flex; align-items:baseline; gap:9px; flex-wrap:wrap;
+    padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.08);
+    font-size:13.5px; color:rgba(255,255,255,0.9);
+  }
+  .ar-fin-ruta li:last-child{ border-bottom:none; }
+  .ar-fin-ruta li b{ font-weight:600; }
+  .ar-fin-ruta li span{ font-family:var(--font-mono); font-size:10.5px; color:rgba(255,255,255,0.5); }
+  .ar-fin-ruta li em{
+    margin-left:auto; font-style:normal; font-family:var(--font-mono);
+    font-size:12.5px; color:var(--ar-acento, #fff);
+  }
+
   /* Pie del visor: la leyenda a la izquierda, la descarga a la derecha, y en
      movil una debajo de la otra. */
   .campo-pie{

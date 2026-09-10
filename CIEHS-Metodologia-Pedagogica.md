@@ -243,7 +243,11 @@ Tesorería y registro de ventas · Inventario · Impacto ambiental · Coordinaci
       tabla `methodology_steps` siguiendo el patrón de [[CIEHS-Backend-Supabase]].
 - [ ] Vincular cada paso de la ruta con los recursos descargables
       correspondientes cuando existan los archivos.
-- [ ] Alinear los retos de [[CIEHS-Arena-Juego]] con los pasos de la ruta.
+- [~] Alinear los retos de [[CIEHS-Arena-Juego]] con la ruta. Hecho **hasta la
+      fase** el 2026-09-10: cada reto declara si practica Indaga, Experimenta o
+      Transforma, y el resumen de partida lo recuenta. Falta el detalle **paso a
+      paso**, que es decisión del equipo de área →
+      [[pendientes-coordinacion/04-validacion-cneb|04 · Validación CNEB]].
 - [ ] Cerrar la trazabilidad DUA: que cada paso de la ruta declare sus vías de
       representación, implicación y expresión, como ya hace la sección `juega`.
 - [ ] Que cada sesión programada declare su nivel HPOS (analizar / evaluar /

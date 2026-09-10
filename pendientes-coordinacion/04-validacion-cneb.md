@@ -42,6 +42,24 @@ desempeño es lo que la hace evaluable.
 | 8 | Actúa | Enfoque ambiental · bien común | ☐ sí ☐ no → | | ☐ sí ☐ no → |
 | 9 | Comparte | Evalúa y comunica el proceso y resultados | ☐ sí ☐ no → | | ☐ sí ☐ no → |
 
+### Una tercera cosa que confirmar: la Arena
+
+Los 150 retos de la Arena ya declaran a qué **fase** de la ruta pertenecen. La
+alineación se hizo por ambientación, que es lo que el proyecto ya tenía
+clasificado, y está pendiente de que el equipo la confirme:
+
+| Fase | Temas asignados | ¿Correcto? | Si no, ¿a qué fase? |
+|---|---|---|---|
+| **Indaga** (1–3) | invernadero · abismo | ☐ sí ☐ no → | |
+| **Experimenta** (4–6) | pociones · datos | ☐ sí ☐ no → | |
+| **Transforma** (7–9) | taller · tormenta | ☐ sí ☐ no → | |
+
+Y la pregunta que no se pudo responder sin ustedes: **¿tiene sentido bajar de la
+fase al paso?** Es decir, ¿un reto sobre pH practica el paso 2 (*Explora*) o el
+paso 5 (*Analiza*)? Si la respuesta es que depende del reto, la alineación se
+queda en la fase y no pasa nada — es una decisión válida y conviene dejarla
+escrita.
+
 ### Dos preguntas de cierre, por nivel
 
 1. **Nivel HPOS de cada paso.** Marcar para cada uno si pone al estudiante a

@@ -74,6 +74,43 @@
   var VIDAS_EXPEDICION = 1;
   var RETOS_EXPEDICION = 10;
   var MULTIPLICADOR_EXPEDICION = 2;
+  /* --------------------- la Arena y la ruta pedagogica -------------------
+
+     Hasta ahora la Arena era un juego al lado de la ruta de 9 pasos, no dentro
+     de ella: un estudiante podia jugar treinta retos sin saber que parte de su
+     propia indagacion estaba practicando.
+
+     Cada ambientacion ya clasificaba el contenido, asi que la alineacion se
+     hace por ahi y no reto a reto: dos temas por fase, y ningun reto queda sin
+     fase. Que sea una tabla de seis lineas y no un campo en cada uno de los
+     150 retos es deliberado — si el equipo docente decide mover un tema de
+     fase, se cambia aqui y no en 150 sitios.
+
+     El detalle paso a paso (cual de los nueve, no cual de las tres fases) es
+     una decision del equipo de area, y se recoge en el instrumento de
+     validacion de pendientes-coordinacion/04. Aqui se llega hasta la fase,
+     que es lo que se sostiene sin inventar programacion.
+  ----------------------------------------------------------------------- */
+  var FASES = {
+    indaga:      { nombre:'Indaga',      pasos:'pasos 1-3', lema:'Del contacto con el laboratorio a una pregunta investigable.' },
+    experimenta: { nombre:'Experimenta', pasos:'pasos 4-6', lema:'Del diseño experimental a la lectura de los propios datos.' },
+    transforma:  { nombre:'Transforma',  pasos:'pasos 7-9', lema:'Del resultado a una acción concreta y comunicada.' }
+  };
+
+  // Los dos objetos que hay que conocer antes de poder preguntar nada son la
+  // planta y el agua; el trabajo experimental es preparar la solucion y leer
+  // los datos; y transformar es mejorar el modulo y actuar por el clima.
+  var FASE_POR_TEMA = {
+    invernadero: 'indaga',       // la planta: que necesita, como crece
+    abismo:      'indaga',       // el agua: pH, CE, recirculacion
+    pociones:    'experimenta',  // preparar la solucion, concentraciones
+    datos:       'experimenta',  // medir, promediar, disenar el experimento
+    taller:      'transforma',   // mejorar el modulo, sensores, prototipos
+    tormenta:    'transforma'    // clima, ODS, accion por el clima
+  };
+
+  function faseDe(tema){ return FASES[FASE_POR_TEMA[tema]] || null; }
+
   var TEMAS = {
     umbral:      { nombre:'El umbral',               acento:'#c084fc' },
     santuario:   { nombre:'Santuario de datos',      acento:'#f0c876' },
@@ -743,7 +780,10 @@
       i: 0, puntos: 0, racha: 0, mejorRacha: 0,
       vidas: esExp ? VIDAS_EXPEDICION : VIDAS,
       vidasMax: esExp ? VIDAS_EXPEDICION : VIDAS,
-      aciertos: 0, consultas: 0
+      aciertos: 0, consultas: 0,
+      // Cuantos retos de cada fase han salido y cuantos se acertaron, para que
+      // el resumen final pueda decir que parte de la ruta se ha practicado.
+      fases: {}
     };
     raiz.classList.toggle('ar-modo-exped', esExp);
     if(esExp) pintarPortalExpedicion(def);
@@ -779,6 +819,24 @@
     b.addEventListener('click', function(){ pintarReto(); });
   }
 
+  /* Que parte de la ruta se ha practicado. No es decoracion: es lo que
+     convierte una partida en algo que el estudiante puede llevar a su bitacora
+     —"trabaje Experimenta y falle la mitad"— en vez de un numero suelto. */
+  function resumenDeFases(){
+    var orden = ['indaga', 'experimenta', 'transforma'];
+    var hay = orden.filter(function(k){ return partida.fases[k]; });
+    if(!hay.length) return '';
+    return '<div class="ar-fin-ruta">'
+      + '<p class="ar-fin-ruta-tit">Lo que has practicado de la ruta CIEHS</p>'
+      + '<ul>'
+      + hay.map(function(k){
+          var f = partida.fases[k];
+          return '<li><b>' + esc(FASES[k].nombre) + '</b> <span>' + esc(FASES[k].pasos) + '</span>'
+            + '<em>' + f.aciertos + ' de ' + f.vistos + '</em></li>';
+        }).join('')
+      + '</ul></div>';
+  }
+
   function terminarPartida(){
     detenerTemporizador(); detenerFondo();
     var n = partida.nivel;
@@ -802,6 +860,7 @@
       +   '<div><b>' + partida.mejorRacha + '</b><span>mejor racha</span></div>'
       +   '<div><b>' + progreso.mejores[n] + '</b><span>récord del nivel</span></div>'
       + '</div>'
+      + resumenDeFases()
       + (partida.consultas ? '<p class="ar-aviso">Saliste de la pantalla ' + partida.consultas
           + (partida.consultas === 1 ? ' vez' : ' veces') + ' durante un reto. Esos retos quedaron marcados como consultados.</p>' : '')
       + '<div class="ar-fin-acciones">'
@@ -846,6 +905,10 @@
       + '<div class="ar-top-izq">'
       +   '<button type="button" class="ar-salir" data-accion="menu" aria-label="Volver al menú">‹ Niveles</button>'
       +   '<span class="ar-tema">' + esc(tema.nombre) + '</span>'
+      +   (faseDe(r.tema)
+            ? '<span class="ar-fase" title="' + esc(faseDe(r.tema).lema) + '">Ruta CIEHS · '
+              + esc(faseDe(r.tema).nombre) + '</span>'
+            : '')
       + '</div>'
       + '<div class="ar-top-der">'
       +   '<span class="ar-vidas" aria-label="Vidas restantes">' + repetir('◆', partida.vidas) + repetir('◇', partida.vidasMax - partida.vidas) + '</span>'
@@ -1043,6 +1106,13 @@
   function resolver(r, acertado, boton, nota){
     detenerTemporizador();
     callarVoz();
+
+    var claveFase = FASE_POR_TEMA[r.tema];
+    if(claveFase){
+      var f = partida.fases[claveFase] || (partida.fases[claveFase] = { vistos:0, aciertos:0 });
+      f.vistos++;
+      if(acertado) f.aciertos++;
+    }
 
     var cuerpo = document.getElementById('arCuerpo');
     cuerpo.querySelectorAll('button, input').forEach(function(x){ x.disabled = true; });
