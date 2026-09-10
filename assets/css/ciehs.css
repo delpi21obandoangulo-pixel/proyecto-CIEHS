@@ -946,6 +946,15 @@
   .ar-escucha{ margin-bottom:28px; text-align:center; }
   .ar-escucha-nota{ margin-top:12px; font-size:13px; color:rgba(232,238,246,0.55); }
   .ar-repetir{ font-size:15px !important; padding:14px 26px !important; }
+  /* «Escuchar la pregunta»: va en TODOS los retos, no solo en los de escucha.
+     Discreto, porque ahi el enunciado ya esta escrito y el audio es la segunda
+     via, no la principal. */
+  .ar-oir{
+    margin-top:14px; font-size:13px !important; padding:9px 16px !important;
+    opacity:.78;
+  }
+  .ar-oir:hover, .ar-oir:focus-visible{ opacity:1; }
+  .ar-oir .ar-mini{ width:15px; height:15px; vertical-align:-3px; margin-right:4px; }
 
   /* ---------- botones ---------- */
   .ar-btn{
@@ -2373,7 +2382,7 @@
   .pal-5{ background:#c2410c; }
   .pal-6{ background:#0f766e; }
 
-  /* ---------------- ecosistema integrado y vínculo con el PRAE ------------ */
+  /* ---------------- ecosistema integrado y vínculo con el PEAI ------------ */
   .ecosistema{ margin-top:8px; }
   .ecosistema h3{ margin-top:12px; font-size:1.5rem; }
   .ecosistema-lede{ margin-top:14px; max-width:78ch; font-size:15.5px; line-height:1.75; color:var(--ink-soft); }
@@ -2403,23 +2412,23 @@
   }
   .ecosistema-nota b{ color:var(--ink); font-weight:600; }
 
-  .prae-block{ margin-top:64px; padding-top:52px; border-top:1px solid var(--line); }
-  .prae-block h3{ margin-top:12px; font-size:1.5rem; }
-  .prae-lede{ margin-top:14px; max-width:78ch; font-size:15.5px; line-height:1.75; color:var(--ink-soft); }
-  .prae-lede b{ color:var(--ink); font-weight:600; }
-  .prae-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:20px; }
-  @media (max-width:1040px){ .prae-grid{ grid-template-columns:repeat(2,1fr); } }
-  @media (max-width:620px){ .prae-grid{ grid-template-columns:1fr; } }
-  .prae-card{
+  .peai-block{ margin-top:64px; padding-top:52px; border-top:1px solid var(--line); }
+  .peai-block h3{ margin-top:12px; font-size:1.5rem; }
+  .peai-lede{ margin-top:14px; max-width:78ch; font-size:15.5px; line-height:1.75; color:var(--ink-soft); }
+  .peai-lede b{ color:var(--ink); font-weight:600; }
+  .peai-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:20px; }
+  @media (max-width:1040px){ .peai-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:620px){ .peai-grid{ grid-template-columns:1fr; } }
+  .peai-card{
     padding:20px 18px; border-radius:var(--radius-m);
     border:1px solid var(--line); background:var(--glass); backdrop-filter:blur(14px);
   }
-  .prae-card h5{
+  .peai-card h5{
     font-family:var(--font-mono); font-size:10.5px; letter-spacing:.11em;
     text-transform:uppercase; color:var(--leaf-300);
   }
-  .prae-card p{ margin-top:10px; font-size:13.3px; line-height:1.65; color:var(--ink-soft); }
-  .prae-card b{ color:var(--ink); font-weight:600; }
+  .peai-card p{ margin-top:10px; font-size:13.3px; line-height:1.65; color:var(--ink-soft); }
+  .peai-card b{ color:var(--ink); font-weight:600; }
 
   /* -------------------- fundamento científico (módulos) ------------------
      Tabla de sistemas, tarjetas de nutrientes y rejilla de factores. Es la

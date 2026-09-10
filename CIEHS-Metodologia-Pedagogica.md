@@ -101,6 +101,42 @@ explica en la feria, el arte.
 
 ---
 
+## 1 quater. Vinculación con el PEAI
+
+El **Proyecto Educativo Ambiental Integrado (PEAI)** es el instrumento con el
+que la institución organiza su enfoque ambiental, dentro del marco del MINEDU.
+El CIEHS no es un proyecto paralelo a él: **es su laboratorio**.
+
+| Compromiso del PEAI | Qué aporta el CIEHS | Con qué se demuestra |
+|---|---|---|
+| Uso responsable del agua | Cultivo sin suelo, con el agua confinada en el módulo | Litros por kilogramo cosechado |
+| Gestión de residuos | Envases y estructuras reutilizados en los módulos | Plástico retirado del flujo de residuos |
+| Alimentación saludable | Hortaliza fresca producida por los estudiantes | Kilos cosechados y su destino |
+| Educación frente al cambio climático | El reto Acción por el Clima como eje de la indagación | Investigaciones, campañas y Pasaporte |
+
+La tercera columna es la que importa: es lo que separa un compromiso declarado
+de uno que se puede comprobar.
+
+**Transversal quiere decir quiénes:** 280 estudiantes en diez equipos de
+gestión, el equipo docente cruzando áreas —comunicación, matemática, arte,
+educación para el trabajo—, las familias, que reciben la cosecha y pueden seguir
+el proceso y no solo la nota, y el distrito, que es a la vez el contexto del
+problema y el destino de la solución.
+
+> [!warning] PEAI, no PRAE
+> Una primera versión de esta sección usó **PRAE**, que es la figura
+> **colombiana** (Decreto 1743 de 1994). En Perú el instrumento equivalente es
+> el **PEAI**. La coordinación lo confirmó el 2026-09-10 y se corrigió en el
+> portal, en las clases del CSS y en esta nota. Conviene no volver atrás: en un
+> documento que va a Eureka, la sigla equivocada se nota.
+
+> [!caution] Alcance
+> La correspondencia de la tabla es una **propuesta del equipo del CIEHS**,
+> pendiente de contrastarse con el PEAI vigente de la institución y con el PEI.
+> No es una homologación.
+
+---
+
 ## 2. Los dos ejes movilizadores
 
 El eje movilizador no es solo el reto climático. Son dos, y se sostienen

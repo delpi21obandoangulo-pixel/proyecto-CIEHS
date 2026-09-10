@@ -100,6 +100,38 @@ Ningún reto queda sin fase.
 
 ---
 
+## 1 ter. Todos los retos tienen voz (2026-09-10)
+
+Antes solo sonaban los de tipo `escucha`, donde el audio **es** el enunciado.
+Los demás se leían únicamente si el estudiante ya había activado la voz en el
+portal — y dentro de la Arena no había forma de pedirla. Un reto escrito se
+quedaba mudo para quien lo necesitaba.
+
+Ahora **cada reto lleva su botón «Escuchar la pregunta»**, y se lee el enunciado
+con sus opciones numeradas: *«Opción 1… Opción 2…»*.
+
+### Dos caminos, y por qué no uno solo
+
+| Camino | Cuándo suena |
+|---|---|
+| **Automático** | Solo si el estudiante ya activó la voz en el portal |
+| **A petición**, con el botón | **Siempre**, aunque la voz global esté apagada |
+
+No se puso a sonar automáticamente para todos, y es deliberado por dos razones:
+arrancar audio sin que nadie lo haya pedido es intrusivo en un aula con treinta
+estudiantes, y además **los navegadores bloquean la reproducción automática**
+hasta que hay una interacción — así que «que suene siempre solo» ni siquiera es
+técnicamente fiable.
+
+Es la misma lógica del DUA que rige el resto del portal: más de una vía para
+recibir lo mismo, y ninguna obligatoria.
+
+> [!note] Comprobado
+> Con el botón, la Arena emite cuatro locuciones encadenadas: el enunciado y
+> cada una de las opciones. Verificado sobre un reto de Secundaria.
+
+---
+
 ## 2. Seis formatos de reto
 
 `opcion` · `vf` · `escucha` · `orden` · `dial` · `escribe`

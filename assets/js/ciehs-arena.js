@@ -927,7 +927,10 @@
     var enunciado = esEscucha
       ? '<div class="ar-escucha"><button type="button" class="ar-btn ar-repetir" id="arRepetir"><svg class="ar-mini" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4Z"/><path d="M15.5 9.2a4 4 0 0 1 0 5.6"/><path d="M18.2 6.6a7.6 7.6 0 0 1 0 10.8"/></svg> Repetir enunciado</button>'
         + '<p class="ar-escucha-nota">Este reto se escucha: el enunciado no aparece escrito.</p></div>'
-      : '<h2 class="ar-pregunta">' + esc(r.q) + '</h2>';
+      : '<h2 class="ar-pregunta">' + esc(r.q) + '</h2>'
+        + '<button type="button" class="ar-btn ar-oir" id="arOir">'
+        +   '<svg class="ar-mini" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4Z"/><path d="M15.5 9.2a4 4 0 0 1 0 5.6"/><path d="M18.2 6.6a7.6 7.6 0 0 1 0 10.8"/></svg> Escuchar la pregunta'
+        + '</button>';
 
     capa.innerHTML =
       cabecera
@@ -956,13 +959,37 @@
       var rep = document.getElementById('arRepetir');
       if(rep) rep.addEventListener('click', function(){ leerEnVoz(r.q, { forzar: true }); });
     } else {
-      // El resto de retos tambien se leen, con sus opciones numeradas, pero
-      // solo si el estudiante ha pedido la voz.
+      /* TODO reto tiene voz, no solo los de tipo 'escucha'.
+
+         Se lee el enunciado con sus opciones numeradas, y hay dos caminos
+         para oirlo:
+
+           · Automatico, solo si el estudiante ya activo la voz en el portal.
+             Se deja asi a proposito: arrancar audio sin que nadie lo pida es
+             intrusivo, y ademas los navegadores bloquean la reproduccion
+             automatica hasta que hay una interaccion.
+           · A peticion, con el boton «Escuchar la pregunta», que suena
+             SIEMPRE (forzar) aunque la voz global este apagada. Ese boton es
+             lo que hace que ningun reto se quede mudo.
+
+         Es la misma logica del DUA que rige el resto del portal: mas de una
+         via para recibir lo mismo, y ninguna obligatoria. */
       var partes = [r.q];
       capa.querySelectorAll('.ar-op').forEach(function(o, i){
         partes.push('Opción ' + (i + 1) + ': ' + o.textContent.trim() + '.');
       });
-      leerEnVoz(partes.join(' '), { forzar: false });
+      var dicho = partes.join(' ');
+      leerEnVoz(dicho, { forzar: false });
+
+      var oir = document.getElementById('arOir');
+      if(oir) oir.addEventListener('click', function(){
+        // Se recomponen las opciones por si el formato las monto despues.
+        var ahora = [r.q];
+        capa.querySelectorAll('.ar-op').forEach(function(o, i){
+          ahora.push('Opción ' + (i + 1) + ': ' + o.textContent.trim() + '.');
+        });
+        leerEnVoz(ahora.join(' '), { forzar: true });
+      });
     }
   }
 

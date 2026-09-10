@@ -217,6 +217,8 @@ hacer.
 
 ## 8. Pendientes
 
+- [x] Que **todos** los retos de la Arena tengan voz, no solo los de escucha.
+      Hecho el 2026-09-10 → [[CIEHS-Arena-Juego]] §1 ter.
 - [ ] Pregrabar el banco de preguntas con voz de gama alta.
 - [x] Audio en la Arena y en los minijuegos. Hecho: un solo motor para toda
       la aplicación.
