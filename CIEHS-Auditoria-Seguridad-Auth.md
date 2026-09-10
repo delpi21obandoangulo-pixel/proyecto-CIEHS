@@ -157,7 +157,7 @@ ningún host externo.
 
 | Biblioteca | Versión | Notas |
 |---|---|---|
-| `@supabase/supabase-js` | **2.115.0** | Estaba en 2.58.0, 57 versiones por detrás. Es la que maneja red y autenticación, así que sus correcciones importan |
+| `@supabase/supabase-js` | **2.116.0** | Estaba en 2.58.0, 57 versiones por detrás. Es la que maneja red y autenticación, así que sus correcciones importan. Reincorporada el 2026-09-10 desde 2.115.0 → §8 |
 | `qrcode-generator` | **2.0.4** | Cálculo puro, sin red ni dependencias. El salto de major resultó ser solo de empaquetado: misma API |
 
 Tras actualizar se verificó que **los nueve códigos QR siguen decodificando
@@ -165,9 +165,15 @@ correctamente** con un lector independiente, y que la descarga en SVG no viola
 la política.
 
 > [!tip] Cómo comprobar si hay versiones nuevas
-> `curl -s https://registry.npmjs.org/<paquete>/latest` y comparar con el
-> archivo de `assets/js`. No hay `package.json`: el portal no tiene paso de
-> compilación y las bibliotecas se guardan ya construidas.
+> `npm view <paquete> version` y comparar con la cadena de versión que lleva
+> dentro el archivo de `assets/js` — no con lo que declare `package.json`.
+> El portal no tiene paso de compilación: las bibliotecas se guardan ya
+> construidas, así que **la versión que importa es la del archivo servido**.
+>
+> Desde el 2026-09-09 sí hay `package.json` (la nota decía lo contrario). Eso
+> abrió una grieta nueva, ver §8: se puede actualizar la dependencia sin
+> reincorporar el archivo, y entonces el repositorio declara una versión y
+> sirve otra.
 
 ---
 
@@ -216,9 +222,12 @@ sin acordarlo.
 
 ## 7. Qué revisar tras cada cambio
 
-- [ ] `curl -I` sobre producción: las ocho cabeceras siguen presentes.
+- [ ] `curl -I` sobre producción: las **nueve** cabeceras siguen presentes.
 - [ ] Ninguna violación de CSP al recorrer las rutas
-      (`securitypolicyviolation` en consola).
+      (`securitypolicyviolation` en consola). **No basta**: un color descartado
+      no salta en consola si el escucha se registró después de la carga → §8.
+- [ ] `grep 'style="' index.html` y sobre los JavaScript propios: **cero**.
+      Es la comprobación que sí encuentra lo que la consola calla.
 - [ ] **Ningún `<script>` inline nuevo en `index.html`**: rompería la CSP
       estricta en silencio. La lógica va a `assets/js/ciehs-app.js`.
 - [ ] **Ningún `<style>` ni atributo `style=` nuevo**, tampoco dentro de un
@@ -229,12 +238,100 @@ sin acordarlo.
       columnas vetadas — un `select=*` nuevo rompería la sección entera.
 - [ ] `get_advisors` de Supabase: ninguna alerta con esquema `ciehs`.
 - [ ] Versiones de las dos bibliotecas frente al registro de npm (ver §5).
+      Comparar contra la cadena que lleva **dentro el archivo servido**, no
+      contra `package.json`: son cosas distintas y ya divergieron una vez.
 
 > [!bug] La trampa que ya se pisó dos veces
 > Un `GRANT` a nivel de **tabla** cubre todas las columnas y **no se recorta con
 > un `REVOKE` por columna**. Hay que retirar el permiso de tabla y conceder solo
 > las columnas permitidas. Pasó al cerrar las columnas de lectura y volvió a
 > pasar al cerrar las de autoría.
+
+---
+
+## 8. Revisión del 2026-09-10
+
+Pasada completa de la lista del §7 contra producción. Dos hallazgos reales, los
+dos corregidos.
+
+### 🔴 La CSP estaba descartando colores en silencio — corregido
+
+`style-src-attr 'none'` bloquea **cualquier** estilo escrito en un atributo
+`style=` del marcado. El atributo se queda en el DOM y el elemento sale sin
+pintar: no hay error en consola, no hay hueco en el diseño, simplemente el color
+no está.
+
+Los cuatro puntos de color del reparto de caja (`.destino-lista i`) lo llevaban
+así. **En producción llevaban tiempo saliendo transparentes**, comprobado sobre
+el sitio real: atributo presente, `backgroundColor` = `rgba(0, 0, 0, 0)`.
+
+Y había tres sitios más, latentes, que habrían fallado el día que hubiera datos:
+
+| Dónde | Qué se habría roto |
+|---|---|
+| `index.html` ×4 | Los puntos del reparto previsto — **ya estaba roto** |
+| `ciehs-app.js` · leyenda de resultados | El color de cada tratamiento, en cuanto un equipo publique resultados |
+| `ciehs-app.js` · barra apilada de caja | El **ancho** de cada tramo, no solo el color: la barra entera, en cuanto Tesorería registre un egreso |
+| `ciehs-app.js` · leyenda del reparto | El color de cada concepto |
+
+**Corrección.** Los colores pasan a clases `.pal-1`…`.pal-6`, en el mismo orden
+que las tablas `PALETA` y `COLORES` del JavaScript. El ancho de la barra, que
+es un porcentaje calculado y no cabe en una clase, se aplica por **CSSOM**
+(`element.style.width`) después de insertar: lo que la CSP bloquea es el
+atributo del marcado, no `element.style`.
+
+> [!warning] «Ninguna violación en consola» no basta
+> El §7 pide comprobar que no hay `securitypolicyviolation`. Recorriendo las
+> doce rutas de producción **no saltó ninguna** — y sin embargo cuatro elementos
+> estaban rotos. Dos motivos: un escucha registrado después de la carga no ve
+> las violaciones de tiempo de análisis, y un color descartado no rompe nada
+> visible que delate el fallo.
+>
+> Lo que sí lo encuentra: buscar `style=` en el marcado y en las cadenas de
+> `innerHTML`, y comparar el atributo con el estilo computado. Hoy no queda
+> ninguno en `index.html` ni en los seis JavaScript propios.
+
+### 🟡 El repositorio declaraba una versión y servía otra — corregido
+
+`package.json` pedía `^2.116.0` y `node_modules` la tenía, pero
+`assets/js/supabase.js` —el archivo que de verdad se ejecuta— seguía siendo
+**2.115.0**. Se actualizó la dependencia sin reincorporar el archivo construido.
+
+Reincorporado desde `node_modules/@supabase/supabase-js/dist/umd/supabase.js` y
+verificado contra la base real: conexión establecida, y el portal trae config,
+17 módulos, 8 códigos QR, 2 investigaciones y 6 productos, sin errores en
+consola.
+
+### Lo que salió limpio
+
+| Comprobación | Resultado |
+|---|---|
+| Cabeceras en producción | Las nueve presentes: CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, COOP, CORP y X-Permitted-Cross-Domain-Policies |
+| Documentos internos | `db/`, `*.md`, `.env*`, `.vercel/`, `tools/`, `package.json` y el `.docx`: **404** todos |
+| `<script>` inline | Ninguno ejecutable. El único es `application/ld+json`, que es dato y la CSP no gobierna |
+| `qrcode-generator` | 2.0.4, la última de npm |
+
+### Dos cosas que quedan dichas, no corregidas
+
+**`select('*')` en `modules` y `qr_codes`.** Hoy es correcto: ninguna de las
+dos tiene columnas vetadas. Pero el esquema lleva
+`alter default privileges … grant select`, así que **una columna nueva sería
+legible y viajaría sola** al navegador. No es un fallo actual; es una trampa
+armada para el futuro.
+
+**El renderizador de tablas de `qrcode.js` escribe `style=`.** Es de la
+biblioteca de terceros y la CSP lo bloquearía — pero el portal **no lo usa**:
+construye el `path` del SVG a mano desde `q.isDark()`. Queda escrito para que
+nadie lo marque como hallazgo en la próxima revisión.
+
+### Lo que no se pudo comprobar
+
+`get_advisors` de Supabase. Los servidores MCP disponibles se llaman
+`supabase-aura` y `supabase-kunturmasha`; conectarse a la instancia por
+cualquiera de ellos para inspeccionar el esquema `ciehs` cruza la frontera
+entre proyectos, y esa decisión no es del código. **Queda pendiente de una
+autorización explícita.**
+
 
 ---
 

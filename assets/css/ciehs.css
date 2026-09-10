@@ -2350,6 +2350,21 @@
     border-radius:100px; border:1px solid var(--line-strong); background:transparent;
     color:var(--on-ocean-soft); cursor:pointer; transition:all .2s ease;
   }
+  /* ---------------------------- paleta de series ----------------------------
+     La CSP de produccion lleva style-src-attr 'none': cualquier color escrito
+     en un atributo style= se descarta en silencio —el atributo sigue en el DOM
+     y el elemento sale transparente—. Los puntos de color de las leyendas y del
+     reparto de caja se pintaban asi y estaban saliendo invisibles.
+
+     Las clases son el mismo orden que las tablas PALETA y COLORES de
+     ciehs-app.js. Si crece una, crece la otra. */
+  .pal-1{ background:var(--leaf-500); }
+  .pal-2{ background:var(--azure-500); }
+  .pal-3{ background:var(--sun-500); }
+  .pal-4{ background:#7c3aed; }
+  .pal-5{ background:#c2410c; }
+  .pal-6{ background:#0f766e; }
+
   /* ---- Arena: la fase de la ruta a la que pertenece el reto ---- */
   .ar-fase{
     display:inline-block; padding:3px 9px; border-radius:100px;

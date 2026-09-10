@@ -1059,7 +1059,11 @@
 
      Si de una variable solo hay una fecha, la comparacion es de barras: unir
      dos puntos que no forman serie temporal sugiere una tendencia inventada. */
+  /* Los colores de serie NO pueden ir en un atributo style=: la CSP de
+     produccion lleva style-src-attr 'none' y los descarta sin avisar. Van como
+     clase .pal-N, definida en el CSS en este mismo orden. */
   var PALETA = ['var(--leaf-500)', 'var(--azure-500)', 'var(--sun-500)', '#7c3aed', '#c2410c'];
+  function clasePaleta(i, cuantos){ return 'pal-' + ((i % cuantos) + 1); }
 
   function resultadosDe(code){
     return ((datos && datos.resultados) || []).filter(function(r){
@@ -1141,7 +1145,7 @@
     }
 
     var leyenda = trats.map(function(t, k){
-      return '<span class="res-lg"><i style="background:' + PALETA[k % PALETA.length] + '"></i>' + esc(t) + '</span>';
+      return '<span class="res-lg"><i class="' + clasePaleta(k, PALETA.length) + '"></i>' + esc(t) + '</span>';
     }).join('');
 
     return '<div class="res-bloque">'
@@ -5066,18 +5070,25 @@
       + esc('Reparto de los egresos: ' + filas.map(function(f){
           return f.concepto + ' ' + f.pct.toFixed(0) + ' %'; }).join(', ') + '.')
       + '">' + filas.map(function(f, i){
-          return '<span style="width:' + f.pct.toFixed(2) + '%;background:' + COLORES[i % COLORES.length] + '"></span>';
+          // El ancho es un porcentaje calculado: no cabe en una clase. Se pone
+          // por CSSOM mas abajo, que la CSP si permite — lo que bloquea es el
+          // atributo style= del marcado, no element.style.
+          return '<span class="' + clasePaleta(i, COLORES.length) + '" data-pct="' + f.pct.toFixed(2) + '"></span>';
         }).join('') + '</div>';
 
     var detalle = '<ul class="destino-lista">' + filas.map(function(f, i){
       return '<li>'
-        + '<i style="background:' + COLORES[i % COLORES.length] + '"></i>'
+        + '<i class="' + clasePaleta(i, COLORES.length) + '"></i>'
         + '<span class="destino-con">' + esc(f.concepto) + '</span>'
         + '<b class="destino-pct tabular">' + f.pct.toFixed(1) + ' %</b>'
         + '</li>';
     }).join('') + '</ul>';
 
     destino.innerHTML = apilada + detalle;
+    // El ancho de cada tramo, ya en el DOM.
+    destino.querySelectorAll('.destino-barra [data-pct]').forEach(function(s){
+      s.style.width = s.getAttribute('data-pct') + '%';
+    });
   }
 
   window.CIEHS = window.CIEHS || {};
