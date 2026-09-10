@@ -225,4 +225,5 @@ Los valores de respaldo del HTML se mantienen sincronizados con los de la base
 - [[CIEHS-Arena-Juego]] — el modo de juego a pantalla completa.
 - [[CIEHS]] — índice general.
 - [[CIEHS-Tienda-Escolar]] — catálogo, reservas de cosecha y transparencia.
+- [[CIEHS-Agronomia-Hidroponia]] — CE, pH, nutrientes por cultivo y recambio de solución.
 - [[CIEHS-Estados-UI-Async]] — carga, error y vacío: qué se ve cuando la base no responde todavía.

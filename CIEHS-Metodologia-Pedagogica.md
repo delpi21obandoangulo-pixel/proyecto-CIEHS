@@ -172,6 +172,7 @@ Tesorería y registro de ventas · Inventario · Impacto ambiental · Coordinaci
 ## Enlaces
 
 - [[CIEHS-Portal-Educativo]] — arquitectura del portal, secciones, alojamiento y
+- [[CIEHS-Agronomia-Hidroponia]] — CE, pH, nutrientes por cultivo y recambio de solución.
   contenido institucional.
 - [[CIEHS-Backend-Supabase]] — esquema `ciehs`, tablas, RLS y capa de datos del
   navegador.
