@@ -389,10 +389,19 @@ tallo, y si las cuatro respiran a la vez parece un motor.
 
 ### Seis decisiones que conviene no deshacer
 
-1. **Viven dentro de `.amb`.** Heredan su `position:fixed`, su
-   `pointer-events:none` y su `z-index:-1`: quedan sobre la fotografía y bajo
-   todo el contenido sin abrir un contexto de apilamiento nuevo. Sacarlos de ahí
-   es volver a pelearse con el z-index.
+1. **Viven en su propia capa, en `z-index:0` — no dentro de `.amb`.**
+   Al principio sí estaban dentro, y era un error que tardó en verse: `.amb`
+   está en `z-index:-1`, o sea **por debajo del fondo de las secciones**. Y
+   esos fondos son translúcidos **a ancho completo**: un blanco al 66 % que
+   cubre también los laterales. Con el muro debajo, dos tercios de lo que se
+   veía allí era ese velo, y por mucha opacidad que se le diera a una hoja
+   jamás pasaba de un verde menta lavado — **el techo no estaba en la hoja,
+   estaba en el velo de encima**.
+
+   En `z-index:0` quedan sobre el fondo de las secciones (que no están
+   posicionadas y pintan en la capa de bloques) y bajo todo el contenido, que
+   vive en `.wrap` con `position:relative` y `z-index:1`. Es el único
+   escalón que hay entre esas dos cosas, y por eso el valor no es negociable.
 
 2. **La caja del muro es el tubo _más_ el aire de las matas.** La primera
    versión hizo la caja del tamaño del tubo y las hojas se cortaban contra el

@@ -95,13 +95,24 @@
 <div class="amb" aria-hidden="true">
   <div class="amb-img"></div>
   <div class="amb-veil"></div>
-  <!-- Los dos muros verticales. Viven DENTRO del plano ambiental a proposito:
-       heredan su position:fixed, su pointer-events:none y su z-index:-1, asi
-       que quedan por encima de la fotografia velada y por debajo de todo el
-       contenido, sin abrir un contexto de apilamiento nuevo.
-       Son decorativos: aria-hidden en el contenedor .amb ya los cubre. -->
+  <!-- Los muros ya no viven aquí dentro: ver el bloque .muros, justo debajo. -->
+</div>
 
+<!-- LOS MUROS, en su PROPIA capa fija y no dentro de .amb. La razón es de
+     orden de pintado, y costó descubrirla: .amb está en z-index:-1, o sea por
+     debajo del fondo de las secciones. Y esos fondos son translúcidos A ANCHO
+     COMPLETO —un blanco al 66% que cubre también los laterales—, así que con
+     el muro debajo, dos tercios de lo que se veía allí era ese velo. Por mucha
+     opacidad que se le diera a una hoja, jamás pasaba de un verde menta
+     lavado: el techo no estaba en la hoja, estaba en el velo de encima.
 
+     Aquí van en z-index:0. Eso los deja por ENCIMA del fondo de las secciones
+     —que no están posicionadas y pintan en la capa de bloques— y por DEBAJO de
+     todo el contenido, que vive dentro de .wrap con position:relative y
+     z-index:1. Es el único escalón que hay entre esas dos cosas.
+
+     Puramente decorativos -> aria-hidden. -->
+<div class="muros" aria-hidden="true">
   <div class="muro muro-izq">
     <div class="muro-tubo">
       <div class="muro-agua"></div>
