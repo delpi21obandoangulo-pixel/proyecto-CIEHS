@@ -2373,6 +2373,161 @@
   .pal-5{ background:#c2410c; }
   .pal-6{ background:#0f766e; }
 
+  /* ---------------- ecosistema integrado y vínculo con el PRAE ------------ */
+  .ecosistema{ margin-top:8px; }
+  .ecosistema h3{ margin-top:12px; font-size:1.5rem; }
+  .ecosistema-lede{ margin-top:14px; max-width:78ch; font-size:15.5px; line-height:1.75; color:var(--ink-soft); }
+  .ecosistema-lede b{ color:var(--ink); font-weight:600; }
+  .eco-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:24px; }
+  @media (max-width:940px){ .eco-grid{ grid-template-columns:1fr; } }
+  .eco-card{
+    position:relative; padding:24px 22px; border-radius:var(--radius-m);
+    border:1px solid var(--line); background:var(--surface);
+    box-shadow:var(--shadow-card); backdrop-filter:blur(16px);
+    border-top:3px solid var(--acento, var(--leaf-500));
+  }
+  .eco-1{ --acento:var(--leaf-500); }
+  .eco-2{ --acento:var(--sun-500); }
+  .eco-3{ --acento:var(--azure-500); }
+  .eco-num{
+    font-size:11px; letter-spacing:.1em; color:var(--acento, var(--leaf-500));
+  }
+  .eco-card h4{ margin-top:10px; font-size:16.5px; font-weight:600; color:var(--ink); }
+  .eco-card p{ margin-top:10px; font-size:13.8px; line-height:1.65; color:var(--ink-soft); }
+  .eco-card b{ color:var(--ink); font-weight:600; }
+  .ecosistema-nota{
+    margin-top:20px; padding:14px 18px;
+    border-left:3px solid var(--leaf-500); border-radius:var(--radius-s);
+    background:var(--veil);
+    font-size:13.5px; line-height:1.7; color:var(--ink-soft); max-width:84ch;
+  }
+  .ecosistema-nota b{ color:var(--ink); font-weight:600; }
+
+  .prae-block{ margin-top:64px; padding-top:52px; border-top:1px solid var(--line); }
+  .prae-block h3{ margin-top:12px; font-size:1.5rem; }
+  .prae-lede{ margin-top:14px; max-width:78ch; font-size:15.5px; line-height:1.75; color:var(--ink-soft); }
+  .prae-lede b{ color:var(--ink); font-weight:600; }
+  .prae-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:20px; }
+  @media (max-width:1040px){ .prae-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:620px){ .prae-grid{ grid-template-columns:1fr; } }
+  .prae-card{
+    padding:20px 18px; border-radius:var(--radius-m);
+    border:1px solid var(--line); background:var(--glass); backdrop-filter:blur(14px);
+  }
+  .prae-card h5{
+    font-family:var(--font-mono); font-size:10.5px; letter-spacing:.11em;
+    text-transform:uppercase; color:var(--leaf-300);
+  }
+  .prae-card p{ margin-top:10px; font-size:13.3px; line-height:1.65; color:var(--ink-soft); }
+  .prae-card b{ color:var(--ink); font-weight:600; }
+
+  /* -------------------- fundamento científico (módulos) ------------------
+     Tabla de sistemas, tarjetas de nutrientes y rejilla de factores. Es la
+     parte más densa del portal en información por centímetro, así que todo
+     aquí va a favor de la lectura: una sola columna de texto, tabla con
+     scroll propio y ninguna tarjeta que compita con otra. */
+  .ciencia-block{ margin-top:72px; padding-top:56px; border-top:1px solid var(--line); }
+  .ciencia-block h3{ margin-top:12px; font-size:1.5rem; }
+  .ciencia-lede{ margin-top:14px; max-width:78ch; font-size:15.5px; line-height:1.75; color:var(--ink-soft); }
+  .ciencia-lede b{ color:var(--ink); font-weight:600; }
+  .ciencia-sub{
+    margin-top:44px; font-family:var(--font-display);
+    font-size:1.15rem; font-weight:600; color:var(--ink);
+  }
+
+  /* La tabla se sale en pantallas estrechas: se le da su propio scroll en vez
+     de dejar que empuje el body en horizontal. */
+  .tabla-scroll{ margin-top:18px; overflow-x:auto; border-radius:var(--radius-m); border:1px solid var(--line); }
+  .ciencia-tabla{ width:100%; min-width:680px; border-collapse:collapse; background:var(--surface); }
+  .ciencia-tabla th, .ciencia-tabla td{
+    padding:13px 16px; text-align:left; vertical-align:top;
+    font-size:13.5px; line-height:1.55; border-bottom:1px solid var(--line);
+  }
+  .ciencia-tabla thead th{
+    background:var(--surface-2); font-family:var(--font-mono);
+    font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-mute);
+  }
+  .ciencia-tabla tbody th{ font-weight:600; color:var(--ink); white-space:nowrap; }
+  .ciencia-tabla td{ color:var(--ink-soft); }
+  .ciencia-tabla tbody tr:last-child th, .ciencia-tabla tbody tr:last-child td{ border-bottom:none; }
+  /* El sistema que de verdad se usa va primero y marcado: es la correccion de
+     fondo de toda esta seccion. */
+  .ciencia-tabla .es-nuestro{ background:var(--leaf-100); }
+  .ciencia-tabla .es-nuestro th{ box-shadow:inset 3px 0 0 var(--leaf-500); }
+  .chip-si{
+    display:inline-block; padding:3px 10px; border-radius:100px;
+    background:var(--leaf-500); color:#04140f;
+    font-size:11px; font-weight:600; white-space:nowrap;
+  }
+  .chip-proy{
+    display:inline-block; padding:3px 10px; border-radius:100px;
+    border:1px dashed var(--line-strong); color:var(--ink-mute);
+    font-size:11px; white-space:nowrap;
+  }
+
+  .ciencia-nota{
+    margin-top:18px; padding:16px 20px;
+    background:var(--veil); border:1px dashed var(--line-strong);
+    border-radius:var(--radius-s);
+    font-size:13.5px; line-height:1.7; color:var(--ink-soft); max-width:84ch;
+  }
+  .ciencia-nota b{ color:var(--ink); font-weight:600; }
+
+  /* ---- nutrientes ---- */
+  .nutri-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:20px; }
+  @media (max-width:940px){ .nutri-grid{ grid-template-columns:1fr; } }
+  .nutri-card{
+    padding:22px 20px; border-radius:var(--radius-m);
+    border:1px solid var(--line); background:var(--surface);
+    box-shadow:var(--shadow-card); backdrop-filter:blur(16px);
+    border-top:3px solid var(--acento, var(--leaf-500));
+    display:flex; flex-direction:column;
+  }
+  .nutri-1{ --acento:var(--leaf-500); }
+  .nutri-2{ --acento:var(--azure-500); }
+  .nutri-3{ --acento:var(--sun-500); }
+  .nutri-tag{
+    font-family:var(--font-mono); font-size:10px; letter-spacing:.11em;
+    text-transform:uppercase; color:var(--acento, var(--leaf-500));
+  }
+  .nutri-simbolos{
+    margin-top:10px; font-family:var(--font-display);
+    font-size:1.5rem; line-height:1.2; color:var(--ink); letter-spacing:.02em;
+  }
+  .nutri-simbolos b{ font-weight:700; }
+  .nutri-nombres{ margin-top:5px; font-size:12.5px; line-height:1.5; color:var(--ink-mute); }
+  .nutri-que{ margin-top:12px; font-size:13.5px; line-height:1.6; color:var(--ink-soft); }
+  .nutri-rango{
+    margin-top:auto; padding-top:14px; border-top:1px dashed var(--line);
+    font-family:var(--font-mono); font-size:11.5px; line-height:1.7; color:var(--ink-mute);
+  }
+  .nutri-rango span{ color:var(--ink-soft); font-weight:600; }
+
+  /* ---- factores ambientales ---- */
+  .factores-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:20px; }
+  @media (max-width:940px){ .factores-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:620px){ .factores-grid{ grid-template-columns:1fr; } }
+  .factor-card{
+    padding:20px 18px; border-radius:var(--radius-m);
+    border:1px solid var(--line); background:var(--glass);
+    backdrop-filter:blur(14px);
+  }
+  .factor-card h5{ font-size:14px; font-weight:600; color:var(--ink); }
+  .factor-val{
+    margin-top:6px; font-family:var(--font-mono); font-size:15px;
+    color:var(--leaf-300); letter-spacing:.01em;
+  }
+  .factor-card p:last-child{ margin-top:10px; font-size:13px; line-height:1.6; color:var(--ink-soft); }
+  .factor-card b{ color:var(--ink); font-weight:600; }
+
+  .ciencia-fuentes{
+    margin-top:32px; padding:16px 20px;
+    border-left:3px solid var(--azure-500); border-radius:var(--radius-s);
+    background:var(--veil);
+    font-size:13px; line-height:1.7; color:var(--ink-mute); max-width:88ch;
+  }
+  .ciencia-fuentes b{ color:var(--ink-soft); font-weight:600; }
+
   /* ------------------------------- STEAM --------------------------------
      Cinco tarjetas, una por letra. La letra va grande y translúcida detrás del
      título: es lo que hace que la rejilla se lea como STEAM de un vistazo sin

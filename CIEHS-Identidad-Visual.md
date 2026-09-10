@@ -17,7 +17,7 @@ interfaz se describe en [[CIEHS-Portal-Educativo]].
 
 Todas las piezas salen de un **único mural ilustrado** aportado por la
 coordinación, que reúne el escudo, el reto climático, los ODS y los elementos de
-Huanchaco (caballito de totora, pingüino de Humboldt).
+Huanchaco (caballito de totora, pelícano peruano).
 
 El mural sirve a la vez de **fuente de los logotipos** y de imagen real de la
 sección Mural del portal, con cuatro puntos interactivos sobre las zonas que
@@ -25,13 +25,34 @@ nombran.
 
 ---
 
-## 1 bis. El panel del mural está desactualizado
+## 1 bis. El mural, versión 2 (2026-09-10) — cerrado
 
-El panel «¿Qué buscamos con este proyecto?» **pintado dentro** de
-`assets/img/mural-ciehs.jpg` conserva la redacción anterior a 2026-09-09; el
-portal ya dice la nueva. El encargo completo —texto nuevo, texto viejo, qué no
-puede moverse y los dos caminos posibles— está en
-[[pendientes-coordinacion/01-mural-panel-que-buscamos|01 · Mural]].
+La coordinación entregó un mural nuevo que **ya trae el texto corregido** en el
+panel «¿Qué buscamos con este proyecto?». El encargo
+[[pendientes-coordinacion/01-mural-panel-que-buscamos|01]] queda cerrado.
+
+| | Antes | Ahora |
+|---|---|---|
+| Medidas | 1280 × 853 | **1536 × 1024** |
+| Peso | 361 KB | 657 KB |
+| Proporción | 3:2 | **3:2** — la misma, y por eso los cuatro puntos siguen valiendo |
+
+Tres cosas que hubo que ajustar y no eran obvias:
+
+1. **El ave cambió.** Donde había un **pingüino de Humboldt** ahora hay un
+   **pelícano peruano**. Los dos son de esta costa, pero el texto alternativo,
+   el punto «nuestra identidad» y la ficha del QR decían pingüino: si no se
+   corrige, el portal describe una imagen que ya no existe. Corregido en los
+   tres sitios. *(La pregunta de la Arena sobre el pingüino se queda: habla de
+   la fauna de la costa, no del mural.)*
+2. **Las medidas del `<img>`**, que reservan el espacio antes de que la imagen
+   cargue. Con las viejas, el hueco saltaba al terminar de descargar.
+3. **Los cuatro puntos no se tocaron**: al mantenerse la proporción 3:2, los
+   porcentajes caen sobre las mismas zonas de la composición nueva. Comprobado
+   punto por punto sobre la imagen ya instalada.
+
+Se pasó por `tools/limpiar-metadatos-jpeg.js` antes de instalarla, como toda
+imagen del portal. Venía ya sin EXIF ni GPS.
 
 ---
 

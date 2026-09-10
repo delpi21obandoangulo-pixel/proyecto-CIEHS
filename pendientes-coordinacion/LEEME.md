@@ -20,7 +20,7 @@ en la nota de la que salió.
 | # | Tarea | Por qué no puede hacerse desde el código | Qué desbloquea |
 |---|---|---|---|
 | [[pendientes-coordinacion/08-rotar-codigo-de-acceso\|08]] | 🔴 **Rotar el código de acceso al panel** | Hay que elegir el código nuevo y dónde se guarda | Cerrar un acceso de administración que estuvo publicado en GitHub |
-| [[pendientes-coordinacion/01-mural-panel-que-buscamos\|01]] | **Repintar el panel del mural** | Es una ilustración rasterizada, y el mural físico está en una pared | Que la imagen y el portal dejen de decir cosas distintas |
+| ~~[[pendientes-coordinacion/01-mural-panel-que-buscamos\|01]]~~ | ~~Repintar el panel del mural~~ · **CERRADO el 2026-09-10** | — | Hecho: la coordinación entregó un mural nuevo con el texto corregido. Queda repintar el mural **físico** de la pared |
 | [[pendientes-coordinacion/02-autorizacion-de-imagen\|02]] | **Autorización de imagen**: revisión de Dirección, confirmar custodia, distribuir | Decisión institucional y firmas en papel | Publicar rostros sin tapar, y que `consent_ref` apunte a algo real |
 | [[pendientes-coordinacion/03-vercel-github-app\|03]] | **Instalar la Vercel GitHub App** | Flujo OAuth en tu navegador con tu sesión | Despliegue automático por push |
 | [[pendientes-coordinacion/04-validacion-cneb\|04]] | **Validar la correspondencia CNEB** | Reunión del equipo de área | Que la ruta pase de propuesta a programación validada |

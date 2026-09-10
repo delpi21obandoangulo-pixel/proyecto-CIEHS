@@ -366,8 +366,11 @@ indagación de una observación.
       → los tres, con procedimiento, en
       [[pendientes-coordinacion/05-datos-del-laboratorio|05 · Datos del laboratorio]].
 - [ ] Verificar una a una las referencias del §9 antes de citarlas formalmente.
-- [ ] Llevar las tablas del §5 a las fichas de cultivo del portal, que hoy no
-      muestran ningún parámetro agronómico.
+- [x] Llevar la ciencia de esta nota al portal. Hecho el 2026-09-10: la sección
+      **Módulos** lleva ahora tipos de sistema, macro y micronutrientes con sus
+      rangos, y los seis factores ambientales, con las fuentes citadas. Falta
+      todavía el paso fino: los rangos **por especie** dentro de cada ficha de
+      cultivo.
 - [ ] Reencuadrar `MEJORA-01` en el portal: de carencia a variable experimental.
 
 ---

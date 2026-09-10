@@ -599,7 +599,7 @@
       label: '4 · Nuestra identidad',
       title: 'I.E. N.° 80033 "José Olaya Balandra"',
       html: '<p>El CIEHS es el laboratorio de investigación escolar de la I.E. N.° 80033 <b>"José Olaya Balandra"</b>, en Huanchaco, La Libertad — con el lema <i>"Cultivamos Ciencia, Cosechamos Futuro"</i>. Lo sostienen <b>280 estudiantes de 1.° a 5.° de secundaria</b> repartidos en diez equipos de gestión.</p>'
-        + '<p>El caballito de totora y el pingüino de Humboldt que aparecen en el mural no son adorno: son el recordatorio de que el problema que estudiamos —agua escasa, suelos salinizados, plástico en la playa— ocurre exactamente aquí.</p>'
+        + '<p>El caballito de totora y el pelícano peruano que aparecen en el mural no son adorno: son el recordatorio de que el problema que estudiamos —agua escasa, suelos salinizados, plástico en la playa— ocurre exactamente aquí.</p>'
     }
   };
 
