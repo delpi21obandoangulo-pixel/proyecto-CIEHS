@@ -274,6 +274,44 @@ proyectos.
 
 ---
 
+## 9. Adjuntos de la carpeta de campo, y una URL que no podía funcionar
+
+El formulario de la carpeta solo aceptaba un **enlace**. Eso invitaba al fallo
+que se acabó dando: se guardó `blob:https://web.whatsapp.com/0a30fc1f-…`,
+copiado con «copiar dirección de la imagen» desde WhatsApp Web.
+
+> [!bug] Por qué una URL `blob:` no puede funcionar
+> Es una referencia a la **memoria de una pestaña concreta**. Vive mientras esa
+> pestaña está abierta y solo dentro de ella. Fuera, no apunta a nada — ni en
+> otro navegador, ni en otro equipo, ni al día siguiente.
+>
+> El campo era `type="url"` y `blob:` **es** una URL válida, así que el
+> formulario la aceptó sin rechistar. En el portal aparecía el botón «Ver el
+> archivo adjunto» y no abría nada.
+
+### Qué se hizo
+
+1. **Subida real**, a un bucket propio `ciehs-carpeta` — público, 25 MB,
+   admitiendo imagen, vídeo, audio, PDF y ofimática. Bucket propio y no
+   `ciehs-evidencias` porque aquel admite solo imágenes de 6 MB y está atado al
+   protocolo de imagen de menores.
+2. En `media_url` se guarda la **ruta dentro del bucket**;
+   `urlArchivoCarpeta()` la resuelve. Si lo que hay es una URL absoluta —un
+   enlace externo legítimo— se respeta tal cual.
+3. El formulario **rechaza** `blob:` y `data:` con un mensaje que dice qué
+   hacer en su lugar, y el portal no pinta el enlace si no se resuelve: mejor
+   ningún botón que un botón que no lleva a ningún lado.
+4. Se vació el `media_url` roto. No se puede reparar: el archivo original
+   nunca llegó a salir del navegador.
+
+> [!warning] Lo que este formulario NO hace
+> **No pasa por el editor que tapa las caras.** Si en la imagen o el vídeo
+> aparece un estudiante, va por *Evidencias*. El formulario lo advierte, pero
+> conviene saber que la advertencia es la única defensa aquí →
+> [[CIEHS-Privacidad-Menores]].
+
+---
+
 ## 8. Llevarse las mediciones: el CSV
 
 Un dato que solo se puede mirar en una gráfica del portal no es del estudiante:

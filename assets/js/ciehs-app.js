@@ -1422,8 +1422,12 @@
     }
     Estado.en(carpetaEstado, null);
     carpetaGrid.innerHTML = filas.map(function(f){
-      var media = f.media_url
-        ? '<a class="carpeta-link" href="' + esc(f.media_url) + '" target="_blank" rel="noopener noreferrer">Ver el archivo adjunto</a>'
+      // Se resuelve la ruta del bucket a URL. Si lo guardado no sirve —una
+      // blob: de otra pestaña, por ejemplo— devuelve vacio y NO se pinta el
+      // enlace: mejor que no haya boton a que lo haya y no lleve a ningun lado.
+      var mediaHref = (D && D.urlArchivoCarpeta) ? D.urlArchivoCarpeta(f.media_url) : f.media_url;
+      var media = mediaHref
+        ? '<a class="carpeta-link" href="' + esc(mediaHref) + '" target="_blank" rel="noopener noreferrer">Ver el archivo adjunto</a>'
         : '';
       return '<article class="card carpeta-card" data-kind="' + esc(f.kind) + '">'
         + '<div class="top-row"><span class="code mono">' + esc(f.code) + '</span>'
@@ -2352,18 +2356,54 @@
       txt('carCode', f.code); txt('carTitle', f.title);
       txt('carSummary', f.summary); txt('carBody', f.body);
       txt('carKind', f.kind || 'informe'); txt('carTeam', f.team);
-      txt('carAuthor', f.author_label); txt('carMedia', f.media_url);
+      // Un enlace blob:/data: guardado antes no se muestra: no lleva a ningun
+      // sitio y ponerlo en el campo invitaria a volver a guardarlo.
+      var guardado = /^(blob|data):/i.test(f.media_url || '') ? '' : f.media_url;
+      txt('carAuthor', f.author_label); txt('carMedia', guardado);
       txt('carFecha', f.published_on); txt('carPos', f.position == null ? 1 : f.position);
       marcar('carPublicado', f.published);
+      var carArchivoEl = document.getElementById('carArchivo');
+      if(carArchivoEl) carArchivoEl.value = '';
     },
     guardar: function(){
-      return D.guardarNota({
-        code: leer('carCode').trim(), title: leer('carTitle').trim(),
-        summary: leer('carSummary').trim(), body: leer('carBody').trim(),
-        kind: leer('carKind'), team: leer('carTeam').trim(),
-        authorLabel: leer('carAuthor').trim(), mediaUrl: leer('carMedia').trim(),
-        publishedOn: leer('carFecha'), position: leer('carPos'),
-        published: leerMarca('carPublicado')
+      var archivoEl = document.getElementById('carArchivo');
+      var archivo   = archivoEl && archivoEl.files && archivoEl.files[0];
+      var enlace    = leer('carMedia').trim();
+
+      /* Una direccion blob: o data: NO puede guardarse. Son referencias a la
+         memoria de una pestaña concreta: fuera de ella no apuntan a nada. Es
+         exactamente lo que paso con un enlace copiado de WhatsApp Web, y el
+         resultado fue una entrada publicada con un boton que no abria nada.
+         Se corta aqui, con un mensaje que dice que hacer en su lugar. */
+      if(/^(blob|data):/i.test(enlace)){
+        return Promise.reject(new Error(
+          'Ese enlace no puede funcionar fuera de tu navegador: es una dirección temporal '
+          + '(blob:) de la página desde la que lo copiaste. Usa «Archivo adjunto» y sube el archivo.'));
+      }
+      if(archivo && archivo.size > 25 * 1024 * 1024){
+        return Promise.reject(new Error('El archivo pesa más de 25 MB. Redúcelo antes de subirlo.'));
+      }
+
+      var codigo = leer('carCode').trim();
+      var paso;
+      if(archivo){
+        // El nombre lleva el codigo de la entrada delante para que el bucket se
+        // pueda leer de un vistazo y dos entradas no se pisen el archivo.
+        var limpio = archivo.name.replace(/[^w.-]+/g, '-').toLowerCase();
+        paso = D.subirArchivoCarpeta(archivo, (codigo || 'nota') + '/' + Date.now() + '-' + limpio);
+      } else {
+        paso = Promise.resolve(enlace);
+      }
+
+      return paso.then(function(media){
+        return D.guardarNota({
+          code: codigo, title: leer('carTitle').trim(),
+          summary: leer('carSummary').trim(), body: leer('carBody').trim(),
+          kind: leer('carKind'), team: leer('carTeam').trim(),
+          authorLabel: leer('carAuthor').trim(), mediaUrl: media,
+          publishedOn: leer('carFecha'), position: leer('carPos'),
+          published: leerMarca('carPublicado')
+        });
       });
     }
   });

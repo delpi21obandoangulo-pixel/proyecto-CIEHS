@@ -361,6 +361,44 @@ autorización explícita.**
 
 ---
 
+## 10. El panel por código no mandaba en Storage (2026-09-10)
+
+Salió al probar un aporte pendiente, y era más grande de lo que parecía.
+
+### El fallo
+
+Cuando el panel pasó a entrar por código (`db/10` y `db/11`), el archivo 11
+extendió al rol `anon` todas las políticas de administración… **de las tablas**.
+Se olvidó de las de `storage.objects`, que se quedaron en `to authenticated`.
+
+La entrada por código **no usa sesión**: el panel viaja como `anon` con la
+cabecera `X-CIEHS-Code`. Y una política RLS es **por rol**: aunque `is_admin()`
+devuelva true, si la política no incluye a `anon` no se le aplica y RLS niega.
+
+Cinco políticas afectadas, y solo una se había notado:
+
+| Política | Qué impedía |
+|---|---|
+| `aportes_obj_admin_lee_todo` | **Abrir un aporte en cuarentena.** Al publicarlo sí se veía, porque entonces entraba la otra política —la de lectura aprobada, que es `to public`— |
+| `aportes_obj_admin_borra` | Borrar el archivo de un aporte |
+| `ciehs_evidencias_admin_inserta` | **Subir cualquier evidencia** |
+| `ciehs_evidencias_admin_actualiza` | Reemplazarla |
+| `ciehs_evidencias_admin_borra` | Borrarla |
+
+> [!caution] Lo peor no era no poder abrirlo
+> Era que el sistema **obligaba a publicar para poder ver**. La cuarentena
+> existe exactamente para lo contrario: mirar antes de decidir. Un coordinador
+> que siga el flujo tal como estaba aprueba a ciegas — y el ejemplo que lo
+> destapó era una fotografía con las caras de unos niños.
+
+### La corrección
+
+Las cinco pasan a `anon, authenticated` en `db/14_storage_admin_por_codigo.sql`.
+`is_admin()` sigue siendo la única puerta: lo que se corrige es que la política
+se **evalúe** para el rol que de verdad usa el panel.
+
+---
+
 ## 9. Cierre de la auditoría: los *advisors* (2026-09-10)
 
 Último punto de la lista del §7, ejecutado con autorización explícita para usar

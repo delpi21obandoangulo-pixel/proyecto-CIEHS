@@ -2373,6 +2373,88 @@
   .pal-5{ background:#c2410c; }
   .pal-6{ background:#0f766e; }
 
+  /* ------------------------------- STEAM --------------------------------
+     Cinco tarjetas, una por letra. La letra va grande y translúcida detrás del
+     título: es lo que hace que la rejilla se lea como STEAM de un vistazo sin
+     tener que poner un acrónimo aparte. */
+  .steam-block{
+    margin-top:64px; padding:36px 38px; border-radius:var(--radius-l);
+    border:1px solid var(--line);
+    background:linear-gradient(160deg, rgba(2,132,199,0.07), rgba(5,150,105,0.05));
+  }
+  .steam-block h3{ margin-top:12px; font-size:1.5rem; }
+  .steam-lede{ margin-top:14px; max-width:78ch; font-size:15.5px; line-height:1.7; color:var(--ink-soft); }
+  .steam-lede b{ color:var(--ink); font-weight:600; }
+
+  .steam-grid{
+    list-style:none; margin:28px 0 0; padding:0;
+    display:grid; grid-template-columns:repeat(5,1fr); gap:16px;
+  }
+  @media (max-width:1080px){ .steam-grid{ grid-template-columns:repeat(3,1fr); } }
+  @media (max-width:720px){ .steam-grid{ grid-template-columns:1fr; } }
+
+  .steam-card{
+    position:relative; overflow:hidden;
+    padding:22px 20px 20px; border-radius:var(--radius-m);
+    border:1px solid var(--line); background:var(--surface);
+    box-shadow:var(--shadow-card); backdrop-filter:blur(16px);
+    border-top:3px solid var(--acento, var(--leaf-500));
+    display:flex; flex-direction:column;
+  }
+  /* La letra, de fondo. aria-hidden en el marcado: quien usa lector de pantalla
+     ya oye «Ciencia», y oír además una «ese» suelta solo estorba. */
+  .steam-letra{
+    position:absolute; right:6px; top:-14px;
+    font-family:var(--font-display); font-size:86px; font-weight:700;
+    line-height:1; color:var(--acento, var(--leaf-500)); opacity:.13;
+    pointer-events:none; user-select:none;
+  }
+  .steam-card h4{
+    position:relative; font-size:17px; font-weight:600; color:var(--ink);
+  }
+  .steam-card h4 + p{
+    margin-top:2px; font-family:var(--font-mono); font-size:11px;
+    letter-spacing:.06em; color:var(--acento, var(--leaf-500));
+  }
+  .steam-que{ margin-top:12px; font-size:13.5px; line-height:1.6; color:var(--ink-soft); }
+  .steam-donde{
+    display:block; margin-top:auto; padding-top:14px;
+    border-top:1px dashed var(--line);
+    font-size:12px; line-height:1.5; color:var(--ink-mute);
+  }
+
+  /* Un color por letra: el mismo criterio que la paleta del resto del portal,
+     de la ciencia (verde) a la matemática (violeta). */
+  .steam-s{ --acento:var(--leaf-500); }
+  .steam-t{ --acento:var(--azure-500); }
+  .steam-e{ --acento:var(--sun-500); }
+  .steam-a{ --acento:#7c3aed; }
+  .steam-m{ --acento:#0f766e; }
+
+  .steam-nota{
+    margin-top:24px; padding:16px 20px;
+    border:1px dashed var(--line); border-radius:var(--radius-s);
+    font-size:13.5px; line-height:1.7; color:var(--ink-soft); max-width:88ch;
+  }
+  .steam-nota b{ color:var(--ink); font-weight:600; }
+  @media (max-width:880px){ .steam-block{ padding:28px 22px; } }
+
+  /* ---- panel: bloque de archivo adjunto ---- */
+  .admin-adjunto{
+    padding:16px 18px; margin-top:4px;
+    border:1px dashed var(--line-strong); border-radius:var(--radius-s);
+    background:var(--veil);
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .admin-nota{ font-size:12.5px; line-height:1.55; color:var(--ink-mute); }
+  .admin-nota b{ color:var(--ink-soft); font-weight:600; }
+  .admin-nota-aviso{
+    padding:9px 12px; border-radius:var(--radius-s);
+    background:rgba(180,83,9,0.08); border-left:3px solid var(--sun-500);
+    color:var(--ink-soft);
+  }
+  .admin-nota-aviso b{ color:var(--ink); }
+
   /* ---- Arena: la fase de la ruta a la que pertenece el reto ---- */
   .ar-fase{
     display:inline-block; padding:3px 9px; border-radius:100px;

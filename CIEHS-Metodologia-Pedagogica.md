@@ -61,6 +61,46 @@ accesibilidad puesto al final.
 
 ---
 
+## 1 bis. STEAM: la metodología
+
+El CIEHS **combina la metodología STEAM con el aprendizaje**. No es una capa
+añadida: es la forma en que el laboratorio ya funcionaba, nombrada.
+
+STEAM no significa dar cinco cursos seguidos. Significa que **un problema real
+no se deja resolver por una sola disciplina**. Cultivar sin suelo en un distrito
+con agua escasa y suelos salinizados obliga a la vez a medir, a construir, a
+calcular y a contarlo.
+
+| Letra | En el CIEHS | Dónde está ya |
+|---|---|---|
+| **S** · Ciencia | Formular la hipótesis, controlar variables, sostener la conclusión con datos propios | Las dos investigaciones Eureka, con DBCA |
+| **T** · Tecnología | Registrar, publicar y hacer trazable el dato | Este portal, la bitácora agronómica y los ocho QR |
+| **E** · Ingeniería | Diseñar, construir y mejorar el sistema físico | Los quince módulos DWC, y la aireación forzada pendiente |
+| **A** · Arte | Hacer entendible lo que se descubrió | El mural, las campañas y la comunicación de cada equipo |
+| **M** · Matemática | Medir, promediar, graficar y comparar | pH, CE, biomasa fresca y el ahorro hídrico por kilo |
+
+### Dónde se junta con el aprendizaje
+
+Las cinco letras **no se reparten por asignaturas ni por semanas**: se cruzan en
+la misma ruta de nueve pasos. Un equipo que mide el pH hace matemática y ciencia
+a la vez; cuando propone una mejora del módulo entra la ingeniería, y cuando la
+explica en la feria, el arte.
+
+> [!important] STEAM es la metodología; el rector sigue siendo otro
+> Conviene no confundir los planos, porque son respuestas a preguntas
+> distintas:
+>
+> - **CNEB** — qué se aprende y con qué se evalúa. *(rector)*
+> - **DUA** — cómo llega a cada estudiante. *(rector)*
+> - **HPOS** — a qué altura se piensa. *(transversal)*
+> - **STEAM** — **cómo se organiza el trabajo**: alrededor de un problema que
+>   necesita varias disciplinas a la vez, en vez de alrededor de un temario.
+>
+> Ninguno sustituye a otro. STEAM es lo que hace que la ruta de nueve pasos sea
+> un proyecto y no una secuencia de clases.
+
+---
+
 ## 2. Los dos ejes movilizadores
 
 El eje movilizador no es solo el reto climático. Son dos, y se sostienen

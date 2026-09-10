@@ -356,6 +356,35 @@
   function vacio(v) { return v === '' || v === undefined ? null : v; }
 
   /* carpeta de campo */
+  /* ---------------- archivos adjuntos de la carpeta de campo -------------
+     El formulario solo aceptaba un ENLACE, y eso invitaba al fallo que se
+     acabo dando: alguien copio la direccion de una imagen desde WhatsApp Web
+     y guardo un `blob:https://web.whatsapp.com/...`. Una URL blob: es una
+     referencia en memoria de UNA pestaña concreta: fuera de ella no apunta a
+     nada, asi que en el portal el enlace existia y no abria nada.
+
+     Ahora el archivo se sube de verdad, a su propio bucket publico. En
+     `media_url` se guarda la RUTA dentro del bucket, y `urlArchivoCarpeta`
+     la resuelve; si lo que hay es una URL absoluta —un enlace externo
+     legitimo— se respeta tal cual. */
+  var BUCKET_CARPETA = 'ciehs-carpeta';
+
+  CIEHSData.urlArchivoCarpeta = function (ruta) {
+    if (!ruta) return '';
+    // blob: y data: no se resuelven a proposito: no funcionan fuera de la
+    // pestaña que las creo, y devolverlas seria pintar un enlace muerto.
+    if (/^(blob|data):/i.test(ruta)) return '';
+    if (/^https?:\/\//i.test(ruta)) return ruta;
+    return cliente.storage.from(BUCKET_CARPETA).getPublicUrl(ruta).data.publicUrl;
+  };
+
+  CIEHSData.subirArchivoCarpeta = function (archivo, nombre) {
+    var ruta = nombre || archivo.name;
+    return cliente.storage.from(BUCKET_CARPETA)
+      .upload(ruta, archivo, { upsert: true, contentType: archivo.type, cacheControl: '3600' })
+      .then(function (r) { if (r.error) throw r.error; return ruta; });
+  };
+
   CIEHSData.listarNotas = function () { return listar('field_notes', COLS_NOTA, 'position'); };
   CIEHSData.guardarNota = function (n) {
     return guardar('field_notes', COLS_NOTA, {
