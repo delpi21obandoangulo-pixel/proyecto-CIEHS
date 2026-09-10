@@ -59,7 +59,7 @@
     /* ===================== INICIAL · Ciclo II (3 a 5 años) =====================
        Lenguaje sensorial y concreto, sin unidades ni tecnicismos. */
     inicial: [
-      { id:'inicial-1', cat:'ciencia', q:'¿Cómo se llama el laboratorio de plantas de nuestro colegio?',
+      { id:'inicial-1', cat:'ciencia', q:'¿Cómo se llama el laboratorio de plantas de nuestra institución educativa?',
         ops:[['CIEHS',true],['El patio',false],['La biblioteca',false]],
         exp:'CIEHS significa Centro de Investigación Escolar Hidropónico Sostenible.' },
       { id:'inicial-2', cat:'agua', q:'¿En qué crecen las plantas del CIEHS?',
@@ -152,7 +152,7 @@
         ops:[['Una regla o cinta métrica',true],['Un termómetro',false],['Una balanza',false]],
         exp:'La altura se mide en centímetros con regla; la balanza sirve para la biomasa.' },
       { id:'primaria-6', cat:'ciencia', q:'En un gráfico de barras del crecimiento semanal, ¿qué va normalmente en el eje horizontal?',
-        ops:[['Las semanas',true],['Los centímetros',false],['El nombre del colegio',false]],
+        ops:[['Las semanas',true],['Los centímetros',false],['El nombre de la institución educativa',false]],
         exp:'En el eje horizontal va el tiempo y en el vertical la medida que cambia.' },
       { id:'primaria-7', cat:'agua', q:'En el CIEHS, la solución nutritiva…',
         ops:[['Recircula y se vuelve a usar',true],['Se tira después de cada riego',false],['Solo se usa una vez al año',false]],
@@ -178,7 +178,7 @@
       { id:'primaria-14', cat:'cultivo', q:'La biomasa fresca de una planta se mide con…',
         ops:[['Una balanza, en gramos',true],['Una regla, en centímetros',false],['Un reloj, en minutos',false]],
         exp:'La biomasa es masa: se pesa. La altura sí se mide con regla.' },
-      { id:'primaria-15', cat:'clima', q:'¿Cuál de estas acciones reduce la basura del colegio?',
+      { id:'primaria-15', cat:'clima', q:'¿Cuál de estas acciones reduce la basura de la institución educativa?',
         ops:[['Separar los residuos para reciclarlos',true],['Mezclarlo todo en un solo tacho',false],['Quemar los papeles',false]],
         exp:'Separar residuos permite reciclar y conecta con el ODS 12, consumo responsable.' },
       { id:'primaria-16', cat:'ciencia', q:'Si mido mi planta un día a las 8 y otro día a las 3, mis datos…',

@@ -181,7 +181,7 @@
         exp:'Huanchaco está junto al mar, y por eso el agua dulce es poquita.' },
 
       { id:'ar-ini-30', tema:'tormenta', tipo:'vf', dif:1,
-        q:'Podemos ayudar al planeta desde el colegio.',
+        q:'Podemos ayudar al planeta desde la institución educativa.',
         correcta:true,
         exp:'¡Claro que sí! Cuidando el agua, reciclando y cultivando nuestras plantas.' }
     ],
@@ -229,7 +229,7 @@
         exp:'Cuatro: NFT, Raíz Flotante, Sustrato y Vertical.' },
 
       { id:'ar-pri-9', tema:'tormenta', tipo:'vf', dif:1,
-        q:'Separar los residuos ayuda a reducir la basura del colegio.',
+        q:'Separar los residuos ayuda a reducir la basura de la institución educativa.',
         correcta:true,
         exp:'Verdadero. Separar permite reciclar y conecta con el ODS 12.' },
 
@@ -264,7 +264,7 @@
         exp:'14 − 8 = 6 cm. Restar la medida anterior es como se calcula el crecimiento.' },
 
       { id:'ar-pri-16', tema:'invernadero', tipo:'escucha', dif:2,
-        q:'¿Cuál de estas hortalizas cultivamos en el laboratorio del colegio?',
+        q:'¿Cuál de estas hortalizas cultivamos en el laboratorio de la institución educativa?',
         ops:[['Espinaca',true],['Plátano',false],['Papa',false]],
         exp:'Cultivamos lechuga, espinaca, cebollita china y aromáticas.' },
 
@@ -611,7 +611,7 @@
 
       { id:'ar-pre-24', tema:'tormenta', tipo:'orden', dif:3,
         q:'Ordena de menor a mayor escala geográfica.',
-        pasos:['El módulo del laboratorio','El colegio','Huanchaco','La Libertad','El Perú'],
+        pasos:['El módulo del laboratorio','La institución educativa','Huanchaco','La Libertad','El Perú'],
         exp:'Pensar en escalas ayuda a dimensionar el impacto real de una acción local.' },
 
       { id:'ar-pre-25', tema:'invernadero', tipo:'opcion', dif:3,

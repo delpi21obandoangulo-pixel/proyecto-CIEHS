@@ -16,7 +16,7 @@ motiva está registrado en [[CIEHS-Auditoria-Seguridad-Auth]].
 > Una versión anterior de esta nota afirmaba que la Dirección había aprobado
 > formalmente el protocolo en esta fecha. **Eso no consta.** El CIEHS es, en la
 > práctica, un proyecto personal del docente coordinador apoyado en el
-> laboratorio del colegio, y no se tramitó tal aprobación. Se deja escrito en
+> laboratorio de la institución educativa, y no se tramitó tal aprobación. Se deja escrito en
 > lugar de borrarlo: un documento que dice tener un respaldo que no tiene es
 > peor que uno que reconoce no tenerlo.
 >

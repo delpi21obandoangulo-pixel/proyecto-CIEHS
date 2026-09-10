@@ -29,7 +29,7 @@ nombran.
 
 | Archivo | Qué es | Dónde se usa |
 |---|---|---|
-| `escudo-ie80033.png` | Escudo oficial de la I.E. N.° 80033, fondo transparente | **Ya no se usa en el portal** — se conserva para documentos del colegio |
+| `escudo-ie80033.png` | Escudo oficial de la I.E. N.° 80033, fondo transparente | **Ya no se usa en el portal** — se conserva para documentos de la institución educativa |
 | `sello-accion-clima.png` | Sello «Yo me sumo a la Acción por el Clima» | Reservado; hoy no aparece en el portal |
 | `mural-ciehs.jpg` | Mural completo, 1280 px | Sección Mural |
 | `icon-32/180/512.png` | Iconos derivados del **isotipo**, generados por `tools/generar-marca.js` | Pestaña del navegador, pantalla de inicio |
@@ -79,18 +79,18 @@ del laboratorio, y el QR 02 del laboratorio físico lleva al mismo sitio.
 
 ## 2 ter. El logo del CIEHS
 
-Hasta 2026-09-09 el proyecto no tenía marca propia: usaba el escudo del colegio
+Hasta 2026-09-09 el proyecto no tenía marca propia: usaba el escudo de la institución educativa
 para todo. Son dos cosas distintas y conviene no confundirlas.
 
 > **El escudo es de la institución. El logo es del proyecto.**
 
-Desde 2026-09-09 el portal —que es una pieza del proyecto, no del colegio— usa
+Desde 2026-09-09 el portal —que es una pieza del proyecto, no de la institución educativa— usa
 **solo el isotipo del CIEHS** en cabecera, hero, pie, favicons, iconos de la PWA
 y tarjeta al compartir. La institución sigue presente, pero **por escrito**:
 «Un proyecto de la I.E. N.° 80033 "José Olaya Balandra" · Huanchaco».
 
 Esto **no degrada al escudo**: en documentos, oficios y piezas oficiales del
-colegio el escudo manda y el logo del CIEHS no lo sustituye. Lo que cambia es
+la institución educativa el escudo manda y el logo del CIEHS no lo sustituye. Lo que cambia es
 que el proyecto deja de tomar prestada una marca ajena para nombrarse a sí mismo.
 
 ### De dónde sale
@@ -405,7 +405,7 @@ debajo solo queda la galería de evidencias. Lo que había después se movió:
   coincidir.
 - El isotipo **no se recolorea, no se recorta y no se deforma**. Sobre fondo
   oscuro se usa `logo-ciehs-claro.svg`; el dibujo no cambia, solo el texto y el aro.
-- Si alguna pieza necesita el escudo del colegio (un oficio, una carátula), se
+- Si alguna pieza necesita el escudo de la institución educativa (un oficio, una carátula), se
   usa `escudo-ie80033.png` **tal cual**: no se recolorea, no se recorta y nunca se
   sustituye por una reinterpretación vectorial.
 
@@ -418,7 +418,7 @@ debajo solo queda la galería de evidencias. Lo que había después se movió:
       jerarquía entre texto corrido y metadato, así que la salida probablemente
       sea densificar la superficie de sección, no la tinta.
 - [ ] Conseguir el escudo de la I.E. en **vector** (SVG o AI) si la institución lo
-      tiene, para las piezas oficiales del colegio: el PNG actual procede de una
+      tiene, para las piezas oficiales de la institución educativa: el PNG actual procede de una
       ilustración rasterizada y a tamaños grandes pierde definición.
 - [ ] Fotografías reales del laboratorio y de los quince módulos DWC, sujetas al
       protocolo de [[CIEHS-Privacidad-Menores]].

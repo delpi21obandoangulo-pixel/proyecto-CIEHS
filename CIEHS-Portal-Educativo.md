@@ -166,8 +166,16 @@ Los valores de respaldo del HTML se mantienen sincronizados con los de la base
 - **Lema:** «Dios, Patria y Cultura» · **Eje:** Reto Acción por el Clima (ODS 13)
 - **Enfoque rector:** Habilidades de Pensamiento de Orden Superior (HPOS) y
   competencias científicas del CNEB — el estudiante es el protagonista.
-- **Problemática de partida:** escasez y desperdicio de agua · suelos de baja
-  fertilidad · alimentación poco saludable · manejo inadecuado de residuos plásticos
+- **Problemática de partida:** identificada **dentro de la I.E. N.° 80033**, en su
+  población escolar y sus agentes educativos, no en un diagnóstico territorial
+  ajeno. Seis situaciones: la indagación se enseña pero apenas se practica · la
+  institución no dispone de un espacio de cultivo viable · bajo consumo de
+  hortalizas frescas en la población escolar · residuos plásticos propios sin ruta
+  de reaprovechamiento · docentes sin espacio propio de experimentación · familias
+  que conocen la nota, no el proceso. El contexto costero de Huanchaco es la
+  **condición** en la que hay que resolverlo, no el origen del problema.
+- **Léxico institucional:** en todo el portal y en estas notas se dice
+  **«institución educativa»**, nunca «colegio».
 - **Cifras:** 280 estudiantes de 1.° a 5.° de secundaria · 10 equipos de gestión ·
   15 módulos activos · 20 kg de cosecha acumulada · 90 % de ahorro hídrico
 - **Módulos:** `MOD-DWC-01` … `MOD-DWC-15`, **todos raíz flotante (DWC)** y

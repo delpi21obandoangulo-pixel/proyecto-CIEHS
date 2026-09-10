@@ -4,7 +4,7 @@
     "archivo": "voz/inicial-1-p.mp3",
     "nivel": "Inicial",
     "categoria": "ciencia",
-    "texto": "¿Cómo se llama el laboratorio de plantas de nuestro colegio? Opción 1: La biblioteca. Opción 2: CIEHS. Opción 3: El patio."
+    "texto": "¿Cómo se llama el laboratorio de plantas de nuestra institución educativa? Opción 1: La biblioteca. Opción 2: CIEHS. Opción 3: El patio."
   },
   {
     "clave": "inicial-2-p",
@@ -207,7 +207,7 @@
     "archivo": "voz/primaria-6-p.mp3",
     "nivel": "Primaria",
     "categoria": "ciencia",
-    "texto": "En un gráfico de barras del crecimiento semanal, ¿qué va normalmente en el eje horizontal? Opción 1: El nombre del colegio. Opción 2: Los centímetros. Opción 3: Las semanas."
+    "texto": "En un gráfico de barras del crecimiento semanal, ¿qué va normalmente en el eje horizontal? Opción 1: El nombre de la institución educativa. Opción 2: Los centímetros. Opción 3: Las semanas."
   },
   {
     "clave": "primaria-7-p",
@@ -270,7 +270,7 @@
     "archivo": "voz/primaria-15-p.mp3",
     "nivel": "Primaria",
     "categoria": "clima",
-    "texto": "¿Cuál de estas acciones reduce la basura del colegio? Opción 1: Separar los residuos para reciclarlos. Opción 2: Quemar los papeles. Opción 3: Mezclarlo todo en un solo tacho."
+    "texto": "¿Cuál de estas acciones reduce la basura de la institución educativa? Opción 1: Separar los residuos para reciclarlos. Opción 2: Quemar los papeles. Opción 3: Mezclarlo todo en un solo tacho."
   },
   {
     "clave": "primaria-16-p",

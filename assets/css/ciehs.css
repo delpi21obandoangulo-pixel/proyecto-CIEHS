@@ -1747,11 +1747,24 @@
   .problema-card.suelo .problema-num{ color:var(--sun-500); }
   .problema-card.alimentacion .problema-num{ color:var(--leaf-300); }
   .problema-card.residuos .problema-num{ color:#6d28d9; }
+  /* Las dos situaciones nuevas miran a los AGENTES educativos, no al entorno
+     fisico: docentes y familias. Se les da tinta propia para que se lean como
+     otra familia de problema dentro de la misma rejilla. */
+  .problema-card.docentes .problema-num{ color:var(--azure-600); }
+  .problema-card.familias .problema-num{ color:#a21caf; }
   .problema-card h4{ margin-top:8px; font-size:16.5px; font-weight:600; }
   .problema-card p{ margin-top:10px; font-size:14px; line-height:1.65; color:var(--ink-soft); }
   .problema-resp{
     display:block; margin-top:14px; padding-top:12px; border-top:1px dashed var(--line-strong);
     font-size:13px; line-height:1.55; color:var(--leaf-300); font-weight:600;
+  }
+  /* Nota de procedencia de la evidencia. Va en gris y en cuerpo pequeño a
+     proposito: es una advertencia de rigor, no una de las seis situaciones. */
+  .problema-nota{
+    margin-top:22px; padding:16px 18px;
+    background:var(--veil); border:1px dashed var(--line-strong);
+    border-radius:var(--radius-s);
+    font-size:13.5px; line-height:1.65; color:var(--ink-soft); max-width:80ch;
   }
 
   /* ------------------------------ HPOS --------------------------------- */

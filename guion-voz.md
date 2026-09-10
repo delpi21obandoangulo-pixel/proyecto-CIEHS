@@ -3,7 +3,7 @@
 Generado por `tools/guion-voz.js` a partir del banco real de preguntas.
 No editar a mano: si el banco cambia, vuelve a ejecutarlo.
 
-- **72 pistas** · **10,794 caracteres** en total.
+- **72 pistas** · **10,840 caracteres** en total.
 - Nombra cada archivo **exactamente** como dice su fila.
 - Súbelos desde *Administración → Aportes*, tipo **Audio**, y apruébalos.
 
@@ -19,7 +19,7 @@ No editar a mano: si el banco cambia, vuelve a ejecutarlo.
 
 ### `voz/inicial-1-p.mp3`
 
-¿Cómo se llama el laboratorio de plantas de nuestro colegio? Opción 1: La biblioteca. Opción 2: CIEHS. Opción 3: El patio.
+¿Cómo se llama el laboratorio de plantas de nuestra institución educativa? Opción 1: La biblioteca. Opción 2: CIEHS. Opción 3: El patio.
 
 ### `voz/inicial-2-p.mp3`
 
@@ -140,7 +140,7 @@ El ODS 13 de la Agenda 2030 trata sobre… Opción 1: Acción por el Clima. Opci
 
 ### `voz/primaria-6-p.mp3`
 
-En un gráfico de barras del crecimiento semanal, ¿qué va normalmente en el eje horizontal? Opción 1: El nombre del colegio. Opción 2: Los centímetros. Opción 3: Las semanas.
+En un gráfico de barras del crecimiento semanal, ¿qué va normalmente en el eje horizontal? Opción 1: El nombre de la institución educativa. Opción 2: Los centímetros. Opción 3: Las semanas.
 
 ### `voz/primaria-7-p.mp3`
 
@@ -176,7 +176,7 @@ La biomasa fresca de una planta se mide con… Opción 1: Una regla, en centíme
 
 ### `voz/primaria-15-p.mp3`
 
-¿Cuál de estas acciones reduce la basura del colegio? Opción 1: Separar los residuos para reciclarlos. Opción 2: Quemar los papeles. Opción 3: Mezclarlo todo en un solo tacho.
+¿Cuál de estas acciones reduce la basura de la institución educativa? Opción 1: Separar los residuos para reciclarlos. Opción 2: Quemar los papeles. Opción 3: Mezclarlo todo en un solo tacho.
 
 ### `voz/primaria-16-p.mp3`
 

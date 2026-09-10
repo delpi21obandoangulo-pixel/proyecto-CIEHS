@@ -62,7 +62,7 @@ Velocidad `0.95` y tono `1.08`: algo más lenta y algo más aguda es lo que sepa
 > `(?<=...)` es un **error de sintaxis** en Safari anterior a la 16.4, y un
 > error de sintaxis no rompe solo la voz: impide que se evalúe
 > `ciehs-app.js` entero y tumba el portal completo en los iPad viejos de un
-> colegio. Se parte con un bucle, que además respeta los decimales: «El pH es
+> institución educativa. Se parte con un bucle, que además respeta los decimales: «El pH es
 > 6.5.» no se corta por la mitad.
 
 ---
@@ -164,7 +164,7 @@ actividad suelta de química, no parte de esta investigación.
 Dos razones que apuntan al mismo sitio:
 
 - **Datos móviles.** Un simulador pesa varios megas y quien abre esto suele
-  estar con el móvil en un colegio.
+  estar con el móvil en una institución educativa.
 - **Privacidad.** Hasta que alguien pulsa, el portal **no contacta con ningún
   servidor ajeno**. [[CIEHS-Privacidad-Menores]] enumera a los terceros uno por
   uno, y este es el segundo después de Google Fonts.
@@ -172,7 +172,7 @@ Dos razones que apuntan al mismo sitio:
 El iframe va con `referrerpolicy="no-referrer"` y sin permisos que no necesita:
 un simulador no tiene por qué pedir cámara, micrófono ni ubicación.
 
-Si PhET no responde en 15 s —hay colegios que filtran dominios— se dice con esas
+Si PhET no responde en 15 s —hay instituciones educativas que filtran dominios— se dice con esas
 palabras y se ofrece reintentar. Un marco en blanco parecería un fallo del
 portal.
 

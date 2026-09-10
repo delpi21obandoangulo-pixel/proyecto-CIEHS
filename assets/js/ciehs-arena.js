@@ -25,7 +25,7 @@
 
   var CLAVE = 'ciehs_arena_v1';
   // Los tres primeros son los niveles de la institución y se juegan sin límite.
-  // Los dos últimos son EXPEDICIONES: el colegio llega hasta secundaria, así que
+  // Los dos ultimos son EXPEDICIONES: la institucion educativa llega hasta
   // se plantean como un desafío excepcional, no como un curso más. Una tirada al
   // día, una sola vida y puntuación doble.
   var NIVELES = [
@@ -1227,7 +1227,7 @@
       + '<p class="ar-menu-lede">Ocho retos por partida, tres vidas y tiempo contado. Cada reto abre una ambientación distinta y alterna entre opciones, verdadero o falso, escucha, ordenar, ajustar valores y escribir.</p>'
       + '<div class="ar-niveles">' + basicos.map(tarjeta).join('') + '</div>'
       + '<div class="ar-exped-sep"><span>Expediciones</span></div>'
-      + '<p class="ar-exped-nota">El colegio llega hasta secundaria. Estas dos van más allá: <b>una sola tirada al día</b>, <b>una vida</b> y <b>puntos dobles</b>. Se abren cuando demuestras nivel en la etapa anterior.</p>'
+      + '<p class="ar-exped-nota">La institución educativa llega hasta secundaria. Estas dos van más allá: <b>una sola tirada al día</b>, <b>una vida</b> y <b>puntos dobles</b>. Se abren cuando demuestras nivel en la etapa anterior.</p>'
       + '<div class="ar-niveles">' + expedic.map(function(l,i){ return tarjeta(l, i + basicos.length); }).join('') + '</div>'
       + '<p class="ar-menu-pie">Progreso total: ' + resueltos + ' de ' + totalRetos + ' retos resueltos alguna vez.</p>'
       + '</div>';

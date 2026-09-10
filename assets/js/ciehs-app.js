@@ -2189,7 +2189,7 @@
 
     /* Los doce listados del panel usan los mismos tres estados que el portal
        publico, y por las mismas razones. Aqui pesan incluso mas: quien esta
-       delante es el equipo registrando datos con la conexion del colegio, y si
+       delante es el equipo registrando datos con la conexion de la institucion, y si
        la lista falla necesita poder reintentar sin recargar la pagina entera y
        perder lo que tuviera a medio escribir en el formulario de al lado.
        El boton llama a cargar(), no a refrescar(): solo recarga ESTA lista. */
@@ -5065,7 +5065,7 @@
   // Se parte por frases SIN lookbehind. No es purismo: `(?<=...)` es un error
   // de SINTAXIS en Safari anterior a la 16.4, y un error de sintaxis no rompe
   // solo la voz — impide que se evalúe este archivo entero y tumba el portal
-  // completo en los iPad viejos de un colegio.
+  // completo en los iPad viejos de una institucion educativa.
   function frasear(texto){
     var limpio = String(texto || '').replace(/\s+/g, ' ').trim();
     if(!limpio) return [];
@@ -5214,7 +5214,7 @@
 
    Los simuladores se cargan BAJO DEMANDA por dos razones que apuntan al mismo
    sitio: pesan varios megas —y quien abre esto suele estar con datos móviles de
-   un colegio— y, hasta que alguien pulsa, el portal no contacta con ningún
+   una institucion educativa— y, hasta que alguien pulsa, el portal no contacta con ningún
    servidor ajeno. La privacidad aquí no es un extra: la nota de privacidad del
    CIEHS enumera a los terceros uno por uno, y este es el segundo.
    =========================================================================== */
@@ -5259,14 +5259,14 @@
           btn.textContent = 'Cerrar simulador';
           marco.classList.add('is-abierto');
         });
-        // Si PhET no responde (aula sin salida a internet, filtro del colegio),
+        // Si PhET no responde (aula sin salida a internet, filtro de la institucion),
         // hay que decirlo: un marco en blanco parece un fallo del portal.
         var aviso = setTimeout(function(){
           if(!marco.classList.contains('is-abierto')){
             btn.disabled = false;
             btn.textContent = 'Reintentar';
             marco.innerHTML = '<p class="phet-fallo">No se pudo cargar el simulador. '
-              + 'Puede que la red del colegio bloquee <span class="mono">phet.colorado.edu</span>, '
+              + 'Puede que la red de la institución educativa bloquee <span class="mono">phet.colorado.edu</span>, '
               + 'o que la conexión se haya caído.</p>';
           }
         }, 15000);
