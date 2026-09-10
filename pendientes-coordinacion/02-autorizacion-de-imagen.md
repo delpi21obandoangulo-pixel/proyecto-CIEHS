@@ -1,12 +1,13 @@
 ---
-title: CIEHS · Ficha de autorización de imagen
-aliases: [Autorización de imagen CIEHS, consent_ref, Custodia de autorizaciones]
-tags: [ciehs, privacidad, menores, legal, ley-29733, autorizacion]
+title: 2 · Autorización de imagen de menores
+aliases: [Ficha de autorizacion CIEHS, consent_ref, Custodia de autorizaciones]
+tags: [ciehs, pendiente-coordinacion, privacidad, menores, legal, ley-29733]
+depende-de: revisión de Dirección y firmas en papel
 estado: redactada · pendiente de confirmar quién custodia
 actualizado: 2026-09-10
 ---
 
-# CIEHS · Ficha de autorización de imagen
+# 2 · Autorización de imagen de menores
 
 El documento que firma el apoderado, dónde se guarda y cómo se enlaza con cada
 fotografía publicada. Cierra dos pendientes de [[CIEHS-Privacidad-Menores]].
@@ -186,3 +187,4 @@ Lugar y fecha: Huanchaco, **[día]** de **[mes]** de **[año]**
 - [[CIEHS-Backend-Supabase]] — la columna `consent_ref` de `ciehs.evidencias`.
 - [[CIEHS-Portal-Educativo]] — dónde se cargan las evidencias.
 - [[CIEHS]] — índice general.
+- [[pendientes-coordinacion/LEEME|LEEME]] — índice de esta carpeta.

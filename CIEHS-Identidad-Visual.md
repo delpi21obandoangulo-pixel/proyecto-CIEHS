@@ -3,7 +3,7 @@ title: CIEHS · Identidad visual
 aliases: [Escudo CIEHS, Marca CIEHS, Paleta CIEHS, Mural CIEHS]
 tags: [ciehs, identidad, marca, diseno, mural]
 estado: isotipo del CIEHS como marca del portal · plano ambiental + vidrio
-actualizado: 2026-09-09
+actualizado: 2026-09-10
 ---
 
 # CIEHS · Identidad visual
@@ -25,63 +25,13 @@ nombran.
 
 ---
 
-## 1 bis. Encargo abierto: el panel «¿Qué buscamos con este proyecto?»
+## 1 bis. El panel del mural está desactualizado
 
-> [!warning] La ilustración y el portal dicen cosas distintas
-> El 2026-09-09 se corrigió la redacción de **qué busca el proyecto**. El portal
-> ya dice la nueva; el panel **pintado dentro** de `assets/img/mural-ciehs.jpg`
-> —y por tanto el mural físico— sigue diciendo la anterior. Mientras eso siga
-> así, quien mire la página del mural lee dos versiones a la vez.
-
-### El texto que debe decir
-
-> **¿QUÉ BUSCAMOS CON ESTE PROYECTO?**
->
-> Que los estudiantes sean protagonistas de su aprendizaje, desarrollando
-> competencias científicas al realizar investigaciones, innovando soluciones
-> sostenibles y preparándose para enfrentar el cambio climático y construir un
-> futuro mejor.
-
-### El texto que dice hoy (para reconocerlo)
-
-> Producir alimentos saludables de manera sostenible con hidroponía, cuidando el
-> agua, reduciendo residuos y mitigando el cambio climático.
-
-### Qué NO puede cambiar
-
-De esto salen el logo, el escudo y los cuatro puntos interactivos del portal.
-Una ilustración «parecida» obliga a rehacer las tres cosas.
-
-1. **La composición entera**, elemento por elemento y en la misma posición: el
-   escudo de la I.E. al centro, el reto climático en cinta azul arriba, la
-   rejilla de ODS a la derecha con el 13 destacado, el logo CIEHS a la
-   izquierda, el caballito de totora y el pingüino de Humboldt abajo a la
-   izquierda, el módulo hidropónico con lechugas al centro-abajo, los dos
-   estudiantes a la derecha, el cartel «Cultivamos Ciencia, Cosechamos Futuro».
-2. **Las proporciones**: 1280 × 853 px (3:2). El portal recorta con
-   `object-fit:cover` y los cuatro puntos se posicionan en **porcentaje**; si
-   cambia el encuadre, hay que recolocarlos en `index.html`.
-3. **Las cuatro zonas que apuntan los puntos** — módulo hidropónico (1), raíces
-   en la mano del estudiante (2), rejilla de ODS (3) y cinta del escudo (4).
-4. **El estilo** del panel: caja blanca redondeada, ícono de diana a la
-   izquierda, título en azul y mayúsculas, cuerpo en dos o tres líneas.
-
-### Dos caminos
-
-| Camino | Qué implica | Riesgo |
-|---|---|---|
-| **A · Regenerar la ilustración completa** con la herramienta que la produjo | Un solo archivo nuevo, coherente | Alto: si la composición se mueve, hay que rehacer logo, escudo y las cuatro posiciones de los puntos |
-| **B · Repintar solo el panel** sobre el JPG actual, en un editor de imagen | Quirúrgico; todo lo demás queda intacto por definición | Bajo, pero exige acertar con la tipografía del panel |
-
-**Recomendado: B**, salvo que la herramienta original permita regenerar con la
-misma semilla. Y en cualquiera de los dos, **el mural físico hay que repintarlo
-igual**: la ilustración es su copia, no al revés.
-
-### Al cerrarlo
-
-Actualizar `assets/img/mural-ciehs.jpg`, comprobar en
-`/#/mural` que los cuatro puntos siguen cayendo donde deben, y marcar el
-pendiente en [[CIEHS-Metodologia-Pedagogica]].
+El panel «¿Qué buscamos con este proyecto?» **pintado dentro** de
+`assets/img/mural-ciehs.jpg` conserva la redacción anterior a 2026-09-09; el
+portal ya dice la nueva. El encargo completo —texto nuevo, texto viejo, qué no
+puede moverse y los dos caminos posibles— está en
+[[pendientes-coordinacion/01-mural-panel-que-buscamos|01 · Mural]].
 
 ---
 
@@ -230,7 +180,7 @@ un elemento, más cerca del blanco puro y más sombra lleva debajo.
 |---|---|---|
 | `--ink` | `#0d1117` | Titulares y cifras |
 | `--ink-soft` | `#47505f` | Texto corrido |
-| `--ink-mute` | `#66707f` | Etiquetas, unidades, metadatos (era `#8b95a7`; no llegaba a AA) |
+| `--ink-mute` | `#5c6675` | Etiquetas, unidades, metadatos (dos escalones: `#8b95a7` → `#66707f` → `#5c6675`, ver §3 quater) |
 | `--leaf-500` | `#059669` | Verde institucional, degradados y barras |
 | `--leaf-600` | `#065f46` | Verde más oscuro |
 | `--leaf-300` | `#045c40` | **Acento de texto** — ver la nota de abajo (era `#047857`) |
@@ -355,16 +305,46 @@ fino y sobre la sección menos densa —el peor caso posible—:
 | `--leaf-300` | 4.9:1 | ✅ |
 | `--azure-300` | 5.1:1 | ✅ |
 | `--sun-300` | 5.3:1 | ✅ |
-| `--ink-mute` | 3.0:1 | ⚠️ dentro de una tarjeta, 4.7:1 |
+| `--ink-mute` | 4.6:1 | ✅ desde 2026-09-10 — ver abajo |
 
 Los tres tonos `-300` bajaron un escalón (`#047857`→`#045c40`, `#0369a1`→`#03527d`,
 `#92400e`→`#7c3606`) precisamente por esta medición: son la tinta de los
 antetítulos, que van directos sobre la superficie de sección. Con los valores
 viejos, el 94 % del fondo los dejaba por debajo de 4.5:1.
 
-`--ink-mute` queda como **pendiente conocido**: ya estaba en 3.0:1 sobre blanco
-pleno antes de que existiera este plano, así que no es una regresión, pero sigue
-sin llegar a AA cuando cae fuera de una tarjeta.
+### `--ink-mute`: cómo se cerró (2026-09-10)
+
+La medición anterior daba 3.0:1 y quedó registrada como pendiente conocido. Al
+ir a cerrarlo, la primera sorpresa fue que **3.0:1 era pesimista**: suponía la
+tinta directamente sobre el peor píxel de la fotografía, sin contar el velo de
+sección que en la práctica siempre hay debajo.
+
+Se volvió a medir de otra forma: recorriendo **los 389 elementos del portal**
+que usan `--ink-mute`, componiendo para cada uno **todos los fondos de sus
+ancestros** sobre ese peor píxel, y calculando el contraste real de cada uno.
+
+| | Antes (`#66707f`) | Ahora (`#5c6675`) |
+|---|---|---|
+| Peor caso real | **3.98:1** ❌ | **4.61:1** ✅ |
+| Dónde | Migas de pan, `th` de tabla y las notas al pie de sección | El mismo sitio |
+| Elementos por debajo de 4.5:1 | 17 clases | **ninguna** |
+| Escalón frente a `--ink-soft` | 1.62 | 1.40 |
+
+**El precio está en la última fila.** La nota anticipaba que oscurecer más la
+tinta empezaría a competir con `--ink-soft` y a borrar la jerarquía entre
+texto corrido y metadato, y así es: el escalón se estrecha de 1.62 a 1.40. Sigue
+siendo un escalón perceptible —el metadato se lee como metadato— pero es el
+margen que queda.
+
+La alternativa que la nota proponía, **densificar la superficie de sección en
+lugar de la tinta**, se descartó al ver dónde fallaba de verdad: no eran solo
+los bloques de nota, que sí admiten una superficie propia, sino también las
+migas de pan y las cabeceras de tabla. Darles fondo a esas habría sido rediseñar
+elementos que funcionan, y densificar la sección entera hasta RGB 247 —lo que
+haría falta— borraría el plano ambiental. Un token contra dos rediseños.
+
+> Si se vuelve a tocar la densidad de sección, esta medición sirve igual:
+> el script recorre el DOM y no depende de qué valor tenga el token.
 
 > Si se toca `contrast()`, `brightness()`, el velo o la densidad de las secciones,
 > **hay que volver a medir**. Son números que se sostienen entre sí.
@@ -473,10 +453,9 @@ debajo solo queda la galería de evidencias. Lo que había después se movió:
 
 ## 5. Pendientes
 
-- [ ] Subir `--ink-mute` a AA (4.5:1) cuando cae fuera de una tarjeta. Hoy está
-      en 3.0:1; oscurecerlo más empieza a competir con `--ink-soft` y a borrar la
-      jerarquía entre texto corrido y metadato, así que la salida probablemente
-      sea densificar la superficie de sección, no la tinta.
+- [x] Subir `--ink-mute` a AA (4.5:1) cuando cae fuera de una tarjeta. Hecho el
+      2026-09-10 con `#5c6675`: peor caso real 4.61:1 y ningún uso por debajo
+      de 4.5:1 en todo el portal. Ver §3 quater.
 - [ ] Conseguir el escudo de la I.E. en **vector** (SVG o AI) si la institución lo
       tiene, para las piezas oficiales de la institución educativa: el PNG actual procede de una
       ilustración rasterizada y a tamaños grandes pierde definición.

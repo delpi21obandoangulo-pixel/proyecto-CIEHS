@@ -31,12 +31,17 @@
     /* ---- tinta ---- */
     --ink:        #0d1117;   /* titulares y cifras */
     --ink-soft:   #47505f;   /* texto corrido */
-    /* Se oscurece de #8b95a7 a #66707f. Aquel gris nunca llego a AA: sobre
-       blanco pleno daba 3.0:1, por debajo del 4.5 que pide el texto pequeno, y
-       con el plano ambiental detras habria bajado aun mas. Con #66707f la misma
-       etiqueta pasa a 4.7:1 dentro de una tarjeta —ya cumple— y sobre la
-       superficie de seccion se mantiene en el 3.0 que tenia antes. */
-    --ink-mute:   #66707f;   /* etiquetas, unidades, metadatos */
+    /* Dos escalones, y el segundo cerro el pendiente de AA.
+       #8b95a7 nunca llego: 3.0:1 sobre blanco pleno. #66707f lo dejo en 4.7:1
+       dentro de una tarjeta pero en 3.98:1 en el peor caso real —el texto que
+       cae directo sobre la superficie de seccion, con el plano ambiental
+       detras—, medido componiendo todos los fondos ancestros sobre el pixel mas
+       oscuro de la fotografia. #5c6675 sube ese peor caso a 4.61:1, y con el
+       ya no queda ni un uso de --ink-mute por debajo de 4.5:1 en todo el portal.
+       El precio: el escalon frente a --ink-soft se estrecha de 1.62 a 1.40, que
+       es lo que anticipaba la nota de identidad. Sigue siendo un escalon
+       legible, y era eso o densificar las secciones hasta borrar el plano. */
+    --ink-mute:   #5c6675;   /* etiquetas, unidades, metadatos */
     --line:       rgba(13,17,23,0.07);
     --line-strong:rgba(13,17,23,0.13);
 

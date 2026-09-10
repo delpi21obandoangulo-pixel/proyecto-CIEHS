@@ -32,7 +32,7 @@ está cada cosa.
 | [[CIEHS-Portal-Educativo]] | Cómo está construido: rutas, QR, alojamiento, cacheo, mejora progresiva |
 | [[CIEHS-Backend-Supabase]] | Dónde viven los datos: esquema `ciehs`, tablas, RLS, capa de datos |
 | [[CIEHS-Auditoria-Seguridad-Auth]] | Qué se rompió, qué se arregló y qué sigue abierto |
-| [[CIEHS-Ficha-Autorizacion-Imagen]] | Autorización de imagen de menores: documento, custodia y `consent_ref` |
+| [[pendientes-coordinacion/LEEME|pendientes-coordinacion/]] | Los seis encargos que no se pueden resolver desde el código |
 | [[CIEHS-Metodologia-Pedagogica]] | Enfoque rector (CNEB · DUA) con HPOS transversal, los dos ejes movilizadores y la ruta de 9 pasos |
 | [[CIEHS-Identidad-Visual]] | Escudo, sello, mural, paleta e iconos |
 | [[CIEHS-Privacidad-Menores]] | Qué se publica de los estudiantes y qué nunca |

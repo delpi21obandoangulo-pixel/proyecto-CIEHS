@@ -207,7 +207,7 @@ carpeta está vacía», y la primera ofrece deshacer el filtro.
 
 ## 9. Pendientes
 
-- [ ] `--ink-mute` sigue en 3.0:1 cuando cae fuera de una tarjeta (ver
+- [x] `--ink-mute` llegó a AA el 2026-09-10 (`#5c6675`, peor caso 4.61:1) (ver
       [[CIEHS-Identidad-Visual]]). Afecta a los metadatos dentro de los estados.
 - [ ] Los estados están verificados en navegador para el portal público; los 12
       listados del panel solo de forma estática, porque probarlos pide el código

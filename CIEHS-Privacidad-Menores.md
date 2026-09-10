@@ -151,7 +151,7 @@ Tres condiciones que la hacen válida y no meramente formal:
    una presión encubierta.
 
 El documento que cumple las tres, con su procedimiento de custodia y el formato
-del código `consent_ref`, está en [[CIEHS-Ficha-Autorizacion-Imagen]].
+del código `consent_ref`, está en [[pendientes-coordinacion/02-autorizacion-de-imagen|02 · Autorización de imagen]].
 
 ---
 
@@ -213,12 +213,12 @@ obstáculo.
       obtenida el 2026-09-09; era la misma afirmación que esa corrección
       desmiente, así que vuelve a estar abierto.
 - [x] Redactar la **ficha de autorización de imagen** para apoderados. Hecho:
-      [[CIEHS-Ficha-Autorizacion-Imagen]] §4, lista para imprimir. Falta que la
-      Dirección la revise y que se distribuya.
+      [[pendientes-coordinacion/02-autorizacion-de-imagen|02 · Autorización de imagen]] §4, lista para imprimir. Falta que la Dirección la revise y que se
+      distribuya.
 - [ ] Definir **quién archiva y custodia** las autorizaciones firmadas. La
-      propuesta operativa está escrita en [[CIEHS-Ficha-Autorizacion-Imagen]]
-      §1 —original en papel bajo llave, índice local que nunca entra al
-      repositorio ni a la base—, pero **falta que el coordinador la confirme**.
+      propuesta operativa está escrita en [[pendientes-coordinacion/02-autorizacion-de-imagen|02 · Autorización de imagen]] §1 —original en papel bajo
+      llave, índice local que nunca entra al repositorio ni a la base—, pero
+      **falta que el coordinador la confirme**.
       Hasta entonces `consent_ref` no tiene destino verificable y no debe
       publicarse ninguna fotografía con rostro sin tapar.
 - [x] Procedimiento para **retirar metadatos** de las fotografías antes de
@@ -233,8 +233,8 @@ obstáculo.
 ## Enlaces
 
 - [[CIEHS]] — índice general.
-- [[CIEHS-Ficha-Autorizacion-Imagen]] — el documento que firma el apoderado,
-  dónde se custodia y cómo se enlaza con cada evidencia.
+- [[pendientes-coordinacion/02-autorizacion-de-imagen|02 · Autorización de imagen]] — el documento que firma el apoderado, dónde se custodia y cómo se
+  enlaza con cada evidencia.
 - [[CIEHS-Auditoria-Seguridad-Auth]] — riesgos y hallazgos de seguridad.
 - [[CIEHS-Identidad-Visual]] — qué imágenes existen hoy en el portal.
 - [[CIEHS-Arena-Juego]] — qué guarda el juego en el navegador.

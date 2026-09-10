@@ -363,6 +363,8 @@ indagación de una observación.
       Condiciona todas las demás cifras.
 - [ ] **Verificar la práctica de reposición**: comprobar si se rellena hasta el
       borde. Si es así, se está anulando la cámara de aire.
+      → los tres, con procedimiento, en
+      [[pendientes-coordinacion/05-datos-del-laboratorio|05 · Datos del laboratorio]].
 - [ ] Verificar una a una las referencias del §9 antes de citarlas formalmente.
 - [ ] Llevar las tablas del §5 a las fichas de cultivo del portal, que hoy no
       muestran ningún parámetro agronómico.

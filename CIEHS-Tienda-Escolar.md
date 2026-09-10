@@ -154,6 +154,8 @@ pública** sobre `orders` ni sobre sus líneas.
       nombre de archivo en el catálogo).
 - [ ] Clasificar los egresos ya registrados que quedaron sin categoría.
 - [ ] Aviso al coordinador cuando entra una reserva; hoy hay que mirar el panel.
+      → los cuatro, con lo que hay que decidir antes, en
+      [[pendientes-coordinacion/06-tienda-precios-y-catalogo|06 · Tienda]].
 
 ---
 

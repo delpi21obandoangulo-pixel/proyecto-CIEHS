@@ -210,7 +210,8 @@ Los valores de respaldo del HTML se mantienen sincronizados con los de la base
 - [ ] **Instalar la Vercel GitHub App** desde el navegador para habilitar el
       despliegue automático por push (§4). El CLI no puede hacerlo: es un flujo
       OAuth interactivo. Todo lo demás ya está listo — enlace correcto, rama
-      `master` y repositorio sincronizado con producción.
+      `master` y repositorio sincronizado con producción. Pasos en
+      [[pendientes-coordinacion/03-vercel-github-app|03 · Vercel GitHub App]].
 - [x] Banco de preguntas ampliado a 72, y Arena con 150 retos → [[CIEHS-Arena-Juego]].
 
 ---
