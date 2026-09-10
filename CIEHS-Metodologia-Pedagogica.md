@@ -1,12 +1,12 @@
 ---
 title: CIEHS · Metodología pedagógica
 aliases: [Ruta CIEHS, Ruta de 9 pasos, Articulación CNEB CIEHS]
-tags: [ciehs, pedagogia, cneb, ods13, eds-unesco, hidroponia]
+tags: [ciehs, pedagogia, cneb, hpos, dua, ods13, eds-unesco, hidroponia]
 institucion: I.E. N.° 80033 “José Olaya Balandra” — Huanchaco, La Libertad, Perú
 area: Ciencia y Tecnología (CyT)
 estado: implementado
 implementado-en: index.html · sección `metodologia` (estática)
-actualizado: 2026-09-04
+actualizado: 2026-09-09
 ---
 
 # CIEHS · Metodología pedagógica
@@ -27,7 +27,53 @@ Educación Básica.
 
 ---
 
-## 1. La ruta de 9 pasos
+## 1. Enfoque pedagógico rector: HPOS + CNEB + DUA
+
+El enfoque rector no es un solo marco, sino tres que trabajan juntos. Ninguno
+basta por sí mismo.
+
+| Marco | Qué aporta | Dónde se ve |
+|---|---|---|
+| **HPOS** — Habilidades de Pensamiento de Orden Superior | El **nivel de exigencia**: el estudiante analiza, evalúa y crea, no solo recuerda y comprende | La ruta de 9 pasos y las tarjetas *Analizar · Evaluar · Crear* |
+| **CNEB** — competencias del área de Ciencia y Tecnología | El **marco curricular** y los criterios con los que se evalúa | La articulación por niveles (§4) y la capacidad citada en cada paso |
+| **DUA** — Diseño Universal del Aprendizaje | El **acceso**: más de una vía para recibir, implicarse y demostrar lo aprendido, según las habilidades y el estilo de aprendizaje de cada estudiante | [[CIEHS-Voz-DUA]] y la sección `juega` del portal |
+
+El detalle de cómo se aplica el DUA vía por vía —representación, implicación,
+acción y expresión— vive en [[CIEHS-Voz-DUA]] y en el bloque desplegable de la
+sección `juega`. Aquí solo se registra que **es parte del enfoque rector**, no un
+añadido de accesibilidad puesto al final.
+
+---
+
+## 2. Los dos ejes movilizadores
+
+El eje movilizador no es solo el reto climático. Son dos, y se sostienen
+mutuamente.
+
+### Eje 1 · Reto Acción por el Clima
+Da el **propósito**. Alineado al **ODS 13** de la Agenda 2030 (detalle en §5).
+Es la razón por la que vale la pena investigar.
+
+### Eje 2 · El CIEHS como estrategia para desarrollar competencias científicas
+Da el **método**. El laboratorio no es solo el escenario del reto: es en sí mismo
+una estrategia pedagógica.
+
+- **Investigación y trabajo en equipo.** Cada uno de los diez equipos de gestión
+  sostiene una parte del laboratorio y responde ante los demás. La competencia
+  científica se construye discutiendo con los pares datos tomados por uno mismo.
+- **Tareas en beneficio propio y de los demás.** Lo que se cultiva, se mide y se
+  vende sirve a quien lo hizo y a la comunidad educativa: la hortaliza que llega
+  a la mesa, el dato que alimenta la siguiente investigación, el ingreso que
+  sostiene al propio centro. El estudiante ve para qué sirve lo que hace.
+- **Una oportunidad de aprender de otra manera.** El CIEHS es una puerta distinta
+  a la del aula: hay quien entra midiendo, quien entra construyendo el módulo,
+  quien entra comunicando y quien entra vendiendo. En línea con el **DUA**, cada
+  estudiante encuentra una vía acorde a sus habilidades y a su estilo de
+  aprendizaje, y todas conducen a las mismas competencias.
+
+---
+
+## 3. La ruta de 9 pasos
 
 Nueve pasos agrupados en **tres fases**. La agrupación no es decorativa: marca
 el cambio de naturaleza del trabajo — primero se problematiza, luego se
@@ -62,15 +108,27 @@ experimenta, y por último se transforma el resultado en acción.
 
 ---
 
-## 2. Articulación con el CNEB
+## 4. Articulación con el CNEB
 
 Los tres niveles recorren **la misma ruta**, con el grado de autonomía y rigor
-que corresponde a su ciclo. Las competencias son las del área de **Ciencia y
-Tecnología**.
+que corresponde a su ciclo. Las competencias son las **tres** del área de
+**Ciencia y Tecnología**, con su enunciado oficial completo:
+
+1. **Indaga mediante métodos científicos** para construir conocimientos.
+2. **Explica el mundo físico** basándose en conocimientos sobre los seres vivos,
+   materia y energía, biodiversidad, Tierra y universo.
+3. **Diseña y construye soluciones tecnológicas** para resolver problemas de su
+   entorno.
+
+> [!tip] El enunciado se cita entero
+> Recortar el segundo a «seres vivos, materia y energía» deja fuera
+> *biodiversidad, Tierra y universo*, que es justamente la parte que ampara la
+> lectura territorial del CIEHS: salinización del suelo costero, estrés hídrico
+> y biodiversidad del litoral de Huanchaco.
 
 ### Inicial — Ciclo II (3 a 5 años)
 
-- **Competencia:** Indaga mediante métodos científicos para construir sus conocimientos.
+- **Competencia:** Indaga mediante métodos científicos para construir conocimientos.
 - **Capacidades:** Problematiza situaciones · Genera y registra datos o información.
 - **En el CIEHS:** exploración sensorial — tocar, oler y observar hojas, raíces y
   semillas antes de sembrar; observación guiada del ciclo de vida de la planta y
@@ -81,7 +139,8 @@ Tecnología**.
 ### Primaria — Ciclos III a V (1.° a 6.°)
 
 - **Competencias:** Indaga mediante métodos científicos · Explica el mundo físico
-  basándose en conocimientos sobre los seres vivos, materia y energía.
+  basándose en conocimientos sobre los seres vivos, materia y energía,
+  biodiversidad, Tierra y universo.
 - **Capacidades:** Diseña estrategias · Genera y registra datos · Analiza datos e información.
 - **En el CIEHS:** registro guiado — medición semanal de altura y número de hojas
   con regla y bitácora, traslado a un gráfico de barras, y comparación de
@@ -111,10 +170,11 @@ Tecnología**.
 
 ---
 
-## 3. Marco: ODS 13 y EDS de UNESCO
+## 5. Marco: ODS 13 y EDS de UNESCO
 
-El eje movilizador es el reto **Acción por el Clima**, alineado al **ODS 13** de la
-Agenda 2030. La indagación conecta además con ODS 2, 3, 4, 6, 12 y 15.
+El primero de los dos ejes movilizadores (§2) es el reto **Acción por el Clima**,
+alineado al **ODS 13** de la Agenda 2030. La indagación conecta además con
+ODS 2, 3, 4, 6, 12 y 15.
 
 La justificación es territorial y concreta: Huanchaco enfrenta **salinización de
 suelos** por cercanía al litoral y uso histórico de aguas subterráneas, y **estrés
@@ -130,7 +190,7 @@ infiltración ni evaporación en tierra.
 
 ---
 
-## 4. Decisiones técnicas vigentes
+## 6. Decisiones técnicas vigentes
 
 | Decisión | Estado | Motivo |
 |---|---|---|
@@ -138,7 +198,8 @@ infiltración ni evaporación en tierra.
 | Nomenclatura **`MOD-DWC-01`…`15`** | vigente | Identifica cada **módulo físico**: es lo que va rotulado y lo que apunta su código QR. «Raíz Flotante» es el nombre en castellano de la misma técnica (*Deep Water Culture*), no un sistema distinto |
 | **Un solo sistema activo: raíz flotante** | vigente | La maqueta anterior describía cuatro sistemas (NFT, DWC, sustrato inerte y vertical) que no existen en el laboratorio. El sustrato inerte se retiró por completo; NFT y vertical quedan marcados **estrictamente como proyecciones a futuro** |
 | **Sin bomba de aire**, dicho explícitamente | vigente | Los quince módulos oxigenan por difusión superficial y agitación manual. Ocultarlo haría irreproducible cualquier resultado publicado; declararlo lo convierte además en una variable investigable |
-| **HPOS como enfoque rector** | vigente | El objetivo no es el cultivo sino que el estudiante **analice, evalúe y cree**. El cultivo es el fenómeno de estudio; el docente pregunta y acompaña |
+| **HPOS + CNEB + DUA como enfoque rector** | vigente | El objetivo no es el cultivo sino que el estudiante **analice, evalúe y cree** (HPOS), con el marco curricular y los criterios del **CNEB**, y por más de una vía de entrada según sus habilidades y estilo de aprendizaje (**DUA**). El cultivo es el fenómeno de estudio; el docente pregunta y acompaña |
+| **Dos ejes movilizadores, no uno** | vigente | El reto climático da el propósito; el CIEHS como estrategia de desarrollo de competencias da el método. Declarar solo el primero dejaba fuera lo que más se nota en el día a día: investigar en equipo, con tareas útiles para uno mismo y para los demás |
 | Ruta como `<ol>`/`<li>` con contador CSS | vigente | La numeración es información, no adorno: un lector de pantalla anuncia la posición de cada paso. Un único contador sobre `.ruta` hace correr la cuenta 1→9 a través de las tres listas |
 | Rejilla de 3 fases, sin scroll horizontal | vigente | La tira anterior escondía media ruta en escritorio y obligaba a arrastrar en móvil. Con tres fases: o caben las tres o va una por fila — dos columnas dejaban la fase 3 huérfana |
 
@@ -156,7 +217,7 @@ Tesorería y registro de ventas · Inventario · Impacto ambiental · Coordinaci
 
 ---
 
-## 5. Puntos abiertos
+## 7. Puntos abiertos
 
 - [ ] Validar la correspondencia CNEB con el equipo docente y ajustarla a los
       desempeños por grado.
@@ -165,6 +226,8 @@ Tesorería y registro de ventas · Inventario · Impacto ambiental · Coordinaci
 - [ ] Vincular cada paso de la ruta con los recursos descargables
       correspondientes cuando existan los archivos.
 - [ ] Alinear los retos de [[CIEHS-Arena-Juego]] con los pasos de la ruta.
+- [ ] Cerrar la trazabilidad DUA: que cada paso de la ruta declare sus vías de
+      representación, implicación y expresión, como ya hace la sección `juega`.
 - [x] Escudo institucional en uso → [[CIEHS-Identidad-Visual]].
 
 ---
@@ -178,5 +241,7 @@ Tesorería y registro de ventas · Inventario · Impacto ambiental · Coordinaci
   navegador.
 - [[CIEHS-Auditoria-Seguridad-Auth]] — autenticación del panel, políticas de
   escritura y hallazgos de seguridad.
+- [[CIEHS-Voz-DUA]] — cómo se aplica el Diseño Universal del Aprendizaje en el
+  portal: lectura en voz alta, simuladores y vías alternativas de respuesta.
 
 **Sitio en producción:** https://ciehs.vercel.app/#/metodologia
