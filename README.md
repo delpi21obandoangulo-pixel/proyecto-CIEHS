@@ -10,7 +10,6 @@
 [![ODS 13](https://img.shields.io/badge/ODS-13%20Acci%C3%B3n%20por%20el%20Clima-2E7D32?style=for-the-badge&logo=leaflet&logoColor=white)](https://www.un.org/sustainabledevelopment/es/climate-change/)
 [![Eureka 2026](https://img.shields.io/badge/Eureka-2026-F59E0B?style=for-the-badge&logo=starship&logoColor=white)](#)
 [![Estado del sitio](https://img.shields.io/website?url=https%3A%2F%2Fciehs.vercel.app&up_message=en%20l%C3%ADnea&down_message=fuera%20de%20l%C3%ADnea&style=for-the-badge&label=vercel)](https://ciehs.vercel.app)
-[![Licencia MIT](https://img.shields.io/badge/Licencia-MIT-0EA5E9?style=for-the-badge)](#-licencia)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](#)
 [![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)](#)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](#)
@@ -158,7 +157,22 @@ en cada despliegue.
 
 ## 📄 Licencia
 
-Distribuido bajo licencia **MIT**. Ver el encabezado de este repositorio para más detalles.
+**Todos los derechos reservados** — © 2026 I.E. N.° 80033 "José Olaya Balandra".
+
+Una versión anterior de este README distribuía el proyecto bajo **MIT**. Era
+incorrecto: no existe archivo `LICENSE`, la sección remitía a sí misma y el pie
+del portal decía justo lo contrario. Se retira en lugar de completarse, porque
+**abrir la obra es una decisión de la institución, no una corrección de
+documentación**.
+
+> Una licencia abierta sobre todo el repositorio alcanzaría también a las
+> fotografías del laboratorio, y eso rompería la promesa de
+> [`CIEHS-Privacidad-Menores`](CIEHS-Privacidad-Menores.md): que una
+> autorización de imagen es **revocable en cualquier momento**. Lo que se
+> licencia de forma irrevocable no se puede retirar después.
+
+Las opciones, con su recomendación, están en
+[`pendientes-coordinacion/07-licencia.md`](pendientes-coordinacion/07-licencia.md).
 
 ---
 

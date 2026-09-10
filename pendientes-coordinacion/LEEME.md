@@ -25,6 +25,7 @@ en la nota de la que salió.
 | [[pendientes-coordinacion/04-validacion-cneb\|04]] | **Validar la correspondencia CNEB** | Reunión del equipo de área | Que la ruta pase de propuesta a programación validada |
 | [[pendientes-coordinacion/05-datos-del-laboratorio\|05]] | **CE del agua, ficha de la UNT, cómo se repone** | Hay que medir y pedir el papel | Que los rangos publicados sean reproducibles |
 | [[pendientes-coordinacion/06-tienda-precios-y-catalogo\|06]] | **Precios, fotos, egresos, aviso de reserva** | Decisión de la coordinación y captura en el panel | Dejar la tienda operativa |
+| [[pendientes-coordinacion/07-licencia\|07]] | **Elegir la licencia** del código, del contenido y de las imágenes | Es la obra de la institución, no una corrección de documentación | Que otra escuela pueda reutilizar el trabajo |
 
 ---
 
@@ -48,10 +49,10 @@ mano.
 
 ## Lo que no está aquí
 
-Lo que sí se puede hacer desde el código vive en las notas de siempre y se va
-resolviendo ahí: contraste AA, exportación de mediciones a CSV, alinear los
-retos de la Arena con la ruta, la revisión de seguridad de producción y la
-contradicción de licencia del repositorio.
+Lo que sí se podía hacer desde el código ya está hecho: contraste AA,
+exportación de mediciones a CSV, los retos de la Arena alineados con la ruta, la
+revisión de seguridad de producción y la contradicción de licencia retirada. De
+esa última quedó la parte que sí es tuya, y es la 07.
 
 Esta carpeta queda fuera del sitio publicado: `.vercelignore` excluye todos los
 `.md` y, por si acaso, la carpeta entera.

@@ -201,10 +201,25 @@ Supabase propio lo elimina → [[CIEHS-Backend-Supabase]].
 No está escrito quién carga las mediciones, quién publica avisos ni quién
 aprueba fotos.
 
-### 🟠 Licencia contradictoria
+### 🟡 Licencia: contradicción retirada, decisión pendiente
 
-El README declara MIT sin archivo `LICENSE`, y el pie dice «Todos los derechos
-reservados». Para el material pedagógico encaja mejor una Creative Commons.
+El README declaraba MIT sin archivo `LICENSE` —y con una sección que remitía a
+sí misma— mientras el pie del portal decía «Todos los derechos reservados».
+
+**Corregido a medias el 2026-09-10:** se retiró la afirmación MIT, que era la
+falsa de las dos. Ahora el repositorio dice una sola cosa, y es la que rige por
+defecto en derecho de autor.
+
+Al revisarlo apareció lo que hacía el hallazgo más serio de lo que parecía:
+**una licencia abierta sobre todo el repositorio alcanzaría a las cuatro
+fotografías versionadas del laboratorio.** MIT y las CC permisivas son
+irrevocables; el protocolo de imagen promete que una autorización se puede
+retirar cuando el apoderado quiera. Las dos cosas no caben juntas.
+
+Sea cual sea la salida, **las imágenes quedan fuera de cualquier licencia
+abierta**. Las tres opciones y la recomendación —código MIT, contenido
+CC BY-NC-SA, imágenes reservadas— están en
+[[pendientes-coordinacion/07-licencia|07 · Licencia]].
 
 ### 🟡 Google Fonts
 

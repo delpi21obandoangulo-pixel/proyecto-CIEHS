@@ -225,8 +225,11 @@ obstáculo.
       subirlas. Hecho: hay un limpiador propio que descarta todos los segmentos
       APPn y de comentario de cada JPEG. Se aplicó a las cuatro publicadas.
 - [ ] Decidir sobre las tipografías propias para eliminar la llamada a Google.
-- [ ] Revisar la contradicción de licencia del repositorio
-      → [[CIEHS-Auditoria-Seguridad-Auth]]
+- [ ] Revisar la contradicción de licencia del repositorio. La contradicción ya
+      se retiró; falta la decisión, y afecta directamente a esta nota: una
+      licencia abierta sobre las fotografías haría **imposible cumplir** la
+      promesa de revocación del §3 →
+      [[pendientes-coordinacion/07-licencia|07 · Licencia]]
 
 ---
 
