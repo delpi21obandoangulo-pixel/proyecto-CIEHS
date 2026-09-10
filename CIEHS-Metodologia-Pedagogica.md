@@ -27,21 +27,37 @@ Educación Básica.
 
 ---
 
-## 1. Enfoque pedagógico rector: HPOS + CNEB + DUA
+## 1. Enfoque pedagógico rector y enfoque transversal
 
-El enfoque rector no es un solo marco, sino tres que trabajan juntos. Ninguno
-basta por sí mismo.
+Dos marcos **rigen** la propuesta; uno la **atraviesa**. No están al mismo nivel,
+y confundirlos cambia cómo se programa una sesión.
+
+### Rectores
 
 | Marco | Qué aporta | Dónde se ve |
 |---|---|---|
-| **HPOS** — Habilidades de Pensamiento de Orden Superior | El **nivel de exigencia**: el estudiante analiza, evalúa y crea, no solo recuerda y comprende | La ruta de 9 pasos y las tarjetas *Analizar · Evaluar · Crear* |
-| **CNEB** — competencias del área de Ciencia y Tecnología | El **marco curricular** y los criterios con los que se evalúa | La articulación por niveles (§4) y la capacidad citada en cada paso |
-| **DUA** — Diseño Universal del Aprendizaje | El **acceso**: más de una vía para recibir, implicarse y demostrar lo aprendido, según las habilidades y el estilo de aprendizaje de cada estudiante | [[CIEHS-Voz-DUA]] y la sección `juega` del portal |
+| **CNEB** — competencias del área de Ciencia y Tecnología | **Qué se aprende** y con qué criterios se evalúa | La articulación por niveles (§4) y la capacidad citada en cada paso |
+| **DUA** — Diseño Universal del Aprendizaje | **Cómo llega** ese aprendizaje a cada estudiante: más de una vía para recibir, implicarse y demostrar lo aprendido, según sus habilidades y su estilo de aprendizaje | [[CIEHS-Voz-DUA]] y la sección `juega` del portal |
+
+### Transversal
+
+| Marco | Qué aporta | Dónde se ve |
+|---|---|---|
+| **HPOS** — Habilidades de Pensamiento de Orden Superior | El **nivel de exigencia**: analizar, evaluar y crear, no solo recordar y comprender | Atraviesa las tres competencias, los nueve pasos y **cada** actividad del laboratorio |
+
+> [!important] Por qué las HPOS son transversales y no rectoras
+> No definen qué se aprende (eso lo pone el CNEB) ni cómo se accede (eso lo pone
+> el DUA): definen **a qué altura se piensa**, sea cual sea el contenido y sea
+> cual sea la vía. Se exigen igual en Inicial que en Secundaria, en una medición
+> de pH que en una campaña de residuos, y tanto a quien responde por escrito como
+> a quien lo hace en voz alta o construyendo. Tratarlas como un tercer marco
+> paralelo las vuelve optativas; tratarlas como eje transversal obliga a que
+> cada sesión declare en qué nivel de pensamiento pone al estudiante.
 
 El detalle de cómo se aplica el DUA vía por vía —representación, implicación,
 acción y expresión— vive en [[CIEHS-Voz-DUA]] y en el bloque desplegable de la
-sección `juega`. Aquí solo se registra que **es parte del enfoque rector**, no un
-añadido de accesibilidad puesto al final.
+sección `juega`. Aquí solo se registra que **es rector**, no un añadido de
+accesibilidad puesto al final.
 
 ---
 
@@ -198,7 +214,7 @@ infiltración ni evaporación en tierra.
 | Nomenclatura **`MOD-DWC-01`…`15`** | vigente | Identifica cada **módulo físico**: es lo que va rotulado y lo que apunta su código QR. «Raíz Flotante» es el nombre en castellano de la misma técnica (*Deep Water Culture*), no un sistema distinto |
 | **Un solo sistema activo: raíz flotante** | vigente | La maqueta anterior describía cuatro sistemas (NFT, DWC, sustrato inerte y vertical) que no existen en el laboratorio. El sustrato inerte se retiró por completo; NFT y vertical quedan marcados **estrictamente como proyecciones a futuro** |
 | **Sin bomba de aire**, dicho explícitamente | vigente | Los quince módulos oxigenan por difusión superficial y agitación manual. Ocultarlo haría irreproducible cualquier resultado publicado; declararlo lo convierte además en una variable investigable |
-| **HPOS + CNEB + DUA como enfoque rector** | vigente | El objetivo no es el cultivo sino que el estudiante **analice, evalúe y cree** (HPOS), con el marco curricular y los criterios del **CNEB**, y por más de una vía de entrada según sus habilidades y estilo de aprendizaje (**DUA**). El cultivo es el fenómeno de estudio; el docente pregunta y acompaña |
+| **CNEB + DUA rectores, HPOS transversal** | vigente | El CNEB pone qué se aprende y con qué se evalúa; el DUA, por cuántas vías se llega. Las **HPOS** no son un tercer marco paralelo: atraviesan las tres competencias y los nueve pasos fijando el nivel de pensamiento —**analizar, evaluar, crear**—. El cultivo es el fenómeno de estudio; el docente pregunta y acompaña |
 | **Dos ejes movilizadores, no uno** | vigente | El reto climático da el propósito; el CIEHS como estrategia de desarrollo de competencias da el método. Declarar solo el primero dejaba fuera lo que más se nota en el día a día: investigar en equipo, con tareas útiles para uno mismo y para los demás |
 | Ruta como `<ol>`/`<li>` con contador CSS | vigente | La numeración es información, no adorno: un lector de pantalla anuncia la posición de cada paso. Un único contador sobre `.ruta` hace correr la cuenta 1→9 a través de las tres listas |
 | Rejilla de 3 fases, sin scroll horizontal | vigente | La tira anterior escondía media ruta en escritorio y obligaba a arrastrar en móvil. Con tres fases: o caben las tres o va una por fila — dos columnas dejaban la fase 3 huérfana |
@@ -228,6 +244,12 @@ Tesorería y registro de ventas · Inventario · Impacto ambiental · Coordinaci
 - [ ] Alinear los retos de [[CIEHS-Arena-Juego]] con los pasos de la ruta.
 - [ ] Cerrar la trazabilidad DUA: que cada paso de la ruta declare sus vías de
       representación, implicación y expresión, como ya hace la sección `juega`.
+- [ ] Que cada sesión programada declare su nivel HPOS (analizar / evaluar /
+      crear), que es lo que hace exigible el enfoque transversal.
+- [ ] Regenerar la imagen del mural: el panel «¿Qué buscamos con este proyecto?»
+      pintado en `assets/img/mural-ciehs.jpg` conserva la redacción anterior
+      («producir alimentos saludables…»). El texto vigente ya está en el portal,
+      pero la ilustración —y el mural físico— siguen mostrando el viejo.
 - [x] Escudo institucional en uso → [[CIEHS-Identidad-Visual]].
 
 ---

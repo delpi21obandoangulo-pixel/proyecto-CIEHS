@@ -1827,6 +1827,13 @@
     display:block; margin-top:14px; padding-top:11px; border-top:1px solid var(--line);
     font-size:12px; line-height:1.5; color:var(--ink-mute);
   }
+  .hpos-lede + .hpos-lede{ margin-top:14px; }
+  .hpos-transversal{
+    margin-top:20px; padding:14px 18px;
+    border-left:3px solid var(--leaf-500); border-radius:var(--radius-s);
+    background:var(--veil); font-size:14px; line-height:1.65; color:var(--ink-soft); max-width:80ch;
+  }
+  .hpos-transversal b{ color:var(--ink); font-weight:600; }
   .hpos-nota{ margin-top:24px; font-size:13px; line-height:1.65; color:var(--ink-mute); max-width:80ch; }
 
   /* -------------------------- equipos: tareas -------------------------- */
@@ -2273,19 +2280,51 @@
     .mural-art{ min-height:0; }
     .mural-img{ min-height:0; aspect-ratio:1280/853; height:auto; }
   }
+  /* Un mural es una pieza grafica, no un lienzo para poner numeros encima. Los
+     cuatro puntos son ahora un anillo pequeno y semitransparente, con doble
+     contorno para que se lea igual sobre el cielo claro que sobre el follaje.
+     El numero y el tema salen en una etiqueta flotante al pasar el cursor,
+     enfocar con teclado o activar el punto — nunca de forma permanente. */
   .hotspot{
-    position:absolute; width:36px; height:36px; border-radius:50%;
-    background:rgba(240,200,118,0.92); border:2px solid var(--sun-300);
-    color:#1a1200; font-family:var(--font-mono); font-weight:700; font-size:13px;
-    display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0;
-    transform:translate(-50%,-50%); box-shadow:0 0 0 6px rgba(240,200,118,0.16);
+    position:absolute; width:20px; height:20px; border-radius:50%;
+    background:rgba(255,255,255,0.30); border:2px solid rgba(255,255,255,0.92);
+    cursor:pointer; padding:0; transform:translate(-50%,-50%);
+    box-shadow:0 0 0 1.5px rgba(4,20,15,0.5), 0 0 0 6px rgba(240,200,118,0.16);
     animation:hotspot-pulse 2.6s ease-in-out infinite;
   }
-  .hotspot:hover, .hotspot:focus-visible{ animation-play-state:paused; box-shadow:0 0 0 9px rgba(240,200,118,0.24); }
-  .hotspot.is-active{ background:linear-gradient(135deg, var(--leaf-500), var(--azure-500)); border-color:var(--ink); color:#04140f; box-shadow:0 0 0 9px rgba(5,150,105,0.22); animation:none; }
+  .hotspot:hover, .hotspot:focus-visible{
+    animation-play-state:paused;
+    box-shadow:0 0 0 1.5px rgba(4,20,15,0.5), 0 0 0 9px rgba(240,200,118,0.28);
+  }
+  .hotspot.is-active{
+    background:linear-gradient(135deg, var(--leaf-500), var(--azure-500));
+    border-color:#fff; animation:none;
+    box-shadow:0 0 0 1.5px rgba(4,20,15,0.5), 0 0 0 9px rgba(5,150,105,0.26);
+  }
+  .hotspot-tip{
+    position:absolute; left:50%; bottom:calc(100% + 10px);
+    transform:translate(-50%,4px); transform-origin:bottom center;
+    padding:5px 11px; border-radius:100px; white-space:nowrap;
+    background:rgba(4,20,15,0.9); color:#fff;
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.02em;
+    opacity:0; pointer-events:none; transition:opacity .18s ease, transform .18s ease;
+  }
+  /* El punto de los ODS vive pegado al borde derecho: su etiqueta se sale del
+     recorte del mural, asi que ahi va al costado izquierdo. */
+  .hotspot.tip-start .hotspot-tip{
+    left:auto; right:calc(100% + 10px); bottom:auto; top:50%;
+    transform:translate(4px,-50%); transform-origin:right center;
+  }
+  /* La etiqueta sale solo al apuntar o enfocar. El punto activo no la necesita:
+     su tema ya esta escrito en el panel de la derecha y en la botonera, asi que
+     en reposo el mural queda limpio. */
+  .hotspot:hover .hotspot-tip,
+  .hotspot:focus-visible .hotspot-tip{ opacity:1; transform:translate(-50%,0); }
+  .hotspot.tip-start:hover .hotspot-tip,
+  .hotspot.tip-start:focus-visible .hotspot-tip{ transform:translate(0,-50%); }
   @keyframes hotspot-pulse{
-    0%,100%{ box-shadow:0 0 0 6px rgba(240,200,118,0.16); }
-    50%{ box-shadow:0 0 0 11px rgba(240,200,118,0.02); }
+    0%,100%{ box-shadow:0 0 0 1.5px rgba(4,20,15,0.5), 0 0 0 6px rgba(240,200,118,0.16); }
+    50%{ box-shadow:0 0 0 1.5px rgba(4,20,15,0.5), 0 0 0 11px rgba(240,200,118,0.02); }
   }
   .mural-info{ padding:38px; color:var(--on-ocean); display:flex; flex-direction:column; }
   .mural-info .eyebrow{ color:var(--sun-300); }
@@ -2307,6 +2346,18 @@
     color:var(--on-ocean-soft); cursor:pointer; transition:all .2s ease;
   }
   .mural-nav button.is-active{ background:linear-gradient(135deg, var(--leaf-500), var(--azure-500)); color:#04140f; border-color:transparent; }
+
+  /* El proposito que el mural fisico lleva pintado abajo, aqui como texto real:
+     seleccionable, traducible y leible por un lector de pantalla. */
+  .mural-proposito{
+    margin-top:26px; padding:26px 30px;
+    border:1px solid var(--line); border-left:3px solid var(--leaf-500);
+    border-radius:var(--radius-m); background:var(--glass);
+    backdrop-filter:blur(16px); max-width:86ch;
+  }
+  .mural-proposito p{ margin-top:12px; font-size:15.5px; line-height:1.7; color:var(--ink-soft); }
+  .mural-proposito p b{ color:var(--ink); font-weight:600; }
+  @media (max-width:620px){ .mural-proposito{ padding:22px 20px; } }
 
   /* ============ DATA / DASHBOARD ============ */
   .stat-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-top:8px; }
@@ -2630,6 +2681,7 @@
   .u-top-34pct{ top:34% !important; }
   .u-left-49pct{ left:49% !important; }
   .u-top-38pct{ top:38% !important; }
+  .u-top-54pct{ top:54% !important; }
   .u-margin-top-16px{ margin-top:16px !important; }
   .u-font-size-1p9rem{ font-size:1.9rem !important; }
   .u-font-size-15p5px{ font-size:15.5px !important; }

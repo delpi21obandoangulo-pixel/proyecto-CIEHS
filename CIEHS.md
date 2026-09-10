@@ -32,7 +32,7 @@ está cada cosa.
 | [[CIEHS-Portal-Educativo]] | Cómo está construido: rutas, QR, alojamiento, cacheo, mejora progresiva |
 | [[CIEHS-Backend-Supabase]] | Dónde viven los datos: esquema `ciehs`, tablas, RLS, capa de datos |
 | [[CIEHS-Auditoria-Seguridad-Auth]] | Qué se rompió, qué se arregló y qué sigue abierto |
-| [[CIEHS-Metodologia-Pedagogica]] | Enfoque rector (HPOS · CNEB · DUA), los dos ejes movilizadores y la ruta de 9 pasos |
+| [[CIEHS-Metodologia-Pedagogica]] | Enfoque rector (CNEB · DUA) con HPOS transversal, los dos ejes movilizadores y la ruta de 9 pasos |
 | [[CIEHS-Identidad-Visual]] | Escudo, sello, mural, paleta e iconos |
 | [[CIEHS-Privacidad-Menores]] | Qué se publica de los estudiantes y qué nunca |
 | [[CIEHS-Arena-Juego]] | El modo de juego: niveles, expediciones, animación y voz |
