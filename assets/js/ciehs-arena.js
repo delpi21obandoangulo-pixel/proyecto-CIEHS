@@ -906,7 +906,8 @@
       +   '<button type="button" class="ar-salir" data-accion="menu" aria-label="Volver al menú">‹ Niveles</button>'
       +   '<span class="ar-tema">' + esc(tema.nombre) + '</span>'
       +   (faseDe(r.tema)
-            ? '<span class="ar-fase" title="' + esc(faseDe(r.tema).lema) + '">Ruta CIEHS · '
+            ? '<span class="ar-fase" title="' + esc(faseDe(r.tema).lema) + '">'
+              + '<span class="ar-fase-pref">Ruta CIEHS · </span>'
               + esc(faseDe(r.tema).nombre) + '</span>'
             : '')
       + '</div>'

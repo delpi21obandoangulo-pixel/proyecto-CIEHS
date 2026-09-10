@@ -95,6 +95,340 @@
 <div class="amb" aria-hidden="true">
   <div class="amb-img"></div>
   <div class="amb-veil"></div>
+  <!-- Los dos muros verticales. Viven DENTRO del plano ambiental a proposito:
+       heredan su position:fixed, su pointer-events:none y su z-index:-1, asi
+       que quedan por encima de la fotografia velada y por debajo de todo el
+       contenido, sin abrir un contexto de apilamiento nuevo.
+       Son decorativos: aria-hidden en el contenedor .amb ya los cubre. -->
+
+
+  <div class="muro muro-izq">
+    <div class="muro-tubo">
+      <div class="muro-agua"></div>
+      <div class="muro-caustica"></div>
+      <div class="muro-burbujas">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="muro-menisco"></div>
+      <div class="muro-brillo"></div>
+    </div>
+    <div class="muro-cultivo">
+        <div class="muro-sitio">
+          <svg class="muro-raiz" viewBox="0 0 44 118" fill="none" aria-hidden="true">
+            <path d="M22 0c1 15-2 25-1 38 1 12 4 19 3 31-1 9-4 14-3 23"/>
+            <path d="M22 2c-3 13-8 20-10 31-1.5 9 .5 15-1 24"/>
+            <path d="M22 2c4 11 10 16 13 26 2 8 0 14 1 21"/>
+            <path d="M22 4c-1 12 0 20-2 31-1.4 8 .4 13-.6 20"/>
+            <path d="M19 28c-4 7-8 11-10 18"/>
+            <path d="M25 40c4 6 8 9 10 15"/>
+            <path d="M21 56c-3 6-5 9-6 15"/>
+          </svg>
+          <span class="muro-alveolo"></span>
+          <svg class="muro-hojas" viewBox="0 0 60 74" fill="none" aria-hidden="true">
+            <g class="muro-mata">
+            <g class="muro-hoja muro-hoja-1">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-2">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-3">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-4">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-5">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            </g>
+          </svg>
+        </div>
+        <div class="muro-sitio">
+          <svg class="muro-raiz" viewBox="0 0 44 118" fill="none" aria-hidden="true">
+            <path d="M22 0c1 15-2 25-1 38 1 12 4 19 3 31-1 9-4 14-3 23"/>
+            <path d="M22 2c-3 13-8 20-10 31-1.5 9 .5 15-1 24"/>
+            <path d="M22 2c4 11 10 16 13 26 2 8 0 14 1 21"/>
+            <path d="M22 4c-1 12 0 20-2 31-1.4 8 .4 13-.6 20"/>
+            <path d="M19 28c-4 7-8 11-10 18"/>
+            <path d="M25 40c4 6 8 9 10 15"/>
+            <path d="M21 56c-3 6-5 9-6 15"/>
+          </svg>
+          <span class="muro-alveolo"></span>
+          <svg class="muro-hojas" viewBox="0 0 60 74" fill="none" aria-hidden="true">
+            <g class="muro-mata">
+            <g class="muro-hoja muro-hoja-1">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-2">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-3">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-4">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-5">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            </g>
+          </svg>
+        </div>
+        <div class="muro-sitio">
+          <svg class="muro-raiz" viewBox="0 0 44 118" fill="none" aria-hidden="true">
+            <path d="M22 0c1 15-2 25-1 38 1 12 4 19 3 31-1 9-4 14-3 23"/>
+            <path d="M22 2c-3 13-8 20-10 31-1.5 9 .5 15-1 24"/>
+            <path d="M22 2c4 11 10 16 13 26 2 8 0 14 1 21"/>
+            <path d="M22 4c-1 12 0 20-2 31-1.4 8 .4 13-.6 20"/>
+            <path d="M19 28c-4 7-8 11-10 18"/>
+            <path d="M25 40c4 6 8 9 10 15"/>
+            <path d="M21 56c-3 6-5 9-6 15"/>
+          </svg>
+          <span class="muro-alveolo"></span>
+          <svg class="muro-hojas" viewBox="0 0 60 74" fill="none" aria-hidden="true">
+            <g class="muro-mata">
+            <g class="muro-hoja muro-hoja-1">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-2">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-3">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-4">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-5">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            </g>
+          </svg>
+        </div>
+        <div class="muro-sitio">
+          <svg class="muro-raiz" viewBox="0 0 44 118" fill="none" aria-hidden="true">
+            <path d="M22 0c1 15-2 25-1 38 1 12 4 19 3 31-1 9-4 14-3 23"/>
+            <path d="M22 2c-3 13-8 20-10 31-1.5 9 .5 15-1 24"/>
+            <path d="M22 2c4 11 10 16 13 26 2 8 0 14 1 21"/>
+            <path d="M22 4c-1 12 0 20-2 31-1.4 8 .4 13-.6 20"/>
+            <path d="M19 28c-4 7-8 11-10 18"/>
+            <path d="M25 40c4 6 8 9 10 15"/>
+            <path d="M21 56c-3 6-5 9-6 15"/>
+          </svg>
+          <span class="muro-alveolo"></span>
+          <svg class="muro-hojas" viewBox="0 0 60 74" fill="none" aria-hidden="true">
+            <g class="muro-mata">
+            <g class="muro-hoja muro-hoja-1">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-2">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-3">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-4">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-5">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            </g>
+          </svg>
+        </div>
+    </div>
+  </div>
+
+  <div class="muro muro-der">
+    <div class="muro-tubo">
+      <div class="muro-agua"></div>
+      <div class="muro-caustica"></div>
+      <div class="muro-burbujas">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="muro-menisco"></div>
+      <div class="muro-brillo"></div>
+    </div>
+    <div class="muro-cultivo">
+        <div class="muro-sitio">
+          <svg class="muro-raiz" viewBox="0 0 44 118" fill="none" aria-hidden="true">
+            <path d="M22 0c1 15-2 25-1 38 1 12 4 19 3 31-1 9-4 14-3 23"/>
+            <path d="M22 2c-3 13-8 20-10 31-1.5 9 .5 15-1 24"/>
+            <path d="M22 2c4 11 10 16 13 26 2 8 0 14 1 21"/>
+            <path d="M22 4c-1 12 0 20-2 31-1.4 8 .4 13-.6 20"/>
+            <path d="M19 28c-4 7-8 11-10 18"/>
+            <path d="M25 40c4 6 8 9 10 15"/>
+            <path d="M21 56c-3 6-5 9-6 15"/>
+          </svg>
+          <span class="muro-alveolo"></span>
+          <svg class="muro-hojas" viewBox="0 0 60 74" fill="none" aria-hidden="true">
+            <g class="muro-mata">
+            <g class="muro-hoja muro-hoja-1">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-2">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-3">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-4">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-5">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            </g>
+          </svg>
+        </div>
+        <div class="muro-sitio">
+          <svg class="muro-raiz" viewBox="0 0 44 118" fill="none" aria-hidden="true">
+            <path d="M22 0c1 15-2 25-1 38 1 12 4 19 3 31-1 9-4 14-3 23"/>
+            <path d="M22 2c-3 13-8 20-10 31-1.5 9 .5 15-1 24"/>
+            <path d="M22 2c4 11 10 16 13 26 2 8 0 14 1 21"/>
+            <path d="M22 4c-1 12 0 20-2 31-1.4 8 .4 13-.6 20"/>
+            <path d="M19 28c-4 7-8 11-10 18"/>
+            <path d="M25 40c4 6 8 9 10 15"/>
+            <path d="M21 56c-3 6-5 9-6 15"/>
+          </svg>
+          <span class="muro-alveolo"></span>
+          <svg class="muro-hojas" viewBox="0 0 60 74" fill="none" aria-hidden="true">
+            <g class="muro-mata">
+            <g class="muro-hoja muro-hoja-1">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-2">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-3">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-4">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-5">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            </g>
+          </svg>
+        </div>
+        <div class="muro-sitio">
+          <svg class="muro-raiz" viewBox="0 0 44 118" fill="none" aria-hidden="true">
+            <path d="M22 0c1 15-2 25-1 38 1 12 4 19 3 31-1 9-4 14-3 23"/>
+            <path d="M22 2c-3 13-8 20-10 31-1.5 9 .5 15-1 24"/>
+            <path d="M22 2c4 11 10 16 13 26 2 8 0 14 1 21"/>
+            <path d="M22 4c-1 12 0 20-2 31-1.4 8 .4 13-.6 20"/>
+            <path d="M19 28c-4 7-8 11-10 18"/>
+            <path d="M25 40c4 6 8 9 10 15"/>
+            <path d="M21 56c-3 6-5 9-6 15"/>
+          </svg>
+          <span class="muro-alveolo"></span>
+          <svg class="muro-hojas" viewBox="0 0 60 74" fill="none" aria-hidden="true">
+            <g class="muro-mata">
+            <g class="muro-hoja muro-hoja-1">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-2">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-3">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-4">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-5">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            </g>
+          </svg>
+        </div>
+        <div class="muro-sitio">
+          <svg class="muro-raiz" viewBox="0 0 44 118" fill="none" aria-hidden="true">
+            <path d="M22 0c1 15-2 25-1 38 1 12 4 19 3 31-1 9-4 14-3 23"/>
+            <path d="M22 2c-3 13-8 20-10 31-1.5 9 .5 15-1 24"/>
+            <path d="M22 2c4 11 10 16 13 26 2 8 0 14 1 21"/>
+            <path d="M22 4c-1 12 0 20-2 31-1.4 8 .4 13-.6 20"/>
+            <path d="M19 28c-4 7-8 11-10 18"/>
+            <path d="M25 40c4 6 8 9 10 15"/>
+            <path d="M21 56c-3 6-5 9-6 15"/>
+          </svg>
+          <span class="muro-alveolo"></span>
+          <svg class="muro-hojas" viewBox="0 0 60 74" fill="none" aria-hidden="true">
+            <g class="muro-mata">
+            <g class="muro-hoja muro-hoja-1">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-2">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-3">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-4">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            <g class="muro-hoja muro-hoja-5">
+              <path d="M0 0C8-13 30-17 47-4 34 10 12 12 0 0Z"/>
+              <path class="muro-nervio" d="M2 0C17-5 33-6 47-4"/>
+            </g>
+            </g>
+          </svg>
+        </div>
+    </div>
+  </div>
 </div>
 
 <div class="mesh-aura" aria-hidden="true"><span></span><span></span><span></span></div>

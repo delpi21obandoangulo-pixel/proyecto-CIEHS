@@ -357,6 +357,73 @@ desenfocada del tamaño de la pantalla mientras se hace scroll.
 
 ---
 
+## 3 sexies. Los muros verticales (2026-09-10)
+
+En escritorio ancho el contenido se detiene en 1160 px y a los lados quedaba la
+fotografía velada y nada más. Ahora hay una **columna hidropónica vertical** a
+cada lado.
+
+### Por qué esto y no una textura
+
+Es el sistema `PROY-VER` que el laboratorio tiene **declarado como proyección y
+todavía no ha construido**. El portal lo enseña antes de que exista.
+
+Por eso el vocabulario del dibujo no es decorativo y se sostiene solo: tubo,
+solución nutritiva, alvéolos, raíz sumergida y burbujas subiendo. Las burbujas
+dicen además, en silencio, la pregunta abierta del laboratorio — los quince
+módulos operan hoy **sin bomba de aire**.
+
+### Cómo está montado
+
+| Pieza | Qué es |
+|---|---|
+| `.muro-tubo` | El vidrio: gradiente, canto iluminado y sombra interior |
+| `.muro-agua` · `.muro-menisco` | La solución y su línea de superficie, que es lo que hace que el tubo se lea «lleno hasta aquí» |
+| `.muro-caustica` | La banda de luz que baja: da líquido sin dibujar una sola onda |
+| `.muro-burbujas` | Siete, cada una con su carril, su tamaño y su ritmo |
+| `.muro-sitio` ×4 | Alvéolo + mata de cinco hojas + raíz |
+
+Las cinco hojas de cada mata son **la misma forma girada** desde el alvéolo. Se
+mece la mata entera, no cada hoja por su cuenta: una planta se mueve desde el
+tallo, y si las cuatro respiran a la vez parece un motor.
+
+### Seis decisiones que conviene no deshacer
+
+1. **Viven dentro de `.amb`.** Heredan su `position:fixed`, su
+   `pointer-events:none` y su `z-index:-1`: quedan sobre la fotografía y bajo
+   todo el contenido sin abrir un contexto de apilamiento nuevo. Sacarlos de ahí
+   es volver a pelearse con el z-index.
+
+2. **La caja del muro es el tubo _más_ el aire de las matas.** La primera
+   versión hizo la caja del tamaño del tubo y las hojas se cortaban contra el
+   borde de la ventana. Son dos variables (`--tubo` y `--mata`) justamente por
+   eso.
+
+3. **Las matas se abren hacia afuera, no hacia el texto.** También se probó al
+   revés: a 1440 px solo hay unos 30 px entre el tubo y la columna de contenido,
+   así que o se metían encima o había que encogerlas hasta que dejaban de leerse
+   como hojas. Y hacia afuera es lo natural: la planta se inclina hacia la luz,
+   y aquí la luz es el borde de la pantalla.
+
+4. **El umbral es 1500 px, no 1440.** A 1440 la cuenta sale, pero deja el tubo a
+   8 px del texto, y eso no es un margen: es un roce.
+
+5. **No hay una sola línea de texto en el hueco lateral**, así que esto **no
+   toca** la medición de contraste del §3 quater. Si algún día se pone texto
+   ahí, hay que volver a medir.
+
+6. **Bajo `prefers-reduced-motion` las animaciones no arrancan**, en vez de
+   dejarse apagar por la regla global. Esa regla las congelaría en su fotograma
+   final y las burbujas se acumularían todas arriba. Se reparten quietas por el
+   tubo: no se mueven, pero están.
+
+> [!note] Coste
+> Se anima solo `transform` y `opacity`, nunca `filter` ni geometría. Son 32
+> animaciones simultáneas entre los dos muros, todas muy lentas: a esa cadencia
+> el compositor no suda. Un `filter` animado sí lo haría.
+
+---
+
 ## 3 bis. La capa de movimiento
 
 Con una paleta casi monocroma el movimiento deja de ser adorno: es lo que
@@ -462,6 +529,8 @@ debajo solo queda la galería de evidencias. Lo que había después se movió:
 - [ ] Fotografías reales del laboratorio y de los quince módulos DWC, sujetas al
       protocolo de [[CIEHS-Privacidad-Menores]].
 - [ ] Fotografía del mural físico instalado, para acompañar a la ilustración.
+- [ ] Revisar los muros verticales (§3 sexies) el día que exista de verdad un
+      módulo `PROY-VER`: entonces la ilustración debería parecerse al de verdad.
 - [ ] Repintar el panel «¿Qué buscamos con este proyecto?» del mural, en la
       ilustración y en la pared → §1 bis.
 

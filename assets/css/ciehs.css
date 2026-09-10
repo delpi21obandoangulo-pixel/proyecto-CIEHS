@@ -2323,10 +2323,18 @@
   /* La etiqueta sale solo al apuntar o enfocar. El punto activo no la necesita:
      su tema ya esta escrito en el panel de la derecha y en la botonera, asi que
      en reposo el mural queda limpio. */
-  .hotspot:hover .hotspot-tip,
+  /* El foco de teclado revela la etiqueta en cualquier dispositivo. El cursor
+     solo donde hay cursor de verdad: en una pantalla tactil el `:hover` se
+     queda pegado tras tocar, asi que la etiqueta aparecia y se quedaba encima
+     del mural sin que nadie la hubiera pedido. Y ahi no hace falta — al tocar
+     el punto, el panel de al lado ya dice de que trata.
+     La pregunta correcta no es «¿es pantalla pequena?» sino «¿hay cursor?». */
   .hotspot:focus-visible .hotspot-tip{ opacity:1; transform:translate(-50%,0); }
-  .hotspot.tip-start:hover .hotspot-tip,
   .hotspot.tip-start:focus-visible .hotspot-tip{ transform:translate(0,-50%); }
+  @media (hover:hover) and (pointer:fine){
+    .hotspot:hover .hotspot-tip{ opacity:1; transform:translate(-50%,0); }
+    .hotspot.tip-start:hover .hotspot-tip{ transform:translate(0,-50%); }
+  }
   @keyframes hotspot-pulse{
     0%,100%{ box-shadow:0 0 0 1.5px rgba(4,20,15,0.5), 0 0 0 6px rgba(240,200,118,0.16); }
     50%{ box-shadow:0 0 0 1.5px rgba(4,20,15,0.5), 0 0 0 11px rgba(240,200,118,0.02); }
@@ -2372,7 +2380,15 @@
     font-family:var(--font-mono); font-size:10px; letter-spacing:.06em;
     text-transform:uppercase; color:var(--ar-acento, #fff); white-space:nowrap;
   }
-  @media (max-width:560px){ .ar-fase{ display:none; } }
+  /* Antes esto era `display:none` por debajo de 560px, y estaba mal: la fase de
+     la ruta es INFORMACION, no un adorno. Esconderla en el movil dejaba sin
+     saber que se practica justo a quien mas probablemente juega desde el
+     telefono. Ahora se cae el prefijo, que si es prescindible, y el nombre de
+     la fase se queda. */
+  @media (max-width:560px){
+    .ar-fase-pref{ display:none; }
+    .ar-fase{ padding:3px 7px; font-size:9.5px; letter-spacing:.04em; }
+  }
 
   .ar-fin-ruta{
     margin-top:26px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.14);
@@ -3858,6 +3874,289 @@
 @media (max-width:640px){
   .amb-img{ animation:none !important; transform:scale(1.08); }
 }
+
+/* ===========================================================================
+   MUROS VERTICALES · las columnas hidropónicas de los laterales
+
+   QUÉ SON, Y POR QUÉ ESTO Y NO OTRA COSA
+   --------------------------------------
+   En escritorio ancho, el contenido se detiene en 1160px y a los lados queda
+   la fotografía velada y nada más. En vez de rellenar ese hueco con una
+   textura cualquiera, se planta ahí lo único que le corresponde al proyecto:
+   una COLUMNA HIDROPÓNICA VERTICAL. Es el sistema `PROY-VER` que el laboratorio
+   tiene declarado como proyección y todavía no ha construido. El portal lo
+   enseña antes de que exista.
+
+   Por eso el vocabulario del dibujo no es decorativo: tubo, solución nutritiva,
+   alvéolos, raíz sumergida y burbujas subiendo. Las burbujas, además, dicen en
+   silencio la pregunta abierta del laboratorio — los quince módulos operan HOY
+   sin bomba de aire.
+
+   CINCO REGLAS QUE NO CONVIENE DESHACER
+   -------------------------------------
+   1) Viven DENTRO de `.amb`. Heredan su `position:fixed`, su
+      `pointer-events:none` y su `z-index:-1`, así que quedan sobre la
+      fotografía y bajo TODO el contenido sin abrir un contexto de apilamiento
+      nuevo. Sacarlos de ahí es volver a pelearse con el z-index.
+
+   2) Solo aparecen si hay hueco de verdad. No es "escritorio sí, móvil no":
+      el hueco se calcula, y por debajo de 1440px el muro no cabe sin apretar
+      la columna de texto. La consulta es de ancho porque lo que se pregunta
+      ES el ancho disponible; no hay nada aquí que dependa del cursor.
+
+   3) No hay una sola línea de texto en el hueco lateral, así que esto NO
+      toca la medición de contraste del plano ambiental (§3 quater de la nota
+      de identidad). Si algún día se pone texto ahí, hay que volver a medir.
+
+   4) Se anima solo `transform` y `opacity`, nunca `filter` ni geometría.
+      Son ~40 elementos por lado moviéndose muy despacio: a esa cadencia el
+      compositor no suda, pero un `filter` animado sí lo haría.
+
+   5) Bajo `prefers-reduced-motion` las animaciones NO ARRANCAN, en vez de
+      dejarse apagar por la regla global. Esa regla las congelaría en su
+      fotograma final y las burbujas se acumularían todas arriba, que es peor
+      que no moverse. La columna se queda quieta y sigue estando bien.
+   ========================================================================== */
+.muro{
+  position:absolute; top:0; bottom:0;
+  /* El hueco entre el borde de la ventana y la columna de contenido. */
+  --hueco: calc((100vw - var(--max)) / 2);
+  /* El tubo, y aparte el aire que las matas necesitan para abrirse. La caja
+     del muro es la suma: si fuera solo el tubo, las hojas —que salen por el
+     lado de fuera— se cortarían contra el borde de la ventana. Pasó en la
+     primera versión y es la razón de que estén separados. */
+  --tubo: clamp(58px, calc(var(--hueco) * .42), 92px);
+  --mata: 52px;
+  width:calc(var(--tubo) + var(--mata));
+  display:none;
+  /* Se desvanece arriba y abajo para que no choque contra la cabecera ni
+     contra el pie: la columna nace y muere en niebla, no cortada a cuchillo. */
+  -webkit-mask-image:linear-gradient(180deg, transparent 0, #000 14%, #000 84%, transparent 100%);
+          mask-image:linear-gradient(180deg, transparent 0, #000 14%, #000 84%, transparent 100%);
+}
+.muro-izq{ left:max(8px, calc((var(--hueco) - var(--tubo) - var(--mata)) / 2)); }
+.muro-der{
+  right:max(8px, calc((var(--hueco) - var(--tubo) - var(--mata)) / 2));
+  /* Espejo: los dos muros son la misma columna, y así las matas de ambos se
+     abren hacia su borde de ventana en vez de hacia el texto. */
+  transform:scaleX(-1);
+}
+/* 1500 y no 1440. A 1440 la cuenta sale, pero deja el tubo a 8px del texto y
+   eso no es un margen, es un roce. A 1500 la holgura es de ~24px, que es la
+   misma que se ve bien a 1536. Por debajo, el hueco lateral no da para una
+   columna sin apretar la lectura, y entonces es mejor no poner nada. */
+@media (min-width:1500px){ .muro{ display:block; } }
+
+/* ----------------------------------------------------------------- el tubo */
+.muro-tubo{
+  position:absolute; top:0; bottom:0; right:0; width:var(--tubo);
+  border-radius:999px;
+  overflow:hidden;
+  background:linear-gradient(180deg,
+    rgba(255,255,255,0.34) 0%,
+    rgba(236,247,250,0.26) 38%,
+    rgba(222,240,246,0.30) 100%);
+  border:1px solid rgba(255,255,255,0.62);
+  box-shadow:
+    inset 5px 0 14px -8px rgba(255,255,255,0.9),
+    inset -7px 0 18px -8px rgba(2,132,199,0.30),
+    0 18px 60px -34px rgba(2,60,80,0.28);
+}
+
+/* La solución nutritiva. Muy poco color: es agua con sales, no un refresco. */
+.muro-agua{
+  position:absolute; inset:0;
+  background:linear-gradient(180deg,
+    rgba(125,211,252,0.00) 0%,
+    rgba(56,189,248,0.10) 42%,
+    rgba(2,132,199,0.16) 100%);
+}
+
+/* La línea del agua: un menisco tenue en el tercio alto, que es lo que hace
+   que el tubo se lea como "lleno hasta aquí" y no como un cilindro pintado. */
+.muro-menisco{
+  position:absolute; left:0; right:0; top:11%;
+  height:22px;
+  background:
+    radial-gradient(120% 100% at 50% 100%, rgba(255,255,255,0.55), transparent 70%),
+    linear-gradient(180deg, rgba(255,255,255,0.30), rgba(255,255,255,0) 60%);
+  border-top:1px solid rgba(255,255,255,0.55);
+}
+
+/* Cáustica: la banda de luz que recorre el agua. Es lo que da sensación de
+   líquido sin dibujar una sola onda. */
+.muro-caustica{
+  position:absolute; left:-30%; right:-30%; height:38%;
+  top:-38%;
+  background:linear-gradient(180deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.26) 45%,
+    rgba(255,255,255,0) 100%);
+  opacity:.75;
+}
+
+/* --------------------------------------------------------------- burbujas */
+.muro-burbujas{ position:absolute; inset:0; }
+.muro-burbujas span{
+  position:absolute; bottom:-6%;
+  border-radius:50%;
+  background:radial-gradient(circle at 32% 28%,
+    rgba(255,255,255,0.98), rgba(236,250,255,0.55) 52%, rgba(125,211,252,0.18) 100%);
+  box-shadow:0 0 0 .6px rgba(2,132,199,0.28), 0 1px 2px rgba(2,60,80,0.12);
+  opacity:0;
+}
+/* Cada burbuja con su tamaño, su carril y su ritmo. Van por `nth-child` y no
+   por un `style="--i"` en el marcado: la CSP de producción lleva
+   `style-src-attr 'none'` y descartaría el atributo en silencio. */
+.muro-burbujas span:nth-child(1){ left:28%; width:7px;  height:7px;  animation-duration:19s; animation-delay:  0s; }
+.muro-burbujas span:nth-child(2){ left:56%; width:4px;  height:4px;  animation-duration:26s; animation-delay:-4s; }
+.muro-burbujas span:nth-child(3){ left:41%; width:5px;  height:5px;  animation-duration:22s; animation-delay:-9s; }
+.muro-burbujas span:nth-child(4){ left:68%; width:3px;  height:3px;  animation-duration:31s; animation-delay:-14s; }
+.muro-burbujas span:nth-child(5){ left:34%; width:3.5px;height:3.5px;animation-duration:28s; animation-delay:-19s; }
+.muro-burbujas span:nth-child(6){ left:61%; width:6px;  height:6px;  animation-duration:17s; animation-delay:-11s; }
+.muro-burbujas span:nth-child(7){ left:47%; width:2.5px;height:2.5px;animation-duration:35s; animation-delay:-24s; }
+
+/* --------------------------------------------------- los sitios de cultivo */
+.muro-cultivo{ position:absolute; inset:0; }
+.muro-sitio{ position:absolute; left:var(--mata); right:0; height:0; }
+.muro-sitio:nth-child(1){ top:23%; }
+.muro-sitio:nth-child(2){ top:42%; }
+.muro-sitio:nth-child(3){ top:61%; }
+.muro-sitio:nth-child(4){ top:80%; }
+
+/* El alvéolo va en el borde EXTERIOR del tubo, el que da a la ventana, y la
+   planta se abre hacia afuera. La primera versión los puso en el borde
+   interior y las hojas crecían hacia la columna de texto: a 1440px solo hay
+   unos 30px de aire entre el tubo y el contenido, así que o se metían encima
+   o había que encogerlas hasta que no se leían como hojas.
+   Hacia afuera, además, es lo natural: la planta se inclina hacia la luz, y
+   aquí la luz es el borde de la pantalla. */
+.muro-alveolo{
+  position:absolute; left:-9px; top:-8px;
+  width:19px; height:15px;
+  border-radius:50%;
+  background:linear-gradient(160deg, rgba(255,255,255,0.92), rgba(222,238,244,0.70));
+  box-shadow:
+    inset 0 -2px 3px -1px rgba(2,60,80,0.30),
+    0 1px 4px rgba(2,60,80,0.22);
+}
+
+/* La raíz, dentro del agua. Es la pieza que distingue la hidroponía de un
+   huerto, así que se ve — tenue, pero se ve. */
+/* La raíz cuelga DENTRO del agua, desde el alvéolo hacia abajo. Es la pieza
+   que distingue la hidroponía de un huerto, así que se ve. */
+.muro-raiz{
+  position:absolute; left:-2px; top:4px;
+  width:40px; height:106px;
+  stroke:rgba(255,255,255,0.86);
+  stroke-width:1.15; stroke-linecap:round;
+  opacity:.88;
+  transform-box:fill-box; transform-origin:50% 0;
+}
+/* La mata, abriéndose hacia el borde de la ventana. `overflow:visible` porque
+   las hojas giradas se salen del viewBox a propósito. */
+.muro-hojas{
+  position:absolute; left:-46px; top:-40px;
+  width:60px; height:74px;
+  overflow:visible;
+}
+.muro-mata{ transform-box:fill-box; transform-origin:56px 62px; }
+.muro-hoja path{
+  fill:rgba(5,150,105,0.22);
+  stroke:rgba(5,150,105,0.44);
+  stroke-width:.8;
+  stroke-linejoin:round;
+}
+.muro-hoja .muro-nervio{ fill:none; stroke:rgba(255,255,255,0.46); stroke-width:.75; }
+/* Las cinco hojas son la MISMA forma girada desde el alvéolo. El abanico va de
+   casi vertical a casi horizontal, que es como se abre una lechuga vista de
+   perfil. Cada una con su propio balanceo. */
+.muro-hoja{ transform-box:fill-box; transform-origin:0 0; }
+.muro-hoja-1{ transform:translate(56px,62px) rotate(-104deg) scale(.72); }
+.muro-hoja-2{ transform:translate(56px,62px) rotate(-142deg) scale(.90); }
+.muro-hoja-3{ transform:translate(56px,62px) rotate(-180deg) scale(1);   }
+.muro-hoja-4{ transform:translate(56px,62px) rotate(-216deg) scale(.88); }
+.muro-hoja-5{ transform:translate(56px,62px) rotate(-252deg) scale(.68); }
+
+/* Se mece la MATA entera, no cada hoja por su cuenta: una planta se mueve
+   desde el tallo. Cada sitio va desfasado del anterior — si las cuatro
+   respiran a la vez parece un motor, no un cultivo. */
+.muro-sitio:nth-child(1) .muro-mata{ animation-duration:13s;   animation-delay:  0s; }
+.muro-sitio:nth-child(2) .muro-mata{ animation-duration:16s;   animation-delay:-5s; }
+.muro-sitio:nth-child(3) .muro-mata{ animation-duration:11.5s; animation-delay:-9s; }
+.muro-sitio:nth-child(4) .muro-mata{ animation-duration:14.5s; animation-delay:-3s; }
+.muro-sitio:nth-child(2) .muro-raiz{ animation-delay:-4s; }
+.muro-sitio:nth-child(3) .muro-raiz{ animation-delay:-9s; }
+.muro-sitio:nth-child(4) .muro-raiz{ animation-delay:-13s; }
+
+/* El brillo del canto exterior: una sola línea de luz que hace que el tubo
+   deje de ser una mancha y se lea como vidrio. */
+.muro-brillo{
+  position:absolute; top:6%; bottom:6%; left:9px; width:3px;
+  border-radius:999px;
+  background:linear-gradient(180deg,
+    rgba(255,255,255,0) 0%, rgba(255,255,255,0.70) 18%,
+    rgba(255,255,255,0.42) 62%, rgba(255,255,255,0) 100%);
+}
+
+/* El muro derecho va desfasado del izquierdo: son la misma columna en espejo,
+   y sin esto se nota que respiran sincronizadas. */
+.muro-der .muro-burbujas span{ animation-delay:-13s; }
+.muro-der .muro-caustica{ animation-delay:-17s; }
+.muro-der .muro-mata{ animation-delay:-7s; }
+.muro-der .muro-raiz{ animation-delay:-6s; }
+
+/* ------------------------------------------------------------- movimiento */
+@media (prefers-reduced-motion:no-preference){
+  .muro-burbujas span{ animation-name:muroBurbuja; animation-timing-function:ease-in-out; animation-iteration-count:infinite; will-change:transform, opacity; }
+  .muro-caustica{ animation:muroCaustica 26s linear infinite; will-change:transform; }
+  .muro-mata{ animation-name:muroHoja; animation-timing-function:ease-in-out; animation-iteration-count:infinite; animation-direction:alternate; }
+  .muro-raiz{ animation:muroRaiz 17s ease-in-out infinite alternate; }
+}
+
+/* La burbuja no sube recta: se va a un lado y vuelve, como en agua quieta.
+   Y no aparece de golpe ni desaparece de golpe. */
+/* Sin movimiento, las burbujas se quedarian en su estado base —opacidad 0— y
+   el tubo perderia justo lo que lo hace agua. Se reparten quietas por la
+   columna: no se mueven, pero estan. */
+@media (prefers-reduced-motion:reduce){
+  .muro-burbujas span{ opacity:.55; }
+  .muro-burbujas span:nth-child(1){ bottom:14%; }
+  .muro-burbujas span:nth-child(2){ bottom:31%; }
+  .muro-burbujas span:nth-child(3){ bottom:46%; }
+  .muro-burbujas span:nth-child(4){ bottom:58%; }
+  .muro-burbujas span:nth-child(5){ bottom:69%; }
+  .muro-burbujas span:nth-child(6){ bottom:79%; }
+  .muro-burbujas span:nth-child(7){ bottom:88%; }
+}
+
+@keyframes muroBurbuja{
+  0%   { transform:translate3d(0,0,0)          scale(.72); opacity:0; }
+  12%  { opacity:.85; }
+  35%  { transform:translate3d(7px,-34vh,0)    scale(1); }
+  65%  { transform:translate3d(-6px,-66vh,0)   scale(1.04); }
+  88%  { opacity:.7; }
+  100% { transform:translate3d(3px,-102vh,0)   scale(1.1); opacity:0; }
+}
+@keyframes muroCaustica{
+  from{ transform:translate3d(0,0,0); }
+  to  { transform:translate3d(0,340%,0); }
+}
+@keyframes muroHoja{
+  from{ transform:rotate(-2.4deg); }
+  to  { transform:rotate(2.6deg); }
+}
+@keyframes muroRaiz{
+  from{ transform:rotate(-1.4deg); }
+  to  { transform:rotate(1.4deg); }
+}
+
+/* En pantallas muy anchas el hueco crece y la columna se queda flotando sola
+   en mucho aire. Se le da algo más de cuerpo y se separa del borde. */
+@media (min-width:1900px){
+  .muro{ --tubo:clamp(78px, calc(var(--hueco) * .34), 112px); --mata:62px; }
+}
+
 
 /* --- Secciones traslucidas ---
    Antes: las pares transparentes (dejaban ver el papel) y las .alt con --veil
