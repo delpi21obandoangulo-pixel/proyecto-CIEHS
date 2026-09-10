@@ -120,6 +120,22 @@
   });
 
   routeEls.forEach(function(el){
+    /* <body data-route> NO es un enlace: es el ESTADO de la ruta actual, que el
+       CSS lee para adaptar la portada. Pero querySelectorAll('[data-route]') lo
+       captura igual que a los botones, y sin esta exclusion <body> acababa con
+       un manejador de clic propio.
+
+       El efecto era que NINGUN enlace de ruta funcionaba. Al pulsar "Modulos":
+         1. el boton navega  -> hash pasa a "#/modulos"
+         2. el evento sigue subiendo hasta <body>
+         3. <body> navega a SU data-route... que todavia dice "inicio", porque
+            el repintado ocurre despues, en el evento hashchange, que es
+            asincrono. Asi que devuelve el hash a "#/inicio".
+       Cada clic se revertia a si mismo y el portal se quedaba en la portada.
+       Solo funcionaba escribiendo el hash a mano o llamando a CIEHS.navigate().
+
+       Se excluye tambien <html> por si algun dia hereda el atributo. */
+    if(el === document.body || el === document.documentElement) return;
     el.addEventListener('click', function(){ navigate(el.getAttribute('data-route')); });
   });
 
