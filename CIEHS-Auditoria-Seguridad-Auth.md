@@ -179,6 +179,17 @@ la política.
 
 ## 6. Riesgos abiertos
 
+### 🔴 El código de administración estuvo publicado en internet
+
+Hasta el 2026-09-10, `db/10_acceso_codigo.sql` llevaba el código **en claro**.
+El repositorio es **público**: se descargaba sin cuenta, y con él se obtiene
+acceso de administración completo al esquema `ciehs` enviando la cabecera
+`X-CIEHS-Code`.
+
+Se retiró del árbol de trabajo, **y eso no corrige nada por sí solo**: el
+historial de git lo conserva para siempre. **La corrección es rotarlo** →
+[[pendientes-coordinacion/08-rotar-codigo-de-acceso|08 · Rotar el código]].
+
 ### 🔴 Datos personales de menores — Ley N.° 29733
 
 La página de privacidad y el protocolo están **redactados y publicados**, con el
@@ -350,9 +361,79 @@ autorización explícita.**
 
 ---
 
+## 9. Cierre de la auditoría: los *advisors* (2026-09-10)
+
+Último punto de la lista del §7, ejecutado con autorización explícita para usar
+el MCP de Supabase **limitándose al esquema `ciehs`**. Con eso la lista queda
+completa.
+
+> [!note] Por qué `execute_sql` y no `apply_migration`
+> `apply_migration` escribe en `supabase_migrations.schema_migrations`, que en
+> esta instancia es **global**: contaminaría a Aura y a Safari. El DDL se aplicó
+> de forma aislada y quedó versionado en `db/13_indices_fk.sql`, que es como
+> el proyecto lleva su esquema.
+
+### Lo que se corrigió
+
+**Tres claves foráneas sin índice de cobertura.** Postgres no indexa el lado
+hijo de una FK: sin índice, borrar o actualizar la fila padre obliga a recorrer
+la tabla hija entera. Se añadieron:
+
+| Índice | Tabla | Por qué importa |
+|---|---|---|
+| `pedido_lineas_producto_idx` | `pedido_lineas` | La que más se va a notar: se recorre al abrir un pedido y al retirar un producto |
+| `site_config_updated_by_idx` | `site_config` | Autoría de la portada |
+| `telemetry_readings_recorded_by_idx` | `telemetry_readings` | Autoría de las lecturas |
+
+Hoy las tablas son pequeñas y no se nota. Se añadieron porque crearlos cuesta
+cero y descubrirlo con datos reales, no.
+
+### Lo que el linter marca y NO se toca
+
+**Las dos funciones `SECURITY DEFINER` invocables por `anon` son necesarias.**
+El linter avisa de `ciehs.is_admin()` y `ciehs.verificar_codigo()`. Lo comprobé
+antes de tocar nada:
+
+- **`is_admin()`**: hay **17 políticas RLS** que se aplican al rol `anon` y la
+  invocan. Una política se evalúa como el usuario que consulta, así que `anon`
+  **necesita** `EXECUTE`. Revocarlo apagaría el panel entero.
+- **`verificar_codigo()`**: la llama el modal de acceso **antes** de que exista
+  ninguna sesión. Cerrarla dejaría al panel sin puerta.
+
+No son fallos: son la consecuencia del diseño de entrada por código. Lo que sí
+es un problema real —que `verificar_codigo` funciona como oráculo de fuerza
+bruta sin límite de intentos— **no se arregla cerrándola**, sino con un código
+que no se pueda adivinar. Ver el riesgo 🔴 del §6.
+
+**`acceso_config` y `admins` con RLS y sin políticas.** El linter lo marca como
+INFO. Es **deliberado y es lo más estricto posible**: sin política, nadie lee
+nada por la API. Las lee únicamente `is_admin()`, que es `SECURITY DEFINER` y
+salta RLS. Añadir una política aquí **debilitaría** la tabla.
+
+**Tres «índices sin usar»** (`orders_estado_idx`, `registros_campo_modulo_fecha`,
+`aportes_kind_fecha`). Lo son porque todavía no hay datos, no porque sobren.
+Borrarlos sería optimizar contra una tabla vacía.
+
+**«Múltiples políticas permisivas»** en casi todas las tablas: cada una tiene su
+política de administración (ALL, vía `is_admin()`) y otra de lectura o alta
+pública. Fundirlas exigiría reescribir las diecisiete, y a esta escala el
+beneficio es indistinguible de cero.
+
+### Fuera del alcance autorizado
+
+**Protección de contraseñas filtradas y MFA** siguen desactivadas. Es
+configuración **de toda la instancia**, compartida con Aura y Safari: cambiarla
+afecta a proyectos ajenos y no se toca sin acordarlo. Ya estaba registrado en el §6.
+
+Todo lo demás que devolvieron los *advisors* pertenece a los esquemas `public`
+y `safary_kids`. **No se leyó ni se tocó**: la autorización era para `ciehs`.
+
+---
+
 ## Enlaces
 
 - [[CIEHS]] — índice general.
+- [[pendientes-coordinacion/08-rotar-codigo-de-acceso|08 · Rotar el código de acceso]] — lo que queda por hacer, y es urgente.
 - [[CIEHS-Portal-Educativo]] — arquitectura, alojamiento y cacheo.
 - [[CIEHS-Backend-Supabase]] — esquema, RLS y permisos por columna.
 - [[CIEHS-Metodologia-Pedagogica]] — contenido pedagógico que se publica.

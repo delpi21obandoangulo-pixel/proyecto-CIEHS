@@ -70,6 +70,6 @@ grant insert, update, delete on ciehs.transparency_entries to anon;
 
 -- Comprobación tras aplicar (debe permitir la escritura SOLO con la cabecera):
 --   set role anon;
---   select set_config('request.headers','{"x-ciehs-code":"12435687"}',true);
+--   select set_config('request.headers','{"x-ciehs-code":"<CÓDIGO>"}',true);
 --   select ciehs.is_admin();   -- true
 --   reset role;

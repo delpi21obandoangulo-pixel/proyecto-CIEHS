@@ -190,6 +190,9 @@ on conflict (user_id) do nothing;
 - [ ] Interfaz de **edición** de `investigations` y `resources` en el panel:
       hoy solo se editan por SQL.
 - [ ] Subida de archivos para `resources.file_url` (Supabase Storage).
+- [x] `get_advisors` sobre el esquema `ciehs`. Hecho el 2026-09-10: tres índices
+      de cobertura añadidos (`db/13_indices_fk.sql`) y el resto documentado como
+      aceptado → [[CIEHS-Auditoria-Seguridad-Auth]] §9.
 - [ ] Migración a proyecto Supabase propio: **bloqueada por el plan gratuito**
       (2 proyectos, ocupados por Aura y Kunturmasha). Queda para cuando se pague
       o se libere uno; entonces elimina el blast radius y la convivencia en

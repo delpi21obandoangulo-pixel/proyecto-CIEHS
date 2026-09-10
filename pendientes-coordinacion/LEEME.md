@@ -19,6 +19,7 @@ en la nota de la que salió.
 
 | # | Tarea | Por qué no puede hacerse desde el código | Qué desbloquea |
 |---|---|---|---|
+| [[pendientes-coordinacion/08-rotar-codigo-de-acceso\|08]] | 🔴 **Rotar el código de acceso al panel** | Hay que elegir el código nuevo y dónde se guarda | Cerrar un acceso de administración que estuvo publicado en GitHub |
 | [[pendientes-coordinacion/01-mural-panel-que-buscamos\|01]] | **Repintar el panel del mural** | Es una ilustración rasterizada, y el mural físico está en una pared | Que la imagen y el portal dejen de decir cosas distintas |
 | [[pendientes-coordinacion/02-autorizacion-de-imagen\|02]] | **Autorización de imagen**: revisión de Dirección, confirmar custodia, distribuir | Decisión institucional y firmas en papel | Publicar rostros sin tapar, y que `consent_ref` apunte a algo real |
 | [[pendientes-coordinacion/03-vercel-github-app\|03]] | **Instalar la Vercel GitHub App** | Flujo OAuth en tu navegador con tu sesión | Despliegue automático por push |
@@ -30,6 +31,12 @@ en la nota de la que salió.
 ---
 
 ## Si solo puedes hacer una
+
+**La 08, y hoy.** El código de administración estuvo escrito en claro en un
+repositorio público. Mientras no se rote, cualquiera que lo haya leído sigue
+teniendo acceso de escritura a todo. Las demás pueden esperar; esta no.
+
+## Después de esa
 
 **La 02.** No porque sea la más urgente en apariencia, sino porque es la única
 con consecuencia legal: mientras la custodia no esté confirmada, el campo

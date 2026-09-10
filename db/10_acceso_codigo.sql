@@ -38,12 +38,24 @@ create table if not exists ciehs.acceso_config (
 alter table ciehs.acceso_config enable row level security;
 revoke all on ciehs.acceso_config from anon, authenticated, public;
 
--- 2) Fijar el código actual: 12435687 (guardado como hash, no en claro).
-insert into ciehs.acceso_config (id, codigo_hash, actualizado)
-values (1, encode(extensions.digest('12435687','sha256'),'hex'), now())
-on conflict (id) do update
-  set codigo_hash = excluded.codigo_hash,
-      actualizado = now();
+-- 2) Fijar el código de acceso.
+--
+--    !! EL CÓDIGO NO SE ESCRIBE AQUÍ. Este archivo está en un repositorio
+--    PÚBLICO: cualquiera que lo lea obtiene acceso de administración enviando
+--    la cabecera X-CIEHS-Code. Hasta el 2026-09-10 el código estuvo escrito en
+--    claro en esta misma línea, y por eso hubo que rotarlo.
+--
+--    El código vigente vive en la bóveda local (C:\Users\delpi\.boveda), nunca
+--    en el repositorio. Para fijar uno nuevo se ejecuta esta sentencia a mano,
+--    sustituyendo el marcador, y NO se guarda el resultado en el repositorio:
+--
+--      insert into ciehs.acceso_config (id, codigo_hash, actualizado)
+--      values (1, encode(extensions.digest('<CÓDIGO>','sha256'),'hex'), now())
+--      on conflict (id) do update
+--        set codigo_hash = excluded.codigo_hash,
+--            actualizado = now();
+--
+--    Solo se guarda el hash sha256; el código en claro no toca la base.
 
 -- 3) is_admin(): admite el camino histórico (usuario en ciehs.admins) O un
 --    código válido en la cabecera X-CIEHS-Code. Al resolverse aquí dentro,
@@ -107,5 +119,5 @@ revoke all on function ciehs.verificar_codigo(text) from public;
 grant  execute on function ciehs.verificar_codigo(text) to anon, authenticated;
 
 -- Comprobación rápida (debe devolver true / false):
---   select ciehs.verificar_codigo('12435687');  -- true
+--   select ciehs.verificar_codigo('<CÓDIGO>');  -- true
 --   select ciehs.verificar_codigo('000');        -- false
