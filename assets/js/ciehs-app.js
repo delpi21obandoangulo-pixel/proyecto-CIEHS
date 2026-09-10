@@ -745,6 +745,37 @@
   var fase = 'cargando';
   function faseActual(){ return fase; }
 
+  /* ---- aria-busy ----
+     role="status" ya anuncia que la region cambio, pero no dice que lo que hay
+     AHORA es provisional. Alguien que llegue con lector de pantalla mientras el
+     esqueleto brilla no tiene forma de saber que va a llegar otra cosa: oye una
+     region vacia y sigue. aria-busy="true" es exactamente esa frase que falta, y
+     su ausencia es lo que marca que la seccion ya termino.
+
+     Se aplica desde un solo sitio y atado a la fase, no seccion por seccion:
+     un aria-busy que se pone y no se quita es peor que no ponerlo, porque deja
+     la region marcada como incompleta para siempre. Centralizado, ninguna
+     seccion puede olvidarse de retirarlo. */
+  var CAJAS_ASINCRONAS = [
+    'telemetriaLista', 'carpetaGrid', 'carpetaEstado', 'bitacoraCuerpo',
+    'bitacoraEstado', 'comentariosLista', 'comentariosEstado', 'tiendaEstado',
+    'transpEstado', 'campoVacio', 'invOrigen', 'aportePublicados'
+  ];
+  function marcarOcupacion(){
+    var cargando = (fase === 'cargando');
+    CAJAS_ASINCRONAS.forEach(function(id){
+      var n = document.getElementById(id);
+      if(!n) return;
+      if(cargando) n.setAttribute('aria-busy', 'true');
+      else n.removeAttribute('aria-busy');
+    });
+  }
+
+  // Unico camino para cambiar de fase: asi el aria-busy no puede desincronizarse
+  // de lo que se esta pintando.
+  function ponerFase(f){ fase = f; marcarOcupacion(); }
+  marcarOcupacion();   // el estado inicial es 'cargando'
+
   /* ---- aviso de datos caducados ----
      Caso aparte y facil de pasar por alto: la carga falla PERO ya habia datos
      buenos en pantalla de un intento anterior. Borrarlos para enseñar un error
@@ -1232,7 +1263,7 @@
 
   function refrescar(){
     if(!D || !D.listo){
-      fase = 'error';
+      ponerFase('error');
       repintarSeccionesDeRed();
       pintarTelemetria();
       avisarDatosCaducados(!!datos);
@@ -1242,20 +1273,20 @@
     // "cargando". Sin esto, al pulsar Reintentar el aviso de error se quedaria
     // fijo hasta que la respuesta llegara, y no habria ninguna señal de que la
     // pulsacion hizo algo.
-    fase = 'cargando';
+    ponerFase('cargando');
     avisarDatosCaducados(false);
     repintarSeccionesDeRed();
     pintarTelemetria();
 
     return D.cargarPortal().then(function(res){
       if(!res) {
-        fase = 'error';
+        ponerFase('error');
         pintarSync(); pintarTelemetria();
         repintarSeccionesDeRed();
         avisarDatosCaducados(!!datos);
         return;
       }
-      fase = 'listo';
+      ponerFase('listo');
       datos = res;
       horaBuena = new Date().toLocaleTimeString('es-PE', { hour:'2-digit', minute:'2-digit' });
       avisarDatosCaducados(false);
@@ -1285,7 +1316,7 @@
       // Un rechazo (red caida, CORS, token invalido) tiene que terminar igual
       // que una respuesta vacia: con un mensaje, no con un esqueleto eterno.
       if(window.console && console.warn) console.warn("CIEHS: no se pudo cargar el portal", err);
-      fase = 'error';
+      ponerFase('error');
       pintarSync(); pintarTelemetria();
       repintarSeccionesDeRed();
       avisarDatosCaducados(!!datos);

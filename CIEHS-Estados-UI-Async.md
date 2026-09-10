@@ -212,8 +212,37 @@ carpeta está vacía», y la primera ofrece deshacer el filtro.
 - [ ] Los estados están verificados en navegador para el portal público; los 12
       listados del panel solo de forma estática, porque probarlos pide el código
       de administración.
-- [ ] Un `aria-busy` en los contenedores mientras `fase === 'cargando'` ayudaría
-      a los lectores de pantalla más que el `role="status"` actual.
+- [x] ~~Un `aria-busy` en los contenedores mientras `fase === 'cargando'`.~~
+      Hecho. Ver §10.
+
+---
+
+## 10. `aria-busy`: por qué `role="status"` no bastaba
+
+`role="status"` anuncia que la región **cambió**, pero no dice que lo que hay
+ahora es **provisional**. Alguien que llega con lector de pantalla mientras el
+esqueleto brilla oye una región vacía y sigue de largo: no tiene forma de saber
+que va a llegar otra cosa. `aria-busy="true"` es exactamente la frase que
+faltaba, y su retirada es lo que marca que la sección terminó.
+
+Se aplica desde **un solo sitio**, atado a la fase, sobre doce contenedores:
+
+```js
+function ponerFase(f){ fase = f; marcarOcupacion(); }
+```
+
+Y no sección por sección, que era la tentación obvia. El motivo: **un
+`aria-busy` que se pone y no se quita es peor que no ponerlo**, porque deja la
+región marcada como incompleta para siempre. Con un único camino para cambiar de
+fase, ninguna sección puede olvidarse de retirarlo.
+
+Efecto secundario deseable: al combinarse con `role="status"`, la región live
+anuncia su contenido **cuando `aria-busy` pasa a falso**, es decir con los datos
+ya definitivos, en vez de leer el esqueleto a medio pintar.
+
+> No se marca en el HTML estático a propósito. Si el JS no llegara a correr, un
+> `aria-busy="true"` escrito a mano se quedaría puesto para siempre — justo el
+> fallo que esta centralización evita.
 
 ---
 
