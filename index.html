@@ -68,11 +68,23 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Cinzel:wght@500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
+<!-- Red de seguridad del arranque. Va PRIMERO, sincrono y en <head>: marca
+     <html data-js> antes del primer pintado. Si la aplicacion no llega a
+     arrancar, el CSS revela las secciones y el portal se lee como una sola
+     pagina larga en vez de quedarse mudo. Ver assets/js/arranque.js -->
+<script src="/assets/js/arranque.js"></script>
+
 <link rel="stylesheet" href="/assets/css/ciehs.css">
 
 </head>
 
 <body data-route="inicio">
+
+<noscript>
+  <div class="aviso-sinjs" role="alert">
+    <p>Este portal usa JavaScript para moverse entre secciones. Con JavaScript desactivado puedes leerlo entero igualmente: todas las secciones aparecen seguidas, una tras otra.</p>
+  </div>
+</noscript>
 
 <div class="scroll-progress" aria-hidden="true"><i></i></div>
 

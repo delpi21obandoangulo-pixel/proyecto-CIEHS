@@ -130,6 +130,12 @@
   canonicalize(initial);
   render(initial.route, { moveFocus:false });
 
+  // El router ya esta en pie y las secciones responden: se cancela la red de
+  // seguridad de arranque.js. Va justo aqui, despues del primer render() y no
+  // al final del archivo, porque a partir de este punto la navegacion funciona
+  // aunque algo mas abajo falle. Ver assets/js/arranque.js
+  if(window.CIEHS_ARRANQUE && window.CIEHS_ARRANQUE.listo) window.CIEHS_ARRANQUE.listo();
+
   // Punto de entrada para el resto de scripts y para los QR por sección.
   window.CIEHS = window.CIEHS || {};
   window.CIEHS.navigate = navigate;

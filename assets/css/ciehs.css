@@ -3874,3 +3874,50 @@ footer{
 }
 @keyframes caducadoEntraMovil{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
 @media print{ .datos-caducados{ display:none !important; } }
+
+/* ==========================================================================
+   RED DE SEGURIDAD DEL ARRANQUE
+   Catorce de las dieciseis secciones nacen con `hidden` y es ciehs-app.js quien
+   las muestra. Si ese archivo no llega a ejecutarse, el visitante se queda con
+   la portada y un menu que no responde, sin ningun aviso: el sintoma exacto de
+   "solo puedo navegar en la pagina principal".
+
+   La regla de abajo es el plan B. `html[data-js]` lo pone arranque.js antes del
+   primer pintado; si falta —JS desactivado, bloqueado, o el vigilante se rindio
+   porque la aplicacion nunca arranco— las secciones se revelan y el portal pasa
+   a ser una sola pagina larga. Se pierde la navegacion; no se pierde el
+   contenido, que es lo que importa.
+
+   Se usa `display:block !important` porque hay que ganarle al estilo del propio
+   navegador para [hidden], que tambien es display:none.
+   ========================================================================== */
+html:not([data-js]) main > section[hidden]{ display:block !important; }
+
+/* Sin aplicacion no hay router: los botones de ruta no llevan a ninguna parte y
+   anunciarlos como pulsables seria mentir. El menu lateral tampoco abre. */
+html:not([data-js]) .navtoggle,
+html:not([data-js]) .nav-admin,
+html:not([data-js]) .admin-fab,
+html:not([data-js]) .hm-nav{ display:none !important; }
+
+/* El aviso: lo inserta arranque.js cuando se rinde, y tambien vive dentro del
+   <noscript> del HTML para el caso de JavaScript desactivado. */
+.aviso-sinjs{
+  position:relative; z-index:41;
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  padding:14px 20px;
+  background:rgba(251,191,36,.16);
+  border-bottom:1px solid rgba(180,83,9,.28);
+  color:var(--sun-300);
+  font-family:var(--font-body); font-size:14px; line-height:1.5;
+}
+.aviso-sinjs p{ margin:0; flex:1 1 20rem; min-width:0; }
+.aviso-sinjs-btn{
+  flex:0 0 auto; cursor:pointer;
+  padding:9px 18px; border-radius:999px;
+  border:1px solid rgba(180,83,9,.32); background:var(--surface);
+  color:var(--sun-300); font-family:inherit; font-size:13px; font-weight:600;
+}
+.aviso-sinjs-btn:hover{ border-color:var(--sun-300); box-shadow:var(--shadow-2); }
+
+@media print{ .aviso-sinjs{ display:none !important; } }

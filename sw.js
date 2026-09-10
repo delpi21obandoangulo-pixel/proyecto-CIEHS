@@ -22,7 +22,7 @@
 // Al subir esta version se descartan todas las cachas anteriores. Se sube cada
 // vez que cambian el CSS, los iconos o el plano ambiental: si no, quien ya
 // visito el portal sigue viendo la version vieja.
-var VERSION = 'ciehs-v3';
+var VERSION = 'ciehs-v4';
 var SHELL = VERSION + '-shell';
 var MEDIA = VERSION + '-media';
 
@@ -31,6 +31,9 @@ var PRECARGA = [
   '/',
   '/index.html',
   '/assets/css/ciehs.css',
+  // Primero de todos: es la red de seguridad del arranque y sin el, si el resto
+  // falla, el portal se queda mudo con catorce secciones ocultas.
+  '/assets/js/arranque.js',
   '/assets/js/supabase.js',
   '/assets/js/ciehs-data.js',
   '/assets/js/ciehs-preguntas.js',
