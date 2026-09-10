@@ -4,7 +4,7 @@ aliases: [Privacidad CIEHS, Protocolo de imagen, Ley 29733 CIEHS]
 tags: [ciehs, privacidad, menores, legal, ley-29733]
 estado: publicado · rostros tapados en origen · sin aprobacion de direccion
 publicado-en: https://ciehs.vercel.app/#/privacidad
-actualizado: 2026-09-09
+actualizado: 2026-09-10
 ---
 
 # CIEHS · Privacidad y uso de imagen de menores
@@ -150,6 +150,9 @@ Tres condiciones que la hacen válida y no meramente formal:
    por no autorizarla. Esto es lo que evita que la autorización se convierta en
    una presión encubierta.
 
+El documento que cumple las tres, con su procedimiento de custodia y el formato
+del código `consent_ref`, está en [[CIEHS-Ficha-Autorizacion-Imagen]].
+
 ---
 
 ## 4. Qué datos trata el portal
@@ -205,13 +208,19 @@ obstáculo.
 
 ## 7. Pendientes
 
-- [x] **Aprobación formal de la Dirección.** Obtenida el 2026-09-09. Era el
-      bloqueo que retenía todo lo demás.
-- [ ] Redactar y distribuir la **ficha de autorización de imagen** para
-      apoderados.
-- [ ] Definir **quién archiva y custodia** las autorizaciones firmadas. Ahora
-      es lo más urgente: las autorizaciones ya existen y el campo `consent_ref`
-      de cada evidencia debe apuntar a un sitio concreto y localizable.
+- [ ] **Aprobación formal de la Dirección.** No consta — ver la corrección del
+      registro al inicio de esta nota. Un pendiente anterior la daba por
+      obtenida el 2026-09-09; era la misma afirmación que esa corrección
+      desmiente, así que vuelve a estar abierto.
+- [x] Redactar la **ficha de autorización de imagen** para apoderados. Hecho:
+      [[CIEHS-Ficha-Autorizacion-Imagen]] §4, lista para imprimir. Falta que la
+      Dirección la revise y que se distribuya.
+- [ ] Definir **quién archiva y custodia** las autorizaciones firmadas. La
+      propuesta operativa está escrita en [[CIEHS-Ficha-Autorizacion-Imagen]]
+      §1 —original en papel bajo llave, índice local que nunca entra al
+      repositorio ni a la base—, pero **falta que el coordinador la confirme**.
+      Hasta entonces `consent_ref` no tiene destino verificable y no debe
+      publicarse ninguna fotografía con rostro sin tapar.
 - [x] Procedimiento para **retirar metadatos** de las fotografías antes de
       subirlas. Hecho: hay un limpiador propio que descarta todos los segmentos
       APPn y de comentario de cada JPEG. Se aplicó a las cuatro publicadas.
@@ -224,6 +233,8 @@ obstáculo.
 ## Enlaces
 
 - [[CIEHS]] — índice general.
+- [[CIEHS-Ficha-Autorizacion-Imagen]] — el documento que firma el apoderado,
+  dónde se custodia y cómo se enlaza con cada evidencia.
 - [[CIEHS-Auditoria-Seguridad-Auth]] — riesgos y hallazgos de seguridad.
 - [[CIEHS-Identidad-Visual]] — qué imágenes existen hoy en el portal.
 - [[CIEHS-Arena-Juego]] — qué guarda el juego en el navegador.
