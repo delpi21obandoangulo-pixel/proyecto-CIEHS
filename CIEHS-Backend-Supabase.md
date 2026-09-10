@@ -194,8 +194,8 @@ on conflict (user_id) do nothing;
       (2 proyectos, ocupados por Aura y Kunturmasha). Queda para cuando se pague
       o se libere uno; entonces elimina el blast radius y la convivencia en
       `auth.users`.
-- [ ] Exportación de mediciones a CSV: los estudiantes deberían poder llevarse
-      los datos a la hoja de cálculo.
+- [x] Exportación de mediciones a CSV. Hecho el 2026-09-10: botón en el visor
+      de la carpeta de campo, un archivo por módulo → §8.
 - [x] Autoría (`recorded_by`, `updated_by`) la pone el servidor, no el cliente
       → [[CIEHS-Auditoria-Seguridad-Auth]].
 
@@ -267,6 +267,65 @@ su propia sesión. No hay ninguna vía automatizada, y es deliberado: la
 `service_role` de esta instancia pertenece a Aura y Safari según su ficha de la
 bóveda, y reutilizarla para el CIEHS sería cruce de credenciales entre
 proyectos.
+
+
+---
+
+## 8. Llevarse las mediciones: el CSV
+
+Un dato que solo se puede mirar en una gráfica del portal no es del estudiante:
+es del portal. El botón **Descargar CSV** del visor de la carpeta de campo
+devuelve la medición a sus manos — para promediarla, graficarla de otra forma o
+pegarla en el informe.
+
+### Qué exporta
+
+Un archivo **por módulo**, con **todas** sus variables, no solo la que está
+dibujada: en una hoja de cálculo lo útil es la tabla entera.
+
+| Columna | Origen |
+|---|---|
+| `modulo`, `fecha` | `module_code`, `medido_en` |
+| `ph`, `ce_ms_cm`, `temp_c`, `altura_cm`, `hojas` | las cinco variables de `ciehs.registros_campo` |
+| `equipo`, `grado` | atribución del trabajo — nunca el nombre de un menor |
+| `estado` | `validado` o `pendiente de validar` |
+| `nota` | la observación de quien midió |
+
+Van también **los registros propios todavía pendientes de validar**, marcados en
+la columna `estado`. Son los que el estudiante acaba de tomar, y es justo lo
+que quiere llevarse. La gráfica ya los distingue con su propia leyenda, así que
+el CSV no inventa una distinción nueva: refleja la que ya se ve.
+
+### Por qué separador `;` y coma decimal
+
+> [!important] Con el formato "correcto" la función sería inútil aquí
+> El estándar internacional (RFC 4180) es coma como separador y punto decimal.
+> Abierto en el **Excel en español** que hay en la institución, ese archivo mete
+> la fila entera en una sola celda: Excel usa el separador de lista del sistema,
+> que en es-PE es `;`.
+>
+> Así que el archivo se genera **para el Excel de aquí**: separador `;` y coma
+> decimal. Google Sheets y LibreOffice lo detectan sin problema.
+
+El archivo empieza con **BOM UTF-8**. Sin él, Excel abre el CSV en la
+codificación del sistema y «módulo» se lee «mÃ³dulo». Las líneas terminan en
+**CRLF**, que es lo que espera Excel y lo que dice el RFC.
+
+Las notas se entrecomillan si llevan `;`, comillas o un salto de línea —
+si no, una observación como «se repuso agua; bajó el nivel» partiría la fila
+en dos.
+
+### Detalles de implementación
+
+- Se genera **en el navegador** con `Blob` + `URL.createObjectURL`. No hay
+  petición al servidor: los datos ya están en el snapshot.
+- El `objectURL` se revoca a los 30 s. Sin eso el archivo se queda en memoria
+  hasta recargar la página.
+- La descarga por `blob:` **no infringe la CSP** de producción: las directivas
+  de *fetch* no gobiernan un `<a download>`. Comprobado inyectando la política
+  de `vercel.json` en la página y descargando sin violaciones.
+- El botón se deshabilita y dice por qué cuando el módulo elegido no tiene
+  mediciones. Un botón que no hace nada al pulsarlo es peor que uno apagado.
 
 
 ---

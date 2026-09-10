@@ -3755,6 +3755,8 @@
   var elTitulo  = document.getElementById('campoVisorTitulo');
   var elVacio   = document.getElementById('campoVacio');
   var elSeries  = document.getElementById('campoSeries');
+  var elCsv     = document.getElementById('campoCsv');
+  var elCsvNota = document.getElementById('campoCsvNota');
 
   var VARIABLES = [
     { clave:'ph',        etiqueta:'pH',      unidad:'',       min:4,  max:8   },
@@ -4003,6 +4005,7 @@
       if(fila) pendientes.push(fila);
       aviso('Registrado. Tu medición ya aparece en la gráfica marcada como pendiente: el equipo coordinador la valida y pasa a ser oficial.');
       dibujar();
+      refrescarCsv();
       ['campoPh','campoCe','campoTemp','campoAltura','campoHojas','campoNota'].forEach(function(id){
         var e = document.getElementById(id); if(e) e.value = '';
       });
@@ -4013,16 +4016,123 @@
     });
   });
 
-  if(selModulo) selModulo.addEventListener('change', dibujar);
+  /* ------------------------------------------- llevarselo a la hoja de calculo
+
+     Un dato que solo se puede mirar en una grafica del portal no es del
+     estudiante: es del portal. Con el CSV la medicion vuelve a sus manos y
+     puede promediarla, graficarla de otra forma o pegarla en su informe.
+
+     Se exporta el modulo seleccionado con TODAS sus variables, no solo la que
+     esta dibujada: en la hoja de calculo lo util es la tabla entera. Van tambien
+     los registros propios pendientes de validar, con la columna "estado"
+     diciendolo, porque son los que el estudiante acaba de tomar y es justo lo
+     que quiere llevarse.
+
+     Formato pensado para el Excel de aqui (es-PE): separador ";" y coma decimal.
+     Con separador "," y punto decimal —el estandar internacional— este Excel
+     mete toda la fila en una sola celda, que es exactamente el fallo que haria
+     inutil la funcion. El BOM inicial es lo que evita que «módulo» y «pH» se
+     lean como «mÃ³dulo».
+  ---------------------------------------------------------------------------*/
+  var CSV_COLUMNAS = [
+    { cab:'modulo',     leer:function(r){ return r.module_code; } },
+    { cab:'fecha',      leer:function(r){ return r.medido_en; } },
+    { cab:'ph',         leer:function(r){ return r.ph; },        num:true },
+    { cab:'ce_ms_cm',   leer:function(r){ return r.ce; },        num:true },
+    { cab:'temp_c',     leer:function(r){ return r.temp_c; },    num:true },
+    { cab:'altura_cm',  leer:function(r){ return r.altura_cm; }, num:true },
+    { cab:'hojas',      leer:function(r){ return r.hojas; },     num:true },
+    { cab:'equipo',     leer:function(r){ return r.equipo; } },
+    { cab:'grado',      leer:function(r){ return r.grado; } },
+    { cab:'estado',     leer:function(r){ return r.pendiente ? 'pendiente de validar' : 'validado'; } },
+    { cab:'nota',       leer:function(r){ return r.nota; } }
+  ];
+
+  function celda(valor, numerica){
+    if(valor == null || valor === '') return '';
+    var s = String(valor);
+    // Coma decimal para el Excel local. Solo en las columnas numericas: en una
+    // nota de texto los puntos son puntos.
+    if(numerica) return s.replace('.', ',');
+    // Un ";" o un salto de linea dentro de una nota partiria la fila en dos.
+    if(/[;"\n\r]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  }
+
+  function filasDelModulo(codigo){
+    var snap = (window.CIEHS && window.CIEHS.snapshot && window.CIEHS.snapshot()) || null;
+    var val = ((snap && snap.registros) || []).filter(function(r){ return r.module_code === codigo; });
+    var pen = pendientes.filter(function(r){ return r.module_code === codigo; })
+      .map(function(r){ var c = {}; for(var k in r){ if(Object.prototype.hasOwnProperty.call(r, k)) c[k] = r[k]; } c.pendiente = true; return c; });
+    return val.concat(pen).sort(function(a, b){
+      return a.medido_en < b.medido_en ? -1 : a.medido_en > b.medido_en ? 1 : 0;
+    });
+  }
+
+  function csvDe(filas){
+    var lineas = [CSV_COLUMNAS.map(function(c){ return c.cab; }).join(';')];
+    filas.forEach(function(r){
+      lineas.push(CSV_COLUMNAS.map(function(c){ return celda(c.leer(r), c.num); }).join(';'));
+    });
+    // CRLF: es lo que espera Excel y lo que dice el RFC 4180.
+    return '\ufeff' + lineas.join('\r\n') + '\r\n';
+  }
+
+  function avisoCsv(texto, error){
+    if(!elCsvNota) return;
+    elCsvNota.classList.toggle('error', !!error);
+    elCsvNota.textContent = texto || '';
+  }
+
+  function refrescarCsv(){
+    if(!elCsv) return;
+    var codigo = selModulo ? selModulo.value : '';
+    var n = codigo ? filasDelModulo(codigo).length : 0;
+    elCsv.disabled = !n;
+    elCsv.textContent = n
+      ? 'Descargar CSV (' + n + (n === 1 ? ' medición' : ' mediciones') + ')'
+      : 'Descargar CSV';
+    if(!codigo) avisoCsv('');
+    else if(!n) avisoCsv('Este módulo todavía no tiene mediciones que descargar.');
+    else avisoCsv('Se abre en Excel, Google Sheets o LibreOffice. Incluye las cinco variables del módulo, no solo la dibujada.');
+  }
+
+  if(elCsv){
+    elCsv.addEventListener('click', function(){
+      var codigo = selModulo ? selModulo.value : '';
+      var filas = codigo ? filasDelModulo(codigo) : [];
+      if(!filas.length) return;
+      var url;
+      try{
+        var blob = new Blob([csvDe(filas)], { type: 'text/csv;charset=utf-8' });
+        url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'ciehs-' + codigo.toLowerCase() + '-' + hoy() + '.csv';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        avisoCsv('Descargado: ' + a.download);
+      }catch(e){
+        avisoCsv('No se pudo generar el archivo: ' + ((e && e.message) || 'error desconocido'), true);
+      }finally{
+        // Sin esto el archivo se queda en memoria hasta recargar la pagina.
+        if(url) setTimeout(function(){ URL.revokeObjectURL(url); }, 30000);
+      }
+    });
+  }
+
+  if(selModulo) selModulo.addEventListener('change', function(){ dibujar(); refrescarCsv(); });
 
   pintarSeries();
   llenarModulos();
   dibujar();
+  refrescarCsv();
 
   // La capa de datos avisa cuando termina de cargar: hasta entonces no hay
   // modulos que listar ni registros que graficar.
   window.CIEHS = window.CIEHS || {};
-  window.CIEHS.refrescarCampo = function(){ llenarModulos(); dibujar(); };
+  window.CIEHS.refrescarCampo = function(){ llenarModulos(); dibujar(); refrescarCsv(); };
 })();
 
 /* ===========================================================================

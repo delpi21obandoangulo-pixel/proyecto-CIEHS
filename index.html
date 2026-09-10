@@ -1479,10 +1479,16 @@
               <div class="campo-vacio" id="campoVacio" role="status" aria-live="polite">
                 <div class="estado-caja estado-caja--cargando"><span class="estado-ico" aria-hidden="true"><span class="estado-pulso"></span></span><div class="estado-txt"><p>Consultando los registros del módulo…</p></div></div>
               </div>
-              <p class="campo-leyenda">
-                <span class="lg lg-val"></span> Validado por el equipo coordinador
-                <span class="lg lg-pend"></span> Tu registro, pendiente de validar
-              </p>
+              <div class="campo-pie">
+                <p class="campo-leyenda">
+                  <span class="lg lg-val"></span> Validado por el equipo coordinador
+                  <span class="lg lg-pend"></span> Tu registro, pendiente de validar
+                </p>
+                <button type="button" class="btn btn-ghost campo-csv" id="campoCsv" disabled>
+                  Descargar CSV
+                </button>
+              </div>
+              <p class="campo-csv-nota" id="campoCsvNota" role="status" aria-live="polite"></p>
             </div>
           </div>
         </div>

@@ -2350,6 +2350,25 @@
     border-radius:100px; border:1px solid var(--line-strong); background:transparent;
     color:var(--on-ocean-soft); cursor:pointer; transition:all .2s ease;
   }
+  /* Pie del visor: la leyenda a la izquierda, la descarga a la derecha, y en
+     movil una debajo de la otra. */
+  .campo-pie{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:14px; flex-wrap:wrap; margin-top:14px;
+  }
+  .campo-pie .campo-leyenda{ margin-top:0; }
+  .campo-csv{ flex:none; font-size:12.5px; padding:9px 16px; }
+  .campo-csv:disabled{ opacity:.5; cursor:not-allowed; }
+  .campo-csv-nota{
+    margin-top:10px; font-family:var(--font-mono); font-size:11.5px;
+    line-height:1.5; color:var(--ink-mute);
+  }
+  .campo-csv-nota.error{ color:var(--status-danger); }
+  @media (max-width:560px){
+    .campo-pie{ align-items:stretch; }
+    .campo-csv{ width:100%; }
+  }
+
   .mural-nav button.is-active{ background:linear-gradient(135deg, var(--leaf-500), var(--azure-500)); color:#04140f; border-color:transparent; }
 
   /* El proposito que el mural fisico lleva pintado abajo, aqui como texto real:
