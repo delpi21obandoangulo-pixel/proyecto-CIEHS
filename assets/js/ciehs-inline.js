@@ -39,11 +39,23 @@
 
    SEGURIDAD
    ---------
-   · Todo texto guardado se pinta con textContent, NUNCA con innerHTML. Es la
-     unica barrera que impide que esta tabla se convierta en un XSS almacenado
-     servido a cualquier visitante si el codigo de administracion se filtrase.
-     Si algun dia hace falta negrita, se resuelve con lista blanca de etiquetas,
-     no quitando esta linea.
+   · Todo texto guardado se pinta reconstruyendolo contra una LISTA BLANCA de
+     etiquetas (b, strong, i, em, br) y sin copiar ni un atributo — ver
+     sanearAFragmento. NUNCA se asigna innerHTML con contenido que venga de la
+     base: lo que acaba en la pagina son nodos creados aqui. Esa es la barrera
+     que impide que esta tabla se convierta en un XSS almacenado servido a
+     cualquier visitante si el codigo de administracion se filtrase.
+
+     Hasta 2026-09-13 la barrera era pintar con textContent. Se cambio porque el
+     portal tiene 154 parrafos con negrita dentro y editarlos los devolvia en
+     plano; la cabecera de entonces ya dejaba dicho que la salida era la lista
+     blanca y no relajar la regla. El filtrado se aplica DOS veces, al guardar y
+     al pintar: que el valor se saneara al escribirlo no basta, porque la fila
+     pudo llegar a la tabla por otra via.
+
+     <a> queda deliberadamente FUERA de la lista. Sin enlaces, un codigo de
+     administracion filtrado no permite convertir un parrafo del portal en un
+     cebo hacia otro sitio.
    · Las claves se validan contra el mismo patron que el CHECK del servidor
      antes de usarse en un selector.
    · Quien manda de verdad es RLS: sin la cabecera con el codigo correcto,
@@ -80,6 +92,112 @@
   function $$(sel, raiz) { return [].slice.call((raiz || doc).querySelectorAll(sel)); }
 
   function claveValida(c) { return CLAVE_OK.test(String(c || '')); }
+
+  /* ------------------------------------------------- texto con formato ----
+
+     Hasta aqui lo guardado se pintaba con textContent y punto. Era la barrera
+     que impedia que esta tabla se convirtiera en un XSS almacenado, y sigue
+     siendo obligatorio que exista una barrera — pero tenia un precio que solo
+     se veia de cerca: el portal tiene 154 parrafos con negrita dentro, y editar
+     uno lo devolvia en texto plano. Con 27 textos rotulados era una molestia;
+     rotulado el portal entero, seria la razon por la que nadie usaria esto.
+
+     La cabecera de este archivo ya dejo escrito el camino: «se resuelve con
+     lista blanca de etiquetas, no quitando esta linea». Es lo que hay aqui.
+
+     COMO NO SE HACE
+     ---------------
+     No se limpia con expresiones regulares sobre la cadena. Un HTML mal formado
+     se reinterpreta al asignarlo, y toda limpieza por regex acaba teniendo un
+     caso que se le escapa.
+
+     COMO SE HACE
+     ------------
+     Se parsea en un documento INERTE (DOMParser): ahi ni se ejecutan scripts,
+     ni se cargan imagenes, ni corre un onerror. Sobre ese arbol muerto se
+     reconstruye uno nuevo nodo a nodo, creando SOLO los elementos de la lista
+     blanca y SIN copiar ni un atributo. Lo que no esta en la lista no se
+     convierte en nada: no hay "quitar lo peligroso", hay "copiar lo permitido".
+
+     Por eso no se asigna innerHTML con contenido ajeno en ningun punto: lo que
+     acaba en la pagina son nodos creados aqui con createElement y createTextNode.
+
+     Sin atributos no hay onclick, ni href de javascript:, ni style. Y como <a>
+     NO esta en la lista, tampoco hay enlaces: un administrador con el codigo
+     filtrado no puede convertir un parrafo en un cebo hacia otro sitio. */
+
+  // Lo unico que se conserva. Deliberadamente corto: es formato de enfasis, no
+  // maquetacion. Ampliarlo es una decision de seguridad, no de estilo.
+  var ETIQUETAS_RICAS = { B: 1, STRONG: 1, I: 1, EM: 1, BR: 1 };
+
+  // De estos no se conserva ni el contenido. Desenvolver un <script> dejaria su
+  // codigo como texto visible en mitad del parrafo: inofensivo, pero absurdo.
+  var ETIQUETAS_MUDAS = {
+    SCRIPT: 1, STYLE: 1, NOSCRIPT: 1, TEMPLATE: 1, TITLE: 1, TEXTAREA: 1,
+    IFRAME: 1, OBJECT: 1, EMBED: 1, SVG: 1, MATH: 1, HEAD: 1
+  };
+
+  // Un texto de enfasis no anida diez niveles. El tope corta de raiz cualquier
+  // arbol absurdo que llegue de la base sin tener que razonar sobre su forma.
+  var PROFUNDIDAD_MAX = 6;
+
+  function copiarSaneado(origen, destino, profundidad) {
+    var hijos = origen.childNodes;
+    for (var i = 0; i < hijos.length; i++) {
+      var n = hijos[i];
+
+      if (n.nodeType === 3) {                       // texto
+        destino.appendChild(doc.createTextNode(n.nodeValue));
+        continue;
+      }
+      if (n.nodeType !== 1) continue;               // comentarios y demas, fuera
+
+      var etiqueta = n.tagName;
+      if (ETIQUETAS_MUDAS[etiqueta]) continue;      // ni el elemento ni su contenido
+
+      if (ETIQUETAS_RICAS[etiqueta] && profundidad < PROFUNDIDAD_MAX) {
+        // Elemento NUEVO, creado aqui: no se clona el de origen ni se copia un
+        // solo atributo. Es la diferencia entre copiar lo permitido y quitar lo
+        // peligroso.
+        var limpio = doc.createElement(etiqueta);
+        if (etiqueta !== 'BR') copiarSaneado(n, limpio, profundidad + 1);
+        destino.appendChild(limpio);
+      } else {
+        // Fuera de la lista: se tira el elemento y se conserva lo que decia,
+        // que es lo que el administrador queria escribir.
+        copiarSaneado(n, destino, profundidad);
+      }
+    }
+  }
+
+  // Devuelve un fragmento listo para colgar del DOM.
+  function sanearAFragmento(html) {
+    var frag = doc.createDocumentFragment();
+    var texto = String(html == null ? '' : html);
+    if (!texto) return frag;
+    try {
+      var inerte = new global.DOMParser().parseFromString(texto, 'text/html');
+      copiarSaneado(inerte.body, frag, 0);
+    } catch (e) {
+      // Sin DOMParser no se adivina: se degrada a texto plano, que es seguro.
+      frag.appendChild(doc.createTextNode(texto));
+    }
+    return frag;
+  }
+
+  // Devuelve la cadena ya saneada, que es lo que viaja a la base. Se obtiene
+  // del fragmento ya limpio, nunca del original.
+  function sanearACadena(html) {
+    var caja = doc.createElement('div');
+    caja.appendChild(sanearAFragmento(html));
+    return caja.innerHTML;
+  }
+
+  // Sustituye el contenido de un nodo por la version saneada de `html`.
+  function pintarRico(nodo, html) {
+    while (nodo.firstChild) nodo.removeChild(nodo.firstChild);
+    nodo.appendChild(sanearAFragmento(html));
+  }
 
   // Region viva unica para anunciar el resultado de cada accion. Sin esto, a
   // quien navega con lector de pantalla un guardado correcto le resulta
@@ -133,11 +251,15 @@
       if (!claveValida(clave)) return;
       // El texto que traia el HTML es el respaldo: se guarda la PRIMERA vez que
       // se ve el nodo, antes de pisarlo, porque es a lo que hay que poder
-      // volver si el administrador se arrepiente.
-      if (!(clave in estado.originales)) estado.originales[clave] = nodo.textContent;
+      // volver si el administrador se arrepiente. Se guarda el HTML, no el
+      // texto pelado, o restaurar un parrafo lo devolveria sin sus negritas —
+      // que es justo el defecto que esta version viene a quitar.
+      if (!(clave in estado.originales)) estado.originales[clave] = nodo.innerHTML;
       if (Object.prototype.hasOwnProperty.call(estado.textos, clave)) {
-        // textContent y no innerHTML: ver la nota de seguridad de la cabecera.
-        nodo.textContent = estado.textos[clave];
+        // pintarRico y no innerHTML: lo que llega de la base se reconstruye
+        // nodo a nodo contra la lista blanca. Que el valor se saneara al
+        // guardarlo no basta — la fila pudo escribirse por otra via.
+        pintarRico(nodo, estado.textos[clave]);
       }
     });
   }
@@ -210,12 +332,11 @@
 
     function abrir() {
       if (nodo.isContentEditable) return;
-      var antes = nodo.textContent;
-      nodo.setAttribute('contenteditable', 'plaintext-only');
-      // plaintext-only no esta en todos los navegadores; donde no lo esta, el
-      // atributo cae a "true" y el pegado podria traer HTML. Se limpia en el
-      // propio pegado, mas abajo.
-      if (!nodo.isContentEditable) nodo.setAttribute('contenteditable', 'true');
+      var antes = nodo.innerHTML;
+      // Antes era plaintext-only: no habia otra opcion, porque lo guardado se
+      // repintaba en plano. Ahora el formato sobrevive, asi que el campo lo
+      // admite; lo que entra se filtra igual por la lista blanca al guardar.
+      nodo.setAttribute('contenteditable', 'true');
       nodo.classList.add('is-editando');
       nodo.removeAttribute('role');
       nodo.focus();
@@ -224,23 +345,35 @@
       barra.className = 'ed-barra ed-barra--texto';
       barra.setAttribute('contenteditable', 'false');
 
+      // Negrita y cursiva son lo unico que la lista blanca conserva, asi que es
+      // lo unico que se ofrece: un boton que promete mas de lo que el guardado
+      // respeta seria peor que no tenerlo.
+      var negrita = boton('ed-btn ed-btn--marca', 'Poner en negrita lo seleccionado (Ctrl+B)', 'N');
+      var cursiva = boton('ed-btn ed-btn--marca ed-btn--cursiva', 'Poner en cursiva lo seleccionado (Ctrl+I)', 'C');
       var guardar = boton('ed-btn ed-btn--ok', 'Guardar este texto', 'Guardar');
       var cancelar = boton('ed-btn', 'Descartar los cambios', 'Cancelar');
       var restaurar = boton('ed-btn ed-btn--sutil', 'Volver al texto original del portal', 'Restaurar');
+      barra.appendChild(negrita);
+      barra.appendChild(cursiva);
       barra.appendChild(guardar);
       barra.appendChild(cancelar);
       barra.appendChild(restaurar);
 
-      // Lo guardado se repinta con textContent (ver la nota de seguridad de la
-      // cabecera), asi que un parrafo que traia negritas las pierde al
-      // guardarse. No se impide -son justo los parrafos que mas se corrigen-,
-      // pero se avisa ANTES de pulsar, no despues de haberlo perdido.
-      if (nodo.querySelector('b, i, em, strong, a, span')) {
-        var aviso = doc.createElement('span');
-        aviso.className = 'ed-aviso';
-        aviso.textContent = 'Al guardar, este texto perderá sus negritas y cursivas.';
-        barra.appendChild(aviso);
+      // El foco esta dentro del nodo editable; si el boton se lo lleva, la
+      // seleccion se pierde y execCommand no tiene sobre que actuar.
+      function marcar(orden) {
+        return function (ev) {
+          ev.preventDefault();
+          try { doc.execCommand(orden, false, null); } catch (e) { /* navegador sin soporte */ }
+          nodo.focus();
+        };
       }
+      negrita.addEventListener('mousedown', marcar('bold'));
+      cursiva.addEventListener('mousedown', marcar('italic'));
+      // El teclado no dispara mousedown: sin esto, los dos botones quedaban
+      // fuera del alcance de quien no usa raton.
+      negrita.addEventListener('click', marcar('bold'));
+      cursiva.addEventListener('click', marcar('italic'));
 
       nodo.parentNode.insertBefore(barra, nodo.nextSibling);
 
@@ -262,10 +395,24 @@
       }
 
       guardar.addEventListener('click', function () {
-        var valor = nodo.textContent.trim();
+        // Lo que sale del campo pasa por la lista blanca ANTES de ir a la base,
+        // no solo al pintarse. Asi la fila guardada ya esta limpia y el valor
+        // que viaja es exactamente el que se vera.
+        var valor = sanearACadena(nodo.innerHTML).trim();
+        if (!valor) { anunciar('El texto no puede quedar vacío.', true); return; }
+        // El CHECK del servidor corta en 4000 y devolveria un error en ingles
+        // sobre una restriccion que aqui nadie ha visto. Mejor decirlo antes.
+        if (valor.length > 4000) {
+          anunciar('El texto pasa de 4000 caracteres: acórtalo antes de guardar.', true);
+          return;
+        }
         guardar.disabled = true;
         D.guardarTexto(clave, valor).then(function () {
           estado.textos[clave] = valor;
+          // Se repinta con lo saneado y no se deja lo que quedo en el campo:
+          // si el navegador metio un <font> o un <div>, lo que ve el
+          // administrador debe ser ya lo que vera el visitante.
+          pintarRico(nodo, valor);
           cerrar();
           anunciar('Texto publicado para todo el portal.');
         }).catch(function (e) {
@@ -275,7 +422,7 @@
       });
 
       cancelar.addEventListener('click', function () {
-        nodo.textContent = antes;
+        pintarRico(nodo, antes);
         cerrar();
       });
 
@@ -283,7 +430,7 @@
         restaurar.disabled = true;
         D.borrarTexto(clave).then(function () {
           delete estado.textos[clave];
-          nodo.textContent = estado.originales[clave];
+          pintarRico(nodo, estado.originales[clave]);
           cerrar();
           anunciar('Texto devuelto al original del portal.');
         }).catch(function (e) {
@@ -297,12 +444,38 @@
       nodo.addEventListener('keydown', atajos);
     }
 
-    // Pegado siempre en plano, tambien donde plaintext-only no exista.
+    // El pegado nunca entra crudo. Antes se forzaba a texto plano porque era la
+    // unica forma segura; ahora pasa por la misma lista blanca que todo lo
+    // demas, asi que pegar un parrafo de un documento conserva sus negritas y
+    // deja fuera el resto —tablas, estilos, enlaces— sin perder el contenido.
     nodo.addEventListener('paste', function (ev) {
       if (!nodo.isContentEditable) return;
       ev.preventDefault();
-      var t = (ev.clipboardData || global.clipboardData).getData('text/plain');
-      doc.execCommand('insertText', false, t);
+      var datos = ev.clipboardData || global.clipboardData;
+      if (!datos) return;
+
+      var html = datos.getData('text/html');
+      if (!html) {
+        doc.execCommand('insertText', false, datos.getData('text/plain'));
+        return;
+      }
+
+      var frag = sanearAFragmento(html);
+      var sel = global.getSelection && global.getSelection();
+      if (!sel || !sel.rangeCount) { nodo.appendChild(frag); return; }
+
+      var rango = sel.getRangeAt(0);
+      rango.deleteContents();
+      // Se deja el cursor DESPUES de lo pegado. Sin esto queda delante y seguir
+      // escribiendo mete el texto nuevo por detras de lo que acabas de pegar.
+      var ultimo = frag.lastChild;
+      rango.insertNode(frag);
+      if (ultimo) {
+        rango.setStartAfter(ultimo);
+        rango.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(rango);
+      }
     });
 
     nodo.addEventListener('click', function (ev) {

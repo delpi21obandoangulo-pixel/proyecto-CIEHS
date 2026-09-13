@@ -25,12 +25,29 @@
 -- se duplica nada.
 --
 -- ============================ NOTA DE SEGURIDAD =============================
--- El valor de ciehs.textos se pinta SIEMPRE con textContent, nunca con
--- innerHTML (ver assets/js/ciehs-inline.js, funcion aplicarTextos). Eso es lo
--- que impide que un valor guardado se convierta en HTML ejecutable. Si alguna
--- vez se quiere permitir negrita o enlaces, NO se resuelve quitando el
--- textContent: se resuelve con una lista blanca de etiquetas en el cliente. Un
--- administrador con codigo es un usuario privilegiado, pero el codigo puede
+-- El valor de ciehs.textos se pinta reconstruyendolo contra una LISTA BLANCA de
+-- etiquetas -b, strong, i, em, br- y sin copiar ni un atributo (ver
+-- assets/js/ciehs-inline.js, funciones copiarSaneado y aplicarTextos). NUNCA se
+-- asigna innerHTML con el valor que sale de esta tabla: lo que acaba en la
+-- pagina son nodos creados por el cliente uno a uno. Eso es lo que impide que
+-- un valor guardado se convierta en HTML ejecutable.
+--
+-- El filtrado corre DOS veces, al guardar y al pintar. Que el valor se saneara
+-- al escribirlo no basta: la fila pudo llegar aqui por otra via -psql, el SQL
+-- Editor, un script- y lo que manda es lo que se pinta.
+--
+-- Hasta 2026-09-13 la barrera era pintar con textContent a secas. Se cambio
+-- porque el portal tiene 154 parrafos con negrita dentro y editarlos los
+-- devolvia en texto plano; la nota de entonces ya dejaba dicho que la salida
+-- era la lista blanca y no relajar la regla. Si alguna vez se quiere permitir
+-- una etiqueta mas, se añade a ETIQUETAS_RICAS y se amplia
+-- tools/prueba-saneador.html — nunca se resuelve pintando el valor tal cual.
+--
+-- <a> queda deliberadamente fuera de la lista: sin enlaces, un codigo de
+-- administracion filtrado no permite convertir un parrafo del portal en un
+-- cebo hacia otro sitio.
+--
+-- Un administrador con codigo es un usuario privilegiado, pero el codigo puede
 -- filtrarse, y entonces esta tabla seria un XSS almacenado servido a todo
 -- visitante del portal.
 --

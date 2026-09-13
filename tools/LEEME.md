@@ -99,3 +99,27 @@ mantiene las cuatro piezas coincidiendo entre sí.
 > `CHROME_PATH` a cualquier `chrome.exe` y repite. La tarjeta al compartir baja
 > las fuentes de Google en el momento de rasterizar, así que necesita red; los
 > iconos no.
+
+## `prueba-saneador.html`
+
+Comprueba que el saneador de texto de la edición in-place (`ETIQUETAS_RICAS`,
+`copiarSaneado` en `assets/js/ciehs-inline.js`) deja pasar la negrita y la
+cursiva y **nada más**.
+
+```bash
+npx http-server -p 8125 -c-1     # y abrir /tools/prueba-saneador.html
+```
+
+Tiene que salir **0 ejecuciones** y las diecisiete filas en `LIMPIO`. Entre los
+casos hay `<script>` directo, `<img onerror>`, `<svg onload>`, `href` con
+`javascript:`, atributos sobre una etiqueta permitida, HTML mal formado y
+comentarios con carga dentro.
+
+> El archivo lleva una **copia** del saneador, porque el original vive dentro de
+> una IIFE y no se puede importar. Si se cambia la lista blanca en
+> `ciehs-inline.js`, hay que traer el cambio aquí o la prueba mide código que ya
+> no existe.
+
+Por qué importa: `ciehs.textos` la escribe quien tenga el código de
+administración, y lo guardado se sirve a **todos** los visitantes. Si el
+saneador falla, eso es un XSS almacenado en el portal de un colegio.
