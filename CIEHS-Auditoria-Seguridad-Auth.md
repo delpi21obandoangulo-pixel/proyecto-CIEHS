@@ -4,7 +4,7 @@ aliases: [Seguridad CIEHS, Auth CIEHS, Hallazgos de seguridad]
 tags: [ciehs, seguridad, auth, rls, csp, privacidad, menores]
 estado: hallazgos corregidos · riesgos abiertos documentados
 ultima-auditoria: 2026-09-04
-actualizado: 2026-09-04
+actualizado: 2026-09-13
 ---
 
 # CIEHS · Auditoría de seguridad y autenticación
@@ -468,9 +468,96 @@ y `safary_kids`. **No se leyó ni se tocó**: la autorización era para `ciehs`.
 
 ---
 
+## 11. Endurecimiento del acceso por código (2026-09-13)
+
+Revisión completa del único mecanismo que autoriza toda escritura del portal.
+Tres hallazgos, corregidos en `db/17_endurecimiento_acceso.sql`.
+
+### H1 · Oráculo de fuerza bruta sin freno — **grave**
+
+`ciehs.verificar_codigo(text)` estaba concedida a `anon` y **sin límite de
+intentos**. Cualquiera con la clave publicable —que viaja en el navegador a
+propósito— podía llamarla en bucle hasta acertar. Y acertar el código no da
+«algo de acceso»: da **el** acceso, porque `is_admin()` es la única puerta de
+todas las políticas de escritura.
+
+**Corregido:** diez fallos por ventana de quince minutos. Se registra **cuándo**
+se intentó, nunca **qué** se tecleó: guardar el código probado convertiría el
+registro de seguridad en el peor sitio del sistema. Un acierto limpia el
+contador.
+
+> [!warning] Límite honesto
+> El freno es **global**, no por IP, porque RLS no ve la IP — la misma
+> limitación que ya asumió `db/09_antiflood.sql`. Eso significa que alguien
+> puede quemar los diez intentos y dejar al coordinador esperando quince
+> minutos. Se acepta: el coordinador conoce el código y acierta a la primera.
+
+### H3 · Se permitía un código corto — **grave, y es la causa de que H1 importe**
+
+Nada impedía fijar un PIN de ocho dígitos. 10⁸ se recorre entero muy rápido.
+
+> [!danger] Contra la cabecera no cabe poner freno
+> `is_admin()` se evalúa **dentro de cada política RLS, en cada consulta**.
+> Ponerle un contador de intentos sería escribir en disco por cada fila leída
+> del portal. Es decir: el freno de H1 quita el oráculo **cómodo**, pero lo
+> único que hace el ataque inviable de verdad es **la entropía del código**.
+
+**Corregido:** `ciehs.fijar_codigo(text)` exige 12 caracteres y 3 familias de
+caracteres, y es ahora la única forma de fijarlo. Mientras fuera un `insert` a
+mano, nada impedía volver a poner un PIN corto en la siguiente rotación con
+prisa. El campo del modal perdió `inputmode="numeric"`, que era justo lo que
+empujaba a elegir dígitos; no hace falta que sea memorizable porque el código
+vive en la bóveda local.
+
+### H2 · Hash desnudo — medio
+
+`codigo_hash` era un sha256 de una sola vuelta, sin sal ni pimienta. Una fila
+filtrada —un volcado, una política mal puesta, una copia de seguridad mal
+guardada— se crackeaba con tabla precalculada.
+
+**Corregido:** una **pimienta** que vive en el **Vault de Supabase**, cifrada
+con una clave que no está en la base de datos. Y `ciehs.hash_codigo()` es ahora
+el único sitio donde se calcula el hash: antes la fórmula estaba copiada en
+`is_admin()`, en `verificar_codigo()` y en el comentario que explicaba cómo
+fijar el código — tres copias que podían divergir, y divergir ahí significa
+quedarse fuera sin saber por qué.
+
+> [!info] Aplicar `db/17` no deja a nadie fuera
+> Sin pimienta en el Vault, `hash_codigo()` calcula exactamente el mismo sha256
+> de antes. El hash solo cambia al **crear el secreto**, y entonces hay que
+> volver a fijar el código. Orden seguro: aplicar → crear pimienta →
+> `fijar_codigo()` → guardar en la bóveda.
+
+### En el cliente
+
+| Cambio | Por qué |
+|---|---|
+| `X-CIEHS-Code` solo viaja a la API del propio proyecto | Adjuntarla a ciegas dejaba el secreto a merced de que mañana el cliente llamase a un tercero |
+| El código **caduca a los 30 min sin actividad** | Los equipos del laboratorio son compartidos; una pestaña abierta y desatendida dejaba a cualquiera borrar publicaciones. El aula se queda vacía entre clase y clase |
+| `guardarImagen()` rechaza URLs absolutas | Sin eso, una escritura en `ciehs.imagenes` podía apuntar el mural a un servidor ajeno. La CSP lo bloquearía al pintarlo, pero el síntoma sería una imagen rota sin explicación |
+
+### Superficie nueva: la edición in-place
+
+Ver [[CIEHS-Admin-InPlace-UI]]. Lo relevante para esta nota:
+
+> [!danger] `ciehs.textos` se pinta con `textContent`, nunca `innerHTML`
+> Es **lo único** que impide que esa tabla sea un XSS almacenado servido a
+> cualquier visitante si el código se filtrase. La tabla es de lectura pública
+> por diseño: es contenido del portal.
+
+La corrección de retos solo acepta `q` y `exp`, y solo texto. Permitir tocar
+`correcta` u `ops` convertiría una escritura en la base en la capacidad de dejar
+un reto **sin respuesta válida**.
+
+Y la regla de siempre: **esconder un botón no es control de acceso**. Los
+controles de edición son interfaz. Quien autoriza es RLS.
+
+---
+
 ## Enlaces
 
 - [[CIEHS]] — índice general.
+- [[CIEHS-Admin-InPlace-UI]] — la superficie de administración y sus reglas.
 - [[pendientes-coordinacion/08-rotar-codigo-de-acceso|08 · Rotar el código de acceso]] — lo que queda por hacer, y es urgente.
 - [[CIEHS-Portal-Educativo]] — arquitectura, alojamiento y cacheo.
 - [[CIEHS-Backend-Supabase]] — esquema, RLS y permisos por columna.

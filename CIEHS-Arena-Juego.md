@@ -4,7 +4,7 @@ aliases: [Arena CIEHS, Expediciones CIEHS, Retos CIEHS]
 tags: [ciehs, arena, juego, gamificacion, animacion, accesibilidad]
 estado: en produccion
 publicado-en: https://ciehs.vercel.app/#/juega
-actualizado: 2026-09-10
+actualizado: 2026-09-13
 ---
 
 # CIEHS · Arena, el modo de juego
@@ -245,16 +245,65 @@ y velocidad **0.9**.
 
 ---
 
+## 6 bis. Purga de contenido y corrección del banco (2026-09-13)
+
+El banco describía un laboratorio que no existe. Se corrigió de raíz.
+
+> [!danger] Solo hay dos sistemas: **germinación** y **raíz flotante (DWC)**
+> NFT, sustrato inerte y cultivo vertical **no existen** en el CIEHS y ya no
+> figuran ni en el banco, ni en el portal, ni en la base. Antes se describían
+> como si fueran infraestructura o proyección; ver [[CIEHS-Agronomia-Hidroponia]].
+
+| Qué estaba mal | Qué dice ahora |
+|---|---|
+| «¿Cuántos módulos activos?» → **4**, con la lista de sistemas viejos | **15**, y explica el reparto mesa/botella |
+| Seis retos sobre NFT, sustrato o cultivo vertical | Reescritos sobre lo que sí hay: la cámara de aire del sistema no circulante, el poco volumen de las botellas, la germinación |
+| `ar-ini-10`: «¿qué animal **no vuela**?» → el pingüino | «¿qué animal vuela y pesca con su gran pico?» → **el pelícano** |
+| «la solución **recircula**», «aireación forzada constante» | Los módulos son **no circulantes** y hoy **sin bomba de aire** |
+
+> [!warning] Los retos se reescriben, no se borran
+> Cada nivel tiene exactamente **30 retos** y el marcador cuenta sobre ese
+> total. Retirar los seis defectuosos habría dejado niveles cortos y un
+> marcador mentiroso. Por eso se reescribieron sobre contenido válido.
+
+Del pelícano conviene recordar **por qué cambió también el enunciado**: se
+pedía el animal que *no vuela*, y el pelícano vuela. Cambiar solo la opción
+habría convertido un acierto en un error. El enunciado pregunta ahora por el
+pico, que es lo que de verdad lo distingue en la playa de Huanchaco — y es el
+mismo pelícano peruano que aparece en el mural (ver [[CIEHS-Identidad-Visual]]).
+
+El mismo barrido se aplicó al banco antiguo `assets/js/ciehs-preguntas.js`.
+
+---
+
 ## 7. Archivos
 
 | Archivo | Contenido |
 |---|---|
 | `assets/js/ciehs-arena.js` | Motor: niveles, expediciones, formatos, ambientaciones, animación, voz |
-| `assets/js/ciehs-arena-preguntas.js` | Banco de 150 retos |
+| `assets/js/ciehs-arena-preguntas.js` | Banco de 150 retos (5 × 30) |
+| `assets/js/ciehs-inline.js` | Corrección de retos desde el portal |
 | `index.html` | Capa `#arenaCapa`, CSS de la arena y tarjeta de acceso |
 
 El banco admite retos nuevos **sin tocar el motor**: basta añadir objetos al
 array del nivel con `id`, `tema`, `tipo`, `dif`, `q`, los datos del formato y `exp`.
+
+### Correcciones desde el portal (2026-09-13)
+
+La coordinación puede corregir **el enunciado y la explicación** de cualquier
+reto desde la propia arena, con el modo edición encendido (ver
+[[CIEHS-Admin-InPlace-UI]]). Se guardan en `ciehs.arena_preguntas` como un
+**delta** sobre el banco del código, y se funden al construir cada ronda.
+
+> [!info] Por qué delta y no sustitución
+> El banco sigue en el JS, así que **la arena se juega sin conexión** — que en
+> el laboratorio pasa a menudo. Y «Restaurar» devuelve el reto original sin
+> tener que recordarlo.
+
+> [!danger] Solo `q` y `exp`
+> No se pueden editar `correcta` ni `ops`. Permitirlo convertiría una escritura
+> en la base en la capacidad de dejar un reto **sin respuesta válida**. Rehacer
+> un reto sigue siendo trabajo de código.
 
 Progreso del jugador en `localStorage`, clave `ciehs_arena_v1`: récords,
 retos resueltos, tiradas del día y sellos. Declarado en [[CIEHS-Privacidad-Menores]].
@@ -267,6 +316,12 @@ contenido de `localStorage` lo controla quien usa el navegador.
 
 - [x] Alinear los retos con la ruta pedagógica. Hecho el 2026-09-10 **hasta la
       fase** → §1 bis; el detalle paso a paso queda para la validación docente.
+- [x] Purgar NFT, sustrato y vertical, y fijar en 15 el número de módulos.
+      Hecho el 2026-09-13 → §6 bis.
+- [x] Corregir el reto del «Abismo Hídrico»: el pelícano, con su enunciado
+      rehecho. Hecho el 2026-09-13 → §6 bis.
+- [ ] Aplicar `db/16_contenido_editable.sql` para que las correcciones desde el
+      portal se puedan guardar de verdad.
 - [ ] Ampliar el banco por encima de 150 retos si el uso lo pide.
 - [ ] Marcador entre clases: hoy el récord es solo local del navegador.
       Requeriría una tabla en [[CIEHS-Backend-Supabase]] y decidir antes qué se
@@ -285,3 +340,5 @@ contenido de `localStorage` lo controla quien usa el navegador.
 - [[CIEHS-Auditoria-Seguridad-Auth]] — la distinción entre fricción y seguridad.
 - [[CIEHS-Privacidad-Menores]] — qué guarda el juego en el navegador.
 - [[CIEHS-Identidad-Visual]] — la arena tiene paleta propia, distinta del portal.
+- [[CIEHS-Admin-InPlace-UI]] — cómo se corrigen los retos desde el portal.
+- [[CIEHS-Agronomia-Hidroponia]] — los dos sistemas que sí existen.

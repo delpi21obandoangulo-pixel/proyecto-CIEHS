@@ -6,7 +6,7 @@ cultivos: [lechuga, espinaca, albahaca, acelga, cebolla china]
 sistema: raíz flotante no circulante, sin aireación forzada
 solucion: concentrados A y B — Universidad Nacional de Trujillo (UNT)
 estado: borrador tecnico · pendiente de validacion con la ficha del producto
-actualizado: 2026-09-09
+actualizado: 2026-09-13
 ---
 
 # CIEHS · Fundamento agronómico
@@ -64,10 +64,20 @@ también el elemento del que conviene no abusar: véase §6.
 |---|---|---|---|
 | **Raíz flotante (DWC)** | La planta flota en una lámina sobre un volumen de solución; la raíz queda sumergida | Nula si no se airea | **El del CIEHS** |
 | **No circulante (Kratky)** | DWC sin bomba **ni reposición**: el nivel baja y deja una cámara de aire donde la raíz respira | **Ninguna** | **Lo que realmente hace el CIEHS** — véase §3 |
-| **NFT** (película nutritiva) | Lámina delgada que recircula por canales inclinados | Bomba continua | Proyección `PROY-NFT` |
-| **Sustrato** | Arena, cascarilla, fibra de coco; riego por goteo | Bomba intermitente | No instalado |
+| **Germinación (almácigo)** | La semilla germina en esponja o bandeja con agua, sin solución, hasta tener raíz y dos hojas verdaderas | **Ninguna** | **También del CIEHS** — el paso previo al trasplante |
 | **Aeroponía** | Raíz al aire, nebulización periódica | Bomba de alta presión | Fuera de alcance escolar |
-| **Vertical** | Cualquiera de los anteriores en altura | Variable | Proyección `PROY-VER` |
+
+> [!danger] NFT, sustrato inerte y vertical ya no figuran (2026-09-13)
+> Estaban aquí y en el portal como «proyección a futuro» (`PROY-NFT`,
+> `PROY-VER`) o como «no instalado». Se retiraron de la tabla, del portal, de
+> los dos bancos de preguntas y de la base (`db/15_modulos_2026_09.sql`).
+>
+> El motivo no es de estilo. Mientras `PROY-NFT` y `PROY-VER` fueran filas de
+> `ciehs.modules`, **cualquier selector del panel podía ofrecerlas para
+> registrar una medición** sobre infraestructura que no existe. Una proyección
+> se anuncia en prosa; no se da de alta en el inventario.
+>
+> **El CIEHS tiene dos sistemas y solo dos: germinación y raíz flotante.**
 
 ---
 
@@ -177,7 +187,33 @@ recogen de Sonneveld y Voogt (2009), Resh y Jones, contrastados entre sí.
 | **Espinaca** *(Spinacia oleracea)* | 1,8 – 2,3 | 6,0 – 6,8 | 15 – 20 °C | Tolera menos calor que la lechuga; acumula nitrato y oxalato (§6) |
 | **Albahaca** *(Ocimum basilicum)* | 1,6 – 2,2 | 5,5 – 6,5 | 20 – 25 °C | Cultivo cálido: por debajo de 10 °C sufre daño por frío |
 | **Acelga** *(Beta vulgaris var. cicla)* | 1,8 – 2,4 | 6,0 – 6,5 | 18 – 22 °C | Rústica; tolera CE algo mayor |
-| **Cebolla china** *(Allium fistulosum)* | 1,4 – 1,8 | 6,0 – 6,8 | 18 – 22 °C | Raíz sensible a la falta de oxígeno |
+| **Cebolla china** *(Allium fistulosum)* | 1,4 – 1,8 | 6,0 – 6,8 | 18 – 22 °C | Raíz sensible a la falta de oxígeno. Su raíz fina es la que mejor tolera el poco volumen de una botella |
+
+> [!warning] Albahaca y acelga están en la tabla, pero **no en el laboratorio**
+> Sus filas son **referencia bibliográfica**, no medición del CIEHS. A
+> 2026-09-13 no están sembradas: figuran en el plan de diversificación, **en
+> proyecto de pedido de semilla y preparación del módulo**, y no ocupan ninguno
+> de los quince. El portal las rotula como previstas allí donde aparecen, y no
+> hay lecturas suyas en la bitácora.
+
+### Distribución real de los quince módulos (2026-09-13)
+
+| Módulos | Especie | Contenedor |
+|---|---|---|
+| `MOD-DWC-01` – `07` | Lechuga crespa | Mesa |
+| `MOD-DWC-08` – `09` | Lechuga **arrepollada** | Mesa |
+| `MOD-DWC-10` – `11` | Espinaca | Mesa |
+| `MOD-DWC-12` – `15` | Cebolla china | **Botella reutilizada** |
+
+«Lechuga americana» era el nombre que usaba el portal; el real es
+**arrepollada** (*Lactuca sativa* var. *capitata*).
+
+> [!info] Las botellas no son otro sistema, son otro contenedor
+> Mismo manejo y mismo rango, pero **mucho menos volumen de solución**: a menos
+> litros, cualquier consumo de la planta mueve antes el pH y la CE. Por eso las
+> botellas se revisan con más frecuencia que un módulo de mesa. Y son, de paso,
+> el cierre visible del problema 04 de la problemática: el envase que acababa
+> en la playa sostiene ahora un cultivo.
 
 **La CE no mide nutrientes, mide sales disueltas.** Es un indicador de
 concentración total, no de composición: una solución agotada en nitrógeno pero

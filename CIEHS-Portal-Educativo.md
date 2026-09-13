@@ -6,7 +6,7 @@ institucion: I.E. N.° 80033 “José Olaya Balandra” — Huanchaco, La Libert
 produccion: https://ciehs.vercel.app
 repositorio: github.com/delpi21obandoangulo-pixel/proyecto-CIEHS
 estado: en produccion
-actualizado: 2026-09-04
+actualizado: 2026-09-13
 ---
 
 # CIEHS · Portal educativo
@@ -180,9 +180,29 @@ Los valores de respaldo del HTML se mantienen sincronizados con los de la base
   15 módulos activos · 20 kg de cosecha acumulada · 90 % de ahorro hídrico
 - **Módulos:** `MOD-DWC-01` … `MOD-DWC-15`, **todos raíz flotante (DWC)** y
   **operando sin bomba de aire** (la aireación forzada es mejora planificada).
-  `PROY-NFT` y `PROY-VER` son proyecciones a futuro: no están instalados.
-- **Especies:** lechuga crespa · lechuga americana · espinaca · cebolla china ·
-  albahaca · acelga
+  Del **01 al 11 son módulos de mesa**; del **12 al 15, botellas reutilizadas**
+  — que es el cierre visible del problema 04: el envase que iba a la playa
+  sostiene ahora un cultivo. Menos volumen de solución significa revisar el
+  nivel y la CE con más frecuencia, así que no es solo un detalle de aspecto.
+- **Distribución agronómica real (2026-09-13):**
+
+  | Módulos | Especie | pH | CE (mS/cm) |
+  |---|---|---|---|
+  | `01`–`07` | Lechuga crespa | 5.5–6.5 | 1.2–1.8 |
+  | `08`–`09` | Lechuga arrepollada | 5.5–6.5 | 1.2–1.8 |
+  | `10`–`11` | Espinaca | 6.0–6.8 | 1.8–2.3 |
+  | `12`–`15` (botellas) | Cebolla china | 6.0–7.0 | 1.4–1.8 |
+
+  «Lechuga americana» pasa a llamarse por su nombre real, **arrepollada**.
+- **Especies previstas, NO sembradas:** albahaca y acelga. Están **en proyecto
+  de pedido de semilla y preparación del módulo**: no ocupan ninguno de los
+  quince y no hay lecturas suyas en la bitácora. Sus rangos publicados son
+  bibliografía, no mediciones del CIEHS, y se rotulan como tales.
+- **Sistemas:** solo dos, **germinación en almácigo** y **raíz flotante (DWC)**.
+  `PROY-NFT` y `PROY-VER` **se retiraron** el 2026-09-13 (`db/15`): describían
+  infraestructura inexistente y cualquier selector del panel podía ofrecerlas
+  para registrar una medición. NFT, sustrato inerte y vertical no figuran ya ni
+  en el portal, ni en los bancos de preguntas, ni en la base.
 - **Equipos de gestión:** Indagación · Cultivo y manejo hidropónico · Monitoreo y
   registro · Cosecha y acondicionamiento · Producción y comunicación · Ventas y
   atención · Tesorería y registro de ventas · Inventario · Impacto ambiental ·
@@ -190,6 +210,46 @@ Los valores de respaldo del HTML se mantienen sincronizados con los de la base
 - **Contacto:** ciehs.olaya@gmail.com · Área de Ciencia y Tecnología (CyT) ·
   lunes a viernes, 1:00 p. m. a 6:00 p. m.
 - **Paleta:** `#10b981` primario · `#059669` oscuro · `#0284c7` azul de Huanchaco
+
+---
+
+## 6 bis. Administración: edición in-place (2026-09-13)
+
+El panel modal de doce pestañas deja de ser la forma de editar el contenido. El
+administrador ve **el mismo portal que un estudiante** y, con el modo edición
+encendido, corrige el texto donde está, reemplaza la fotografía sobre la
+fotografía y borra una publicación desde su propia tarjeta. Apagado, no queda
+rastro de interfaz de administración.
+
+Detalle completo, contrato de atributos y decisiones de seguridad en
+**[[CIEHS-Admin-InPlace-UI]]**. Lo que hay que recordar desde aquí:
+
+- El texto guardado se pinta con `textContent`, **nunca** `innerHTML`.
+- El modal sigue existiendo para los formularios de alta, que es otra cosa.
+- Requiere `db/16_contenido_editable.sql` aplicado.
+
+## 6 ter. Seguridad reforzada del acceso (2026-09-13)
+
+Tres hallazgos sobre el acceso por código, corregidos en `db/17`. El detalle
+está en [[CIEHS-Auditoria-Seguridad-Auth]]; el resumen:
+
+| | Estaba | Ahora |
+|---|---|---|
+| **Tanteo** | `verificar_codigo()` abierta a `anon` **sin límite de intentos** | 10 fallos por ventana de 15 min, con registro de *cuándo*, nunca de *qué* |
+| **Hash** | sha256 de una vuelta, sin sal ni pimienta | pimienta en el **Vault de Supabase**, fuera de la base |
+| **Entropía** | se podía fijar un PIN de 8 dígitos | `fijar_codigo()` exige 12 caracteres y 3 familias |
+
+> [!danger] Contra la cabecera no cabe poner freno
+> `is_admin()` se evalúa dentro de cada política RLS, en cada consulta: un
+> contador ahí sería escribir en disco por cada fila leída del portal. El freno
+> quita el oráculo **cómodo**; lo único que hace el ataque inviable de verdad es
+> **la entropía del código**. Por eso el campo del modal perdió
+> `inputmode="numeric"`, que era justo lo que empujaba a elegir un PIN corto.
+
+En el cliente, además: la cabecera `X-CIEHS-Code` **solo viaja a la API del
+propio proyecto**, el código **caduca a los 30 minutos sin actividad** (los
+equipos del laboratorio son compartidos y el aula se queda vacía entre clase y
+clase) y `guardarImagen()` rechaza URLs absolutas.
 
 ---
 
@@ -228,3 +288,4 @@ Los valores de respaldo del HTML se mantienen sincronizados con los de la base
 - [[CIEHS-Tienda-Escolar]] — catálogo, reservas de cosecha y transparencia.
 - [[CIEHS-Agronomia-Hidroponia]] — CE, pH, nutrientes por cultivo y recambio de solución.
 - [[CIEHS-Estados-UI-Async]] — carga, error y vacío: qué se ve cuando la base no responde todavía.
+- [[CIEHS-Admin-InPlace-UI]] — cómo se edita el portal desde el propio portal.

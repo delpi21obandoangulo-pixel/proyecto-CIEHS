@@ -3,7 +3,7 @@ title: CIEHS · Identidad visual
 aliases: [Escudo CIEHS, Marca CIEHS, Paleta CIEHS, Mural CIEHS]
 tags: [ciehs, identidad, marca, diseno, mural]
 estado: isotipo del CIEHS como marca del portal · plano ambiental + vidrio
-actualizado: 2026-09-10
+actualizado: 2026-09-13
 ---
 
 # CIEHS · Identidad visual
@@ -67,7 +67,8 @@ imagen del portal. Venía ya sin EXIF ni GPS.
 | `ciehs-og.png` | Tarjeta 1200×630 al compartir, con el isotipo y el nombre completo; misma herramienta | Open Graph y Twitter Card |
 | `logo-ciehs.svg` | **Logo del proyecto**: isotipo + logotipo | Hero, sección Mural, descargable |
 | `logo-ciehs-claro.svg` | El mismo, para fondos oscuros | Arena y cualquier fondo oscuro |
-| `isotipo-ciehs.svg` | Solo el emblema. **Fuente única de toda la marca del portal** | Cabecera, hero, pie, iconos, tarjeta social |
+| `emblema-ciehs.svg` | **El emblema, fondo transparente.** Versión por defecto de la marca | Cabecera, pie, descargable |
+| `isotipo-ciehs.svg` | El mismo dibujo **con disco blanco**, para fondos oscuros. Sigue siendo la fuente de la que `tools/generar-marca.js` rasteriza los iconos, que sí necesitan fondo opaco | Hero, iconos, tarjeta social |
 | `evidencias/invernadero-dwc.jpg` | Invernadero de madera con malla raschel y mesas DWC | Galería «El CIEHS en acción», portada |
 | `evidencias/mesas-dwc.jpg` | Módulos de raíz flotante en batería | Galería, portada |
 | `evidencias/almacigo-trasplante.jpg` | Mesa recién trasplantada, plántulas separadas | Galería, portada |
@@ -147,9 +148,49 @@ distingue este isotipo de cualquier logo de planta — dice *hidroponía*, no
 |---|---|
 | `logo-ciehs.svg` | Uso normal, sobre fondo claro |
 | `logo-ciehs-claro.svg` | Sobre fondo oscuro (la Arena) |
-| `isotipo-ciehs.svg` | Solo el emblema: pie, usos pequeños |
+| `emblema-ciehs.svg` | El emblema solo, sobre papel claro: cabecera, pie, documentos |
+| `isotipo-ciehs.svg` | El emblema con disco, cuando va sobre foto o fondo oscuro |
 
 Es vector: se escala sin perder nitidez y **nunca hay que pedir «otro tamaño»**.
+
+---
+
+## 2 quater. El emblema pierde el disco (2026-09-13)
+
+El isotipo pintaba un **círculo blanco opaco** bajo el dibujo. Sobre el papel
+claro del portal no se notaba, pero sobre cualquier otro fondo dejaba un recorte
+blanco alrededor de la marca.
+
+`emblema-ciehs.svg` es el **mismo brote con raíces sobre el agua**, sin ese
+disco: lo único opaco son el agua, la planta y el anillo. Es la versión por
+defecto.
+
+> [!info] El isotipo no se retira, cambia de papel
+> Pasa a ser la **variante para fondos oscuros**, donde el anillo verde
+> (`#065f46`) se perdería sin una base clara detrás. Y sigue siendo la fuente de
+> los favicons, que necesitan fondo opaco por definición. El **dibujo nunca
+> cambia**; lo que cambia es si lleva base o no.
+
+### La cabecera deja de estar centrada
+
+El emblema manda a la izquierda y a su derecha se apilan **tres líneas a
+bandera**: la sigla, el nombre del centro y la institución educativa
+—*I.E. N.° 80033 «José Olaya Balandra» · Huanchaco*—.
+
+Al estrechar la pantalla no envuelven: **se retiran de una en una**, en orden
+inverso de importancia.
+
+| Ancho | Qué se ve |
+|---|---|
+| ≥ 1040 px | Las tres líneas |
+| < 1040 px | Cae el subtítulo largo del centro (la sigla ya lo dice) |
+| < 560 px | Cae el nombre propio entre comillas; queda «I.E. N.° 80033 · Huanchaco» |
+| < 400 px | Queda el emblema y «CIEHS» |
+
+> [!warning] La regla anterior era demasiado gruesa
+> Ocultaba **todo** `span` de la marca por debajo de 900 px. Con la línea
+> institucional dentro, eso se habría llevado por delante justo el dato que
+> identifica al colegio. Por eso ahora cada línea tiene su propio corte.
 
 ### Reglas
 
