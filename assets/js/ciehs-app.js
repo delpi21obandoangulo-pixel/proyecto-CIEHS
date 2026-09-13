@@ -3065,7 +3065,7 @@
       var score = [okAgua, okPh, okLuz].filter(Boolean).length;
       var msg, cls;
       if(score === 3){
-        msg = '🥬 ¡Cosecha exitosa! El agua, el pH y la luz estuvieron dentro del rango óptimo del módulo NFT.';
+        msg = '🥬 ¡Cosecha exitosa! El agua, el pH y la luz estuvieron dentro del rango óptimo del módulo de raíz flotante.';
         cls = 'is-success';
       } else if(score === 2){
         msg = '🌱 Cultivo aceptable, pero puedes mejorar: revisa el parámetro que quedó fuera de rango.';
@@ -3833,8 +3833,10 @@
     if(!selModulo) return;
     var snap = (window.CIEHS && window.CIEHS.snapshot && window.CIEHS.snapshot()) || null;
     var mods = (snap && snap.modulos) || [];
-    // Solo modulos reales: PROY-NFT y PROY-VER son proyecciones a futuro y no
-    // existen fisicamente, asi que nadie puede medirlos.
+    // Solo modulos reales. El prefijo PROY- se reservo para proyecciones a
+    // futuro; ya no queda ninguna en la base, pero el filtro se mantiene porque
+    // es la barrera que impide registrar una medicion sobre algo que no existe
+    // fisicamente, y eso vale para la proxima proyeccion que se anote.
     mods = mods.filter(function(m){ return m.code && m.code.indexOf('PROY-') !== 0; });
     if(!mods.length){
       // La misma distincion de siempre: "(no se pudo cargar)" era falso mientras

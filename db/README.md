@@ -66,7 +66,7 @@ rechaza y RLS también.
 | Tabla | Contenido | Lectura pública |
 |---|---|---|
 | `site_config` | Portada, KPIs y aviso institucional (fila única) | sí |
-| `modules` | Los 15 módulos DWC y las 2 proyecciones, con sus rangos de pH y CE | solo `published` |
+| `modules` | Los 15 módulos DWC (11 de mesa + 4 botellas), con sus rangos de pH y CE | solo `published` |
 | `telemetry_readings` | Lecturas de pH y CE con fecha y autor | solo de módulos publicados |
 | `investigations` | Fichas de investigación | solo `published` |
 | `resources` | Recursos del espacio docente | solo `published` |
@@ -108,7 +108,11 @@ tabla de la galería de la portada; `04_registros_campo.sql` crea la carpeta de
 campo digital; `05_aportes.sql` la bandeja de aportes en cuarentena; y
 `06_resultados.sql` los resultados por tratamiento; `07_tienda.sql` el catálogo y
 las líneas de pedido; y `08_tienda_estados.sql` el estado «próximo a cosecha» y
-el destino canónico del gasto. Todos son idempotentes y se aplican
+el destino canónico del gasto. `15_modulos_2026_09.sql` fija la distribución
+agronómica real (crespa 01–07, arrepollada 08–09, espinaca 10–11 y cebolla china
+en las botellas 12–15) y **retira `PROY-NFT` y `PROY-VER`**: ese archivo es el
+que manda sobre `modules`, por encima de la carga inicial de
+`02_infraestructura_2026.sql`. Todos son idempotentes y se aplican
 **de forma aislada** (SQL
 Editor o `execute_sql`), nunca con `supabase db push` ni `apply_migration`: el
 historial `supabase_migrations.schema_migrations` es global en esta instancia

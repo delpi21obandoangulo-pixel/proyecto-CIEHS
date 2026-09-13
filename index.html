@@ -1504,7 +1504,7 @@
           <p class="module mono">Insumos · instrumentos · semillas</p>
           <p class="team-desc">Sabe qué hay y qué falta: sales nutritivas, semillas, instrumentos de medición, envases y materiales de los módulos.</p>
           <ul class="team-tasks">
-            <li>Stock de sales, semillas y sustratos de almácigo</li>
+            <li>Stock de sales, semillas y esponjas de almácigo</li>
             <li>Control y calibración de instrumentos</li>
             <li>Alerta de reposición a Tesorería</li>
           </ul>
@@ -1581,7 +1581,11 @@
         <p><b>Albahaca y acelga todavía no están sembradas.</b> Las dos figuran en el plan de diversificación del CIEHS y están en proyecto de <b>pedido de semilla y preparación del módulo</b>: no ocupan ninguno de los quince módulos activos y no hay lecturas suyas en la bitácora. Se anuncian aquí porque el plan es público, no porque estén en producción.</p>
       </div>
 
-      <div class="grid cols-4 module-status-grid u-margin-top-40px">
+      <!-- Los dos sistemas que existen de verdad, mas la unica mejora
+           planificada. Antes habia ademas dos tarjetas de proyeccion -PROY-NFT
+           y PROY-VER- que llevaban meses describiendo infraestructura
+           inexistente: se han retirado, y con ellas sus filas en la base. -->
+      <div class="grid cols-3 module-status-grid u-margin-top-40px">
         <div class="card module-card">
           <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 15c0-2 6-2 6 0s6 2 6 0 6-2 6 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="9" r="1.2" fill="currentColor"/><circle cx="13" cy="6" r="1" fill="currentColor"/><circle cx="17" cy="10" r="1.3" fill="currentColor"/></svg>
           <h3>Raíz Flotante (DWC)</h3>
@@ -1594,22 +1598,14 @@
             <dt>Estado</dt><dd class="u-color-status-good">15 módulos activos</dd>
           </dl>
         </div>
-        <div class="card module-card is-future">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3c4 3 6 6.5 6 10a6 6 0 1 1-12 0c0-3.5 2-7 6-10Z" stroke="currentColor" stroke-width="1.6"/></svg>
-          <h3>Sistema NFT</h3>
-          <p class="id mono">PROY-NFT</p>
-          <p class="module-desc"><i>Nutrient Film Technique</i>: tuberías con flujo laminar continuo de solución recirculante. <b>No está instalado.</b> Figura como línea de trabajo futura del CIEHS, no como infraestructura disponible.</p>
+        <div class="card module-card">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21v-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M12 14c-2.6 0-4.4-1.8-4.4-4.4 2.6 0 4.4 1.8 4.4 4.4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 12.4c0-2.6 1.8-4.4 4.4-4.4 0 2.6-1.8 4.4-4.4 4.4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M5 21h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <h3>Germinación</h3>
+          <p class="id mono">ALMÁCIGO</p>
+          <p class="module-desc">El paso previo a la balsa: la semilla germina en esponja o bandeja de almácigo, con agua y sin solución nutritiva, hasta que la plántula tiene raíz y dos hojas verdaderas. Es el <b>segundo y último sistema</b> del CIEHS; de aquí sale todo lo que entra en los quince módulos.</p>
           <dl>
-            <dt>Estado</dt><dd class="u-color-ink-mute">Proyección a futuro</dd>
-          </dl>
-        </div>
-        <div class="card module-card is-future">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="4" width="4" height="16" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="10" y="4" width="4" height="16" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="16" y="4" width="4" height="16" rx="1.5" stroke="currentColor" stroke-width="1.6"/></svg>
-          <h3>Sistema vertical</h3>
-          <p class="id mono">PROY-VER</p>
-          <p class="module-desc">Columnas de cultivo para aprovechar el área escolar en altura. <b>No está instalado.</b> Es una proyección a futuro sujeta a disponibilidad de espacio y presupuesto.</p>
-          <dl>
-            <dt>Estado</dt><dd class="u-color-ink-mute">Proyección a futuro</dd>
+            <dt>Riego</dt><dd>Agua, sin sales, hasta el trasplante</dd>
+            <dt>Estado</dt><dd class="u-color-status-good">En operación</dd>
           </dl>
         </div>
         <div class="card module-card is-future">
@@ -1739,23 +1735,11 @@
                 <td>Nula si no se airea</td>
                 <td>Los quince módulos, en su versión no circulante</td>
               </tr>
-              <tr>
-                <th scope="row">NFT <span class="mono">(película nutritiva)</span></th>
-                <td>Una lámina delgada de solución recircula por canales inclinados</td>
-                <td>Bomba continua</td>
-                <td><span class="chip-proy">Proyección <span class="mono">PROY-NFT</span></span></td>
-              </tr>
-              <tr>
-                <th scope="row">Sustrato inerte</th>
-                <td>Arena, cascarilla o fibra de coco sostienen la raíz; riego por goteo</td>
-                <td>Bomba intermitente</td>
-                <td>No instalado</td>
-              </tr>
-              <tr>
-                <th scope="row">Vertical</th>
-                <td>Cualquiera de los anteriores montado en altura, para ganar superficie</td>
-                <td>Variable</td>
-                <td><span class="chip-proy">Proyección <span class="mono">PROY-VER</span></span></td>
+              <tr class="es-nuestro">
+                <th scope="row">Germinación <span class="mono">(almácigo)</span></th>
+                <td>La semilla germina en esponja o bandeja con agua, sin solución nutritiva, hasta tener raíz y dos hojas verdaderas</td>
+                <td><b>Ninguna</b></td>
+                <td><span class="chip-si">También lo hacemos</span></td>
               </tr>
               <tr>
                 <th scope="row">Aeroponía</th>
@@ -3317,7 +3301,7 @@
               </li>
               <li>
                 <i class="pal-2"></i>
-                <span class="destino-con">Semillas y almácigo<small>Semilla certificada y sustrato de germinación</small></span>
+                <span class="destino-con">Semillas y almácigo<small>Semilla certificada y esponjas de germinación</small></span>
               </li>
               <li>
                 <i class="pal-3"></i>
@@ -3698,7 +3682,7 @@
             <div class="admin-grid-2">
               <label class="form-field">
                 <span>Etiquetas (una por línea)</span>
-                <textarea id="invTags" rows="2" maxlength="200" placeholder="Lechuga · *Lactuca sativa*&#10;Módulo relacionado: NFT"></textarea>
+                <textarea id="invTags" rows="2" maxlength="200" placeholder="Lechuga · *Lactuca sativa*&#10;Módulo relacionado: MOD-DWC-03"></textarea>
               </label>
               <label class="form-field">
                 <span>Orden</span>
@@ -3999,7 +3983,7 @@
     </div>
 
     <p class="pie-marcas"><img src="/assets/img/emblema-ciehs.svg" width="34" height="34" alt="Emblema del CIEHS" loading="lazy" decoding="async"><span class="mono">Centro de Investigación Escolar Hidropónico Sostenible</span></p>
-    <p class="small">Datos institucionales, infraestructura, equipos de gestión, indicadores y contacto son oficiales de la I.E. N.° 80033 “José Olaya Balandra”: 280 estudiantes de 1.° a 5.° de secundaria, diez equipos de gestión y quince módulos de raíz flotante que operan actualmente sin bomba de aire. Los sistemas NFT y vertical figuran como proyecciones a futuro y no están instalados. Siguen pendientes de carga los archivos descargables de la carpeta de campo y del espacio docente. El protocolo de imagen de menores se detalla en la página de privacidad: toda fotografía se sube con las caras pixeladas desde el propio navegador.</p>
+    <p class="small">Datos institucionales, infraestructura, equipos de gestión, indicadores y contacto son oficiales de la I.E. N.° 80033 “José Olaya Balandra”: 280 estudiantes de 1.° a 5.° de secundaria, diez equipos de gestión y quince módulos de raíz flotante que operan actualmente sin bomba de aire. Los dos únicos sistemas del laboratorio son la germinación en almácigo y la raíz flotante (DWC); no hay ningún otro instalado ni proyectado. Albahaca y acelga figuran en el plan de diversificación pero todavía no están sembradas. Siguen pendientes de carga los archivos descargables de la carpeta de campo y del espacio docente. El protocolo de imagen de menores se detalla en la página de privacidad: toda fotografía se sube con las caras pixeladas desde el propio navegador.</p>
     <p class="copyright">© 2026 CIEHS - I.E. N.° 80033 José Olaya Balandra. Todos los derechos reservados.</p>
   </div>
 </footer>

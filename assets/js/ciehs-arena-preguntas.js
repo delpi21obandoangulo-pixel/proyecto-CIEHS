@@ -80,10 +80,14 @@
         correcta:false,
         exp:'No. La basura daña a los animales del mar y ensucia nuestra playa de Huanchaco.' },
 
+      // El enunciado cambio junto a la respuesta: el pelicano SI vuela, asi que
+      // preguntar "cual no vuela" con el pelicano como acierto habria dejado el
+      // reto mal planteado. Ahora pregunta por lo que lo distingue de verdad en
+      // la playa de Huanchaco, que es su pico.
       { id:'ar-ini-10', tema:'abismo', tipo:'escucha', dif:1,
-        q:'¿Qué animalito del mar vive en Huanchaco y no vuela?',
-        ops:[['El pingüino',true],['El elefante',false],['La jirafa',false]],
-        exp:'El pingüino de Humboldt vive en nuestra costa y nada muy bien.' },
+        q:'¿Qué animal del mar de Huanchaco vuela y pesca con su gran pico?',
+        ops:[['El pelícano',true],['El elefante',false],['La jirafa',false]],
+        exp:'El pelícano peruano vive en nuestra costa: vuela sobre el mar y pesca guardando los peces en la bolsa de su pico.' },
 
       { id:'ar-ini-11', tema:'invernadero', tipo:'opcion', dif:1,
         q:'¿Qué usamos para saber si la planta creció?',
@@ -225,8 +229,8 @@
 
       { id:'ar-pri-8', tema:'datos', tipo:'escribe', dif:2,
         q:'¿Cuántos módulos hidropónicos activos tiene el CIEHS? (escribe el número)',
-        respuestas:['4','cuatro'],
-        exp:'Cuatro: NFT, Raíz Flotante, Sustrato y Vertical.' },
+        respuestas:['15','quince'],
+        exp:'Quince, y todos son del mismo sistema: raíz flotante (DWC). Del 01 al 11 son módulos de mesa y del 12 al 15, botellas reutilizadas.' },
 
       { id:'ar-pri-9', tema:'tormenta', tipo:'vf', dif:1,
         q:'Separar los residuos ayuda a reducir la basura de la institución educativa.',
@@ -320,8 +324,8 @@
 
       { id:'ar-pri-27', tema:'taller', tipo:'escucha', dif:2,
         q:'¿Cómo se llama el módulo donde las plantas flotan sobre el agua en una balsa?',
-        ops:[['Raíz flotante',true],['Cultivo vertical',false],['Sustrato',false]],
-        exp:'Es el MOD-DWC-02, con una bomba de aire que oxigena el agua todo el tiempo.' },
+        ops:[['Raíz flotante',true],['Germinación',false],['Riego por goteo',false]],
+        exp:'Es la raíz flotante (DWC): MOD-DWC-01 a MOD-DWC-15. La germinación es el paso anterior, en el almácigo, antes de que la plántula llegue a la balsa.' },
 
       { id:'ar-pri-28', tema:'tormenta', tipo:'opcion', dif:1,
         q:'¿Cuál de estas acciones ayuda más a cuidar el agua en casa?',
@@ -367,9 +371,9 @@
         exp:'Sin pregunta no hay hipótesis, y sin diseño los datos no responden nada.' },
 
       { id:'ar-sec-6', tema:'taller', tipo:'vf', dif:2,
-        q:'En un sistema NFT el canal debe estar completamente inundado.',
+        q:'En los módulos del CIEHS conviene rellenar el depósito hasta el borde.',
         correcta:false,
-        exp:'Falso. La película debe ser delgada para que la raíz reciba nutrientes y oxígeno a la vez.' },
+        exp:'Falso, y es el error más caro del laboratorio. Al bajar el nivel aparece una cámara de aire donde se forman las raíces de aire: rellenar hasta arriba las ahoga y provoca justo la asfixia que se quería evitar.' },
 
       { id:'ar-sec-7', tema:'pociones', tipo:'escribe', dif:3,
         q:'¿En qué unidad se expresa la conductividad eléctrica en el CIEHS?',
@@ -472,9 +476,9 @@
         exp:'Falso. La transpiración crea la fuerza que sube el agua y los nutrientes desde la raíz.' },
 
       { id:'ar-sec-27', tema:'taller', tipo:'opcion', dif:3,
-        q:'En el cultivo vertical, el principal reto técnico suele ser…',
-        ops:[['Repartir la luz y el riego de forma uniforme',true],['Encontrar semillas pequeñas',false],['Evitar que las hojas sean verdes',false]],
-        exp:'Los niveles superiores reciben más luz y los inferiores más agua: hay que compensarlo.' },
+        q:'En las botellas (MOD-DWC-12 a 15), el principal reto técnico suele ser…',
+        ops:[['El poco volumen de solución, que se agota y se desajusta antes',true],['Encontrar semillas pequeñas',false],['Evitar que las hojas sean verdes',false]],
+        exp:'A menos litros, cualquier consumo de la planta mueve más el pH y la CE. Por eso las botellas se revisan con más frecuencia que los módulos de mesa.' },
 
       { id:'ar-sec-28', tema:'datos', tipo:'opcion', dif:3,
         q:'¿Por qué en INV-2026-01 se fija el pH entre 5.8 y 6.2 en todos los tratamientos?',
@@ -668,9 +672,9 @@
         exp:'El nitrógeno es móvil: la planta lo retira de hojas viejas para nutrir las nuevas. El calcio es inmóvil y falla primero en las jóvenes.' },
 
       { id:'ar-uni-5', tema:'taller', tipo:'opcion', dif:3,
-        q:'En NFT, una pendiente insuficiente del canal provoca sobre todo…',
-        ops:[['Encharcamiento y caída del oxígeno disuelto',true],['Exceso de luz en la raíz',false],['Aumento del pH a 9',false]],
-        exp:'La pendiente típica es 1–3 %. Sin ella la película se estanca y la raíz se asfixia.' },
+        q:'En un sistema no circulante, reponer solución hasta el borde provoca sobre todo…',
+        ops:[['Pérdida de la cámara de aire y caída del oxígeno en la raíz',true],['Exceso de luz en la raíz',false],['Aumento del pH a 9',false]],
+        exp:'La cámara de aire sustituye a la bomba: es donde se diferencian las raíces de aire. Sin ella la raíz se asfixia aunque la solución esté perfecta.' },
 
       { id:'ar-uni-6', tema:'datos', tipo:'orden', dif:3,
         q:'Ordena las etapas del análisis de datos de una investigación escolar.',
@@ -713,7 +717,7 @@
         exp:'pH = −log(10⁻⁴) = 4. Cada unidad de pH es un factor diez en concentración de protones.' },
 
       { id:'ar-uni-14', tema:'abismo', tipo:'opcion', dif:3,
-        q:'El potencial hídrico del sustrato debe ser… para que la raíz absorba agua.',
+        q:'El potencial hídrico de la solución debe ser… para que la raíz absorba agua.',
         ops:[['Mayor que el de la raíz',true],['Menor que el de la raíz',false],['Exactamente igual',false]],
         exp:'El agua se mueve de mayor a menor potencial. Con CE alta el externo cae y la absorción se frena.' },
 
@@ -780,7 +784,7 @@
       { id:'ar-uni-27', tema:'invernadero', tipo:'opcion', dif:3,
         q:'El índice de área foliar (IAF) relaciona…',
         ops:[['Superficie de hoja con superficie de suelo ocupada',true],['Peso de hoja con peso de raíz',false],['Número de hojas con altura',false]],
-        exp:'Es clave en cultivo vertical: más IAF capta más luz, pero también genera más sombra propia.' },
+        exp:'Es clave al decidir la densidad de la balsa: más IAF capta más luz, pero también genera más sombra propia.' },
 
       { id:'ar-uni-28', tema:'abismo', tipo:'opcion', dif:3,
         q:'En recirculación, el desequilibrio nutricional aparece porque…',
