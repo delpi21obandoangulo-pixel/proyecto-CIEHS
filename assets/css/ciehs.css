@@ -2348,7 +2348,7 @@
     position:relative; overflow:hidden; display:flex; align-items:center;
     background:linear-gradient(160deg, rgba(5,150,105,0.06), rgba(2,132,199,0.10));
   }
-  .mural-lienzo{ position:relative; width:100%; aspect-ratio:1280/853; }
+  .mural-lienzo{ position:relative; width:100%; aspect-ratio:3/2; }
   .mural-img{ width:100%; height:100%; display:block; object-fit:contain; }
   /* Un mural es una pieza grafica, no un lienzo para poner numeros encima. Los
      cuatro puntos son ahora un anillo pequeno y semitransparente, con doble
@@ -2379,11 +2379,16 @@
     font-family:var(--font-mono); font-size:11px; letter-spacing:.02em;
     opacity:0; pointer-events:none; transition:opacity .18s ease, transform .18s ease;
   }
-  /* El punto de los ODS vive pegado al borde derecho: su etiqueta se sale del
-     recorte del mural, asi que ahi va al costado izquierdo. */
+  /* Dos puntos viven pegados a un borde y su etiqueta se saldria del mural: la
+     de los ODS, contra el borde derecho, sale por el costado izquierdo; la del
+     escudo, en la esquina superior izquierda, por el derecho. */
   .hotspot.tip-start .hotspot-tip{
     left:auto; right:calc(100% + 10px); bottom:auto; top:50%;
     transform:translate(4px,-50%); transform-origin:right center;
+  }
+  .hotspot.tip-end .hotspot-tip{
+    left:calc(100% + 10px); right:auto; bottom:auto; top:50%;
+    transform:translate(-4px,-50%); transform-origin:left center;
   }
   /* La etiqueta sale solo al apuntar o enfocar. El punto activo no la necesita:
      su tema ya esta escrito en el panel de la derecha y en la botonera, asi que
@@ -2396,9 +2401,11 @@
      La pregunta correcta no es «¿es pantalla pequena?» sino «¿hay cursor?». */
   .hotspot:focus-visible .hotspot-tip{ opacity:1; transform:translate(-50%,0); }
   .hotspot.tip-start:focus-visible .hotspot-tip{ transform:translate(0,-50%); }
+  .hotspot.tip-end:focus-visible .hotspot-tip{ transform:translate(0,-50%); }
   @media (hover:hover) and (pointer:fine){
     .hotspot:hover .hotspot-tip{ opacity:1; transform:translate(-50%,0); }
     .hotspot.tip-start:hover .hotspot-tip{ transform:translate(0,-50%); }
+    .hotspot.tip-end:hover .hotspot-tip{ transform:translate(0,-50%); }
   }
   @keyframes hotspot-pulse{
     0%,100%{ box-shadow:0 0 0 1.5px rgba(4,20,15,0.5), 0 0 0 6px rgba(240,200,118,0.16); }
@@ -2409,20 +2416,20 @@
   .mural-info .eyebrow::before{ background:var(--sun-300); }
   .mural-info h3{ margin-top:12px; color:var(--ink); font-size:20px; }
   .mural-info p{ margin-top:10px; font-size:14.5px; line-height:1.7; color:var(--on-ocean-soft); }
-  /* La rejilla de diecisiete casillas numeradas se retiro: el mural oficial no
-     pinta la Agenda entera, fija seis objetivos con su nombre y el 13 en grande.
-     Las fichas de abajo repiten esos seis para que la pared y la pantalla
-     cuenten lo mismo. */
-  .ods-pins{ list-style:none; display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:16px; padding:0; }
-  @media (max-width:560px){ .ods-pins{ grid-template-columns:repeat(2,1fr); } }
+  /* La rejilla de diecisiete casillas numeradas se retiro: el mural no pinta la
+     Agenda entera, fija cinco objetivos con su nombre y su frase. Las fichas de
+     abajo repiten esos cinco para que la pared y la pantalla cuenten lo mismo. */
+  .ods-pins{ list-style:none; display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:16px; padding:0; }
+  @media (max-width:420px){ .ods-pins{ grid-template-columns:1fr; } }
   .ods-pin{
-    display:flex; flex-direction:column; gap:4px; padding:10px 11px; border-radius:10px;
+    display:flex; flex-direction:column; gap:3px; padding:10px 12px; border-radius:10px;
     background:var(--glass); color:var(--on-ocean-soft); border:1px solid var(--line);
   }
   .ods-pin b{ font-family:var(--font-mono); font-size:15px; line-height:1; color:var(--ink); }
-  .ods-pin span{ font-size:11px; line-height:1.35; }
+  .ods-pin span{ font-size:11.5px; line-height:1.35; font-weight:600; color:var(--ink-soft); }
+  .ods-pin i{ font-style:normal; font-size:11px; line-height:1.4; }
   .ods-pin.is-focus{ background:var(--sun-500); border-color:var(--sun-500); color:#3a2c00; }
-  .ods-pin.is-focus b{ color:#1a1200; }
+  .ods-pin.is-focus b, .ods-pin.is-focus span{ color:#1a1200; }
   .mural-retos{ list-style:none; padding:0; margin-top:14px; display:grid; gap:9px; }
   .mural-retos li{
     padding:10px 13px; border-radius:10px; font-size:13px; line-height:1.6;
@@ -3101,8 +3108,15 @@
   .u-left-49pct{ left:49% !important; }
   .u-top-38pct{ top:38% !important; }
   .u-top-54pct{ top:54% !important; }
-  .u-left-27pct{ left:27% !important; }
-  .u-top-61pct{ top:61% !important; }
+  .u-left-48pct{ left:48% !important; }
+  .u-top-74pct{ top:74% !important; }
+  .u-left-62pct{ left:62% !important; }
+  .u-top-68pct{ top:68% !important; }
+  .u-left-86pct{ left:86% !important; }
+  .u-top-41pct{ top:41% !important; }
+  .u-left-10pct{ left:10% !important; }
+  .u-top-11pct{ top:11% !important; }
+  .u-top-48pct{ top:48% !important; }
   .u-margin-top-16px{ margin-top:16px !important; }
   .u-font-size-1p9rem{ font-size:1.9rem !important; }
   .u-font-size-15p5px{ font-size:15.5px !important; }

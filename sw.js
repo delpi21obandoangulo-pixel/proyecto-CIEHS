@@ -22,7 +22,7 @@
 // Al subir esta version se descartan todas las cachas anteriores. Se sube cada
 // vez que cambian el CSS, los iconos o el plano ambiental: si no, quien ya
 // visito el portal sigue viendo la version vieja.
-var VERSION = 'ciehs-v9';
+var VERSION = 'ciehs-v10';
 var SHELL = VERSION + '-shell';
 var MEDIA = VERSION + '-media';
 

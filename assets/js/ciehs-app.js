@@ -591,20 +591,20 @@
     },
     ods: {
       label: '3 · Los ODS del mural',
-      title: 'Los seis ODS que el mural pone en el muro',
-      html: '<p>La Agenda 2030 de Naciones Unidas define <b>17 Objetivos de Desarrollo Sostenible</b>. El mural no los pinta todos: fija los <b>seis</b> que el CIEHS puede sostener con evidencia de su propio laboratorio, con el <b>ODS 13 (Acción por el Clima)</b> destacado en grande porque es el eje de la indagación.</p>'
-        + '<p>Los otros cinco no son decorado: el <b>6</b> lo mide el ahorro hídrico de la raíz flotante, el <b>3</b> lo sostiene la hortaliza fresca que sale a la comunidad, el <b>12</b> son las botellas reutilizadas de los módulos 12 al 15, el <b>15</b> es el suelo salinizado que no cultivamos, y el <b>17</b> son las alianzas que el proyecto necesita para crecer.</p>',
+      title: 'Los cinco ODS a los que el proyecto contribuye',
+      html: '<p>La Agenda 2030 de Naciones Unidas define <b>17 Objetivos de Desarrollo Sostenible</b>. El mural no los pinta todos: fija los <b>cinco</b> que el CIEHS puede sostener con evidencia de su propio laboratorio, empezando por el <b>ODS 13 (Acción por el Clima)</b>, que es el eje de la indagación.</p>'
+        + '<p>Los otros cuatro no son decorado: el <b>6</b> lo mide el ahorro hídrico de la raíz flotante, el <b>3</b> lo sostiene la hortaliza fresca que sale a la comunidad, el <b>12</b> son las botellas reutilizadas de los módulos 12 al 15, y el <b>17</b> son las alianzas que el proyecto necesita para crecer.</p>',
       showOds: true
     },
     retos: {
-      label: '5 · Nuestros cuatro retos',
-      title: 'Investigamos · Innovamos · Cuidamos el agua · Reducimos y reciclamos',
-      html: '<p>Bajo el logo, el mural enuncia los <b>cuatro retos ambientales</b> que el CIEHS se impone. No son un lema: cada uno tiene su reflejo verificable en este portal.</p>'
+      label: '5 · Los cuatro retos',
+      title: '¿Qué problemas buscamos abordar?',
+      html: '<p>El mural no empieza por la solución, empieza por el problema: enuncia los <b>cuatro retos ambientales</b> de los que nace el CIEHS. Los cuatro se observan en Huanchaco y los cuatro tienen respuesta medible en el laboratorio.</p>'
         + '<ul class="mural-retos">'
-        + '<li><b>Investigamos</b> — los estudios en curso y la carpeta de campo, con su pregunta, su hipótesis y sus datos abiertos.</li>'
-        + '<li><b>Innovamos</b> — el bioestimulante de germinados de lenteja y los módulos construidos con lo que había.</li>'
-        + '<li><b>Cuidamos el agua</b> — cerca del 90&nbsp;% de ahorro hídrico frente al cultivo en suelo, medido módulo a módulo.</li>'
-        + '<li><b>Reducimos y reciclamos</b> — cuatro de los quince módulos son botellas plásticas recuperadas de la playa y del colegio.</li>'
+        + '<li><b>Suelos infértiles</b> — recuperar la fertilidad del suelo y promover su uso sostenible. La raíz flotante cultiva <i>sin</i> suelo, así que el terreno salinizado del litoral deja de ser el límite.</li>'
+        + '<li><b>Escasez y desperdicio de agua</b> — usar el agua de forma responsable y eficiente. La solución queda encerrada en el módulo: cerca del <b>90&nbsp;% de ahorro hídrico</b> frente al cultivo en suelo.</li>'
+        + '<li><b>Alimentación poco saludable</b> — fomentar el consumo de hortalizas frescas y nutritivas. Lo que sale de los quince módulos llega a la comunidad educativa por la tienda escolar y los pedidos.</li>'
+        + '<li><b>Disposición inadecuada de residuos sólidos</b> — reducir, reutilizar y reciclar para un entorno más limpio. Cuatro de los quince módulos son botellas plásticas recuperadas.</li>'
         + '</ul>'
     },
     identidad: {
@@ -616,24 +616,25 @@
   };
 
   // Antes esto pintaba las diecisiete casillas de la Agenda con la 13 encendida.
-  // El mural oficial no dice eso: fija seis objetivos con su nombre, y el 13 en
-  // grande. La rejilla ahora repite exactamente esos seis, en el mismo orden en
-  // que estan pintados, para que quien mire la pared y quien mire la pantalla
-  // cuenten lo mismo.
+  // El mural no dice eso: bajo el rotulo «Nuestro proyecto contribuye a los ODS»
+  // fija cinco, cada uno con su nombre y su frase. Las fichas repiten esos cinco
+  // en el mismo orden en que estan pintados —13 y 6 arriba, 3, 12 y 17 debajo—,
+  // con la misma frase, para que quien mire la pared y quien mire la pantalla
+  // lean lo mismo.
   var ODS_MURAL = [
-    [13, 'Acción por el clima'],
-    [3,  'Salud y bienestar'],
-    [6,  'Agua limpia y saneamiento'],
-    [12, 'Producción y consumo responsables'],
-    [15, 'Vida de ecosistemas terrestres'],
-    [17, 'Alianzas para lograr los objetivos']
+    [13, 'Acción por el clima',                 'Combatir el cambio climático y sus efectos'],
+    [6,  'Agua limpia y saneamiento',           'Uso responsable del agua y acceso a agua segura'],
+    [3,  'Salud y bienestar',                   'Mejorar la alimentación y la salud'],
+    [12, 'Producción y consumo responsables',   'Reducir, reutilizar y reciclar'],
+    [17, 'Alianzas para lograr los objetivos',  'Trabajo conjunto para un mejor futuro']
   ];
 
   function buildOdsGrid(){
     var html = '<ul class="ods-pins">';
     ODS_MURAL.forEach(function(o){
       html += '<li class="ods-pin' + (o[0] === 13 ? ' is-focus' : '') + '">'
-           +  '<b>' + o[0] + '</b><span>' + o[1] + '</span></li>';
+           +  '<b>' + o[0] + '</b><span>' + o[1] + '</span>'
+           +  '<i>' + o[2] + '</i></li>';
     });
     return html + '</ul>';
   }

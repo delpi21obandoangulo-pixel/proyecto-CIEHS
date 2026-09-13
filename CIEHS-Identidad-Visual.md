@@ -39,6 +39,13 @@ panel «¿Qué buscamos con este proyecto?». El encargo
 
 Tres cosas que hubo que ajustar y no eran obvias:
 
+> [!info] Hay una ilustración posterior (2026-09-13)
+> Lo que sigue describe el cambio del 2026-09-09. El 2026-09-13 entró una
+> composición **nueva entera** —escudo arriba a la izquierda, logo al centro,
+> cinco ODS con su frase y un panel de cuatro retos ambientales—, con las cinco
+> posiciones de los puntos recalculadas. Ver
+> [[pendientes-coordinacion/01-mural-panel-que-buscamos|el pendiente 01]].
+
 1. **El ave cambió.** Donde había un **pingüino de Humboldt** ahora hay un
    **pelícano peruano**. Los dos son de esta costa, pero el texto alternativo,
    el punto «nuestra identidad» y la ficha del QR decían pingüino: si no se

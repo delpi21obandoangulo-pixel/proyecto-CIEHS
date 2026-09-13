@@ -10,12 +10,25 @@ estado: cerrado
 
 > [!success] Cerrado el 2026-09-13 — en la ilustración, no en la pared
 > La coordinación entregó la ilustración oficial y ya está instalada en
-> `assets/img/mural-ciehs.jpg`: el panel pintado dice el texto nuevo, el ave es
-> el pelícano peruano y las fichas de ODS son seis —13 destacado, 3, 6, 12, 15 y
-> 17—. El portal quedó alineado con ella el 2026-09-13: la rejilla de diecisiete
-> casillas se sustituyó por esas seis fichas y se añadió un quinto punto
-> interactivo para los cuatro retos ambientales. **Sigue pendiente repintar el
-> mural físico de la pared**, que es lo único que esta nota ya no puede resolver.
+> `assets/img/mural-ciehs.jpg`. No es un retoque del panel: es una composición
+> nueva entera. El escudo de la I.E. pasa al ángulo superior izquierdo, el logo
+> del CIEHS al centro, las fichas de ODS son **cinco** —13, 6, 3, 12 y 17, cada
+> una con su frase— y entra un panel nuevo, «¿Qué problemas buscamos abordar?»,
+> con los cuatro retos ambientales. El panel «¿Qué buscamos con este proyecto?»
+> ya dice el texto correcto y el ave es el pelícano peruano.
+>
+> El portal quedó alineado con ella el 2026-09-13: las cinco posiciones de los
+> puntos interactivos se recalcularon enteras sobre la composición nueva, las
+> fichas de ODS repiten esas cinco con su frase y el quinto punto explica los
+> cuatro retos. **Sigue pendiente repintar el mural físico de la pared**, que es
+> lo único que esta nota ya no puede resolver.
+
+> [!question] Una errata de la ilustración, para la próxima tirada
+> El cuarto reto está rotulado «Disponibilidad inadecuada de residuos sólidos».
+> Lo que describe —reducir, reutilizar y reciclar— es la **disposición**
+> inadecuada, no la disponibilidad. El portal escribe «disposición», que es lo
+> correcto; la pared y el JPG dicen «disponibilidad». Conviene corregirlo al
+> repintar, para que las dos vuelvan a decir lo mismo.
 
 > [!warning]- El problema original (2026-09-09), para contexto
 > El 2026-09-09 se corrigió la redacción de **qué busca el proyecto**. El portal
