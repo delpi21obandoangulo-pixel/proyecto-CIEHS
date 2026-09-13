@@ -907,7 +907,7 @@
           </article>
           <article class="peai-card">
             <h5>Familias</h5>
-            <p>Reciben la cosecha y pueden <b>seguir el proceso</b>, no solo la nota: la bitácora y la caja son públicas, y cualquiera puede escribir para pedir una explicación o una rectificación.</p>
+            <p>Reciben la cosecha y pueden <b>seguir el proceso</b>, no solo el resultado final: la bitácora y la caja son públicas, y cualquiera puede escribir para pedir una explicación o una rectificación.</p>
           </article>
           <article class="peai-card">
             <h5>Comunidad y aliados</h5>
@@ -1107,6 +1107,7 @@
             <span class="chip">ODS 6 · Agua limpia y saneamiento</span>
             <span class="chip">ODS 12 · Producción y consumo responsables</span>
             <span class="chip">ODS 15 · Vida de ecosistemas terrestres</span>
+            <span class="chip">ODS 17 · Alianzas para lograr los objetivos</span>
           </div>
         </div>
 
@@ -1868,7 +1869,7 @@
           <div class="qr-thumb" data-qr-slot="mural" data-qr-label="Código QR 02 — QR Mural"></div>
           <h4>QR Mural</h4>
           <p>El mural pintado, explicado punto por punto — junto al mural físico</p>
-          <p class="qr-info"><b>Qué encontrarás:</b> el mural del CIEHS es un mapa de ideas, no una decoración. Al escanearlo se abre su versión interactiva con cuatro puntos explicados: <b>el ciclo del agua</b> en un sistema que recircula, <b>las fitohormonas</b> que hacen enraizar a una plántula, <b>los 17 Objetivos de Desarrollo Sostenible</b> y por qué el nuestro es el 13, y <b>nuestra identidad</b> —el escudo, el caballito de totora y el pelícano peruano de Huanchaco—. Cada punto responde una pregunta que el mural plantea en imagen.</p>
+          <p class="qr-info"><b>Qué encontrarás:</b> el mural del CIEHS es un mapa de ideas, no una decoración. Al escanearlo se abre su versión interactiva con cinco puntos explicados: <b>el ciclo del agua</b> en un sistema que recircula, <b>las fitohormonas</b> que hacen enraizar a una plántula, <b>los seis ODS</b> que el mural fija y por qué el nuestro es el 13, <b>nuestra identidad</b> —el escudo, el caballito de totora y el pelícano peruano de Huanchaco— y <b>los cuatro retos ambientales</b> que el CIEHS se impone. Cada punto responde una pregunta que el mural plantea en imagen.</p>
           <code class="qr-url" data-qr-url="mural"></code>
           <div class="qr-actions">
             <button type="button" data-route="mural">Abrir → Nuestro Mural</button>
@@ -2876,20 +2877,31 @@
 
       <div class="mural-panel">
         <div class="mural-art">
-          <img class="mural-img" data-edit-img="mural" src="/assets/img/mural-ciehs.jpg" width="1536" height="1024"
-               alt="Mural del CIEHS: el escudo de la I.E. 80033 José Olaya Balandra rodeado del reto Acción por el Clima, los Objetivos de Desarrollo Sostenible, un módulo hidropónico de raíz flotante con lechugas, dos estudiantes trabajando en él, y el caballito de totora y el pelícano peruano de Huanchaco."
-               loading="lazy" decoding="async">
+          <!-- El lienzo existe para los cinco puntos: son absolutos en % y
+               necesitan un contenedor con la proporcion exacta del dibujo. La
+               celda de la rejilla no sirve, porque se estira con el texto. -->
+          <div class="mural-lienzo">
+            <img class="mural-img" data-edit-img="mural" src="/assets/img/mural-ciehs.jpg" width="1536" height="1024"
+                 alt="Mural del CIEHS: el escudo de la I.E. 80033 José Olaya Balandra al centro bajo la cinta del reto Acción por el Clima; a la derecha, las fichas de los Objetivos de Desarrollo Sostenible 13 —destacado—, 3, 6, 12, 15 y 17; a la izquierda, el logo del CIEHS con los cuatro retos ambientales —investigamos, innovamos, cuidamos el agua, reducimos y reciclamos—, el caballito de totora y el pelícano peruano de Huanchaco; abajo al centro, un módulo hidropónico de raíz flotante con lechugas y dos estudiantes trabajando en él."
+                 loading="lazy" decoding="async">
 
-          <!-- Los cuatro puntos ya no llevan el numero pintado encima del mural:
-               eran discos amarillos que tapaban la ilustracion y, el cuarto, el
-               rostro del escudo. Ahora son un anillo discreto y el numero con su
-               tema salen en una etiqueta al pasar el cursor, al enfocar con el
-               teclado o al activarlos. La numeracion completa se lee en la
-               botonera de la derecha, fuera de la imagen. -->
-          <button type="button" class="hotspot is-active u-left-42pct u-top-80pct" data-hotspot="agua" aria-label="1 · El ciclo del agua en hidroponía"><span class="hotspot-tip" aria-hidden="true">1 · Ciclo del agua</span></button>
-          <button type="button" class="hotspot u-left-60pct u-top-70pct" data-hotspot="fito" aria-label="2 · Fitohormonas y enraizamiento"><span class="hotspot-tip" aria-hidden="true">2 · Fitohormonas</span></button>
-          <button type="button" class="hotspot tip-start u-left-88pct u-top-34pct" data-hotspot="ods" aria-label="3 · Los Objetivos de Desarrollo Sostenible"><span class="hotspot-tip" aria-hidden="true">3 · Los 17 ODS</span></button>
-          <button type="button" class="hotspot u-left-50pct u-top-54pct" data-hotspot="identidad" aria-label="4 · Nuestra identidad institucional"><span class="hotspot-tip" aria-hidden="true">4 · Nuestra identidad</span></button>
+            <!-- Los cuatro puntos ya no llevan el numero pintado encima del mural:
+                 eran discos amarillos que tapaban la ilustracion y, el cuarto, el
+                 rostro del escudo. Ahora son un anillo discreto y el numero con su
+                 tema salen en una etiqueta al pasar el cursor, al enfocar con el
+                 teclado o al activarlos. La numeracion completa se lee en la
+                 botonera de la derecha, fuera de la imagen. -->
+            <button type="button" class="hotspot is-active u-left-42pct u-top-80pct" data-hotspot="agua" aria-label="1 · El ciclo del agua en hidroponía"><span class="hotspot-tip" aria-hidden="true">1 · Ciclo del agua</span></button>
+            <button type="button" class="hotspot u-left-60pct u-top-70pct" data-hotspot="fito" aria-label="2 · Fitohormonas y enraizamiento"><span class="hotspot-tip" aria-hidden="true">2 · Fitohormonas</span></button>
+            <button type="button" class="hotspot tip-start u-left-88pct u-top-34pct" data-hotspot="ods" aria-label="3 · Los Objetivos de Desarrollo Sostenible del mural"><span class="hotspot-tip" aria-hidden="true">3 · Los ODS del mural</span></button>
+            <button type="button" class="hotspot u-left-50pct u-top-54pct" data-hotspot="identidad" aria-label="4 · Nuestra identidad institucional"><span class="hotspot-tip" aria-hidden="true">4 · Nuestra identidad</span></button>
+            <!-- El quinto punto es nuevo: la ilustracion oficial enuncia bajo el
+                 logo los cuatro retos ambientales del CIEHS, y hasta ahora el
+                 portal no los explicaba en ningun sitio. Cae sobre esa columna
+                 izquierda y no mueve ninguno de los cuatro anteriores. -->
+            <button type="button" class="hotspot u-left-27pct u-top-61pct" data-hotspot="retos" aria-label="5 · Nuestros cuatro retos ambientales"><span class="hotspot-tip" aria-hidden="true">5 · Los cuatro retos</span></button>
+
+          </div>
         </div>
 
         <div class="mural-info">
@@ -2901,8 +2913,9 @@
           <div class="mural-nav">
             <button type="button" class="is-active" data-hotspot="agua">1 · Ciclo del agua</button>
             <button type="button" data-hotspot="fito">2 · Fitohormonas</button>
-            <button type="button" data-hotspot="ods">3 · Los 17 ODS</button>
+            <button type="button" data-hotspot="ods">3 · Los ODS del mural</button>
             <button type="button" data-hotspot="identidad">4 · Nuestra identidad</button>
+            <button type="button" data-hotspot="retos">5 · Los cuatro retos</button>
           </div>
         </div>
       </div>

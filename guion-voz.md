@@ -3,7 +3,7 @@
 Generado por `tools/guion-voz.js` a partir del banco real de preguntas.
 No editar a mano: si el banco cambia, vuelve a ejecutarlo.
 
-- **72 pistas** · **10,840 caracteres** en total.
+- **72 pistas** · **10,887 caracteres** en total.
 - Nombra cada archivo **exactamente** como dice su fila.
 - Súbelos desde *Administración → Aportes*, tipo **Audio**, y apruébalos.
 
@@ -124,7 +124,7 @@ Si mi planta creció más que la de mi compañero, eso es… Opción 1: Un secre
 
 ### `voz/primaria-2-p.mp3`
 
-¿Qué significan las siglas NFT en el módulo MOD-NFT-01? Opción 1: Técnica de Película de Nutrientes. Opción 2: Nuevo Filtro de Tierra. Opción 3: Nutriente Fijo Total.
+¿Qué significan las siglas DWC en el módulo MOD-DWC-01? Opción 1: Cultivo en Agua Profunda. Opción 2: Doble William Cultivo. Opción 3: Dosis Warm Control.
 
 ### `voz/primaria-3-p.mp3`
 
@@ -144,15 +144,15 @@ En un gráfico de barras del crecimiento semanal, ¿qué va normalmente en el ej
 
 ### `voz/primaria-7-p.mp3`
 
-En el CIEHS, la solución nutritiva… Opción 1: Solo se usa una vez al año. Opción 2: Recircula y se vuelve a usar. Opción 3: Se tira después de cada riego.
+En el CIEHS, la solución nutritiva… Opción 1: Solo se usa una vez al año. Opción 2: Se queda en el módulo y la planta la va consumiendo. Opción 3: Se tira después de cada riego.
 
 ### `voz/primaria-8-p.mp3`
 
-¿Cuántos módulos hidropónicos activos tiene el CIEHS? Opción 1: Cuatro. Opción 2: Uno. Opción 3: Diez.
+¿Cuántos módulos hidropónicos activos tiene el CIEHS? Opción 1: Quince. Opción 2: Uno. Opción 3: Cuatro.
 
 ### `voz/primaria-9-p.mp3`
 
-Si comparo semillas en algodón húmedo y en sustrato inerte, ¿qué estoy haciendo? Opción 1: Un dibujo libre. Opción 2: Una encuesta. Opción 3: Un experimento comparativo.
+Si comparo semillas en algodón húmedo y en esponja de almácigo, ¿qué estoy haciendo? Opción 1: Un dibujo libre. Opción 2: Una encuesta. Opción 3: Un experimento comparativo.
 
 ### `voz/primaria-10-p.mp3`
 
@@ -200,7 +200,7 @@ El ODS 6 se refiere a… Opción 1: Acción por el clima. Opción 2: Hambre cero
 
 ### `voz/primaria-21-p.mp3`
 
-El módulo MOD-VER-04 aprovecha sobre todo… Opción 1: La lluvia. Opción 2: El espacio hacia arriba. Opción 3: El agua del mar.
+Los módulos MOD-DWC-12 a 15 aprovechan sobre todo… Opción 1: La lluvia. Opción 2: Botellas usadas que iban a la basura. Opción 3: El agua del mar.
 
 ### `voz/primaria-22-p.mp3`
 
@@ -229,7 +229,7 @@ El rango de pH general recomendado para los cultivos del CIEHS es… Opción 1: 
 
 ### `voz/secundaria-3-p.mp3`
 
-En un sistema NFT, la película de solución debe ser delgada porque… Opción 1: Ahorra electricidad en la bomba. Opción 2: Evita que crezcan las hojas. Opción 3: Así las raíces reciben nutrientes y oxígeno a la vez.
+En los módulos del CIEHS el nivel de solución no se rellena hasta el borde porque… Opción 1: Ahorra electricidad en la bomba. Opción 2: Evita que crezcan las hojas. Opción 3: La cámara de aire es donde la raíz toma oxígeno.
 
 ### `voz/secundaria-4-p.mp3`
 
@@ -269,7 +269,7 @@ El CIEHS declara alineación con la EDS de la UNESCO. Eso significa que… Opci�
 
 ### `voz/secundaria-13-p.mp3`
 
-El módulo MOD-DWC-02 se conoce en castellano como… Opción 1: Raíz Flotante. Opción 2: Cultivo vertical. Opción 3: Película de nutrientes.
+El módulo MOD-DWC-02 se conoce en castellano como… Opción 1: Raíz Flotante. Opción 2: Riego por goteo. Opción 3: Germinación.
 
 ### `voz/secundaria-14-p.mp3`
 
@@ -277,7 +277,7 @@ La hipótesis de una investigación es… Opción 1: Un dato medido. Opción 2: 
 
 ### `voz/secundaria-15-p.mp3`
 
-La aireación forzada en el módulo de Raíz Flotante sirve para… Opción 1: Calentar la solución. Opción 2: Bajar el pH. Opción 3: Mantener oxígeno disuelto disponible para las raíces.
+La aireación forzada, planificada como mejora del CIEHS, serviría para… Opción 1: Calentar la solución. Opción 2: Bajar el pH. Opción 3: Mantener oxígeno disuelto disponible para las raíces.
 
 ### `voz/secundaria-16-p.mp3`
 
@@ -309,7 +309,7 @@ Recircular la solución nutritiva reduce el consumo de agua en torno al… Opci�
 
 ### `voz/secundaria-23-p.mp3`
 
-El sustrato inerte del módulo MOD-SUS-03 se llama inerte porque… Opción 1: Está muerto. Opción 2: No aporta nutrientes: solo da soporte físico. Opción 3: No deja pasar el agua.
+El soporte de la balsa en raíz flotante se llama inerte porque… Opción 1: Está muerto. Opción 2: No aporta nutrientes: solo sostiene la plántula. Opción 3: No deja pasar el agua.
 
 ### `voz/secundaria-24-p.mp3`
 

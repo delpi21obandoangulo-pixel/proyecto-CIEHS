@@ -590,10 +590,22 @@
       html: '<p>Las fitohormonas son sustancias naturales de las plantas —como las auxinas— que regulan su crecimiento y enraizamiento. INV-2026-02 estudia un <b>bioestimulante orgánico a base de germinados de lenteja</b>, rico en auxinas naturales, para favorecer el enraizamiento de plántulas hidropónicas.</p>'
     },
     ods: {
-      label: '3 · Los 17 ODS',
-      title: 'Los 17 Objetivos de Desarrollo Sostenible',
-      html: '<p>La Agenda 2030 de Naciones Unidas define 17 ODS. El CIEHS se conecta especialmente con los ODS 2, 3, 4, 6, 12, 13 y 15 — con el <b>ODS 13 (Acción por el Clima)</b> como eje central de su indagación.</p>',
+      label: '3 · Los ODS del mural',
+      title: 'Los seis ODS que el mural pone en el muro',
+      html: '<p>La Agenda 2030 de Naciones Unidas define <b>17 Objetivos de Desarrollo Sostenible</b>. El mural no los pinta todos: fija los <b>seis</b> que el CIEHS puede sostener con evidencia de su propio laboratorio, con el <b>ODS 13 (Acción por el Clima)</b> destacado en grande porque es el eje de la indagación.</p>'
+        + '<p>Los otros cinco no son decorado: el <b>6</b> lo mide el ahorro hídrico de la raíz flotante, el <b>3</b> lo sostiene la hortaliza fresca que sale a la comunidad, el <b>12</b> son las botellas reutilizadas de los módulos 12 al 15, el <b>15</b> es el suelo salinizado que no cultivamos, y el <b>17</b> son las alianzas que el proyecto necesita para crecer.</p>',
       showOds: true
+    },
+    retos: {
+      label: '5 · Nuestros cuatro retos',
+      title: 'Investigamos · Innovamos · Cuidamos el agua · Reducimos y reciclamos',
+      html: '<p>Bajo el logo, el mural enuncia los <b>cuatro retos ambientales</b> que el CIEHS se impone. No son un lema: cada uno tiene su reflejo verificable en este portal.</p>'
+        + '<ul class="mural-retos">'
+        + '<li><b>Investigamos</b> — los estudios en curso y la carpeta de campo, con su pregunta, su hipótesis y sus datos abiertos.</li>'
+        + '<li><b>Innovamos</b> — el bioestimulante de germinados de lenteja y los módulos construidos con lo que había.</li>'
+        + '<li><b>Cuidamos el agua</b> — cerca del 90&nbsp;% de ahorro hídrico frente al cultivo en suelo, medido módulo a módulo.</li>'
+        + '<li><b>Reducimos y reciclamos</b> — cuatro de los quince módulos son botellas plásticas recuperadas de la playa y del colegio.</li>'
+        + '</ul>'
     },
     identidad: {
       label: '4 · Nuestra identidad',
@@ -603,12 +615,27 @@
     }
   };
 
+  // Antes esto pintaba las diecisiete casillas de la Agenda con la 13 encendida.
+  // El mural oficial no dice eso: fija seis objetivos con su nombre, y el 13 en
+  // grande. La rejilla ahora repite exactamente esos seis, en el mismo orden en
+  // que estan pintados, para que quien mire la pared y quien mire la pantalla
+  // cuenten lo mismo.
+  var ODS_MURAL = [
+    [13, 'Acción por el clima'],
+    [3,  'Salud y bienestar'],
+    [6,  'Agua limpia y saneamiento'],
+    [12, 'Producción y consumo responsables'],
+    [15, 'Vida de ecosistemas terrestres'],
+    [17, 'Alianzas para lograr los objetivos']
+  ];
+
   function buildOdsGrid(){
-    var html = '<div class="ods17">';
-    for(var i = 1; i <= 17; i++){
-      html += '<div class="ods-tile' + (i === 13 ? ' is-focus' : '') + '">' + i + '</div>';
-    }
-    return html + '</div>';
+    var html = '<ul class="ods-pins">';
+    ODS_MURAL.forEach(function(o){
+      html += '<li class="ods-pin' + (o[0] === 13 ? ' is-focus' : '') + '">'
+           +  '<b>' + o[0] + '</b><span>' + o[1] + '</span></li>';
+    });
+    return html + '</ul>';
   }
 
   function activate(key){

@@ -463,7 +463,7 @@
       { id:'ar-sec-24', tema:'tormenta', tipo:'escribe', dif:2,
         q:'¿Cuántos Objetivos de Desarrollo Sostenible tiene la Agenda 2030? (número)',
         respuestas:['17','diecisiete'],
-        exp:'Diecisiete. El CIEHS se conecta principalmente con el 13, y también con el 2, 3, 4, 6, 12 y 15.' },
+        exp:'Diecisiete. El CIEHS se conecta principalmente con el 13, y también con el 2, 3, 4, 6, 12, 15 y 17.' },
 
       { id:'ar-sec-25', tema:'pociones', tipo:'dial', dif:3,
         q:'Ajusta el pH al centro del rango de la cebollita china (6.0 – 7.0).',

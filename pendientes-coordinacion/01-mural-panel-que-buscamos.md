@@ -2,16 +2,26 @@
 title: 1 · Mural — repintar el panel «¿Qué buscamos con este proyecto?»
 tags: [ciehs, pendiente-coordinacion, mural, identidad]
 depende-de: coordinación · no se puede resolver desde el código
-actualizado: 2026-09-10
+actualizado: 2026-09-13
+estado: cerrado
 ---
 
 # 1 · Mural: repintar el panel «¿Qué buscamos con este proyecto?»
 
-> [!warning] La ilustración y el portal dicen cosas distintas
+> [!success] Cerrado el 2026-09-13 — en la ilustración, no en la pared
+> La coordinación entregó la ilustración oficial y ya está instalada en
+> `assets/img/mural-ciehs.jpg`: el panel pintado dice el texto nuevo, el ave es
+> el pelícano peruano y las fichas de ODS son seis —13 destacado, 3, 6, 12, 15 y
+> 17—. El portal quedó alineado con ella el 2026-09-13: la rejilla de diecisiete
+> casillas se sustituyó por esas seis fichas y se añadió un quinto punto
+> interactivo para los cuatro retos ambientales. **Sigue pendiente repintar el
+> mural físico de la pared**, que es lo único que esta nota ya no puede resolver.
+
+> [!warning]- El problema original (2026-09-09), para contexto
 > El 2026-09-09 se corrigió la redacción de **qué busca el proyecto**. El portal
-> ya dice la nueva; el panel **pintado dentro** de `assets/img/mural-ciehs.jpg`
-> —y por tanto el mural físico— sigue diciendo la anterior. Mientras eso siga
-> así, quien mire la página del mural lee dos versiones a la vez.
+> ya decía la nueva; el panel **pintado dentro** de `assets/img/mural-ciehs.jpg`
+> —y por tanto el mural físico— seguía diciendo la anterior. Mientras eso siguió
+> así, quien miraba la página del mural leía dos versiones a la vez.
 
 ### El texto que debe decir
 
@@ -35,7 +45,7 @@ Una ilustración «parecida» obliga a rehacer las tres cosas.
 1. **La composición entera**, elemento por elemento y en la misma posición: el
    escudo de la I.E. al centro, el reto climático en cinta azul arriba, la
    rejilla de ODS a la derecha con el 13 destacado, el logo CIEHS a la
-   izquierda, el caballito de totora y el pingüino de Humboldt abajo a la
+   izquierda, el caballito de totora y el pelícano peruano abajo a la
    izquierda, el módulo hidropónico con lechugas al centro-abajo, los dos
    estudiantes a la derecha, el cartel «Cultivamos Ciencia, Cosechamos Futuro».
 2. **Las proporciones**: 1280 × 853 px (3:2). El portal recorta con

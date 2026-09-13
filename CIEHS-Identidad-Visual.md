@@ -43,8 +43,9 @@ Tres cosas que hubo que ajustar y no eran obvias:
    **pelícano peruano**. Los dos son de esta costa, pero el texto alternativo,
    el punto «nuestra identidad» y la ficha del QR decían pingüino: si no se
    corrige, el portal describe una imagen que ya no existe. Corregido en los
-   tres sitios. *(La pregunta de la Arena sobre el pingüino se queda: habla de
-   la fauna de la costa, no del mural.)*
+   tres sitios. *(La pregunta de la Arena también se corrigió después: el
+   pingüino era la respuesta a «¿cuál no vuela?» y el pelícano sí vuela, así que
+   cambió el enunciado junto con el ave.)*
 2. **Las medidas del `<img>`**, que reservan el espacio antes de que la imagen
    cargue. Con las viejas, el hueco saltaba al terminar de descargar.
 3. **Los cuatro puntos no se tocaron**: al mantenerse la proporción 3:2, los
