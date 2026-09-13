@@ -172,7 +172,7 @@ Los valores de respaldo del HTML se mantienen sincronizados con los de la base
   institución no dispone de un espacio de cultivo viable · bajo consumo de
   hortalizas frescas en la población escolar · residuos plásticos propios sin ruta
   de reaprovechamiento · docentes sin espacio propio de experimentación · familias
-  que conocen la nota, no el proceso. El contexto costero de Huanchaco es la
+  que conocen la calificación, no el proceso. El contexto costero de Huanchaco es la
   **condición** en la que hay que resolverlo, no el origen del problema.
 - **Léxico institucional:** en todo el portal y en estas notas se dice
   **«institución educativa»**, nunca «colegio».
