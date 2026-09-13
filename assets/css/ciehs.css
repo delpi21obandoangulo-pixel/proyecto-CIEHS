@@ -295,11 +295,19 @@
   }
   /* flex:none y nowrap: con diez enlaces en el menú, sin esto el navegador
      estrangula la marca y parte "José Olaya Balandra" en cinco líneas. */
-  .brand{ display:flex; align-items:center; gap:12px; text-decoration:none; cursor:pointer; flex:none; }
+  /* La marca ya no se centra: el emblema queda pegado al borde izquierdo y el
+     texto se alinea a bandera a su derecha. text-align:left es explicito porque
+     .brand es un <button> y el agente de usuario le impone text-align:center. */
+  .brand{ display:flex; align-items:center; gap:12px; text-decoration:none; cursor:pointer; flex:none; text-align:left; }
   .brand-badge{ width:38px; height:38px; flex:none; }
-  .brand-text{ line-height:1.15; }
+  .brand-text{ line-height:1.15; display:flex; flex-direction:column; align-items:flex-start; gap:1px; min-width:0; }
   .brand-text b{ display:block; font-family:var(--font-academic); font-weight:600; font-size:17.5px; letter-spacing:0.02em; color:var(--ink); }
   .brand-text span{ display:block; font-family:var(--font-mono); font-size:10.5px; color:var(--ink-mute); letter-spacing:0.04em; white-space:nowrap; }
+  /* La linea institucional es la que identifica el colegio, asi que aguanta un
+     corte mas que el subtitulo del centro: se distingue con tinta algo mas
+     firme y el nombre propio en cursiva. */
+  .brand-text .brand-ie{ font-size:10px; color:var(--ink-soft); letter-spacing:0.03em; }
+  .brand-ie-nombre{ font-style:italic; }
 
   /* ---------------------------------------------------- botón de tres rayas
      Único en todos los anchos. Antes había una barra de diez enlaces que solo
@@ -325,7 +333,6 @@
   .navtoggle[aria-expanded="true"] .navtoggle-rayas i:nth-child(2){ opacity:0; }
   .navtoggle[aria-expanded="true"] .navtoggle-rayas i:nth-child(3){ transform:translateY(-5.8px) rotate(-45deg); }
   @media (max-width: 620px){
-    .brand-text span{ display:none; }
     .navtoggle-texto{ display:none; }
     .navtoggle{ padding:10px; }
   }
@@ -4027,10 +4034,20 @@
 /* El FAB de admin solo en movil: en escritorio lo cubre la pildora del header. */
 @media (min-width:721px){ .admin-fab{ display:none !important; } }
 
-/* Identidad unificada: subtitulo con el nombre completo del proyecto. Es largo,
-   asi que por debajo de 900px se oculta y queda solo "CIEHS" + isotipo (evita
-   desbordes y colisiones con el menu en tablet/movil). */
-@media (max-width:900px){ .brand-text span{ display:none; } }
+/* ------------------------------------------------------ marca responsiva ---
+   Tres lineas de identidad a la derecha del emblema, y un orden de sacrificio
+   explicito al estrechar la pantalla. Antes habia una sola regla que ocultaba
+   TODO span por debajo de 900px; con la linea institucional dentro eso se
+   llevaba por delante justo el dato que identifica al colegio.
+
+   El orden es: primero cae el subtitulo largo del centro (su contenido ya lo
+   dice la sigla), luego el nombre propio entre comillas, y solo en pantallas
+   muy estrechas queda el emblema con la sigla. En ningun corte se permite que
+   la cabecera se desborde: nada de esto envuelve, todo se retira. */
+@media (max-width:1040px){ .brand-text .brand-sub{ display:none; } }
+@media (max-width:560px){ .brand-ie-nombre{ display:none; } }
+@media (max-width:560px){ .brand-text .brand-ie{ font-size:9.5px; } }
+@media (max-width:400px){ .brand-text .brand-ie{ display:none; } }
 .brand-text span{ max-width:44ch; }
 .fbrand-ie{ display:block; font-weight:400; font-size:11.5px; color:var(--ink-mute); margin-top:2px; letter-spacing:0; }
 

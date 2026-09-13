@@ -454,11 +454,18 @@
   </div>
   <nav class="nav wrap">
     <button type="button" class="brand" data-route="inicio">
-      <img class="brand-badge" src="/assets/img/isotipo-ciehs.svg" width="64" height="64"
-           alt="Isotipo del CIEHS: brote con raíces sumergidas sobre ondas de agua" decoding="async">
+      <img class="brand-badge" src="/assets/img/emblema-ciehs.svg" width="64" height="64"
+           alt="Emblema del CIEHS: brote con raíces sumergidas sobre ondas de agua" decoding="async">
+      <!-- La marca deja de ser un bloque centrado: el emblema manda a la
+           izquierda y a su derecha se apilan las tres lineas de identidad
+           -siglas, nombre del centro y la institucion educativa que lo aloja-
+           a bandera izquierda. Cada linea se retira por su cuenta al estrechar
+           la pantalla (ver .brand-* en el CSS), de menor a mayor importancia,
+           de modo que en movil siempre queda al menos "CIEHS". -->
       <span class="brand-text">
         <b>CIEHS</b>
-        <span>Centro de Investigación Escolar Hidropónico Sostenible</span>
+        <span class="brand-sub">Centro de Investigación Escolar Hidropónico Sostenible</span>
+        <span class="brand-ie">I.E. N.° 80033 <i class="brand-ie-nombre">«José Olaya Balandra»</i> · Huanchaco</span>
       </span>
     </button>
     <!-- Antes habia diez enlaces sueltos repetidos en dos listas (una de
@@ -2926,11 +2933,18 @@
           </div>
           <div class="logo-muestra">
             <div class="logo-isos">
-              <img src="/assets/img/isotipo-ciehs.svg" width="72" height="72" alt="Isotipo del CIEHS" loading="lazy" decoding="async">
-              <img src="/assets/img/isotipo-ciehs.svg" width="44" height="44" alt="" aria-hidden="true" loading="lazy" decoding="async">
-              <img src="/assets/img/isotipo-ciehs.svg" width="28" height="28" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              <img src="/assets/img/emblema-ciehs.svg" width="72" height="72" alt="Emblema del CIEHS" loading="lazy" decoding="async">
+              <img src="/assets/img/emblema-ciehs.svg" width="44" height="44" alt="" aria-hidden="true" loading="lazy" decoding="async">
+              <img src="/assets/img/emblema-ciehs.svg" width="28" height="28" alt="" aria-hidden="true" loading="lazy" decoding="async">
             </div>
-            <span class="logo-pie mono">Isotipo · 72 / 44 / 28 px</span>
+            <span class="logo-pie mono">Emblema · 72 / 44 / 28 px</span>
+          </div>
+          <div class="logo-muestra oscuro">
+            <div class="logo-isos">
+              <img src="/assets/img/isotipo-ciehs.svg" width="72" height="72" alt="Variante del emblema con disco blanco, para fondos oscuros" loading="lazy" decoding="async">
+              <img src="/assets/img/isotipo-ciehs.svg" width="44" height="44" alt="" aria-hidden="true" loading="lazy" decoding="async">
+            </div>
+            <span class="logo-pie mono">Variante con disco · fondos oscuros</span>
           </div>
         </div>
 
@@ -2947,7 +2961,8 @@
             <h4>Cómo se usa</h4>
             <ul>
               <li><b>Son dos marcas distintas</b>: el escudo es de la I.E. N.° 80033 y este isotipo es del CIEHS. Este portal es del proyecto, así que en él la marca es siempre el isotipo —cabecera, pie, iconos y tarjeta al compartir—, y la institución se nombra por escrito. En documentos oficiales de la institución educativa manda el escudo, y este logo <b>no lo sustituye ahí</b>.</li>
-              <li>Sobre fondo oscuro se usa la versión clara. El emblema nunca cambia de dibujo.</li>
+              <li><b>El emblema es de fondo transparente</b> y es la versión por defecto: cabecera, pie y documentos sobre papel claro. Solo cuando va sobre una fotografía o un fondo oscuro se recurre a la variante con disco blanco, que no cambia el dibujo: únicamente le pone una base para que el anillo verde no se pierda.</li>
+              <li>El logotipo completo tiene además su versión clara para fondos oscuros. El dibujo del emblema nunca cambia.</li>
               <li>Es vector: se escala sin perder nitidez y no hay que pedir «otro tamaño».</li>
             </ul>
           </div>
@@ -2956,7 +2971,8 @@
         <div class="logo-descargas">
           <a class="btn btn-ghost" href="/assets/img/logo-ciehs.svg" download>Descargar logo (SVG)</a>
           <a class="btn btn-ghost" href="/assets/img/logo-ciehs-claro.svg" download>Versión clara (SVG)</a>
-          <a class="btn btn-ghost" href="/assets/img/isotipo-ciehs.svg" download>Isotipo (SVG)</a>
+          <a class="btn btn-ghost" href="/assets/img/emblema-ciehs.svg" download>Emblema, fondo transparente (SVG)</a>
+          <a class="btn btn-ghost" href="/assets/img/isotipo-ciehs.svg" download>Emblema con disco (SVG)</a>
         </div>
       </div>
     </div>
@@ -3948,8 +3964,8 @@
   <div class="wrap">
     <div class="footer-row">
       <div class="fbrand">
-        <img src="/assets/img/isotipo-ciehs.svg" width="64" height="64"
-             alt="Isotipo del CIEHS: brote con raíces sumergidas sobre ondas de agua" loading="lazy" decoding="async">
+        <img src="/assets/img/emblema-ciehs.svg" width="64" height="64"
+             alt="Emblema del CIEHS: brote con raíces sumergidas sobre ondas de agua" loading="lazy" decoding="async">
         <b>CIEHS · Centro de Investigación Escolar Hidropónico Sostenible<br><span class="fbrand-ie">Un proyecto de la I.E. N.° 80033 “José Olaya Balandra” · Huanchaco</span></b>
       </div>
       <ul class="flinks">
@@ -3968,7 +3984,7 @@
       <span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l7 4v5c0 4.4-3 8.3-7 9-4-0.7-7-4.6-7-9V7l7-4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.5 12l1.8 1.8L15 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Área de Ciencia y Tecnología (CyT)</span>
     </div>
 
-    <p class="pie-marcas"><img src="/assets/img/isotipo-ciehs.svg" width="34" height="34" alt="Isotipo del CIEHS" loading="lazy" decoding="async"><span class="mono">Centro de Investigación Escolar Hidropónico Sostenible</span></p>
+    <p class="pie-marcas"><img src="/assets/img/emblema-ciehs.svg" width="34" height="34" alt="Emblema del CIEHS" loading="lazy" decoding="async"><span class="mono">Centro de Investigación Escolar Hidropónico Sostenible</span></p>
     <p class="small">Datos institucionales, infraestructura, equipos de gestión, indicadores y contacto son oficiales de la I.E. N.° 80033 “José Olaya Balandra”: 280 estudiantes de 1.° a 5.° de secundaria, diez equipos de gestión y quince módulos de raíz flotante que operan actualmente sin bomba de aire. Los sistemas NFT y vertical figuran como proyecciones a futuro y no están instalados. Siguen pendientes de carga los archivos descargables de la carpeta de campo y del espacio docente. El protocolo de imagen de menores se detalla en la página de privacidad: toda fotografía se sube con las caras pixeladas desde el propio navegador.</p>
     <p class="copyright">© 2026 CIEHS - I.E. N.° 80033 José Olaya Balandra. Todos los derechos reservados.</p>
   </div>

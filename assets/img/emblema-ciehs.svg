@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="emblemaTitulo">
+  <title id="emblemaTitulo">Emblema del CIEHS: brote con raíces sumergidas en agua, dentro de un anillo</title>
+  <!--
+    Emblema completo del CIEHS. Sustituye al isotipo anterior en la cabecera.
+
+    Diferencia con isotipo-ciehs.svg: aquel pintaba un DISCO BLANCO bajo el
+    dibujo, así que sobre cualquier fondo que no fuera blanco aparecía un
+    recorte claro. Aquí el fondo es transparente de verdad: lo único opaco es
+    el agua (que necesita cuerpo para que la raíz se lea sumergida), el brote
+    y el anillo. El resto deja pasar el papel del portal, el velo del menú o el
+    oscuro del hero sin marcar un borde.
+
+    Los tres elementos son los mismos del mural institucional: BROTE (dos hojas
+    y tallo), RAÍCES bajo la línea de agua —lo que dice "hidroponía" y no
+    "huerto"— y AGUA en dos capas de onda.
+
+    currentColor no se usa a propósito: el emblema es a color pleno en cualquier
+    contexto, igual que el escudo de la institución educativa.
+  -->
+  <defs>
+    <clipPath id="embCirculo"><circle cx="32" cy="32" r="28"/></clipPath>
+    <linearGradient id="embHoja" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#10b981"/>
+      <stop offset="1" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="embAgua" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0ea5e9"/>
+      <stop offset="1" stop-color="#0369a1"/>
+    </linearGradient>
+  </defs>
+
+  <g clip-path="url(#embCirculo)">
+    <!-- agua: dos capas de onda. La superior marca la lámina; la inferior da
+         fondo para que las raíces claras contrasten. -->
+    <path d="M4 42c5 0 5-3.4 10-3.4S19 42 24 42s5-3.4 10-3.4S39 42 44 42s5-3.4 10-3.4S59 42 64 42v22H4z" fill="url(#embAgua)"/>
+    <path d="M4 47c5 0 5-3 10-3s5 3 10 3 5-3 10-3 5 3 10 3 5-3 10-3 5 3 10 3v17H4z" fill="#075985"/>
+
+    <!-- raíces sumergidas -->
+    <g stroke="#f1e4c3" stroke-width="1.5" stroke-linecap="round" fill="none" opacity=".95">
+      <path d="M32 40v11"/>
+      <path d="M32 43c-3 2-4.5 3.5-5.5 6.4"/>
+      <path d="M32 43c3 2 4.5 3.5 5.5 6.4"/>
+      <path d="M32 46.2c-1.8 2-2.6 3.4-3 5.2"/>
+      <path d="M32 46.2c1.8 2 2.6 3.4 3 5.2"/>
+    </g>
+
+    <!-- tallo y hojas: la izquierda baja y grande, la derecha alta -->
+    <path d="M32 41V21" stroke="#065f46" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M31 31c-3.6-6.8-10.4-8-15.6-6.2 1 5.4 5.8 10.6 13 9.6 1.2-.2 2-1.6 2.6-3.4z" fill="url(#embHoja)"/>
+    <path d="M33 25c3.2-6.4 9.6-7.6 14.4-6 -.8 5-5.2 9.8-11.8 9-1.2-.2-2-1.4-2.6-3z" fill="url(#embHoja)"/>
+    <!-- nervios: en claro sobre la hoja, no sobre el fondo, así que siguen
+         valiendo aunque detrás no haya disco -->
+    <path d="M29.4 32.6c-4-3.4-8.2-5.2-12.6-5.8" stroke="#ecfdf5" stroke-width="1.1" stroke-linecap="round" fill="none" opacity=".7"/>
+    <path d="M34.6 26.8c3.6-3 7.4-4.6 11.4-5.2" stroke="#ecfdf5" stroke-width="1.1" stroke-linecap="round" fill="none" opacity=".7"/>
+  </g>
+
+  <circle cx="32" cy="32" r="28" fill="none" stroke="#065f46" stroke-width="3.2"/>
+</svg>
