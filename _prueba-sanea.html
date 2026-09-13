@@ -1,0 +1,117 @@
+<!doctype html><meta charset="utf-8">
+<title>Prueba del saneador</title>
+<style>
+ body{font:14px/1.5 system-ui;margin:24px;max-width:1100px}
+ table{border-collapse:collapse;width:100%}
+ td,th{border:1px solid #ccc;padding:7px 9px;vertical-align:top;font-size:12.5px}
+ th{background:#eee;text-align:left}
+ code{font:12px ui-monospace;white-space:pre-wrap;word-break:break-all}
+ .ok{color:#047857;font-weight:700}.mal{color:#b91c1c;font-weight:700}
+ #vivo{border:2px dashed #999;padding:10px;margin-top:16px}
+</style>
+<h1>Saneador de <code>ciehs-inline.js</code></h1>
+<p>Cada fila pega la entrada en un nodo vivo del documento y muestra qué queda.
+Si algo ejecutara, el contador de abajo subiría.</p>
+<p>Ejecuciones detectadas: <b id="cuenta">0</b> · Esperado: <b>0</b></p>
+<table id="t"><tr><th>Caso</th><th>Entrada</th><th>Resultado</th><th>Esperado</th><th></th></tr></table>
+<div id="vivo" hidden></div>
+
+<script>
+window.__ejec = 0;
+function chivato(){ window.__ejec++; document.getElementById('cuenta').textContent = window.__ejec; }
+
+/* ---- copia EXACTA del saneador de ciehs-inline.js ---- */
+var doc = document, global = window;
+var ETIQUETAS_RICAS = { B:1, STRONG:1, I:1, EM:1, BR:1 };
+var ETIQUETAS_MUDAS = { SCRIPT:1, STYLE:1, NOSCRIPT:1, TEMPLATE:1, TITLE:1, TEXTAREA:1,
+  IFRAME:1, OBJECT:1, EMBED:1, SVG:1, MATH:1, HEAD:1 };
+var PROFUNDIDAD_MAX = 6;
+function copiarSaneado(origen, destino, profundidad){
+  var hijos = origen.childNodes;
+  for (var i=0;i<hijos.length;i++){
+    var n = hijos[i];
+    if (n.nodeType === 3){ destino.appendChild(doc.createTextNode(n.nodeValue)); continue; }
+    if (n.nodeType !== 1) continue;
+    var etiqueta = n.tagName;
+    if (ETIQUETAS_MUDAS[etiqueta]) continue;
+    if (ETIQUETAS_RICAS[etiqueta] && profundidad < PROFUNDIDAD_MAX){
+      var limpio = doc.createElement(etiqueta);
+      if (etiqueta !== 'BR') copiarSaneado(n, limpio, profundidad+1);
+      destino.appendChild(limpio);
+    } else { copiarSaneado(n, destino, profundidad); }
+  }
+}
+function sanearAFragmento(html){
+  var frag = doc.createDocumentFragment();
+  var texto = String(html == null ? '' : html);
+  if (!texto) return frag;
+  try {
+    var inerte = new global.DOMParser().parseFromString(texto, 'text/html');
+    copiarSaneado(inerte.body, frag, 0);
+  } catch(e){ frag.appendChild(doc.createTextNode(texto)); }
+  return frag;
+}
+function sanearACadena(html){
+  var caja = doc.createElement('div');
+  caja.appendChild(sanearAFragmento(html));
+  return caja.innerHTML;
+}
+/* ---- fin de la copia ---- */
+
+var casos = [
+  ['texto con negrita (lo normal)',
+   'Es <b>raíz flotante (DWC, <i>Deep Water Culture</i>)</b>: quince módulos.',
+   'Es <b>raíz flotante (DWC, <i>Deep Water Culture</i>)</b>: quince módulos.'],
+  ['script directo', '<script>chivato()<\/script>hola', 'hola'],
+  ['img con onerror', '<img src=x onerror="chivato()">foto', 'foto'],
+  ['svg con onload', '<svg onload="chivato()"></svg>ok', 'ok'],
+  ['iframe', '<iframe src="javascript:chivato()"></iframe>x', 'x'],
+  ['enlace (a NO esta en la lista)', 'ver <a href="https://malo.example">aquí</a>', 'ver aquí'],
+  ['enlace javascript:', '<a href="javascript:chivato()">pulsa</a>', 'pulsa'],
+  ['atributos en etiqueta permitida', '<b onclick="chivato()" style="color:red" class="x">hola</b>', '<b>hola</b>'],
+  ['body onload', '<body onload="chivato()">texto</body>', 'texto'],
+  ['HTML mal formado', '<b>sin cerrar <i>anidado', '<b>sin cerrar <i>anidado</i></b>'],
+  ['comentario con carga', '<!-- <script>chivato()<\/script> -->limpio', 'limpio'],
+  ['maquetacion se desenvuelve', '<div><p>uno</p><table><tr><td>dos</td></tr></table></div>', 'unodos'],
+  ['style no deja su contenido', '<style>body{display:none}</style>sigo', 'sigo'],
+  ['salto de linea', 'una<br>dos', 'una<br>dos'],
+  ['anidado absurdo (tope de profundidad)',
+   '<b><b><b><b><b><b><b><b>fondo</b></b></b></b></b></b></b></b>', '(no revienta)'],
+  ['mayusculas y espacios raros', '<ScRiPt >chivato()<\/ScRiPt>ok', 'ok'],
+  ['entidad que se reinterpreta', '&lt;script&gt;chivato()&lt;/script&gt;', '&lt;script&gt;chivato()&lt;/script&gt;']
+];
+
+var t = document.getElementById('t');
+var vivo = document.getElementById('vivo');
+casos.forEach(function(c){
+  var salida;
+  try { salida = sanearACadena(c[1]); } catch(e){ salida = 'EXCEPCION: ' + e.message; }
+  // Se cuelga de verdad en el documento: si algo fuera a ejecutar, aqui lo haria.
+  var host = document.createElement('div');
+  host.appendChild(sanearAFragmento(c[1]));
+  vivo.appendChild(host);
+
+  var fila = document.createElement('tr');
+  function celda(txt, clase){
+    var td = document.createElement('td');
+    if (clase) td.className = clase;
+    var code = document.createElement('code');
+    code.textContent = txt;
+    td.appendChild(code);
+    return td;
+  }
+  fila.appendChild(celda(c[0]));
+  fila.appendChild(celda(c[1]));
+  fila.appendChild(celda(salida));
+  fila.appendChild(celda(c[2]));
+  var veredicto = document.createElement('td');
+  var limpio = !/<(script|iframe|img|svg|a|style|object|embed)\b/i.test(salida)
+            && !/\son\w+\s*=/i.test(salida)
+            && !/javascript:/i.test(salida);
+  veredicto.className = limpio ? 'ok' : 'mal';
+  veredicto.textContent = limpio ? 'LIMPIO' : 'PASA ALGO';
+  fila.appendChild(veredicto);
+  t.appendChild(fila);
+});
+console.log('[PRUEBA] ejecuciones=' + window.__ejec);
+</script>

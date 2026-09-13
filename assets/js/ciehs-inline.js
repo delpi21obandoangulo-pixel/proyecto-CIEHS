@@ -414,6 +414,7 @@
           // administrador debe ser ya lo que vera el visitante.
           pintarRico(nodo, valor);
           cerrar();
+          apuntarCambio();
           anunciar('Texto publicado para todo el portal.');
         }).catch(function (e) {
           guardar.disabled = false;
@@ -432,6 +433,7 @@
           delete estado.textos[clave];
           pintarRico(nodo, estado.originales[clave]);
           cerrar();
+          apuntarCambio();
           anunciar('Texto devuelto al original del portal.');
         }).catch(function (e) {
           restaurar.disabled = false;
@@ -558,6 +560,7 @@
         .then(function (fila) {
           estado.imagenes[clave] = fila;
           aplicarImagenes();
+          apuntarCambio();
           anunciar('Fotografía reemplazada en todo el portal.');
         })
         .catch(function (e) { anunciar('No se pudo subir: ' + fallo(e), true); })
@@ -573,7 +576,8 @@
       quitar.disabled = true;
       D.borrarImagen(clave).then(function () {
         delete estado.imagenes[clave];
-        anunciar('Fotografía retirada. Recarga para ver la imagen por defecto.');
+        apuntarCambio();
+          anunciar('Fotografía retirada. Recarga para ver la imagen por defecto.');
       }).catch(function (e) {
         anunciar('No se pudo quitar: ' + fallo(e), true);
       }).then(function () { quitar.disabled = false; });
@@ -633,7 +637,8 @@
         // garantiza que lo que queda en pantalla es lo que hay en la base.
         nodo.classList.add('ed-borrado');
         global.setTimeout(function () { if (nodo.parentNode) nodo.parentNode.removeChild(nodo); }, 220);
-        anunciar('Eliminado.');
+        apuntarCambio();
+          anunciar('Eliminado.');
         if (global.CIEHS && global.CIEHS.refrescarDatos) global.CIEHS.refrescarDatos();
       }).catch(function (e) {
         b.disabled = false;
@@ -793,6 +798,7 @@
           ficha.remove();
           // El reto original vuelve en la siguiente ronda; el atributo se deja
           // como esta porque este nodo desaparece al pasar de reto.
+          apuntarCambio();
           anunciar('Reto devuelto a su versión original.');
         }).catch(function (e) {
           quitar.disabled = false;
@@ -816,6 +822,7 @@
           nodo.setAttribute('data-arena-q', payload.q);
           nodo.setAttribute('data-arena-exp', payload.exp);
           ficha.remove();
+          apuntarCambio();
           anunciar('Reto corregido.');
         }).catch(function (er) {
           ok.disabled = false;
@@ -852,51 +859,162 @@
     marcarEditables(estado.editando);
   }
 
-  /* ---------------------------------------------------------- interruptor - */
+  /* =========================================================================
+     3. LA BARRA — administrar no es abrir un menu, es estar en el portal
 
-  var palanca = null;
+     Antes esto era una palanca flotante en una esquina: entrabas con el codigo,
+     se abria un modal con doce pestañas, y ademas habia que encontrar y pulsar
+     un boton suelto para que el portal se dejara editar. Tres pasos para lo que
+     es un solo estado.
 
-  function pintarPalanca() {
-    if (!palanca) return;
-    palanca.setAttribute('aria-pressed', estado.editando ? 'true' : 'false');
-    palanca.classList.toggle('is-on', estado.editando);
-    $('.ed-palanca-txt', palanca).textContent = estado.editando ? 'Edición activa' : 'Editar portal';
+     Ahora el codigo correcto ES el estado: el portal entra en administracion y
+     lo dice una barra fija arriba, por encima de la cabecera. Mientras esa
+     barra este, lo que se ve es el portal de verdad -el mismo que ve un
+     estudiante- con sus controles encima.
+
+     «Ver como visitante» apaga los controles sin cerrar la sesion, que es lo
+     que se necesita cada dos por tres para comprobar como queda algo. «Salir»
+     si cierra: tira el codigo y devuelve el portal a su estado publico.
+     ========================================================================= */
+
+  var barraAdmin = null;
+  var cambios = 0;
+
+  function pintarBarra() {
+    if (!barraAdmin) return;
+    var ver = $('.ed-admin-ver', barraAdmin);
+    ver.setAttribute('aria-pressed', estado.editando ? 'false' : 'true');
+    ver.textContent = estado.editando ? 'Ver como visitante' : 'Volver a editar';
+    $('.ed-admin-estado', barraAdmin).textContent = estado.editando
+      ? 'Modo administración'
+      : 'Administración en pausa';
+    var cuenta = $('.ed-admin-cuenta', barraAdmin);
+    cuenta.hidden = cambios === 0;
+    cuenta.textContent = cambios === 1 ? '1 cambio publicado' : cambios + ' cambios publicados';
+    // Estos textos cambian de largo -y el contador aparece al primer guardado-,
+    // asi que la barra puede pasar a dos lineas. Se vuelve a medir aqui o la
+    // cabecera se quedaria con el hueco de la altura anterior.
+    medirBarra();
   }
+
+  /* La cabecera del portal es sticky a top:0 y hay que bajarla justo lo que
+     mide la barra. No vale una constante: la barra crece a dos lineas en movil
+     y con el texto del sistema en grande, y una cifra fija dejaria la cabecera
+     montada encima o con un hueco. Se mide y se publica como variable CSS. */
+  function medirBarra() {
+    if (!barraAdmin) return;
+    var alto = barraAdmin.getBoundingClientRect().height;
+    doc.documentElement.style.setProperty('--ed-admin-alto', Math.round(alto) + 'px');
+  }
+
+  var midiendo = null;
+  global.addEventListener('resize', function () {
+    if (!barraAdmin) return;
+    global.clearTimeout(midiendo);
+    midiendo = global.setTimeout(medirBarra, 120);
+  });
+
+  // Lo llaman los guardados y los borrados. El contador no persiste a proposito:
+  // cuenta lo hecho en ESTA sesion, que es lo que uno quiere saber antes de
+  // marcharse, no un historico -para eso esta la columna actualizado-.
+  function apuntarCambio() { cambios++; pintarBarra(); }
 
   function alternar(forzar) {
     estado.editando = forzar === undefined ? !estado.editando : !!forzar;
     doc.body.classList.toggle('ciehs-editando', estado.editando);
     if (estado.editando) montarTodo();
     else marcarEditables(false);
-    pintarPalanca();
+    pintarBarra();
     anunciar(estado.editando
       ? 'Modo edición activo: pulsa sobre cualquier texto o fotografía marcada para cambiarla.'
-      : 'Modo edición desactivado.');
+      : 'Controles ocultos: el portal se ve como lo ve un visitante.');
   }
 
-  function crearPalanca() {
-    if (palanca) return;
-    palanca = doc.createElement('button');
-    palanca.type = 'button';
-    palanca.className = 'ed-palanca';
-    palanca.setAttribute('aria-pressed', 'false');
+  function crearBarra() {
+    if (barraAdmin) return;
+
+    barraAdmin = doc.createElement('div');
+    barraAdmin.className = 'ed-admin';
+    // role=region y no banner: ya hay un banner en la pagina -la cabecera-, y
+    // dos landmarks del mismo tipo sin distinguir es peor que uno bien puesto.
+    barraAdmin.setAttribute('role', 'region');
+    barraAdmin.setAttribute('aria-label', 'Barra de administración del portal');
+
+    var izq = doc.createElement('div');
+    izq.className = 'ed-admin-izq';
     var punto = doc.createElement('span');
-    punto.className = 'ed-palanca-dot';
+    punto.className = 'ed-admin-dot';
     punto.setAttribute('aria-hidden', 'true');
-    var txt = doc.createElement('span');
-    txt.className = 'ed-palanca-txt';
-    txt.textContent = 'Editar portal';
-    palanca.appendChild(punto);
-    palanca.appendChild(txt);
-    doc.body.appendChild(palanca);
-    palanca.addEventListener('click', function () { alternar(); });
-    pintarPalanca();
+    var texto = doc.createElement('b');
+    texto.className = 'ed-admin-estado';
+    texto.textContent = 'Modo administración';
+    var pista = doc.createElement('span');
+    pista.className = 'ed-admin-pista';
+    pista.textContent = 'Pulsa sobre cualquier texto o fotografía para cambiarla.';
+    var cuenta = doc.createElement('span');
+    cuenta.className = 'ed-admin-cuenta';
+    cuenta.hidden = true;
+    izq.appendChild(punto);
+    izq.appendChild(texto);
+    izq.appendChild(pista);
+    izq.appendChild(cuenta);
+
+    var der = doc.createElement('div');
+    der.className = 'ed-admin-der';
+    var ver = boton('ed-admin-btn ed-admin-ver', 'Ocultar los controles y ver el portal como un visitante', 'Ver como visitante');
+    ver.setAttribute('aria-pressed', 'false');
+    // Provisional, y se ve que lo es. Los formularios de alta -registrar una
+    // lectura, dar de alta una investigacion- todavia viven en el modal viejo;
+    // hasta que cada uno este en su seccion hace falta poder volver alli sin
+    // teclear el codigo otra vez. El dia que se trasladen, este boton se cae
+    // solo: solo aparece si app.js publica el puente.
+    if (global.CIEHS && typeof global.CIEHS.abrirFormularios === 'function') {
+      var formularios = boton('ed-admin-btn', 'Abrir los formularios de alta que todavía viven en el panel', 'Formularios');
+      formularios.addEventListener('click', function () { global.CIEHS.abrirFormularios(); });
+      der.appendChild(formularios);
+    }
+    var salir = boton('ed-admin-btn ed-admin-btn--salir', 'Cerrar la sesión de administración', 'Salir');
+    der.appendChild(ver);
+    der.appendChild(salir);
+
+    barraAdmin.appendChild(izq);
+    barraAdmin.appendChild(der);
+    // Delante de todo: la cabecera es sticky y la barra tiene que quedar por
+    // encima de ella, no flotando sobre el contenido.
+    doc.body.insertBefore(barraAdmin, doc.body.firstChild);
+    doc.body.classList.add('ciehs-admin');
+    medirBarra();
+
+    ver.addEventListener('click', function () { alternar(); });
+    salir.addEventListener('click', function () {
+      var hechos = cambios;
+      D.salir();
+      quitarBarra();
+      anunciar(hechos
+        ? 'Sesión de administración cerrada. ' + hechos + (hechos === 1 ? ' cambio queda publicado.' : ' cambios quedan publicados.')
+        : 'Sesión de administración cerrada.');
+    });
+
+    pintarBarra();
   }
 
-  function quitarPalanca() {
+  function quitarBarra() {
     alternar(false);
-    if (palanca && palanca.parentNode) palanca.parentNode.removeChild(palanca);
-    palanca = null;
+    if (barraAdmin && barraAdmin.parentNode) barraAdmin.parentNode.removeChild(barraAdmin);
+    barraAdmin = null;
+    cambios = 0;
+    doc.body.classList.remove('ciehs-admin');
+    /* Los lapices y las papeleras que ya se montaron se quedan en el DOM, y es
+       deliberado. Comprobado al salir: cero visibles, cero alcanzables con el
+       tabulador y ningun [data-edit] conserva su role="button" —el portal queda
+       identico al publico, tambien para un lector de pantalla—.
+
+       Retirarlos de verdad obligaria a desmontar los oyentes que montarTexto
+       colgo de cada nodo, y sin guardar sus referencias lo unico que se puede
+       hacer es borrar el nodo y reiniciar la marca _edMontado. Eso duplicaria
+       los oyentes al volver a entrar, y entonces un solo clic abriria el editor
+       dos veces. Se cambia el dia que haga falta desmontar de verdad; hoy seria
+       arriesgar un fallo real para limpiar nodos que nadie puede alcanzar. */
   }
 
   /* Cada vez que un pintor repinta su seccion aparecen nodos nuevos sin
@@ -918,8 +1036,23 @@
   /* ------------------------------------------------------------- arranque - */
 
   function revisarSesion() {
-    if (esAdminAhora()) { crearPalanca(); observar(); }
-    else if (palanca) { quitarPalanca(); }
+    if (esAdminAhora()) {
+      var estrenando = !barraAdmin;
+      crearBarra();
+      observar();
+      // El codigo correcto es el estado: se entra editando. Antes habia que
+      // acertar ademas con una palanca suelta en una esquina, que es el paso
+      // que hacia que esto pareciera un menu mas y no el portal.
+      // Solo al estrenar la barra: si el administrador pidio «ver como
+      // visitante», volver el foco a la ventana no debe deshacerselo.
+      if (estrenando) alternar(true);
+    } else if (barraAdmin) {
+      // La sesion caduca por inactividad en ciehs-data.js. Cuando eso pasa hay
+      // que decirlo: si la barra desapareciera sin mas, el siguiente guardado
+      // fallaria con un 401 y pareceria que el codigo estaba mal.
+      quitarBarra();
+      anunciar('La sesión de administración caducó por inactividad. Vuelve a entrar con el código.', true);
+    }
   }
 
   function arrancar() {

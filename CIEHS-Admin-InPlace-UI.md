@@ -5,6 +5,7 @@ tags: [ciehs, administracion, cms, arquitectura, seguridad, accesibilidad]
 estado: en produccion
 publicado-en: https://ciehs.vercel.app/
 actualizado: 2026-09-13
+revision: 2 — texto con formato y barra de administración
 ---
 
 # CIEHS · Edición in-place (Admin UI)
@@ -18,6 +19,16 @@ y políticas están en [[CIEHS-Backend-Supabase]] y el modelo de acceso en
 > encender el modo edición aparecen controles superpuestos sobre lo que de
 > verdad se puede cambiar. Apagado, no queda ni un píxel de interfaz de
 > administración: esa es la condición, no un detalle estético.
+
+> [!tip] Revisión 2 — 2026-09-13
+> Dos cambios que esta nota ya recoge:
+>
+> 1. **El texto editable conserva negrita y cursiva.** Antes se aplanaba.
+> 2. **El código de acceso ya es el estado, no un menú.** Entrar deja el portal
+>    entero en administración, con una barra fija arriba; la palanca flotante
+>    que había que pulsar aparte desapareció.
+>
+> Las dos se explican en § 3 bis.
 
 ---
 
@@ -36,9 +47,15 @@ enlaces → uno) y con los estados de datos (seis cajas → un inventario). Aqu�
 respuesta es la misma: **un solo sitio donde vive cada cosa**, y ese sitio es
 la página.
 
-El modal **no desaparece**. Sigue existiendo para lo que es genuinamente un
-formulario de alta —registrar una lectura de pH, dar de alta una investigación,
-moderar la cola de aportes—, que no es editar lo que ya se está viendo.
+El modal **está en retirada**. Conserva dos cosas y las dos son temporales:
+la **puerta** —teclear el código— y los formularios de **alta** que todavía no
+se han trasladado a su sección (registrar una lectura de pH, dar de alta una
+investigación, moderar la cola de aportes). Mientras duren ahí se llega a
+ellos desde el botón **Formularios** de la barra, que existe sólo si `app.js`
+publica el puente `CIEHS.abrirFormularios` — el día que cada alta esté en su
+sitio, el botón se cae solo y el modal se queda únicamente con el código.
+
+
 
 ---
 
@@ -105,6 +122,77 @@ desactualizado por ninguno es peor.
 > Quien manda es RLS. Sin la cabecera con el código correcto, `is_admin()`
 > devuelve `false` y el servidor rechaza la escritura, active o no el navegador
 > estos controles. Esto es **interfaz, no autorización**.
+
+---
+
+## 3 bis. La barra: administrar es un estado, no un menú
+
+Hasta la revisión 1 hacían falta **tres pasos** para editar una frase: entrar
+con el código, cerrar el modal que se abría encima, y encontrar y pulsar una
+palanca flotante en una esquina. Tres pasos para lo que es un solo estado.
+
+Ahora **el código correcto es el estado**. Al validarlo, el modal se cierra y
+el portal entra en administración, con una barra fija por encima de la
+cabecera:
+
+| Pieza | Qué hace |
+|---|---|
+| **Modo administración** + punto verde | dice en qué estado está el portal |
+| contador de cambios | cuántos se han publicado **en esta sesión**; no persiste a propósito |
+| **Formularios** | provisional: abre las altas que aún viven en el modal |
+| **Ver como visitante** | apaga los controles **sin cerrar la sesión** — la barra se vuelve gris y dice «Administración en pausa» |
+| **Salir** | tira el código y devuelve el portal a su estado público |
+
+La cabecera del portal es `sticky` a `top:0`, así que hay que bajarla justo lo
+que mide la barra. No se usa una constante: la barra crece a dos líneas en
+móvil y con el texto del sistema en grande. Se mide con `getBoundingClientRect`
+y se publica como `--ed-admin-alto`, que es lo que lee el CSS.
+
+> [!check] Comprobado al salir
+> Quedan 34 lápices y papeleras montados en el DOM, y es deliberado: **cero
+> visibles, cero alcanzables con el tabulador y ningún `[data-edit]` conserva
+> su `role="button"`**. Retirarlos de verdad obligaría a desmontar los oyentes
+> que `montarTexto` colgó de cada nodo; sin guardar sus referencias, lo único
+> posible sería borrar el nodo y reiniciar `_edMontado`, lo que **duplicaría
+> los oyentes** al volver a entrar y haría que un clic abriera el editor dos
+> veces. Se cambia el día que haga falta desmontar de verdad.
+
+> [!warning] La sesión caduca por inactividad
+> Cuando eso ocurre, la barra se retira **y se anuncia**. Si desapareciera sin
+> más, el siguiente guardado fallaría con un 401 y parecería que el código
+> estaba mal — que es el peor síntoma posible.
+
+### El texto conserva su formato
+
+Hasta la revisión 1, lo guardado se repintaba con `textContent`. Era la barrera
+que impedía convertir `ciehs.textos` en un **XSS almacenado** servido a todos
+los visitantes, y por eso no se tocaba. Pero tenía un precio: el portal tiene
+**154 párrafos con negrita dentro**, y editar uno lo devolvía en texto plano.
+Con 27 textos rotulados era una molestia; rotulado el portal entero, habría sido
+la razón por la que nadie usa esto.
+
+La salida ya estaba escrita en la cabecera del propio archivo: *«se resuelve con
+lista blanca de etiquetas, no quitando esta línea»*.
+
+- Se parsea en un documento **inerte** (`DOMParser`) — ahí no se ejecuta un
+  script ni corre un `onerror` — y sobre ese árbol muerto se reconstruye otro
+  **nodo a nodo**, creando sólo `b`, `strong`, `i`, `em`, `br` y **sin copiar ni
+  un atributo**. No es «quitar lo peligroso», es **copiar lo permitido**.
+- De `script`, `style`, `iframe`, `svg` y compañía no se conserva **ni el
+  contenido**; el resto de etiquetas se desenvuelve y queda su texto.
+- El filtrado corre **dos veces**, al guardar y al pintar. Que el valor se
+  saneara al escribirlo no basta: la fila pudo llegar a la tabla por otra vía.
+- En ningún punto se asigna `innerHTML` con algo que venga de la base.
+
+> [!danger] `<a>` queda fuera a propósito
+> Sin enlaces, un código de administración filtrado **no permite convertir un
+> párrafo del portal en un cebo hacia otro sitio**. Ampliar la lista blanca es
+> una decisión de seguridad, no de estilo.
+
+La comprobación está hecha y es repetible: `tools/prueba-saneador.html`, con
+diecisiete cargas colgadas de verdad del documento. Tiene que dar **cero
+ejecuciones** y las diecisiete en `LIMPIO`. Si se toca la lista blanca, hay que
+traer el cambio a esa página o estará midiendo código que ya no existe.
 
 ---
 

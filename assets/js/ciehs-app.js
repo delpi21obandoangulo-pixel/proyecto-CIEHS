@@ -1921,6 +1921,17 @@
   document.querySelectorAll('.js-abrir-admin').forEach(function(b){
     b.addEventListener('click', abrirPanel);
   });
+
+  /* Puente para la barra de administración (ciehs-inline.js). Mientras los
+     formularios de alta sigan viviendo en el modal, hace falta una forma de
+     volver a ellos sin pasar otra vez por el código. Cuando cada alta esté en
+     su sección, este puente y el modal entero se van juntos. */
+  window.CIEHS = window.CIEHS || {};
+  window.CIEHS.abrirFormularios = function(){
+    if(!adminModal) return;
+    abrirPanel();
+    if(D.codigoActivo && D.codigoActivo()) mostrarFormulario();
+  };
   if(adminClose) adminClose.addEventListener('click', cerrarPanel);
   if(adminBack)  adminBack.addEventListener('click', cerrarPanel);
   document.addEventListener('keydown', function(e){
@@ -1939,7 +1950,16 @@
     D.entrarConCodigo(codigo).then(function(){
       loginBtn.disabled = false;
       if(el('adminCodigo')) el('adminCodigo').value = '';
-      return refrescar().then(mostrarFormulario);
+      return refrescar().then(function(){
+        // El codigo correcto ya no abre un menu: cierra la puerta y deja el
+        // PORTAL en modo administracion. El modal se queda preparado por
+        // detras -mostrarFormulario() sigue corriendo- porque los formularios
+        // de alta todavia viven ahi y se llega a ellos desde la barra; cuando
+        // se trasladen a su seccion, esta llamada se cae sola.
+        mostrarFormulario();
+        cerrarPanel();
+        if(window.CIEHS && window.CIEHS.inline) window.CIEHS.inline.revisar();
+      });
     }).catch(function(e){
       loginBtn.disabled = false;
       var m = (e && e.message) || 'No se pudo entrar.';

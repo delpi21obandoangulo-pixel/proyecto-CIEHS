@@ -4769,42 +4769,74 @@ html:not([data-js]) .hm-nav{ display:none !important; }
    Regla que gobierna todo este bloque: FUERA DEL MODO EDICION NO EXISTE. El
    administrador debe ver el portal exactamente igual que un estudiante, asi
    que ni un pixel de estos controles se pinta mientras body no lleve
-   .ciehs-editando. La unica excepcion es la palanca, que es la que permite
-   entrar.
+   .ciehs-editando. La unica excepcion es la barra de administracion, que se
+   rige por .ciehs-admin: sigue ahi mientras dure la sesion, tambien cuando el
+   administrador pide «ver como visitante», porque es lo que le permite volver.
 
    Color: verde --leaf-500 para lo que guarda, --status-danger para lo que
    borra, ambar --sun-300 para lo que revierte. Ninguno se confia solo al
    color: todos los controles llevan texto o un aria-label explicito.
    ========================================================================== */
 
-/* ----------------------------------------------------------- la palanca --- */
-.ed-palanca{
-  position:fixed; right:18px; bottom:18px; z-index:60;
-  display:inline-flex; align-items:center; gap:9px;
-  padding:11px 18px; border-radius:999px;
-  border:1px solid var(--line-strong);
-  background:rgba(255,255,255,0.86);
-  -webkit-backdrop-filter:blur(16px) saturate(160%);
-  backdrop-filter:blur(16px) saturate(160%);
-  color:var(--ink); font-family:inherit; font-size:13px; font-weight:600;
-  box-shadow:var(--shadow-2); cursor:pointer;
-  transition:transform .32s var(--ease-spring), box-shadow .3s var(--ease-out),
-             border-color .25s var(--ease-soft), background-color .25s var(--ease-soft);
+/* ------------------------------------------- la barra de administracion --- */
+/* Sustituye a la palanca flotante que habia en la esquina. La diferencia no es
+   de sitio: una palanca es un boton que se pulsa para entrar en un modo, y una
+   barra es el modo. Va por ENCIMA de la cabecera -que es sticky- porque
+   administrar no es una capa sobre el portal, es el estado en el que esta. */
+.ed-admin{
+  position:sticky; top:0; z-index:50;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  padding:9px 22px;
+  background:linear-gradient(100deg, #04563f, #047857 55%, #05614a);
+  color:#fff; font-size:13px; line-height:1.4;
+  box-shadow:0 1px 0 rgba(0,0,0,.16), 0 6px 18px -12px rgba(0,0,0,.5);
 }
-.ed-palanca:hover{ transform:translateY(-2px); box-shadow:var(--shadow-3); }
-.ed-palanca:active{ transform:translateY(0) scale(.97); }
-.ed-palanca.is-on{ background:rgba(4,120,87,0.96); color:#fff; border-color:transparent; }
-.ed-palanca-dot{
+/* La cabecera del portal tambien es sticky a top:0. Sin bajarla, las dos se
+   pegan arriba y la barra le queda debajo tapada. */
+body.ciehs-admin header.site{ top:var(--ed-admin-alto, 42px); }
+.ed-admin-izq{ display:flex; align-items:center; gap:11px; min-width:0; flex-wrap:wrap; }
+.ed-admin-der{ display:flex; align-items:center; gap:8px; flex:none; }
+.ed-admin-dot{
   width:9px; height:9px; border-radius:50%; flex:none;
-  background:var(--leaf-500); box-shadow:0 0 9px rgba(5,150,105,.55);
+  background:#6ee7b7; box-shadow:0 0 10px rgba(110,231,183,.8);
 }
-.ed-palanca.is-on .ed-palanca-dot{ background:#fff; box-shadow:0 0 9px rgba(255,255,255,.8); }
 @media (prefers-reduced-motion:no-preference){
-  .ed-palanca.is-on .ed-palanca-dot{ animation:livepulse-scale 2s infinite; }
+  .ed-admin-dot{ animation:livepulse-scale 2s infinite; }
 }
-/* En movil la palanca comparte esquina con el FAB de administracion: se sube
-   para que no se solapen. */
-@media (max-width:720px){ .ed-palanca{ bottom:84px; } }
+.ed-admin-estado{ font-weight:700; letter-spacing:.01em; }
+/* La pista y el contador se retiran antes que el estado al estrechar: lo que
+   no puede faltar nunca es saber QUE modo esta activo. */
+.ed-admin-pista{ color:rgba(255,255,255,.82); }
+.ed-admin-cuenta{
+  padding:3px 10px; border-radius:999px; font-weight:600;
+  background:rgba(255,255,255,.17); color:#fff;
+}
+/* En pausa el verde mentiria: el portal se esta viendo como lo ve cualquiera. */
+body.ciehs-admin:not(.ciehs-editando) .ed-admin{
+  background:linear-gradient(100deg, #3f3f46, #52525b 55%, #3f3f46);
+}
+body.ciehs-admin:not(.ciehs-editando) .ed-admin-dot{
+  background:#d4d4d8; box-shadow:none; animation:none;
+}
+body.ciehs-admin:not(.ciehs-editando) .ed-admin-pista{ display:none; }
+.ed-admin-btn{
+  padding:6px 14px; border-radius:999px; cursor:pointer;
+  border:1px solid rgba(255,255,255,.42); background:transparent; color:#fff;
+  font-family:inherit; font-size:12.5px; font-weight:600; line-height:1.3;
+  transition:transform .25s var(--ease-spring), background-color .2s var(--ease-soft),
+             border-color .2s var(--ease-soft);
+}
+.ed-admin-btn:hover{ background:rgba(255,255,255,.16); border-color:#fff; }
+.ed-admin-btn:active{ transform:scale(.96); }
+.ed-admin-btn:focus-visible{ outline:2px solid #fff; outline-offset:2px; }
+.ed-admin-btn--salir{ background:rgba(0,0,0,.22); }
+@media (max-width:720px){
+  .ed-admin{ padding:8px 14px; font-size:12px; }
+  .ed-admin-pista{ display:none; }
+}
+@media (max-width:440px){
+  .ed-admin-cuenta{ display:none; }
+}
 
 /* --------------------------------------------------- anuncios de accion --- */
 .ed-pregon{
@@ -4942,16 +4974,16 @@ body.ciehs-editando .ed-ficha--ancha{ width:min(420px, calc(100vw - 32px)); }
 }
 
 @media (prefers-reduced-motion:reduce){
-  .ed-palanca, .ed-btn, .ed-borrar, .ed-lapiz, .ed-pregon, .ed-borrado{
+  .ed-admin-btn, .ed-admin-dot, .ed-btn, .ed-borrar, .ed-lapiz, .ed-pregon, .ed-borrado{
     transition-duration:.01ms !important; animation:none !important;
   }
-  .ed-palanca:hover, .ed-btn:hover:not(:disabled),
+  .ed-admin-btn:hover, .ed-btn:hover:not(:disabled),
   .ed-borrar:hover, .ed-lapiz:hover{ transform:none; }
 }
 
 /* Nada de esto se imprime: es interfaz de trabajo, no contenido. */
 @media print{
-  .ed-palanca, .ed-pregon, .ed-barra, .ed-borrar, .ed-lapiz, .ed-ficha{
+  .ed-admin, .ed-pregon, .ed-barra, .ed-borrar, .ed-lapiz, .ed-ficha{
     display:none !important;
   }
 }
