@@ -39,12 +39,26 @@ panel «¿Qué buscamos con este proyecto?». El encargo
 
 Tres cosas que hubo que ajustar y no eran obvias:
 
-> [!info] Hay una ilustración posterior (2026-09-13)
-> Lo que sigue describe el cambio del 2026-09-09. El 2026-09-13 entró una
-> composición **nueva entera** —escudo arriba a la izquierda, logo al centro,
-> cinco ODS con su frase y un panel de cuatro retos ambientales—, con las cinco
-> posiciones de los puntos recalculadas. Ver
-> [[pendientes-coordinacion/01-mural-panel-que-buscamos|el pendiente 01]].
+> [!info] Hay una ilustración posterior (2026-09-13), y con ella un logo nuevo
+> Lo que sigue describe el cambio del 2026-09-09. El 2026-09-13 entraron dos
+> piezas nuevas de coordinación:
+>
+> - **El mural**, con una composición **nueva entera** —escudo arriba a la
+>   izquierda, logo al centro, cinco ODS con su frase y un panel de cuatro retos
+>   ambientales—, y las cinco posiciones de los puntos recalculadas. Ver
+>   [[pendientes-coordinacion/01-mural-panel-que-buscamos|el pendiente 01]].
+> - **El logo**, que es el que preside ese mural. Llegó como JPEG cuadrado de
+>   1254 px con fondo blanco opaco, así que se **redibujó como vector**: a 64 px
+>   de cabecera y 32 px de favicon un mapa de bits se deshace, y el fondo blanco
+>   se recortaba como un parche sobre el velo del menú y sobre el hero oscuro.
+>   Se rehicieron los cuatro SVG —`emblema-ciehs.svg` (sin texto, para la
+>   cabecera), `logo-ciehs.svg` (completo, ahora **circular**: el viewBox pasa
+>   de 300×72 a 256×240), `logo-ciehs-claro.svg` y `isotipo-ciehs.svg`— y se
+>   regeneraron los cuatro PNG con `tools/generar-marca.js`.
+>
+> Dos simplificaciones deliberadas respecto al JPEG, ambas por legibilidad a
+> tamaño pequeño: cuatro ramas de raíz en vez de siete, y dos ondas de lado a
+> lado en vez de cuatro sueltas a los costados.
 
 1. **El ave cambió.** Donde había un **pingüino de Humboldt** ahora hay un
    **pelícano peruano**. Los dos son de esta costa, pero el texto alternativo,

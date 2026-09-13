@@ -1,39 +1,85 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 72" role="img" aria-labelledby="logoTituloClaro">
-  <title id="logoTituloClaro">CIEHS · Centro de Investigación Escolar Hidropónico Sostenible (versión para fondo oscuro)</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 240" role="img" aria-labelledby="logoClaroTitulo">
+  <title id="logoClaroTitulo">CIEHS · Centro de Investigación Escolar Hidropónico Sostenible — versión para fondos oscuros</title>
   <!--
-    Logo completo: isotipo + logotipo. Mismo emblema que el mural, redibujado.
-    El texto va como TRAZADO no, sino como <text> con la familia del portal y un
-    respaldo genérico: si la fuente no carga, el logo sigue siendo legible en
-    lugar de descuadrarse.
+    Misma composición que logo-ciehs.svg, con la paleta subida para que sobreviva
+    a un fondo oscuro. El dibujo NO cambia: solo los valores.
+
+    Lo que hay que aclarar, y por qué:
+      · el verde del aro y de las hojas se aclara, porque el #1b7a3e del original
+        sobre verde oscuro institucional desaparece;
+      · la raíz y las dos líneas de texto dejan el azul marino #123a7a —ilegible
+        en oscuro— por un azul claro;
+      · «CIEHS» pasa a un verde menta que mantiene contraste AA sobre el fondo
+        oscuro del portal.
+
+    Esta versión no lleva disco blanco a propósito: el disco es cosa del isotipo,
+    que existe justamente para cuando el logo va sobre una fotografía y no sobre
+    un color liso.
   -->
   <defs>
-    <clipPath id="logoCirculoClaro"><circle cx="36" cy="36" r="28"/></clipPath>
-    <linearGradient id="logoHojaClaro" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#10b981"/>
-      <stop offset="1" stop-color="#047857"/>
+    <linearGradient id="lgcHoja" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a7e05f"/>
+      <stop offset="1" stop-color="#3fae5c"/>
+    </linearGradient>
+    <linearGradient id="lgcAro" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6fd08a"/>
+      <stop offset="1" stop-color="#3fae5c"/>
+    </linearGradient>
+    <linearGradient id="lgcTexto" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#b6f0c4"/>
+      <stop offset="1" stop-color="#7ee2a8"/>
     </linearGradient>
   </defs>
 
-  <circle cx="36" cy="36" r="28" fill="#ffffff"/>
-  <g clip-path="url(#logoCirculoClaro)">
-    <path d="M8 46c5 0 5-3.4 10-3.4S23 46 28 46s5-3.4 10-3.4S43 46 48 46s5-3.4 10-3.4S63 46 68 46v22H8z" fill="#0284c7"/>
-    <path d="M8 51c5 0 5-3 10-3s5 3 10 3 5-3 10-3 5 3 10 3 5-3 10-3 5 3 10 3v17H8z" fill="#075985"/>
-    <g stroke="#e8d9b5" stroke-width="1.5" stroke-linecap="round" fill="none" opacity=".95">
-      <path d="M36 44v10"/>
-      <path d="M36 47c-3 2-4.5 3.5-5.5 6"/>
-      <path d="M36 47c3 2 4.5 3.5 5.5 6"/>
-      <path d="M36 50c-1.8 2-2.6 3.4-3 5"/>
-      <path d="M36 50c1.8 2 2.6 3.4 3 5"/>
-    </g>
-    <path d="M36 45V25" stroke="#065f46" stroke-width="3" stroke-linecap="round" fill="none"/>
-    <path d="M35 35c-3.6-6.8-10.4-8-15.6-6.2 1 5.4 5.8 10.6 13 9.6 1.2-.2 2-1.6 2.6-3.4z" fill="url(#logoHojaClaro)"/>
-    <path d="M37 29c3.2-6.4 9.6-7.6 14.4-6 -.8 5-5.2 9.8-11.8 9-1.2-.2-2-1.4-2.6-3z" fill="url(#logoHojaClaro)"/>
-    <path d="M33.4 36.6c-4-3.4-8.2-5.2-12.6-5.8" stroke="#ffffff" stroke-width="1.1" stroke-linecap="round" fill="none" opacity=".65"/>
-    <path d="M38.6 30.8c3.6-3 7.4-4.6 11.4-5.2" stroke="#ffffff" stroke-width="1.1" stroke-linecap="round" fill="none" opacity=".65"/>
-  </g>
-  <circle cx="36" cy="36" r="28" fill="none" stroke="#ffffff" stroke-width="3.2"/>
+  <!-- anillo abierto por arriba: el brote lo interrumpe -->
+  <path d="M167.3 11.9A115 115 0 1 1 88.7 11.9" fill="none" stroke="url(#lgcAro)" stroke-width="9" stroke-linecap="round"/>
 
-  <text x="78" y="36" font-family="'Space Grotesk', system-ui, sans-serif" font-size="30" font-weight="700" letter-spacing="1" fill="#ffffff">CIEHS</text>
-  <text x="79" y="50" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="8.4" letter-spacing=".55" fill="#7dd3fc">CENTRO DE INVESTIGACIÓN ESCOLAR</text>
-  <text x="79" y="61" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="8.4" letter-spacing=".55" fill="#7dd3fc">HIDROPÓNICO SOSTENIBLE</text>
+  <!-- las dos hojas del anillo, a la altura de la lámina de agua -->
+  <g fill="url(#lgcHoja)">
+    <path d="M196 148c22 8 36 24 38 44-22-4-38-22-38-44z"/>
+    <path d="M60 148c-22 8-36 24-38 44 22-4 38-22 38-44z"/>
+  </g>
+  <g stroke="#07321f" stroke-width="2.8" stroke-linecap="round" fill="none" opacity=".35">
+    <path d="M202 158c9 9 16 19 21 28"/>
+    <path d="M54 158c-9 9-16 19-21 28"/>
+  </g>
+
+  <!-- brote: hoja central erguida y dos laterales -->
+  <path d="M128 78V30" stroke="#3fae5c" stroke-width="8" stroke-linecap="round" fill="none"/>
+  <g fill="url(#lgcHoja)">
+    <path d="M128 14c-15 12-18.6 36 0 54 18.6-18 15-42 0-54z"/>
+    <path d="M122 58c-21-12-42-6-51 9 18 15 42 12 51-3z"/>
+    <path d="M134 49c21-12 42-6 51 9-18 15-42 12-51-3z"/>
+  </g>
+  <g stroke="#07321f" stroke-width="2.6" stroke-linecap="round" fill="none" opacity=".4">
+    <path d="M117 62c-12-6-24-9-35-9.6"/>
+    <path d="M139 53c12-6 24-9 35-9.6"/>
+  </g>
+
+  <!-- la marca, sobre el tallo -->
+  <text x="128" y="140" text-anchor="middle"
+        font-family="'Space Grotesk', system-ui, sans-serif" font-size="58" font-weight="700"
+        letter-spacing="1" fill="url(#lgcTexto)">CIEHS</text>
+
+  <!-- la lámina de agua, de lado a lado y por debajo de la raíz -->
+  <g fill="none" stroke-linecap="round" stroke-width="6">
+    <path d="M40 154c8.8-7 17.6-7 26.4 0s17.6 7 26.4 0 17.6-7 26.4 0 17.6 7 26.4 0 17.6-7 26.4 0 17.6 7 26.4 0" stroke="#7fd8f7"/>
+    <path d="M40 168c8.8-7 17.6-7 26.4 0s17.6 7 26.4 0 17.6-7 26.4 0 17.6 7 26.4 0 17.6-7 26.4 0 17.6 7 26.4 0" stroke="#3fa2e8"/>
+  </g>
+
+  <!-- raíz sumergida -->
+  <g stroke="#bcdcff" stroke-width="4.5" stroke-linecap="round" fill="none">
+    <path d="M128 146v32"/>
+    <path d="M128 154c-12 7-19 15-22 26"/>
+    <path d="M128 154c12 7 19 15 22 26"/>
+    <path d="M128 163c-7 6-10 12-12 19"/>
+    <path d="M128 163c7 6 10 12 12 19"/>
+  </g>
+
+  <text x="128" y="199" text-anchor="middle"
+        font-family="'JetBrains Mono', ui-monospace, monospace" font-size="10"
+        letter-spacing=".3" font-weight="600" fill="#bcdcff">CENTRO DE INVESTIGACIÓN</text>
+  <text x="128" y="215" text-anchor="middle"
+        font-family="'JetBrains Mono', ui-monospace, monospace" font-size="10"
+        letter-spacing=".3" font-weight="600" fill="#bcdcff">ESCOLAR HIDROPÓNICO SOSTENIBLE</text>
 </svg>

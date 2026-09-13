@@ -1,58 +1,80 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="emblemaTitulo">
-  <title id="emblemaTitulo">Emblema del CIEHS: brote con raíces sumergidas en agua, dentro de un anillo</title>
+  <title id="emblemaTitulo">Emblema del CIEHS: brote con la raíz sumergida en la lámina de agua, dentro de un anillo de hojas</title>
   <!--
-    Emblema completo del CIEHS. Sustituye al isotipo anterior en la cabecera.
+    Redibujo del logo oficial que entregó coordinación el 2026-09-13, y que es
+    el que preside el mural nuevo. Se vectoriza en vez de recortar el JPEG por
+    lo de siempre: aquí mide 64 px en la cabecera y 32 px en el favicon, y un
+    mapa de bits a ese tamaño se deshace. Además el JPEG trae fondo blanco
+    opaco, que sobre el velo del menú o el hero oscuro se recortaría como un
+    parche claro.
 
-    Diferencia con isotipo-ciehs.svg: aquel pintaba un DISCO BLANCO bajo el
-    dibujo, así que sobre cualquier fondo que no fuera blanco aparecía un
-    recorte claro. Aquí el fondo es transparente de verdad: lo único opaco es
-    el agua (que necesita cuerpo para que la raíz se lea sumergida), el brote
-    y el anillo. El resto deja pasar el papel del portal, el velo del menú o el
-    oscuro del hero sin marcar un borde.
+    Esta es la versión SIN TEXTO. El logo oficial lleva «CIEHS» y dos líneas
+    dentro del círculo: a 64 px esas líneas son una mancha, así que aquí solo
+    queda el dibujo, y el logotipo completo vive en logo-ciehs.svg.
 
-    Los tres elementos son los mismos del mural institucional: BROTE (dos hojas
-    y tallo), RAÍCES bajo la línea de agua —lo que dice "hidroponía" y no
-    "huerto"— y AGUA en dos capas de onda.
+    Qué cambia respecto al emblema anterior:
+      · el anillo ya no es un aro liso y cerrado: se abre arriba para dejar
+        salir el brote y lleva DOS HOJAS insertadas abajo, a los lados;
+      · el agua ya no rellena la mitad inferior del círculo — son dos ONDAS de
+        lado a lado, la lámina, y la raíz las cruza por delante;
+      · la raíz es azul marino y baja del mismo tallo del brote: es el eje
+        vertical que sostiene todo el dibujo.
 
-    currentColor no se usa a propósito: el emblema es a color pleno en cualquier
-    contexto, igual que el escudo de la institución educativa.
+    Simplificaciones deliberadas respecto al original: cuatro ramas de raíz en
+    vez de siete y dos ondas en vez de cuatro. A 32 px lo demás se empasta.
+
+    El fondo es transparente de verdad: lo único opaco es lo dibujado.
+    currentColor no se usa a propósito: el emblema va a color pleno en
+    cualquier contexto, igual que el escudo de la institución educativa.
   -->
   <defs>
-    <clipPath id="embCirculo"><circle cx="32" cy="32" r="28"/></clipPath>
     <linearGradient id="embHoja" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#10b981"/>
-      <stop offset="1" stop-color="#047857"/>
+      <stop offset="0" stop-color="#7ac143"/>
+      <stop offset="1" stop-color="#1b7a3e"/>
     </linearGradient>
-    <linearGradient id="embAgua" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#0ea5e9"/>
-      <stop offset="1" stop-color="#0369a1"/>
+    <linearGradient id="embAro" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2f9e44"/>
+      <stop offset="1" stop-color="#1b7a3e"/>
     </linearGradient>
   </defs>
 
-  <g clip-path="url(#embCirculo)">
-    <!-- agua: dos capas de onda. La superior marca la lámina; la inferior da
-         fondo para que las raíces claras contrasten. -->
-    <path d="M4 42c5 0 5-3.4 10-3.4S19 42 24 42s5-3.4 10-3.4S39 42 44 42s5-3.4 10-3.4S59 42 64 42v22H4z" fill="url(#embAgua)"/>
-    <path d="M4 47c5 0 5-3 10-3s5 3 10 3 5-3 10-3 5 3 10 3 5-3 10-3 5 3 10 3v17H4z" fill="#075985"/>
+  <!-- anillo abierto por arriba: el brote lo interrumpe, no lo pisa -->
+  <path d="M41.2 6.6A27 27 0 1 1 22.8 6.6" fill="none" stroke="url(#embAro)" stroke-width="3.2" stroke-linecap="round"/>
 
-    <!-- raíces sumergidas -->
-    <g stroke="#f1e4c3" stroke-width="1.5" stroke-linecap="round" fill="none" opacity=".95">
-      <path d="M32 40v11"/>
-      <path d="M32 43c-3 2-4.5 3.5-5.5 6.4"/>
-      <path d="M32 43c3 2 4.5 3.5 5.5 6.4"/>
-      <path d="M32 46.2c-1.8 2-2.6 3.4-3 5.2"/>
-      <path d="M32 46.2c1.8 2 2.6 3.4 3 5.2"/>
-    </g>
-
-    <!-- tallo y hojas: la izquierda baja y grande, la derecha alta -->
-    <path d="M32 41V21" stroke="#065f46" stroke-width="3" stroke-linecap="round" fill="none"/>
-    <path d="M31 31c-3.6-6.8-10.4-8-15.6-6.2 1 5.4 5.8 10.6 13 9.6 1.2-.2 2-1.6 2.6-3.4z" fill="url(#embHoja)"/>
-    <path d="M33 25c3.2-6.4 9.6-7.6 14.4-6 -.8 5-5.2 9.8-11.8 9-1.2-.2-2-1.4-2.6-3z" fill="url(#embHoja)"/>
-    <!-- nervios: en claro sobre la hoja, no sobre el fondo, así que siguen
-         valiendo aunque detrás no haya disco -->
-    <path d="M29.4 32.6c-4-3.4-8.2-5.2-12.6-5.8" stroke="#ecfdf5" stroke-width="1.1" stroke-linecap="round" fill="none" opacity=".7"/>
-    <path d="M34.6 26.8c3.6-3 7.4-4.6 11.4-5.2" stroke="#ecfdf5" stroke-width="1.1" stroke-linecap="round" fill="none" opacity=".7"/>
+  <!-- las dos hojas del anillo, abajo y apuntando afuera -->
+  <g fill="url(#embHoja)">
+    <path d="M49 42c7 2.4 11 8 10.6 14.6-7-1.6-11.6-7.6-10.6-14.6z"/>
+    <path d="M15 42c-7 2.4-11 8-10.6 14.6 7-1.6 11.6-7.6 10.6-14.6z"/>
+  </g>
+  <g stroke="#eaf7e0" stroke-width=".9" stroke-linecap="round" fill="none" opacity=".5">
+    <path d="M51 45c3 3 5.6 6.4 7.2 9.6"/>
+    <path d="M13 45c-3 3-5.6 6.4-7.2 9.6"/>
   </g>
 
-  <circle cx="32" cy="32" r="28" fill="none" stroke="#065f46" stroke-width="3.2"/>
+  <!-- brote: hoja central erguida y dos laterales -->
+  <path d="M32 24V10" stroke="#1b7a3e" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+  <g fill="url(#embHoja)">
+    <path d="M32 6c-5 4-6.2 12 0 18 6.2-6 5-14 0-18z"/>
+    <path d="M30 20c-7-4-14-2-17 3 6 5 14 4 17-1z"/>
+    <path d="M34 17c7-4 14-2 17 3-6 5-14 4-17-1z"/>
+  </g>
+  <g stroke="#eaf7e0" stroke-width=".9" stroke-linecap="round" fill="none" opacity=".6">
+    <path d="M28.4 21.4c-4-2-8-3-11.6-3.2"/>
+    <path d="M35.6 18.4c4-2 8-3 11.6-3.2"/>
+  </g>
+
+  <!-- la lámina de agua, de lado a lado y por debajo de la raíz -->
+  <g fill="none" stroke-linecap="round" stroke-width="2.6">
+    <path d="M6.5 34.5c3.4-3 6.8-3 10.2 0s6.8 3 10.2 0 6.8-3 10.2 0 6.8 3 10.2 0 6.8-3 10.2 0" stroke="#35b0e8"/>
+    <path d="M6.5 41c3.4-3 6.8-3 10.2 0s6.8 3 10.2 0 6.8-3 10.2 0 6.8 3 10.2 0 6.8-3 10.2 0" stroke="#1565c0"/>
+  </g>
+
+  <!-- raíz sumergida: lo que dice «hidroponía» y no «huerto» -->
+  <g stroke="#123a7a" stroke-width="1.9" stroke-linecap="round" fill="none">
+    <path d="M32 24v21"/>
+    <path d="M32 31c-4.8 3-7.6 6.4-9 11"/>
+    <path d="M32 31c4.8 3 7.6 6.4 9 11"/>
+    <path d="M32 37.5c-2.6 2.6-4 5-4.8 8"/>
+    <path d="M32 37.5c2.6 2.6 4 5 4.8 8"/>
+  </g>
 </svg>
