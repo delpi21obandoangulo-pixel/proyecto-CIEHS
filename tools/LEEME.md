@@ -123,3 +123,45 @@ comentarios con carga dentro.
 Por qué importa: `ciehs.textos` la escribe quien tenga el código de
 administración, y lo guardado se sirve a **todos** los visitantes. Si el
 saneador falla, eso es un XSS almacenado en el portal de un colegio.
+
+## `rotular-editables.js`
+
+Rotula con `data-edit` los textos de `index.html` para que el administrador
+pueda editarlos sobre el propio portal (ver [[CIEHS-Admin-InPlace-UI]]).
+
+```bash
+node tools/rotular-editables.js             # informe, no escribe
+node tools/rotular-editables.js --volcar    # + propuestas.txt y excluidas.txt
+node tools/rotular-editables.js --aplicar   # escribe index.html
+```
+
+**Es idempotente**: lo que ya lleva `data-edit` se respeta. Al añadir una
+sección nueva basta con volver a pasarlo y solo rotula lo que falta.
+
+### Las claves son semánticas, no posicionales
+
+`ruta.bloque.slug` — por ejemplo `metodologia.peai-card.familias`. Una clave por
+índice se rompería **en silencio** al reordenar el HTML: el texto guardado
+aparecería en el elemento equivocado y nadie lo notaría hasta verlo publicado.
+
+### Qué deja fuera, y por qué
+
+| Fuera | Motivo |
+|---|---|
+| Descendientes de `galeriaPista`, `invGrid`, `resGrid`, `carpetaGrid`, `tiendaGrid`, `comentariosLista`, `bitacoraCuerpo`, `telemetriaLista`, `modulosLista`, `phModulosChart`, `aportePublicados`, `destacadosGrid`, `invOrigen`, `vozControl` | **El JS los repinta enteros.** Lo que hay en el HTML es su respaldo estático; un `data-edit` ahí guardaría un valor que el siguiente refresco borra |
+| `#adminModal` | es el panel, no el portal |
+| `<noscript>` | solo lo lee quien no tiene JavaScript, y el editor vive en JavaScript |
+| Nodos con `id` que el JS pisa con `textContent` | el lápiz mentiría: al recargar vuelve el valor de la base |
+| Clases de interfaz (`chip`, `form-status`, `inv-`, `admin-`, `ed-`…) | no son contenido |
+
+### `data-edit-aviso`
+
+Los textos que comprometen algo —la página de privacidad entera, el protocolo de
+imagen de menores, el párrafo de veracidad del pie, el descargo frente a la
+UNESCO— se rotulan además con `data-edit-aviso`. Siguen siendo editables, pero
+el editor **pide la venia antes de abrirlos** y su halo es ámbar en vez de
+verde. Las reglas que deciden cuáles están en la constante `AVISOS`.
+
+> El HTML del portal permite trabajar línea a línea en vez de con un parser:
+> 740 de las 756 etiquetas `p`/`h2-h5`/`li` abren línea y **ninguna línea lleva
+> dos**. Si eso deja de ser cierto, este script deja de ser fiable.

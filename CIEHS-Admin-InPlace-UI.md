@@ -90,13 +90,16 @@ resto del portal (ver [[CIEHS-Estados-UI-Async]]).
 
 ## 3. Decisiones que conviene no deshacer
 
-> [!danger] `textContent`, nunca `innerHTML`
-> Todo texto guardado se pinta con `textContent`. Es **lo único** que impide que
-> `ciehs.textos` sea un XSS almacenado servido a cualquier visitante si el
-> código de administración llegara a filtrarse. Donde el párrafo traía negritas,
-> la interfaz **avisa antes de guardar** de que se pierden, en lugar de abrir la
-> puerta a HTML. Si algún día hace falta énfasis, se resuelve con lista blanca
-> de etiquetas en el cliente, no quitando esa línea.
+> [!danger] Lista blanca, nunca `innerHTML` con lo que venga de la base
+> Todo texto guardado se **reconstruye nodo a nodo** contra una lista blanca
+> (`b`, `strong`, `i`, `em`, `br`) y sin copiar ni un atributo. Es **lo único**
+> que impide que `ciehs.textos` sea un XSS almacenado servido a cualquier
+> visitante si el código de administración llegara a filtrarse. Los detalles, en
+> § 3 bis → «El texto conserva su formato».
+>
+> *Hasta la revisión 1 esta decisión era «pintar con `textContent` a secas», y
+> la nota avisaba de que si algún día hacía falta énfasis se resolvería con
+> lista blanca y no relajando la regla. Es exactamente lo que se hizo.*
 
 **De la arena solo se aceptan `q` y `exp`, y solo si son texto.** Dejar tocar
 `correcta` u `ops` convertiría una escritura en la base en la capacidad de dejar
@@ -193,6 +196,58 @@ La comprobación está hecha y es repetible: `tools/prueba-saneador.html`, con
 diecisiete cargas colgadas de verdad del documento. Tiene que dar **cero
 ejecuciones** y las diecisiete en `LIMPIO`. Si se toca la lista blanca, hay que
 traer el cambio a esa página o estará midiendo código que ya no existe.
+
+---
+
+## 3 ter. El portal entero, rotulado
+
+El motor se gobierna por atributos, asi que su alcance es exactamente **lo que
+este rotulado**. Hasta la revision 1 habia 27 textos con `data-edit`, casi todos
+en dos secciones: el resto del portal no se podia tocar.
+
+Ahora hay **577**, repartidos por las catorce rutas, mas **35 con aviso**.
+
+| Ruta | Textos | | Ruta | Textos |
+|---|--:|---|---|--:|
+| metodologia | 134 | | trazabilidad | 44 |
+| modulos | 75 | | privacidad | 31 |
+| equipos | 54 | | datos | 29 |
+| juega | 50 | | docentes | 27 |
+| investigaciones | 21 | | mural | 21 |
+| comunidad | 19 | | portal (nav y pie) | 17 |
+| eureka | 16 | | contacto | 7 |
+| inicio | 5 | | | |
+
+El rotulado no se hizo a mano: lo genera `tools/rotular-editables.js`, que es
+**idempotente** —al añadir una seccion basta con volver a pasarlo—. Lo que deja
+fuera y por que esta en `tools/LEEME.md`; en resumen, **nada que repinte el JS**,
+porque ahi un `data-edit` guardaria un valor que el siguiente refresco borra.
+
+> [!check] Comprobado: el contenido no se toco
+> `index.html` es identico **byte a byte** quitando los atributos nuevos. Se
+> añadieron 550 atributos y no se movio una letra del texto.
+
+### Por que `inicio` solo tiene 5
+
+No es un olvido. El hero lo pinta `pintarConfig` desde `ciehs.site_config`, y la
+galeria de evidencias desde `ciehs.evidencias`: las dos son editables, pero **por
+su tabla**, no por `ciehs.textos`. Rotularlas habria dado un lapiz que miente.
+
+### Las imagenes ya estaban cubiertas
+
+De las 16 etiquetas `<img>` del portal, **11 son piezas de marca** (emblema,
+isotipo, logotipo) que se cambian en el repositorio —la propia pagina de
+identidad dice que el dibujo no cambia— y **4 son el respaldo estatico de la
+galeria**, que se repinta. La unica imagen de hueco fijo es el mural, y ya
+llevaba `data-edit-img`. No habia 15 pendientes.
+
+> [!todo] Lo que si falta: el fondo del hero
+> Es una imagen fija en CSS (`.hm-bg`, `invernadero-dwc.jpg`), no una etiqueta
+> `<img>`, asi que `data-edit-img` no le sirve. Y no basta con asignar
+> `style.backgroundImage`: la CSP lleva `style-src-attr 'none'` y eso crea un
+> atributo `style`. Habria que insertar la regla por CSSOM, como ya hace
+> `ciehs-app.js` con la mascara del hero. Va con la portada, en la fase que
+> traiga `site_config` al portal.
 
 ---
 

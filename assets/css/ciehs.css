@@ -4983,10 +4983,39 @@ body.ciehs-editando .ed-ficha--ancha{ width:min(420px, calc(100vw - 32px)); }
 
 /* Nada de esto se imprime: es interfaz de trabajo, no contenido. */
 @media print{
-  .ed-admin, .ed-pregon, .ed-barra, .ed-borrar, .ed-lapiz, .ed-ficha{
+  .ed-admin, .ed-pregon, .ed-barra, .ed-borrar, .ed-lapiz, .ed-ficha, .ed-venia-velo{
     display:none !important;
   }
 }
+/* --------------------------------------------- la venia antes de editar --- */
+/* Los textos con data-edit-aviso no se abren de golpe: primero se dice que
+   compromete cambiarlos. Ambar y no rojo — es una advertencia, no un error ni
+   una prohibicion: el administrador puede y debe poder seguir. */
+/* Suelta del flujo y centrada, no anclada al parrafo como las demas fichas.
+   Anclada quedaba cortada: basta con que un ancestro tenga backdrop-filter
+   para abrir un contexto de apilamiento y dejar su z-index sin efecto contra
+   lo que viene despues. Y ademas esto no es un formulario pegado a un dato,
+   es una decision — se mira de frente. */
+body.ciehs-editando .ed-ficha--venia{
+  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  z-index:81; width:min(420px, calc(100vw - 32px));
+  border-color:rgba(180,83,9,.45);
+}
+.ed-ficha--venia .ed-ficha-tit{ color:var(--sun-300); }
+.ed-venia-texto{
+  margin:8px 0 0; font-size:13.5px; line-height:1.65; color:var(--ink-soft);
+}
+.ed-venia-velo{
+  position:fixed; inset:0; z-index:80;
+  background:rgba(4,20,15,.42);
+  -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px);
+}
+/* El halo de un texto con consecuencias es ambar, no verde: se distingue de
+   un vistazo antes de pulsar, sin tener que leer nada. */
+body.ciehs-editando .ed-texto[data-edit-aviso]{
+  outline-color:rgba(180,83,9,.5);
+}
+
 /* Aviso dentro de la barra de edicion de texto. Ambar sobre papel claro
    (--sun-300, 5.3:1): es una advertencia, no un error.
    Servia para avisar de que guardar perdia las negritas. Desde que el texto se

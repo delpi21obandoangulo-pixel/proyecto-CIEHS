@@ -330,8 +330,82 @@
     // es justo lo contrario de lo que persigue la edicion in-place.
     nodo.classList.add('ed-texto');
 
+    /* Hay textos que comprometen algo si se cambian a la ligera: el parrafo que
+       declara que los datos son oficiales de la I.E., la pagina de privacidad
+       entera, el protocolo de imagen de menores, el descargo frente a la
+       UNESCO. Siguen siendo editables —es lo acordado, y no hacerlo obligaria a
+       tocar el repositorio para corregir una errata—, pero no a ciegas: quien
+       los abra lee primero QUE compromete el cambio.
+
+       No se usa confirm(): un dialogo nativo bloquea la pagina entera, no se
+       puede leer con calma y se contesta por inercia. */
+    function pedirVenia(aviso, seguir) {
+      /* Va suelta del flujo, centrada y fija. Anclarla al parrafo —como hacen
+         las fichas de modulo y de arena— la dejaba cortada: basta con que un
+         ancestro tenga backdrop-filter para crear un contexto de apilamiento
+         nuevo, y entonces el z-index de la ficha ya no vale contra lo que viene
+         despues. Ademas esto no es un formulario pegado a un dato: es una
+         decision, y una decision se toma mirandola de frente. */
+      var velo = doc.createElement('div');
+      velo.className = 'ed-venia-velo';
+
+      var ficha = doc.createElement('div');
+      ficha.className = 'ed-ficha ed-ficha--venia';
+      ficha.setAttribute('role', 'alertdialog');
+      ficha.setAttribute('aria-modal', 'true');
+
+      var tit = doc.createElement('p');
+      tit.className = 'ed-ficha-tit';
+      tit.textContent = 'Texto con consecuencias';
+      var cuerpo = doc.createElement('p');
+      cuerpo.className = 'ed-venia-texto';
+      cuerpo.textContent = aviso;
+      ficha.setAttribute('aria-label', 'Texto con consecuencias. ' + aviso);
+
+      var pie = doc.createElement('div');
+      pie.className = 'ed-ficha-pie';
+      var si = boton('ed-btn ed-btn--ok', 'Editar este texto de todos modos', 'Editar igualmente');
+      var no = boton('ed-btn', 'Dejarlo como está', 'Cancelar');
+      pie.appendChild(si);
+      pie.appendChild(no);
+
+      ficha.appendChild(tit);
+      ficha.appendChild(cuerpo);
+      ficha.appendChild(pie);
+      doc.body.appendChild(velo);
+      doc.body.appendChild(ficha);
+      no.focus();
+
+      function cerrarVenia() {
+        if (ficha.parentNode) ficha.parentNode.removeChild(ficha);
+        if (velo.parentNode) velo.parentNode.removeChild(velo);
+        doc.removeEventListener('keydown', escapar, true);
+      }
+      function escapar(ev) { if (ev.key === 'Escape') { ev.preventDefault(); cerrarVenia(); nodo.focus(); } }
+      doc.addEventListener('keydown', escapar, true);
+
+      velo.addEventListener('click', function () { cerrarVenia(); nodo.focus(); });
+      no.addEventListener('click', function () { cerrarVenia(); nodo.focus(); });
+      si.addEventListener('click', function () {
+        cerrarVenia();
+        // Una vez dada la venia, no se vuelve a pedir para ESTE nodo hasta
+        // recargar. Repetirla en cada correccion seria una puerta que se cierra
+        // sola y que se acaba abriendo sin leer, que es lo contrario de lo que
+        // busca el aviso.
+        nodo._edAvisado = true;
+        seguir();
+      });
+    }
+
     function abrir() {
       if (nodo.isContentEditable) return;
+      if (doc.querySelector('.ed-ficha--venia')) return;   // ya hay una pidiendo venia
+      var laVenia = nodo.getAttribute('data-edit-aviso');
+      if (laVenia && !nodo._edAvisado) { pedirVenia(laVenia, abrirDeVerdad); return; }
+      abrirDeVerdad();
+    }
+
+    function abrirDeVerdad() {
       var antes = nodo.innerHTML;
       // Antes era plaintext-only: no habia otra opcion, porque lo guardado se
       // repintaba en plano. Ahora el formato sobrevive, asi que el campo lo
@@ -840,8 +914,15 @@
       if (activo) {
         nodo.setAttribute('tabindex', '0');
         nodo.setAttribute('role', 'button');
-        nodo.setAttribute('aria-label',
-          'Editar este texto (' + nodo.getAttribute('data-edit') + ')');
+        /* Antes esto leia la clave entera. Con 27 textos rotulados pasaba; con
+           el portal entero rotulado, un lector de pantalla dictaria
+           «metodologia punto peai guion card punto reciben guion cosecha…» en
+           cada parada de tabulacion. La clave es para el codigo, no para quien
+           escucha: aqui basta con decir que se puede editar, y avisar si lo que
+           hay debajo tiene consecuencias. */
+        nodo.setAttribute('aria-label', nodo.hasAttribute('data-edit-aviso')
+          ? 'Editar este texto. Atención: cambiarlo tiene consecuencias.'
+          : 'Editar este texto');
       } else {
         nodo.removeAttribute('tabindex');
         nodo.removeAttribute('role');
