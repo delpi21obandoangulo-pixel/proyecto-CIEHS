@@ -61,7 +61,10 @@
 
   var CLAVE_OK = /^[a-z0-9][a-z0-9._-]{1,80}$/;
   var TIPOS_IMAGEN = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
-  var MAX_IMAGEN = 8 * 1024 * 1024;   // 8 MB: de sobra para una foto de 2000 px
+  // 6 MB y no mas porque es el techo real del bucket ciehs-evidencias
+  // (file_size_limit en db/14). Pedir 8 aqui solo servia para que el servidor
+  // rechazara la subida despues de gastar la espera, con un error en ingles.
+  var MAX_IMAGEN = 6 * 1024 * 1024;
 
   var estado = {
     editando: false,
@@ -197,10 +200,13 @@
     nodo._edMontado = true;
     var clave = nodo.getAttribute('data-edit');
 
+    // role y tabindex NO se fijan aqui. Se ponen y se quitan con el modo
+    // edicion (ver marcarEditables). Si se dejaran puestos, al apagar la
+    // edicion un <h4> seguiria anunciandose como boton y no como encabezado, y
+    // cada parrafo rotulado seria una parada de tabulacion falsa: el
+    // administrador se quedaria con un portal peor que el del estudiante, que
+    // es justo lo contrario de lo que persigue la edicion in-place.
     nodo.classList.add('ed-texto');
-    nodo.setAttribute('tabindex', '0');
-    nodo.setAttribute('role', 'button');
-    nodo.setAttribute('aria-label', 'Editar este texto (' + clave + ')');
 
     function abrir() {
       if (nodo.isContentEditable) return;
@@ -312,7 +318,7 @@
       return 'Solo se admiten imágenes JPG, PNG, WebP o AVIF.';
     }
     if (archivo.size > MAX_IMAGEN) {
-      return 'La imagen pesa ' + Math.round(archivo.size / 1048576) + ' MB; el máximo es 8 MB.';
+      return 'La imagen pesa ' + (archivo.size / 1048576).toFixed(1) + ' MB; el máximo es 6 MB.';
     }
     return null;
   }
@@ -343,6 +349,12 @@
     entrada.accept = TIPOS_IMAGEN.join(',');
     entrada.className = 'u-visually-hidden';
     entrada.id = 'ed-file-' + clave;
+    // El control real es el boton de al lado, que lo dispara. El campo queda
+    // fuera del recorrido de tabulacion y con nombre propio: u-visually-hidden
+    // oculta a la vista pero NO al lector de pantalla, asi que sin esto era una
+    // parada de tabulacion que no anunciaba nada.
+    entrada.tabIndex = -1;
+    entrada.setAttribute('aria-label', 'Archivo de imagen para reemplazar (' + clave + ')');
 
     var reemplazar = boton('ed-btn ed-btn--ok', 'Reemplazar esta fotografía', 'Reemplazar');
     var quitar = boton('ed-btn ed-btn--peligro', 'Quitar esta fotografía y volver a la del portal', 'Quitar');
@@ -628,12 +640,29 @@
 
   /* ------------------------------------------------------ montaje global - */
 
+  // Los atributos de interaccion viven solo mientras dura el modo edicion.
+  function marcarEditables(activo) {
+    $$('.ed-texto').forEach(function (nodo) {
+      if (activo) {
+        nodo.setAttribute('tabindex', '0');
+        nodo.setAttribute('role', 'button');
+        nodo.setAttribute('aria-label',
+          'Editar este texto (' + nodo.getAttribute('data-edit') + ')');
+      } else {
+        nodo.removeAttribute('tabindex');
+        nodo.removeAttribute('role');
+        nodo.removeAttribute('aria-label');
+      }
+    });
+  }
+
   function montarTodo() {
     $$('[data-edit]').forEach(montarTexto);
     $$('[data-edit-img]').forEach(montarImagen);
     $$('[data-ciehs-tipo][data-ciehs-id], [data-ciehs-tipo][data-ruta]').forEach(montarBorrable);
     $$('[data-modulo]').forEach(montarModulo);
     $$('[data-arena-id]').forEach(montarArena);
+    marcarEditables(estado.editando);
   }
 
   /* ---------------------------------------------------------- interruptor - */
@@ -651,6 +680,7 @@
     estado.editando = forzar === undefined ? !estado.editando : !!forzar;
     doc.body.classList.toggle('ciehs-editando', estado.editando);
     if (estado.editando) montarTodo();
+    else marcarEditables(false);
     pintarPalanca();
     anunciar(estado.editando
       ? 'Modo edición activo: pulsa sobre cualquier texto o fotografía marcada para cambiarla.'

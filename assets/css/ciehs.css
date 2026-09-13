@@ -2449,11 +2449,18 @@
     box-shadow:var(--shadow-card); backdrop-filter:blur(16px);
     border-top:3px solid var(--acento, var(--leaf-500));
   }
-  .eco-1{ --acento:var(--leaf-500); }
-  .eco-2{ --acento:var(--sun-500); }
-  .eco-3{ --acento:var(--azure-500); }
+  /* Dos acentos y no uno: --acento pinta el filete superior de la tarjeta, que
+     es una superficie y puede ser vivo; --acento-texto pinta letra pequeña, y
+     ahi el 500 se queda corto (--leaf-500 da 3.77:1 y --azure-500 4.10:1 sobre
+     el papel, por debajo del 4.5 que pide AA). Los tonos 300 existen
+     exactamente para esto y estan medidos en la nota de contraste del final de
+     este archivo. */
+  .eco-1{ --acento:var(--leaf-500);  --acento-texto:var(--leaf-300); }
+  .eco-2{ --acento:var(--sun-500);   --acento-texto:var(--sun-300); }
+  .eco-3{ --acento:var(--azure-500); --acento-texto:var(--azure-300); }
   .eco-num{
-    font-size:11px; letter-spacing:.1em; color:var(--acento, var(--leaf-500));
+    font-size:11px; letter-spacing:.1em;
+    color:var(--acento-texto, var(--leaf-300));
   }
   .eco-card h4{ margin-top:10px; font-size:16.5px; font-weight:600; color:var(--ink); }
   .eco-card p{ margin-top:10px; font-size:13.8px; line-height:1.65; color:var(--ink-soft); }
@@ -2546,12 +2553,13 @@
     border-top:3px solid var(--acento, var(--leaf-500));
     display:flex; flex-direction:column;
   }
-  .nutri-1{ --acento:var(--leaf-500); }
-  .nutri-2{ --acento:var(--azure-500); }
-  .nutri-3{ --acento:var(--sun-500); }
+  /* Misma separacion que en .eco-*: superficie con el 500, letra con el 300. */
+  .nutri-1{ --acento:var(--leaf-500);  --acento-texto:var(--leaf-300); }
+  .nutri-2{ --acento:var(--azure-500); --acento-texto:var(--azure-300); }
+  .nutri-3{ --acento:var(--sun-500);   --acento-texto:var(--sun-300); }
   .nutri-tag{
     font-family:var(--font-mono); font-size:10px; letter-spacing:.11em;
-    text-transform:uppercase; color:var(--acento, var(--leaf-500));
+    text-transform:uppercase; color:var(--acento-texto, var(--leaf-300));
   }
   .nutri-simbolos{
     margin-top:10px; font-family:var(--font-display);
@@ -2630,9 +2638,13 @@
   .steam-card h4{
     position:relative; font-size:17px; font-weight:600; color:var(--ink);
   }
+  /* El nombre en ingles va en mono a 11px: es letra pequeña y no puede usar el
+     acento vivo (--leaf-500 da 3.76:1 y --azure-500 4.08:1, por debajo de AA).
+     Se separa --acento-texto, igual que en .eco-* y .nutri-*: el 500 sigue
+     pintando el filete y la letra gigante de fondo, que son superficie. */
   .steam-card h4 + p{
     margin-top:2px; font-family:var(--font-mono); font-size:11px;
-    letter-spacing:.06em; color:var(--acento, var(--leaf-500));
+    letter-spacing:.06em; color:var(--acento-texto, var(--leaf-300));
   }
   .steam-que{ margin-top:12px; font-size:13.5px; line-height:1.6; color:var(--ink-soft); }
   .steam-donde{
@@ -2643,11 +2655,11 @@
 
   /* Un color por letra: el mismo criterio que la paleta del resto del portal,
      de la ciencia (verde) a la matemática (violeta). */
-  .steam-s{ --acento:var(--leaf-500); }
-  .steam-t{ --acento:var(--azure-500); }
-  .steam-e{ --acento:var(--sun-500); }
-  .steam-a{ --acento:#7c3aed; }
-  .steam-m{ --acento:#0f766e; }
+  .steam-s{ --acento:var(--leaf-500);  --acento-texto:var(--leaf-300); }
+  .steam-t{ --acento:var(--azure-500); --acento-texto:var(--azure-300); }
+  .steam-e{ --acento:var(--sun-500);   --acento-texto:var(--sun-300); }
+  .steam-a{ --acento:#7c3aed;          --acento-texto:#5b21b6; }
+  .steam-m{ --acento:#0f766e;          --acento-texto:#115e59; }
 
   .steam-nota{
     margin-top:24px; padding:16px 20px;
@@ -3672,7 +3684,10 @@
     backdrop-filter:blur(8px);
   }
   .est-disp{ background:rgba(5,150,105,0.92);  color:#fff; }
-  .est-crec{ background:rgba(180,83,9,0.92);   color:#fff; }
+  /* 0.92 de opacidad dejaba el blanco en 4.37:1, justo por debajo de AA. Se
+     sube a opaco y se oscurece un punto: la pildora es una etiqueta de estado y
+     tiene que leerse tambien sobre una foto clara. */
+  .est-crec{ background:#9a4708; color:#fff; }
   .est-ago { background:rgba(13,17,23,0.72);   color:#fff; }
 
   .prod-cuerpo{ padding:15px 16px 16px; display:flex; flex-direction:column; gap:6px; flex:1; }

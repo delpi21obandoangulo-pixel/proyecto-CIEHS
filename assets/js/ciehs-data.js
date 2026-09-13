@@ -40,11 +40,43 @@
   var codigoAdmin = null;
   var fetchBase = (typeof global.fetch === 'function') ? global.fetch.bind(global) : null;
 
+  /* --------------------- caducidad por inactividad ------------------------
+     Los equipos del laboratorio son compartidos y los usa quien se sienta. La
+     sesion ya moria al cerrar la pestaña (storage: sessionStorage), pero una
+     pestaña abierta y desatendida dejaba el codigo activo indefinidamente:
+     cualquiera que pasara por delante podia borrar publicaciones.
+
+     Treinta minutos sin tocar nada y el codigo se olvida. No es un control
+     fuerte -quien tiene el equipo delante lo tiene delante-, pero cierra el
+     caso real de este sitio, que es el aula vacia entre clase y clase. */
+  var CADUCA_MS = 30 * 60 * 1000;
+  var ultimoUso = 0;
+
+  function codigoVigente() {
+    if (!codigoAdmin) return null;
+    if (Date.now() - ultimoUso > CADUCA_MS) { codigoAdmin = null; return null; }
+    return codigoAdmin;
+  }
+
+  ['click', 'keydown'].forEach(function (ev) {
+    global.addEventListener(ev, function () { if (codigoAdmin) ultimoUso = Date.now(); }, true);
+  });
+
+  // La cabecera solo viaja a la API del propio proyecto. El cliente de Supabase
+  // hoy no llama a ningun otro origen, pero adjuntarla a ciegas dejaba el
+  // secreto a merced de que manana lo hiciera: un fetch a un tercero se habria
+  // llevado el codigo de administracion dentro de una cabecera.
+  function esNuestraApi(input) {
+    var u = typeof input === 'string' ? input : (input && input.url) || '';
+    return u.indexOf(SUPABASE_URL) === 0;
+  }
+
   function fetchConCodigo(input, init) {
     init = init || {};
-    if (codigoAdmin) {
+    var codigo = codigoVigente();
+    if (codigo && esNuestraApi(input)) {
       var h = new Headers(init.headers || {});
-      h.set('X-CIEHS-Code', codigoAdmin);
+      h.set('X-CIEHS-Code', codigo);
       init.headers = h;
     }
     return fetchBase ? fetchBase(input, init) : fetch(input, init);
@@ -218,15 +250,17 @@
     return cliente.rpc('verificar_codigo', { p_codigo: codigo }).then(function (r) {
       if (r.error) throw r.error;
       if (r.data !== true) throw new Error('Código incorrecto.');
-      codigoAdmin = codigo;   // desde aquí, cada petición lleva X-CIEHS-Code
+      codigoAdmin = codigo;   // desde aquí, cada petición a la API lleva X-CIEHS-Code
+      ultimoUso = Date.now();
       return true;
     });
   };
 
-  CIEHSData.codigoActivo = function () { return !!codigoAdmin; };
+  CIEHSData.codigoActivo = function () { return !!codigoVigente(); };
 
   CIEHSData.salir = function () {
     codigoAdmin = null;
+    ultimoUso = 0;
     // Por si quedara una sesión autenticada del camino histórico.
     return cliente.auth.signOut().catch(function () {});
   };
@@ -807,6 +841,15 @@
   CIEHSData.guardarImagen = function (clave, ruta, alt) {
     if (!CLAVE_OK.test(String(clave || ''))) {
       return Promise.reject(new Error('Clave de imagen no válida: ' + clave));
+    }
+    // Solo rutas DENTRO del bucket. urlEvidencia() devuelve tal cual lo que
+    // parezca una URL absoluta, asi que sin esta comprobacion una escritura en
+    // ciehs.imagenes podria apuntar el mural a un servidor ajeno. La CSP lo
+    // bloquearia al pintarlo, pero entonces el sintoma seria una imagen rota
+    // sin explicacion; mejor rechazarlo donde todavia se entiende.
+    var r = String(ruta || '');
+    if (/^[a-z][a-z0-9+.-]*:/i.test(r) || r.indexOf('//') === 0) {
+      return Promise.reject(new Error('La imagen debe subirse al portal, no enlazarse desde fuera.'));
     }
     return cliente.from('imagenes')
       .upsert({ clave: clave, storage_path: ruta, alt: vacio(alt) }, { onConflict: 'clave' })

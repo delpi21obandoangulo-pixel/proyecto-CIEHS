@@ -3383,10 +3383,16 @@
     <div id="adminPinStep">
       <p class="eyebrow">Panel administrativo</p>
       <h3 class="u-margin-top-10px u-font-size-20px" id="adminModalTitle">Acceso restringido</h3>
-      <p class="u-margin-top-10px u-font-size-14px u-color-ink-soft">Escribe el código de administración del CIEHS para editar la portada, registrar lecturas de pH y CE y publicar avisos.</p>
+      <p class="u-margin-top-10px u-font-size-14px u-color-ink-soft">Escribe el código de administración del CIEHS. Con él se edita el portal sobre el propio portal, se registran lecturas de pH y CE y se publican avisos.</p>
+      <!-- Ya no lleva inputmode="numeric": ese teclado empujaba a elegir un PIN
+           de digitos, y un PIN corto es lo unico que hacia viable tantear el
+           codigo contra la cabecera, donde no cabe poner freno (ver la
+           cabecera de db/17_endurecimiento_acceso.sql). Ahora el codigo es
+           largo y alfanumerico; no hace falta memorizarlo porque vive en la
+           boveda local. -->
       <label class="form-field u-margin-top-14px">
         <span>Código de acceso</span>
-        <input type="password" id="adminCodigo" inputmode="numeric" autocomplete="off" placeholder="••••••••">
+        <input type="password" id="adminCodigo" autocomplete="off" spellcheck="false" autocapitalize="off" placeholder="••••••••••••">
       </label>
       <button type="button" class="btn btn-primary u-margin-top-16px u-width-100pct u-justify-content-center" id="adminPinSubmit">Ingresar</button>
       <p id="adminPinError" class="form-status error" hidden></p>
