@@ -4717,3 +4717,190 @@ html:not([data-js]) .hm-nav{ display:none !important; }
 .aviso-sinjs-btn:hover{ border-color:var(--sun-300); box-shadow:var(--shadow-2); }
 
 @media print{ .aviso-sinjs{ display:none !important; } }
+
+/* ==========================================================================
+   EDICION IN-PLACE (modo administrador)
+
+   Regla que gobierna todo este bloque: FUERA DEL MODO EDICION NO EXISTE. El
+   administrador debe ver el portal exactamente igual que un estudiante, asi
+   que ni un pixel de estos controles se pinta mientras body no lleve
+   .ciehs-editando. La unica excepcion es la palanca, que es la que permite
+   entrar.
+
+   Color: verde --leaf-500 para lo que guarda, --status-danger para lo que
+   borra, ambar --sun-300 para lo que revierte. Ninguno se confia solo al
+   color: todos los controles llevan texto o un aria-label explicito.
+   ========================================================================== */
+
+/* ----------------------------------------------------------- la palanca --- */
+.ed-palanca{
+  position:fixed; right:18px; bottom:18px; z-index:60;
+  display:inline-flex; align-items:center; gap:9px;
+  padding:11px 18px; border-radius:999px;
+  border:1px solid var(--line-strong);
+  background:rgba(255,255,255,0.86);
+  -webkit-backdrop-filter:blur(16px) saturate(160%);
+  backdrop-filter:blur(16px) saturate(160%);
+  color:var(--ink); font-family:inherit; font-size:13px; font-weight:600;
+  box-shadow:var(--shadow-2); cursor:pointer;
+  transition:transform .32s var(--ease-spring), box-shadow .3s var(--ease-out),
+             border-color .25s var(--ease-soft), background-color .25s var(--ease-soft);
+}
+.ed-palanca:hover{ transform:translateY(-2px); box-shadow:var(--shadow-3); }
+.ed-palanca:active{ transform:translateY(0) scale(.97); }
+.ed-palanca.is-on{ background:rgba(4,120,87,0.96); color:#fff; border-color:transparent; }
+.ed-palanca-dot{
+  width:9px; height:9px; border-radius:50%; flex:none;
+  background:var(--leaf-500); box-shadow:0 0 9px rgba(5,150,105,.55);
+}
+.ed-palanca.is-on .ed-palanca-dot{ background:#fff; box-shadow:0 0 9px rgba(255,255,255,.8); }
+@media (prefers-reduced-motion:no-preference){
+  .ed-palanca.is-on .ed-palanca-dot{ animation:livepulse-scale 2s infinite; }
+}
+/* En movil la palanca comparte esquina con el FAB de administracion: se sube
+   para que no se solapen. */
+@media (max-width:720px){ .ed-palanca{ bottom:84px; } }
+
+/* --------------------------------------------------- anuncios de accion --- */
+.ed-pregon{
+  position:fixed; left:50%; bottom:24px; z-index:70;
+  transform:translate(-50%, 14px);
+  margin:0; padding:11px 20px; border-radius:999px; max-width:min(92vw, 62ch);
+  background:rgba(13,17,23,0.93); color:#fff;
+  font-size:13px; line-height:1.5; text-align:center;
+  box-shadow:var(--shadow-3);
+  opacity:0; pointer-events:none;
+  transition:opacity .28s var(--ease-out), transform .32s var(--ease-spring);
+}
+.ed-pregon.is-visible{ opacity:1; transform:translate(-50%, 0); }
+.ed-pregon.is-error{ background:#7f1d1d; }
+
+/* ------------------------------------------------ señales sobre el texto --- */
+/* El contorno es discontinuo a proposito: dice que eso se puede tocar sin
+   parecer un campo de formulario ya abierto. */
+body.ciehs-editando .ed-texto{
+  outline:1px dashed rgba(5,150,105,0.45);
+  outline-offset:3px; border-radius:4px; cursor:text;
+  transition:outline-color .25s var(--ease-soft), background-color .25s var(--ease-soft);
+}
+body.ciehs-editando .ed-texto:hover,
+body.ciehs-editando .ed-texto:focus-visible{
+  outline-color:var(--leaf-500);
+  background:rgba(5,150,105,0.06);
+}
+body.ciehs-editando .ed-texto.is-editando{
+  outline:2px solid var(--leaf-500); background:rgba(5,150,105,0.05);
+}
+
+/* --------------------------------------------------------- barras y fichas - */
+.ed-barra{ display:none; }
+body.ciehs-editando .ed-barra{
+  display:inline-flex; align-items:center; gap:7px; flex-wrap:wrap;
+  margin-top:8px; padding:7px 9px; border-radius:var(--radius-s);
+  background:rgba(255,255,255,0.93);
+  -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+  border:1px solid var(--line-strong); box-shadow:var(--shadow-2);
+}
+body.ciehs-editando .ed-barra--img{
+  position:absolute; right:10px; bottom:10px; z-index:6; margin-top:0;
+}
+.ed-anclaje{ position:relative; }
+
+.ed-btn{
+  padding:6px 13px; border-radius:999px; cursor:pointer;
+  border:1px solid var(--line-strong); background:var(--surface); color:var(--ink);
+  font-family:inherit; font-size:12.5px; font-weight:600; line-height:1.3;
+  transition:transform .25s var(--ease-spring), box-shadow .25s var(--ease-out),
+             border-color .2s var(--ease-soft);
+}
+.ed-btn:hover:not(:disabled){ transform:translateY(-1px); box-shadow:var(--shadow-2); }
+.ed-btn:active:not(:disabled){ transform:scale(.96); }
+.ed-btn:disabled{ opacity:.55; cursor:progress; }
+.ed-btn--ok{ background:#047857; border-color:transparent; color:#fff; }
+.ed-btn--peligro{ background:var(--status-danger); border-color:transparent; color:#fff; }
+.ed-btn--sutil{ color:var(--sun-300); border-color:rgba(180,83,9,.34); }
+
+/* --------------------------------------------------------------- borrar --- */
+.ed-borrar, .ed-lapiz{ display:none; }
+body.ciehs-editando .ed-borrar,
+body.ciehs-editando .ed-lapiz{
+  display:inline-flex; align-items:center; justify-content:center;
+  position:absolute; top:8px; right:8px; z-index:6;
+  width:28px; height:28px; padding:0; border-radius:50%;
+  border:1px solid transparent; cursor:pointer;
+  font-size:15px; line-height:1; font-family:inherit;
+  box-shadow:var(--shadow-2);
+  transition:transform .28s var(--ease-spring), box-shadow .25s var(--ease-out);
+}
+body.ciehs-editando .ed-borrar{ background:var(--status-danger); color:#fff; }
+body.ciehs-editando .ed-lapiz{ background:#047857; color:#fff; right:40px; }
+body.ciehs-editando .ed-borrar:hover,
+body.ciehs-editando .ed-lapiz:hover{ transform:scale(1.12); box-shadow:var(--shadow-3); }
+body.ciehs-editando .ed-borrar:active,
+body.ciehs-editando .ed-lapiz:active{ transform:scale(.94); }
+/* Cuando una tarjeta solo lleva lapiz y no papelera, el lapiz ocupa la esquina. */
+body.ciehs-editando [data-modulo]:not([data-ciehs-tipo]) .ed-lapiz,
+body.ciehs-editando [data-arena-id]:not([data-ciehs-tipo]) .ed-lapiz{ right:8px; }
+
+.ed-borrado{
+  opacity:0; transform:scale(.94);
+  transition:opacity .2s var(--ease-soft), transform .22s var(--ease-soft);
+}
+
+/* ---------------------------------------------------------------- fichas --- */
+.ed-ficha{ display:none; }
+body.ciehs-editando .ed-ficha{
+  display:grid; gap:10px;
+  position:absolute; top:calc(100% + 8px); left:0; z-index:50;
+  width:min(300px, calc(100vw - 32px));
+  padding:15px 16px; border-radius:var(--radius-m);
+  background:rgba(255,255,255,0.97);
+  -webkit-backdrop-filter:blur(18px) saturate(160%);
+  backdrop-filter:blur(18px) saturate(160%);
+  border:1px solid var(--line-strong); box-shadow:var(--shadow-3);
+  text-align:left;
+}
+body.ciehs-editando .ed-ficha--ancha{ width:min(420px, calc(100vw - 32px)); }
+.ed-ficha-tit{
+  margin:0; font-family:var(--font-mono); font-size:11px; letter-spacing:.05em;
+  text-transform:uppercase; color:var(--leaf-300);
+}
+.ed-ficha label{ display:grid; gap:4px; }
+.ed-ficha label span{ font-size:11.5px; color:var(--ink-mute); }
+.ed-ficha input, .ed-ficha textarea{
+  width:100%; padding:8px 10px; border-radius:8px;
+  border:1px solid var(--line-strong); background:#fff; color:var(--ink);
+  font-family:inherit; font-size:13.5px; line-height:1.45;
+}
+.ed-ficha textarea{ resize:vertical; }
+.ed-ficha input:focus-visible, .ed-ficha textarea:focus-visible{
+  outline:2px solid var(--leaf-500); outline-offset:1px; border-color:var(--leaf-500);
+}
+.ed-ficha-pie{ display:flex; gap:8px; flex-wrap:wrap; margin-top:2px; }
+
+/* Una ficha anclada a una tarjeta del borde derecho se saldria de la pantalla;
+   por debajo de 560px se ancla por la derecha. */
+@media (max-width:560px){
+  body.ciehs-editando .ed-ficha{ left:auto; right:0; }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .ed-palanca, .ed-btn, .ed-borrar, .ed-lapiz, .ed-pregon, .ed-borrado{
+    transition-duration:.01ms !important; animation:none !important;
+  }
+  .ed-palanca:hover, .ed-btn:hover:not(:disabled),
+  .ed-borrar:hover, .ed-lapiz:hover{ transform:none; }
+}
+
+/* Nada de esto se imprime: es interfaz de trabajo, no contenido. */
+@media print{
+  .ed-palanca, .ed-pregon, .ed-barra, .ed-borrar, .ed-lapiz, .ed-ficha{
+    display:none !important;
+  }
+}
+/* Aviso dentro de la barra de edicion de texto. Ambar sobre papel claro
+   (--sun-300, 5.3:1): es una advertencia, no un error. */
+.ed-aviso{
+  font-size:11.5px; line-height:1.45; color:var(--sun-300);
+  max-width:34ch; font-weight:600;
+}

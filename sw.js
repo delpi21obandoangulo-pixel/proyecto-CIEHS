@@ -22,7 +22,7 @@
 // Al subir esta version se descartan todas las cachas anteriores. Se sube cada
 // vez que cambian el CSS, los iconos o el plano ambiental: si no, quien ya
 // visito el portal sigue viendo la version vieja.
-var VERSION = 'ciehs-v5';
+var VERSION = 'ciehs-v6';
 var SHELL = VERSION + '-shell';
 var MEDIA = VERSION + '-media';
 
@@ -41,6 +41,7 @@ var PRECARGA = [
   '/assets/js/ciehs-arena.js',
   '/assets/js/qrcode.js',
   '/assets/js/ciehs-app.js',
+  '/assets/js/ciehs-inline.js',
   '/assets/img/logo-ciehs.svg',
   // El isotipo es la marca del portal (cabecera y pie): sin el, sin red, la
   // cabecera queda sin marca. Sustituye al escudo de la I.E., que ya no se usa.

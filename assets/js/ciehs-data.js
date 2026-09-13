@@ -746,5 +746,112 @@
   };
   CIEHSData.eliminarComentario = function (id) { return eliminar('community_comments', 'id', id); };
 
+  /* ==================== CONTENIDO EDITABLE IN-PLACE ======================
+     Tres tablas nuevas (db/16_contenido_editable.sql) que sostienen la edicion
+     sobre la propia pagina: textos rotulados con data-edit, imagenes de hueco
+     fijo y correcciones a los retos de la arena.
+
+     Van en su PROPIA carga y no en cargarPortal(). El motivo es de despliegue:
+     si el DDL todavia no se ha aplicado, estas tres consultas fallan, y
+     metidas en la tanda principal tumbarian el portal entero al respaldo
+     estatico por una tabla que solo le importa al administrador. Aqui el fallo
+     se traga y el portal sigue igual: es exactamente la misma mejora
+     progresiva que con la red.
+     ===================================================================== */
+
+  function tolerante(promesa, cuandoFalle) {
+    return promesa.then(function (r) {
+      if (r.error) return cuandoFalle;
+      return r.data || cuandoFalle;
+    }).catch(function () { return cuandoFalle; });
+  }
+
+  CIEHSData.cargarEditable = function () {
+    return Promise.all([
+      tolerante(cliente.from('textos').select('clave, valor').order('clave', { ascending: true }), []),
+      tolerante(cliente.from('imagenes').select('clave, storage_path, alt'), []),
+      tolerante(cliente.from('arena_preguntas').select('id, payload, oculta'), [])
+    ]).then(function (r) {
+      var textos = {};
+      r[0].forEach(function (t) { textos[t.clave] = t.valor; });
+      var imagenes = {};
+      r[1].forEach(function (i) { imagenes[i.clave] = i; });
+      return { textos: textos, imagenes: imagenes, arena: r[2] };
+    });
+  };
+
+  // Clave y valor se validan tambien en el servidor (CHECK de forma y de
+  // longitud). Repetirlo aqui no es redundancia inutil: ahorra el viaje y da un
+  // mensaje en castellano en lugar de un 400 de PostgREST.
+  var CLAVE_OK = /^[a-z0-9][a-z0-9._-]{1,80}$/;
+
+  CIEHSData.guardarTexto = function (clave, valor) {
+    if (!CLAVE_OK.test(String(clave || ''))) {
+      return Promise.reject(new Error('Clave de texto no válida: ' + clave));
+    }
+    valor = String(valor == null ? '' : valor);
+    if (valor.length > 4000) {
+      return Promise.reject(new Error('El texto no puede pasar de 4000 caracteres.'));
+    }
+    return cliente.from('textos')
+      .upsert({ clave: clave, valor: valor }, { onConflict: 'clave' })
+      .select('clave, valor').maybeSingle()
+      .then(function (r) { if (r.error) throw r.error; return r.data; });
+  };
+
+  // Borrar la fila NO borra el texto de la pagina: lo devuelve al que trae el
+  // HTML. Es la forma de deshacer una edicion sin tener que recordar el
+  // original.
+  CIEHSData.borrarTexto = function (clave) { return eliminar('textos', 'clave', clave); };
+
+  CIEHSData.guardarImagen = function (clave, ruta, alt) {
+    if (!CLAVE_OK.test(String(clave || ''))) {
+      return Promise.reject(new Error('Clave de imagen no válida: ' + clave));
+    }
+    return cliente.from('imagenes')
+      .upsert({ clave: clave, storage_path: ruta, alt: vacio(alt) }, { onConflict: 'clave' })
+      .select('clave, storage_path, alt').maybeSingle()
+      .then(function (r) { if (r.error) throw r.error; return r.data; });
+  };
+
+  CIEHSData.borrarImagen = function (clave) { return eliminar('imagenes', 'clave', clave); };
+
+  CIEHSData.guardarArenaPregunta = function (id, payload, oculta) {
+    if (!/^[a-z0-9][a-z0-9._-]{1,60}$/.test(String(id || ''))) {
+      return Promise.reject(new Error('Identificador de reto no válido: ' + id));
+    }
+    return cliente.from('arena_preguntas')
+      .upsert({ id: id, payload: payload, oculta: !!oculta }, { onConflict: 'id' })
+      .select('id, payload, oculta').maybeSingle()
+      .then(function (r) { if (r.error) throw r.error; return r.data; });
+  };
+
+  CIEHSData.borrarArenaPregunta = function (id) { return eliminar('arena_preguntas', 'id', id); };
+
+  // Distribucion de modulos: se edita contra ciehs.modules, que ya existia. Se
+  // identifica por `code` y no por `id` porque el codigo es lo que el
+  // administrador ve en pantalla y lo que esta impreso en los QR del
+  // laboratorio.
+  var COLS_MODULO = 'id, code, name, system, crop, ph_min, ph_max, ce_min, ce_max, ' +
+                    'status, position, published';
+
+  CIEHSData.guardarModulo = function (m) {
+    var fila = {};
+    if (m.crop   !== undefined) fila.crop   = vacio(m.crop);
+    if (m.name   !== undefined) fila.name   = vacio(m.name);
+    if (m.phMin  !== undefined) fila.ph_min = m.phMin === '' ? null : Number(m.phMin);
+    if (m.phMax  !== undefined) fila.ph_max = m.phMax === '' ? null : Number(m.phMax);
+    if (m.ceMin  !== undefined) fila.ce_min = m.ceMin === '' ? null : Number(m.ceMin);
+    if (m.ceMax  !== undefined) fila.ce_max = m.ceMax === '' ? null : Number(m.ceMax);
+    if (m.status !== undefined) fila.status = m.status;
+    if (m.published !== undefined) fila.published = !!m.published;
+    if (!Object.keys(fila).length) return Promise.resolve(null);
+    return cliente.from('modules').update(fila).eq('code', m.code)
+      .select(COLS_MODULO).maybeSingle()
+      .then(function (r) { if (r.error) throw r.error; return r.data; });
+  };
+
+  CIEHSData.listarModulos = function () { return listar('modules', COLS_MODULO, 'position'); };
+
   global.CIEHSData = CIEHSData;
 })(window);

@@ -21,6 +21,37 @@
   'use strict';
 
   var BANCO = global.CIEHS_ARENA;
+
+  /* ------------------ correcciones publicadas desde el portal --------------
+     El banco de retos vive en el codigo (ciehs-arena-preguntas.js) y ahi sigue:
+     es lo que permite jugar sin conexion, que en el laboratorio pasa a menudo.
+     Lo que la coordinacion corrige desde la edicion in-place se guarda aparte,
+     en ciehs.arena_preguntas, y llega por window.CIEHS.arenaCorrecciones.
+
+     Se funden AQUI, al construir cada ronda, y no mutando el banco: si se
+     escribiera encima del banco, restaurar una correccion obligaria a recargar
+     la pagina, y una correccion mal guardada quedaria pegada a la sesion.
+
+     Solo se aceptan claves conocidas y de tipo texto. Un payload no puede, por
+     ejemplo, cambiar `correcta` ni reescribir `ops`: eso convertiria una
+     escritura en la base en la capacidad de dejar un reto sin respuesta valida,
+     y para rehacer un reto esta el codigo. */
+  var CAMPOS_CORREGIBLES = ['q', 'exp'];
+
+  function conCorrecciones(reto){
+    var lista = (global.CIEHS && global.CIEHS.arenaCorrecciones) || [];
+    if(!lista.length) return reto;
+    var c = null;
+    for(var i = 0; i < lista.length; i++){ if(lista[i] && lista[i].id === reto.id){ c = lista[i]; break; } }
+    if(!c || !c.payload) return reto;
+    var copia = {};
+    for(var k in reto){ if(Object.prototype.hasOwnProperty.call(reto, k)) copia[k] = reto[k]; }
+    CAMPOS_CORREGIBLES.forEach(function(campo){
+      var v = c.payload[campo];
+      if(typeof v === 'string' && v.trim()) copia[campo] = v.trim();
+    });
+    return copia;
+  }
   if (!BANCO) return;
 
   var CLAVE = 'ciehs_arena_v1';
@@ -776,7 +807,7 @@
     var cuantos = esExp ? RETOS_EXPEDICION : RETOS_POR_PARTIDA;
     partida = {
       nivel: nivel, def: def, expedicion: esExp,
-      retos: barajar(banco).slice(0, Math.min(cuantos, banco.length)),
+      retos: barajar(banco).slice(0, Math.min(cuantos, banco.length)).map(conCorrecciones),
       i: 0, puntos: 0, racha: 0, mejorRacha: 0,
       vidas: esExp ? VIDAS_EXPEDICION : VIDAS,
       vidasMax: esExp ? VIDAS_EXPEDICION : VIDAS,
@@ -934,7 +965,11 @@
 
     capa.innerHTML =
       cabecera
-      + '<div class="ar-reto">'
+      // data-arena-*: lo que la edicion in-place necesita para ofrecer el lapiz
+      // de correccion sobre el reto que se esta viendo.
+      + '<div class="ar-reto" data-arena-id="' + esc(r.id) + '"'
+      +   ' data-arena-q="' + esc(r.q || '') + '"'
+      +   ' data-arena-exp="' + esc(r.exp || '') + '">'
       +   meta
       +   '<div class="ar-crono"><span class="ar-crono-barra" id="arCronoBarra"></span>'
       +     '<span class="ar-crono-num" id="arCronoNum">' + segundos + '</span></div>'

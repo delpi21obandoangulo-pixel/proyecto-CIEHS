@@ -944,6 +944,46 @@
     if(window.CIEHS && window.CIEHS.dibujarBarras) window.CIEHS.dibujarBarras();
   }
 
+  /* ------------------- la lista de los quince modulos ------------------
+     El HTML ya trae los quince chips: es el respaldo si no hay red y es lo
+     que ve un buscador. Cuando la base responde se repintan desde ella, y con
+     eso lo que el administrador edita in-place (cultivo y rangos, contra
+     ciehs.modules) aparece de verdad en la pagina en lugar de quedarse en la
+     base sin reflejo.
+
+     Si la base devuelve una lista vacia NO se pinta nada: se conserva el
+     respaldo estatico. Vaciar la seccion porque una consulta volvio corta
+     seria cambiar un dato desactualizado por ninguno. */
+  function pintarModulosLista(modulos){
+    var cont = el('modulosLista');
+    if(!cont || !modulos || !modulos.length) return;
+    var activos = modulos.filter(function(m){ return m.code && m.code.indexOf('PROY-') !== 0; });
+    if(!activos.length) return;
+
+    cont.innerHTML = activos.map(function(m){
+      // "Botella" no es otro sistema sino otro contenedor, y la base lo dice en
+      // notes; se detecta ahi para no inventar una columna nueva.
+      var botella = /botella/i.test(m.notes || '') || /botella/i.test(m.name || '');
+      var rango = (m.ph_min != null && m.ph_max != null)
+        ? 'pH ' + dec1(m.ph_min) + '–' + dec1(m.ph_max)
+            + ((m.ce_min != null && m.ce_max != null)
+                ? ' · CE ' + dec1(m.ce_min) + '–' + dec1(m.ce_max) : '')
+        : 'Sin rango registrado';
+      return '<div class="modulo-chip' + (botella ? ' es-botella' : '') + '"'
+        + ' data-modulo="' + esc(m.code) + '"'
+        + ' data-cultivo="' + esc(m.crop || '') + '"'
+        + ' data-phmin="' + esc(m.ph_min == null ? '' : m.ph_min) + '"'
+        + ' data-phmax="' + esc(m.ph_max == null ? '' : m.ph_max) + '"'
+        + ' data-cemin="' + esc(m.ce_min == null ? '' : m.ce_min) + '"'
+        + ' data-cemax="' + esc(m.ce_max == null ? '' : m.ce_max) + '">'
+        + '<span class="mono">' + esc(m.code) + '</span>'
+        + '<b data-modulo-cultivo>' + esc(m.crop || m.name) + '</b>'
+        + (botella ? '<span class="modulo-forma">botella</span>' : '')
+        + '<span class="rango mono" data-modulo-rango>' + esc(rango) + '</span>'
+        + '</div>';
+    }).join('');
+  }
+
   /* --------------------------- telemetria ---------------------------- */
 
   function fuera(valor, min, max){
@@ -1320,6 +1360,7 @@
       res.modulos.forEach(function(m){ modulosPorId[m.id] = m; });
       pintarConfig(res.config);
       pintarRangosPh(res.modulos);
+      pintarModulosLista(res.modulos);
       pintarQR(res.qr);
       pintarInvestigaciones(res.investigaciones);
       pintarTelemetria();
@@ -1429,7 +1470,8 @@
       var media = mediaHref
         ? '<a class="carpeta-link" href="' + esc(mediaHref) + '" target="_blank" rel="noopener noreferrer">Ver el archivo adjunto</a>'
         : '';
-      return '<article class="card carpeta-card" data-kind="' + esc(f.kind) + '">'
+      return '<article class="card carpeta-card" data-kind="' + esc(f.kind) + '"'
+        + ' data-ciehs-tipo="nota" data-ciehs-id="' + esc(f.code) + '">'
         + '<div class="top-row"><span class="code mono">' + esc(f.code) + '</span>'
         + '<span class="chip">' + esc(ETIQUETA_TIPO[f.kind] || f.kind) + '</span></div>'
         + '<h3>' + esc(f.title) + '</h3>'
@@ -1525,7 +1567,7 @@
       var cosecha = f.harvest_on
         ? fmtDia(f.harvest_on) + (f.harvest_kg ? ' · ' + num(f.harvest_kg, 2) + ' kg' : '')
         : '—';
-      return '<tr>'
+      return '<tr data-ciehs-tipo="lote" data-ciehs-id="' + esc(f.lote) + '">'
         + '<td class="mono">' + esc(f.lote) + '</td>'
         + '<td>' + esc(f.crop) + (f.scientific ? '<br><em class="bit-cientifico">' + esc(f.scientific) + '</em>' : '') + '</td>'
         + '<td class="mono">' + esc(f.module_code || '—') + '</td>'
@@ -1599,7 +1641,8 @@
     if(resGrid){
       resGrid.innerHTML = filas.map(function(r){
         return '<article class="card res-card" data-nivel="' + esc(r.level || 'todos') + '"'
-          + ' data-area="' + esc(r.area || '') + '" data-tipo="' + esc(r.kind || '') + '">'
+          + ' data-area="' + esc(r.area || '') + '" data-tipo="' + esc(r.kind || '') + '"'
+          + ' data-ciehs-tipo="recurso" data-ciehs-id="' + esc(r.id) + '">'
           + '<div class="top-row"><span class="chip">' + esc(r.kind || 'Recurso') + '</span></div>'
           + '<h3>' + esc(r.title) + '</h3>'
           + (r.description ? '<p>' + esc(r.description) + '</p>' : '')
@@ -1657,7 +1700,10 @@
       var carga = i === 0
         ? ' decoding="async" fetchpriority="high"'
         : ' loading="lazy" decoding="async"';
-      return '<li class="galeria-lam' + (i === 0 ? ' is-activa' : '') + '">'
+      // data-ciehs-*: es lo unico que hace falta para que la edicion in-place
+      // ponga aqui su boton de borrar. Ver assets/js/ciehs-inline.js.
+      return '<li class="galeria-lam' + (i === 0 ? ' is-activa' : '') + '"'
+        + ' data-ciehs-tipo="evidencia" data-ruta="' + esc(f.storage_path) + '">'
         + '<img src="' + esc(url) + '"' + dim + carga + ' alt="' + esc(f.alt || f.title) + '">'
         + '<div class="galeria-pie">'
         +   (f.eyebrow ? '<p class="eyebrow">' + esc(f.eyebrow) + '</p>' : '')
@@ -1697,7 +1743,7 @@
     }
     Estado.en(comentariosEstado, null);
     comentariosLista.innerHTML = filas.map(function(c){
-      return '<article class="comentario">'
+      return '<article class="comentario" data-ciehs-tipo="comentario" data-ciehs-id="' + esc(c.id) + '">'
         + '<div class="comentario-head">'
         +   '<b>' + esc(c.display_name) + '</b>'
         +   '<span class="chip">' + esc(ROL_ETIQUETA[c.role] || 'Visitante') + '</span>'
@@ -4437,7 +4483,8 @@
     elPubs.innerHTML = '<h4 class="aporte-pub-titulo">Aportes publicados</h4>'
       + '<ul class="aporte-lista">' + filas.map(function(a){
       var quien = [a.equipo, a.grado].filter(Boolean).join(' · ');
-      return '<li class="aporte-item" data-ruta="' + esc(a.storage_path) + '">'
+      return '<li class="aporte-item" data-ruta="' + esc(a.storage_path) + '"'
+        + ' data-ciehs-tipo="aporte" data-ciehs-id="' + esc(a.id) + '">'
         + '<span class="aporte-ico" aria-hidden="true">' + (ICONO[a.kind] || ICONO.otro) + '</span>'
         + '<div class="aporte-txt">'
         +   '<b>' + esc(a.title) + '</b>'
@@ -4903,7 +4950,8 @@
       var enCesta = cesta.filter(function(c){ return c.id === p.id; })[0];
       var puede = p.estado === 'disponible';
 
-      return '<article class="prod' + (puede ? '' : ' is-off') + '" data-prod="' + esc(p.id) + '">'
+      return '<article class="prod' + (puede ? '' : ' is-off') + '" data-prod="' + esc(p.id) + '"'
+        + ' data-ciehs-tipo="producto" data-ciehs-id="' + esc(p.id) + '">'
         + '<div class="prod-foto">'
         +   (foto
               ? '<img src="' + esc(foto) + '" alt="' + esc(p.nombre) + ' cultivada en el CIEHS" loading="lazy" decoding="async">'
