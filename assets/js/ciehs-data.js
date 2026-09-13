@@ -66,8 +66,15 @@
   // hoy no llama a ningun otro origen, pero adjuntarla a ciegas dejaba el
   // secreto a merced de que manana lo hiciera: un fetch a un tercero se habria
   // llevado el codigo de administracion dentro de una cabecera.
+  // fetch() admite cadena, Request y URL. Leer solo .url dejaba fuera el caso
+  // URL, y quedarse sin cabecera no falla de forma visible: falla como un 401
+  // al guardar, que es el peor sintoma posible porque parece un codigo malo.
   function esNuestraApi(input) {
-    var u = typeof input === 'string' ? input : (input && input.url) || '';
+    var u = '';
+    if (typeof input === 'string') u = input;
+    else if (input && typeof input.url === 'string') u = input.url;       // Request
+    else if (input && typeof input.href === 'string') u = input.href;     // URL
+    else if (input) u = String(input);
     return u.indexOf(SUPABASE_URL) === 0;
   }
 

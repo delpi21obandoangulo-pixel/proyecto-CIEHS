@@ -249,6 +249,16 @@
         nodo.classList.remove('is-editando');
         nodo.setAttribute('role', 'button');
         if (barra.parentNode) barra.parentNode.removeChild(barra);
+        // Quitar los atajos es obligatorio, no higiene. Cada apertura añadia
+        // los suyos, con SU copia de `antes` y SUS botones ya desprendidos del
+        // documento: tras guardar y volver a abrir, un Escape devolvia el texto
+        // a un valor de dos ediciones atras.
+        nodo.removeEventListener('keydown', atajos);
+      }
+
+      function atajos(ev) {
+        if (ev.key === 'Escape') { ev.preventDefault(); cancelar.click(); }
+        if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) { ev.preventDefault(); guardar.click(); }
       }
 
       guardar.addEventListener('click', function () {
@@ -283,11 +293,8 @@
       });
 
       // Escape cancela, Ctrl/Cmd+Enter guarda: lo que espera cualquiera que
-      // haya editado algo alguna vez.
-      nodo.addEventListener('keydown', function esc(ev) {
-        if (ev.key === 'Escape') { ev.preventDefault(); cancelar.click(); nodo.removeEventListener('keydown', esc); }
-        if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) { ev.preventDefault(); guardar.click(); }
-      });
+      // haya editado algo alguna vez. Se retiran en cerrar().
+      nodo.addEventListener('keydown', atajos);
     }
 
     // Pegado siempre en plano, tambien donde plaintext-only no exista.
@@ -611,6 +618,8 @@
           estado.arena = estado.arena.filter(function (a) { return a.id !== id; });
           publicarArena();
           ficha.remove();
+          // El reto original vuelve en la siguiente ronda; el atributo se deja
+          // como esta porque este nodo desaparece al pasar de reto.
           anunciar('Reto devuelto a su versión original.');
         }).catch(function (e) {
           quitar.disabled = false;
@@ -628,6 +637,11 @@
           estado.arena = estado.arena.filter(function (a) { return a.id !== id; });
           estado.arena.push(fila);
           publicarArena();
+          // Los atributos son la fuente de la que se rellena esta ficha. Sin
+          // refrescarlos, reabrir el lapiz mostraba el enunciado viejo y daba
+          // la impresion de que el guardado no habia funcionado.
+          nodo.setAttribute('data-arena-q', payload.q);
+          nodo.setAttribute('data-arena-exp', payload.exp);
           ficha.remove();
           anunciar('Reto corregido.');
         }).catch(function (er) {
@@ -741,9 +755,18 @@
     // acoplarlos, se comprueba al volver el foco y tras cada clic en el modal:
     // barato, y sin que este archivo tenga que conocer al panel.
     doc.addEventListener('click', function (ev) {
-      if (ev.target.closest && ev.target.closest('#adminModal')) {
-        global.setTimeout(revisarSesion, 400);
-      }
+      if (!ev.target.closest || !ev.target.closest('#adminModal')) return;
+      // Entrar con codigo implica una ida y vuelta a la base y luego un
+      // refresco del portal. Un unico sondeo a los 400 ms acertaba con buena
+      // conexion y fallaba justo donde importa, que es la del laboratorio: la
+      // palanca no aparecia hasta el siguiente clic. Se sondea unas cuantas
+      // veces y se para en cuanto hay codigo.
+      var intentos = 0;
+      var t = global.setInterval(function () {
+        intentos++;
+        revisarSesion();
+        if (esAdminAhora() || intentos >= 10) global.clearInterval(t);
+      }, 400);
     });
     global.addEventListener('focus', revisarSesion);
   }

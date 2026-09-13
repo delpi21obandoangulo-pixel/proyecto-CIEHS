@@ -4866,7 +4866,10 @@ body.ciehs-editando [data-arena-id]:not([data-ciehs-tipo]) .ed-lapiz{ right:8px;
 .ed-ficha{ display:none; }
 body.ciehs-editando .ed-ficha{
   display:grid; gap:10px;
-  position:absolute; top:calc(100% + 8px); left:0; z-index:50;
+  /* Por encima de la palanca (60). En movil la palanca vive en la misma esquina
+     y, con un z-index menor, se plantaba encima de los campos de la ficha justo
+     mientras se escribe en ellos. */
+  position:absolute; top:calc(100% + 8px); left:0; z-index:62;
   width:min(300px, calc(100vw - 32px));
   padding:15px 16px; border-radius:var(--radius-m);
   background:rgba(255,255,255,0.97);

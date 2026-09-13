@@ -78,9 +78,13 @@ create table if not exists ciehs.imagenes (
 create table if not exists ciehs.arena_preguntas (
   id          text primary key
               constraint arena_id_forma check (id ~ '^[a-z0-9][a-z0-9._-]{1,60}$'),
+  -- El tamaño se mide sobre la representacion textual y NO con
+  -- pg_column_size(): esa esta declarada STABLE, y Postgres solo admite
+  -- funciones IMMUTABLE dentro de un CHECK, asi que la tabla ni se habria
+  -- creado. jsonb_out y length si lo son.
   payload     jsonb not null
               constraint arena_payload_objeto check (jsonb_typeof(payload) = 'object')
-              constraint arena_payload_largo  check (pg_column_size(payload) <= 8000),
+              constraint arena_payload_largo  check (char_length(payload::text) <= 8000),
   oculta      boolean not null default false,
   actualizado timestamptz not null default now()
 );
