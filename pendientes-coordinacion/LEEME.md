@@ -19,7 +19,7 @@ en la nota de la que salió.
 
 | # | Tarea | Por qué no puede hacerse desde el código | Qué desbloquea |
 |---|---|---|---|
-| [[pendientes-coordinacion/08-rotar-codigo-de-acceso\|08]] | 🔴 **Rotar el código de acceso al panel** | Hay que elegir el código nuevo y dónde se guarda | Cerrar un acceso de administración que estuvo publicado en GitHub |
+| ~~[[pendientes-coordinacion/08-rotar-codigo-de-acceso\|08]]~~ | ~~Rotar el código de acceso al panel~~ · **CERRADO el 2026-09-13** | — | Hecho: código nuevo de 140 bits activo y verificado; el publicado en GitHub ya no abre nada |
 | ~~[[pendientes-coordinacion/01-mural-panel-que-buscamos\|01]]~~ | ~~Repintar el panel del mural~~ · **CERRADO el 2026-09-10** | — | Hecho: la coordinación entregó un mural nuevo con el texto corregido. Queda repintar el mural **físico** de la pared |
 | [[pendientes-coordinacion/02-autorizacion-de-imagen\|02]] | **Autorización de imagen**: revisión de Dirección, confirmar custodia, distribuir | Decisión institucional y firmas en papel | Publicar rostros sin tapar, y que `consent_ref` apunte a algo real |
 | [[pendientes-coordinacion/03-vercel-github-app\|03]] | **Instalar la Vercel GitHub App** | Flujo OAuth en tu navegador con tu sesión | Despliegue automático por push |
@@ -32,20 +32,19 @@ en la nota de la que salió.
 
 ## Si solo puedes hacer una
 
-**La 08, y hoy.** El código de administración estuvo escrito en claro en un
-repositorio público. Mientras no se rote, cualquiera que lo haya leído sigue
-teniendo acceso de escritura a todo. Las demás pueden esperar; esta no.
-
-## Después de esa
-
-**La 02.** No porque sea la más urgente en apariencia, sino porque es la única
-con consecuencia legal: mientras la custodia no esté confirmada, el campo
-`consent_ref` no tiene destino verificable y no debería publicarse ninguna
-fotografía con rostro sin tapar.
+**La 02.** Es la única con consecuencia legal: mientras la custodia de las
+autorizaciones no esté confirmada, el campo `consent_ref` no tiene destino
+verificable y no debería publicarse ninguna fotografía con rostro sin tapar.
 
 La buena noticia es que el portal **pixela las caras por defecto**, así que el
-proyecto puede seguir publicando su trabajo sin esperar a nada. La 02 solo
-abre la puerta de las caras visibles, que hoy no hace falta.
+proyecto puede seguir publicando su trabajo sin esperar a nada. La 02 solo abre
+la puerta de las caras visibles, que hoy no hace falta.
+
+> [!success] La 08 ya no está en esta lista
+> Era la que ocupaba este sitio: el código de administración estuvo publicado
+> en un repositorio público. **Rotado y verificado el 2026-09-13** — el código
+> viejo ya no valida ni escribe. Sigue en el historial de git, porque git no
+> olvida, pero es un dato muerto.
 
 ## Si tienes cinco minutos
 

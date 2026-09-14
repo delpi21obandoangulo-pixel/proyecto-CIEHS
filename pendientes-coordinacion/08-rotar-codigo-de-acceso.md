@@ -1,53 +1,37 @@
 ---
-title: 8 · Rotar el código de acceso al panel — URGENTE
-tags: [ciehs, pendiente-coordinacion, seguridad, credenciales, urgente]
-depende-de: decidir el código nuevo y dónde se guarda
+title: 8 · Rotar el código de acceso al panel — CERRADO
+tags: [ciehs, pendiente-coordinacion, seguridad, credenciales, cerrado]
+depende-de: nada — resuelto el 2026-09-13
 actualizado: 2026-09-13
+estado: cerrado
 ---
 
 # 8 · Rotar el código de acceso al panel
 
-> [!tip] 2026-09-13 · El código nuevo ya está generado
-> Está en la bóveda (`.bovedaciehs-codigo-accesoalor-codigo.txt`): **24
-> caracteres, 140 bits de entropía**, generado con `crypto.randomBytes`. La
-> `FICHA.md` de esa carpeta lleva **la sentencia SQL exacta** para aplicarlo,
-> con el hash ya calculado — así el código en claro no pasa por el historial del
-> SQL Editor.
+> [!success] CERRADO el 2026-09-13 — rotado y verificado
+> El código nuevo está **activo en la base**: 24 caracteres y 140 bits de
+> entropía, generado con `crypto.randomBytes`. Vive sólo en la bóveda local,
+> en `.boveda\ciehs-codigo-acceso\valor-codigo.txt`.
 >
-> **Mientras no se ejecute esa sentencia, el código viejo sigue siendo válido.**
+> Comprobado contra la API real, no supuesto:
+>
+> | | |
+> |---|---|
+> | `verificar_codigo()` con el nuevo | `true` |
+> | `verificar_codigo()` con el viejo | `false` |
+> | Escritura real con el nuevo | **201** |
+> | La misma sin cabecera, y con el viejo | **401** |
+>
+> **El código que quedó publicado en el historial de GitHub ya no abre nada.**
+> Sigue ahí —git no olvida— pero es un dato muerto.
 
-> [!danger] Confirmado el 2026-09-13: **aún sin rotar en la base**
-> Comprobado con `git log -S` sobre el repositorio: **el código que hoy está**
-> **en uso es exactamente el que se publicó**, y aparece en el historial en los
-> commits `ed46c57` y `e6ec83d`. Han pasado tres días desde que se escribió
-> este aviso y el código no ha cambiado.
->
-> Ese mismo día se escribió además en una conversación de chat, para poder
-> probar el guardado real contra `ciehs.textos`. Es un segundo camino de
-> exposición, independiente del primero.
->
-> La ficha está preparada en la bóveda: `.boveda\ciehs-codigo-acceso\FICHA.md`.
-> Sólo falta generar el código nuevo, aplicarlo y pegar el valor.
-
-> [!check] Lo que sí se hizo el 2026-09-13
-> `db/17_endurecimiento_acceso.sql` **ya está aplicada** (hasta ese día estaba
-> en el repositorio pero no en la base). Pone un freno de **10 intentos
-> fallidos cada 15 minutos**, que contra fuerza bruta basta y sobra: 10⁸
-> combinaciones a 960 intentos diarios son siglos.
->
-> **Pero aquí no hay que adivinar nada.** El código está escrito en un
-> repositorio público; el freno no protege de leer. La rotación sigue siendo
-> la única corrección real.
-
-> [!danger] El código de administración está publicado en internet
-> Hasta el 2026-09-10, el archivo `db/10_acceso_codigo.sql` contenía el código
-> **en claro**. Ese archivo está en un repositorio **público** de GitHub y se
-> descarga sin cuenta.
->
-> Cualquiera que lo leyera obtiene **acceso de administración completo** al
-> esquema `ciehs`: basta con enviar la cabecera `X-CIEHS-Code` con ese valor en
-> cualquier petición a la API. Publicar, despublicar, borrar evidencias,
-> cambiar la portada, tocar la caja — todo.
+> [!note] Por qué costó tres días
+> El aviso se escribió el 2026-09-10 y la rotación no se hizo hasta el 13. En
+> el primer intento la sentencia no llegó a aplicarse —el código viejo seguía
+> validando— y hizo falta comprobarlo para darse cuenta. La lección es la de
+> siempre: **una rotación no está hecha hasta que se verifica que la vieja
+> credencial dejó de funcionar.** Dar por buena la ejecución habría dejado la
+> puerta abierta creyéndola cerrada.
 
 ---
 

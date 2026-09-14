@@ -13,12 +13,18 @@ textos, fichas con lápiz y papelera, cajón de formularios, fondo del hero). To
 lo de aquí está **medido**: escrituras reales contra la base, tabulaciones reales
 en el navegador, contrastes calculados sobre los colores que de verdad se pintan.
 
-> [!danger] Lo único grave no es de código
-> **El código de administración sigue siendo el que se publicó en GitHub.**
-> Verificado con `git log -S`: aparece en `ed46c57` y `e6ec83d`, y el repositorio
-> es público. Además el 2026-09-13 se escribió en una conversación de chat.
-> Ficha y procedimiento en `.boveda\ciehs-codigo-acceso\FICHA.md`; detalle en
-> `pendientes-coordinacion/08-rotar-codigo-de-acceso.md`. **Rotarlo es lo primero.**
+> [!success] Lo único grave era el código de administración, y ya está rotado
+> Estaba publicado en el historial de este repositorio (`ed46c57`, `e6ec83d`),
+> que es público. **Rotado y verificado el 2026-09-13**: código nuevo de 24
+> caracteres y 140 bits, sólo en la bóveda local.
+>
+> Comprobado contra la API: el nuevo valida y escribe (201); el viejo no valida
+> (`false`) y no escribe (401). El código publicado sigue en el historial —git
+> no olvida— pero es un dato muerto.
+>
+> Hizo falta un segundo intento: la primera ejecución de la sentencia no llegó a
+> aplicarse y sólo se supo al verificar. **Una rotación no está hecha hasta que
+> se comprueba que la credencial vieja dejó de funcionar.**
 
 ---
 
@@ -164,7 +170,7 @@ auditoría**: `.ed-alta` y `.ed-cajon-panel` faltaban en el bloque `reduce`.
 
 | | Qué | Quién |
 |---|---|---|
-| 🔴 | **Rotar el código de administración.** Publicado en GitHub y en un chat | coordinación |
+| ✅ | ~~Rotar el código de administración~~ · hecho y verificado el 2026-09-13 | — |
 | 🟡 | **577 paradas de tabulación** en modo edición. Es esperable —todo es editable— pero recorrer el portal con teclado se hace largo. Valorar un «saltar los editables» | pendiente de decidir |
 | 🟡 | Los **recursos destacados** llevan el rotulado pero `ciehs.resources` está vacía: no se pudo probar en vivo | comprobar al cargar el primero |
 | 🟢 | Repintar el **mural físico** de la pared, y su errata «disponibilidad» → «disposición» | coordinación |
