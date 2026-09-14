@@ -266,9 +266,20 @@ ciehs.olaya@gmail.com.
 
 Cualquier persona puede pedir que se retire algo escribiendo al correo del
 CIEHS. **No se exige justificar la decisión ni aportar documentación**: el
-contenido se retira mientras se revisa. Es deliberado — poner trámites delante
+contenido se retira **en un plazo máximo de 72 horas** desde que se recibe el
+aviso, y se revisa después, no antes. Es deliberado — poner trámites delante
 de una familia que quiere proteger a su hijo convierte el derecho en un
 obstáculo.
+
+> [!note] El plazo se añadió el 2026-09-13
+> Antes decía solo «se retira mientras se revisa», que no dice cuándo y por
+> tanto no es exigible. **72 horas es el techo, no el objetivo**: lo normal es
+> el mismo día. Se compromete el techo porque es lo que una familia puede
+> reclamar.
+>
+> La misma frase del portal se contradecía: pedía indicar «qué contenido es y
+> **por qué**» y dos líneas después prometía que no hace falta justificar. Se
+> quitó el «por qué»: la promesa que manda es la segunda.
 
 ---
 
