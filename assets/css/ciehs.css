@@ -4907,6 +4907,47 @@ body.ciehs-admin:not(.ciehs-editando) .ed-admin-pista{ display:none; }
 .ed-pregon.is-visible{ opacity:1; transform:translate(-50%, 0); }
 .ed-pregon.is-error{ background:#7f1d1d; }
 
+/* ==========================================================================
+   AUTORIZACIONES DE IMAGEN (panel de moderacion)
+
+   El campo del codigo va al lado del boton de aprobar a proposito: el codigo
+   y la aprobacion son el mismo gesto, y separarlos invita a aprobar primero
+   y «ya pondre el respaldo luego».
+   ========================================================================== */
+.aut-bloque{ margin-top:26px; padding-top:18px; border-top:1px solid var(--line); }
+.aut-alta{ display:flex; gap:10px; align-items:end; flex-wrap:wrap; margin-top:12px; }
+.aut-campo{ display:grid; gap:4px; }
+.aut-campo--ancho{ flex:1 1 220px; }
+.aut-campo span{
+  font-family:var(--font-mono); font-size:10.5px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink-mute);
+}
+.aut-campo input{
+  padding:9px 11px; border-radius:var(--radius-s); font-size:13.5px;
+  border:1px solid var(--line-strong); background:var(--surface);
+  color:var(--ink); font-family:inherit; width:100%;
+}
+#autCodigo{ font-family:var(--font-mono); text-transform:uppercase; width:150px; }
+
+.apo-consent{
+  width:132px; padding:7px 9px; border-radius:var(--radius-s);
+  border:1px dashed var(--line-strong); background:var(--surface);
+  color:var(--ink); font-family:var(--font-mono); font-size:12px;
+  text-transform:uppercase;
+}
+.apo-consent:focus{ border-style:solid; border-color:var(--leaf-500); outline:none; }
+
+/* El resumen de la firma en la fila de moderacion. */
+.apo-firma{ font-size:12.5px; color:var(--ink-soft); }
+/* Un nombre con pinta de llevar apellidos y sin autorizacion detras. No
+   bloquea nada: llama la atencion de quien decide. */
+.apo-firma--ojo{ color:var(--status-danger); font-weight:600; }
+
+@media (max-width:620px){
+  .apo-consent{ width:100%; }
+  #autCodigo{ width:100%; }
+}
+
 /* ============================ EL BLOQUE ABIERTO ==========================
    Todo lo que marca contenido editable cuelga de .ed-bloque--abierto, nunca
    de body.ciehs-editando a secas. Es la diferencia entre administrar un

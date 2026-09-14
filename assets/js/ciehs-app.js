@@ -2912,10 +2912,134 @@
     return b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
   }
 
+  /* Que el coordinador VEA la firma antes de aprobar es la mitad del control.
+     La base garantiza que un codigo existe y esta vigente, pero no puede saber
+     si «Maria Quispe Torres» es un nombre de pila o lleva los apellidos. Eso lo
+     ve una persona, y para verlo hay que enseñarselo. */
+  function firmaResumen(a){
+    var nom = (a.autor_nombre || '').trim();
+    if(!nom && !a.consent_ref) return '';
+    var partes = [];
+    if(nom) partes.push('Firma: ' + esc(nom) + (a.autor_inicial ? ' ' + esc(a.autor_inicial) + '.' : ''));
+    var colabs = Array.isArray(a.colaboradores) ? a.colaboradores.length : 0;
+    if(colabs) partes.push(colabs === 1 ? '1 colaborador' : colabs + ' colaboradores');
+    if(a.consent_ref) partes.push('respaldo ' + esc(a.consent_ref));
+
+    /* El aviso que de verdad importa: un nombre con pinta de llevar apellidos
+       y sin autorizacion detras. No se bloquea -hay nombres compuestos
+       legitimos, y un docente firma entero con todo el derecho-, se enseña.
+       Decidir es del coordinador; avisar, del portal. */
+    var sospecha = a.rol !== 'docente' && !a.consent_ref && nom.split(/\s+/).length > 2;
+    return '<span class="tit apo-firma' + (sospecha ? ' apo-firma--ojo' : '') + '">'
+         + partes.join(' · ')
+         + (sospecha ? ' — ¿apellidos sin autorización?' : '')
+         + '</span>';
+  }
+
+  /* ================= EL REGISTRO DE AUTORIZACIONES ==================
+
+     Solo codigos y fechas. Ni un nombre, ni un DNI, ni el escaneo del papel:
+     el indice codigo -> estudiante vive en la hoja local del coordinador y el
+     original en papel bajo llave (pendientes-coordinacion/02).
+
+     Subir aqui el papel firmado seria la peor pieza del sistema: crearia un
+     almacen con el nombre y el DNI del apoderado, su firma y los datos del
+     menor, en una instancia compartida con otros dos proyectos. Por eso no
+     hay ningun campo de archivo en este panel, y no es un olvido. */
+
+  var autLista  = el('autLista');
+  var autCodigo = el('autCodigo');
+  var autNota   = el('autNota');
+  var autAltaBtn = el('autAlta');
+  var autAvisoEl = el('autAviso');
+
+  function autAviso(t, error){
+    if(!autAvisoEl) return;
+    autAvisoEl.hidden = !t;
+    autAvisoEl.textContent = t || '';
+    autAvisoEl.classList.toggle('error', !!error);
+  }
+
+  function cargarAutorizaciones(){
+    if(!autLista) return;
+    listaCargando(autLista);
+    D.listarAutorizaciones().then(function(filas){
+      if(D.autorizacionesDisponible === false){
+        listaVacia(autLista, 'El registro de autorizaciones todavía no está en la base: falta aplicar db/19.');
+        return;
+      }
+      if(!filas.length){
+        listaVacia(autLista, 'Todavía no hay ninguna autorización registrada. Mientras esté vacío, ninguna fotografía debe publicarse con el rostro sin tapar.');
+        return;
+      }
+      autLista.innerHTML = filas.map(function(a){
+        var estado = a.vigente ? 'vigente' : 'revocada el ' + esc(a.revocada || '—');
+        return '<div class="inv-item">'
+          + '<div class="txt">'
+          +   '<span class="cod">' + esc(a.codigo) + '</span>'
+          +   '<span class="tit u-color-ink-mute">Alta ' + esc(a.alta || '—')
+          +     (a.nota ? ' · ' + esc(a.nota) : '') + '</span>'
+          + '</div>'
+          + '<span class="estado ' + (a.vigente ? 'pub' : 'bor') + '">' + estado + '</span>'
+          + '<button type="button" class="editar" data-revocar="' + esc(a.codigo) + '"'
+          +   ' data-r="' + (a.vigente ? '1' : '0') + '">'
+          +   (a.vigente ? 'Revocar' : 'Reactivar') + '</button>'
+          + '</div>';
+      }).join('');
+
+      autLista.querySelectorAll('[data-revocar]').forEach(function(b){
+        b.addEventListener('click', function(){
+          var revocar = b.getAttribute('data-r') === '1';
+          // Revocar es lo que una familia pide cuando cambia de idea, asi que
+          // no lleva confirmacion: la friccion sobra justo en esa direccion.
+          b.disabled = true;
+          autAviso('Guardando…');
+          D.revocarAutorizacion(b.getAttribute('data-revocar'), revocar)
+            .then(function(){
+              autAviso(revocar
+                ? 'Revocada. Retira también las fotografías que se publicaron con ella.'
+                : 'Reactivada.');
+              cargarAutorizaciones();
+            })
+            .catch(function(e){ b.disabled = false; autAviso('No se pudo: ' + ((e && e.message) || 'error'), true); });
+        });
+      });
+    }).catch(function(e){
+      listaVacia(autLista, 'No se pudo leer el registro: ' + ((e && e.message) || 'error'));
+    });
+  }
+
+  if(autAltaBtn){
+    autAltaBtn.addEventListener('click', function(){
+      var cod = (autCodigo && autCodigo.value || '').trim().toUpperCase();
+      if(!D.formatoAutorizacion(cod)){
+        autAviso('El código debe tener la forma AUT-2026-014.', true);
+        if(autCodigo) autCodigo.focus();
+        return;
+      }
+      autAltaBtn.disabled = true;
+      autAviso('Registrando…');
+      D.crearAutorizacion(cod, autNota && autNota.value)
+        .then(function(){
+          autAviso('Registrada ' + cod + '.');
+          if(autCodigo) autCodigo.value = '';
+          if(autNota) autNota.value = '';
+          cargarAutorizaciones();
+        })
+        .catch(function(e){
+          var m = (e && e.message) || 'error';
+          if(/duplicate|already exists/i.test(m)) m = 'Ese código ya está registrado.';
+          autAviso('No se pudo: ' + m, true);
+        })
+        .then(function(){ autAltaBtn.disabled = false; });
+    });
+  }
+
   function cargarAportes(){
     if(!apoLista) return;
+    cargarAutorizaciones();   // van juntos: se moderan en la misma pantalla
     listaCargando(apoLista);
-    D.listarAportes().then(function(filas){
+    D.listarAportesAdmin().then(function(filas){
       if(!filas.length){
         listaVacia(apoLista, 'Todavía no hay aportes subidos. Lo que envíen estudiantes y docentes llega aquí para aprobarlo.');
         return;
@@ -2928,10 +3052,18 @@
           +   '<span class="tit">' + esc(a.title) + '</span>'
           +   '<span class="tit u-color-ink-mute">' + esc(quien)
           +     (a.description ? ' — ' + esc(a.description) : '') + '</span>'
+          +   firmaResumen(a)
           + '</div>'
           + '<span class="estado ' + (a.published ? 'pub' : 'bor') + '">'
           +   (a.published ? 'publicado' : 'en cuarentena') + '</span>'
           + '<button type="button" class="editar" data-ver="' + esc(a.storage_path) + '">Abrir</button>'
+          + (D.autorizacionesDisponible !== false
+              ? '<input type="text" class="apo-consent" data-consent="' + esc(a.id) + '"'
+                + ' value="' + esc(a.consent_ref || '') + '" placeholder="AUT-2026-014"'
+                + ' maxlength="12" spellcheck="false"'
+                + ' aria-label="Código de autorización de imagen para este aporte"'
+                + ' title="Solo si hay autorización firmada del apoderado. Déjalo vacío si no la hay.">'
+              : '')
           + '<button type="button" class="editar" data-aprobar="' + esc(a.id) + '" data-a="'
           +   (a.published ? '0' : '1') + '">' + (a.published ? 'Retirar' : 'Aprobar') + '</button>'
           + '<button type="button" class="inv-borrar" data-quitar="' + esc(a.id)
@@ -2954,7 +3086,18 @@
         b.addEventListener('click', function(){
           b.disabled = true;
           apoAviso('Guardando…');
-          D.aprobarAporte(b.getAttribute('data-aprobar'), b.getAttribute('data-a') === '1')
+          var idAp = b.getAttribute('data-aprobar');
+          var campo = apoLista.querySelector('[data-consent="' + idAp + '"]');
+          var ref = campo ? campo.value.trim().toUpperCase() : undefined;
+          // Un codigo mal escrito se para aqui. La clave ajena lo rechazaria
+          // igual, pero con un error de base que no le dice nada a nadie.
+          if(ref && !D.formatoAutorizacion(ref)){
+            b.disabled = false;
+            apoAviso('El código debe tener la forma AUT-2026-014.', true);
+            if(campo) campo.focus();
+            return;
+          }
+          D.aprobarAporte(idAp, b.getAttribute('data-a') === '1', campo ? ref : undefined)
             .then(function(){
               apoAviso('Hecho.');
               cargarAportes();

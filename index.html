@@ -3623,6 +3623,28 @@
         </div>
         <p class="u-font-size-12p5px u-color-ink-soft u-line-height-1p55 u-margin-top-8px">Fotos, vídeos, artículos y trabajos que suben los equipos. Llegan <b>en cuarentena</b>: el archivo no es accesible para nadie hasta que lo apruebes, y retirar la aprobación lo vuelve inaccesible al instante. <b>Ábrelo siempre antes de aprobar</b> — y si aparece la cara de un estudiante, comprueba que hay autorización firmada.</p>
         <div id="apoAdminLista" class="inv-admin-lista"></div>
+
+        <!-- ---------- Autorizaciones de imagen (db/19) ----------
+             Aqui NO va ningun dato personal: solo el codigo del papel.
+             El indice codigo -> estudiante vive en la hoja local del
+             coordinador, nunca en la base ni en el repositorio. -->
+        <div class="aut-bloque" id="autBloque">
+          <p class="admin-divider">Autorizaciones de imagen</p>
+          <p class="u-font-size-12p5px u-color-ink-soft u-line-height-1p55 u-margin-top-8px">Registra aquí el <b>código</b> que escribiste a mano en cada autorización firmada por el apoderado — <span class="mono">AUT-2026-014</span>. <b>No escribas nombres:</b> el índice de a quién corresponde cada código vive solo en tu hoja de cálculo local y en el papel bajo llave.</p>
+          <div class="aut-alta">
+            <label class="aut-campo">
+              <span>Código</span>
+              <input type="text" id="autCodigo" maxlength="12" spellcheck="false" placeholder="AUT-2026-014" autocomplete="off">
+            </label>
+            <label class="aut-campo aut-campo--ancho">
+              <span>Nota operativa (opcional)</span>
+              <input type="text" id="autNota" maxlength="120" spellcheck="false" placeholder="Entregada en secretaría" autocomplete="off">
+            </label>
+            <button type="button" class="inv-nueva" id="autAlta">Registrar</button>
+          </div>
+          <p id="autAviso" class="form-status" hidden></p>
+          <div id="autLista" class="inv-admin-lista"></div>
+        </div>
         <p class="form-status" id="apoStatusMsg" role="status" aria-live="polite"></p>
       </div>
 

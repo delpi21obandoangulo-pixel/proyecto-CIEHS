@@ -763,8 +763,95 @@
       return pedir(COLS_APORTE_BASE);
     });
   };
-  CIEHSData.aprobarAporte = function (id, publicado) {
-    return cliente.from('aportes').update({ published: !!publicado }).eq('id', id)
+  /* ---------------- autorizaciones de imagen (db/19) --------------------
+
+     Esta tabla NO guarda nombres: solo codigos y fechas. El indice
+     codigo -> estudiante vive en la hoja local del coordinador y no entra ni
+     en el repositorio ni aqui. Ver pendientes-coordinacion/02.
+
+     Todo lo de abajo es de administracion. La RLS ya lo impone en el
+     servidor; comprobar la sesion aqui solo evita disparar peticiones
+     condenadas al 401. */
+
+  var FORMATO_AUT = /^AUT-\d{4}-\d{3}$/;
+  CIEHSData.formatoAutorizacion = function (c) {
+    return FORMATO_AUT.test(String(c || '').trim().toUpperCase());
+  };
+
+  // Se baja a false si db/19 no esta aplicada, igual que autoriaDisponible.
+  CIEHSData.autorizacionesDisponible = true;
+
+  function faltaTablaAutorizaciones(e) {
+    var m = (e && e.message) || '';
+    return /autorizaciones|consent_ref/i.test(m)
+        || /PGRST20[0-9]|does not exist/i.test(m);
+  }
+
+  CIEHSData.listarAutorizaciones = function () {
+    if (!codigoAdmin) return Promise.resolve([]);
+    return cliente.from('autorizaciones')
+      .select('codigo, anio, vigente, alta, revocada, nota')
+      .order('codigo', { ascending: false }).limit(500)
+      .then(function (r) {
+        if (r.error) {
+          if (faltaTablaAutorizaciones(r.error)) { CIEHSData.autorizacionesDisponible = false; return []; }
+          throw r.error;
+        }
+        return r.data || [];
+      });
+  };
+
+  CIEHSData.crearAutorizacion = function (codigo, nota) {
+    codigo = String(codigo || '').trim().toUpperCase();
+    if (!FORMATO_AUT.test(codigo)) {
+      return Promise.reject(new Error('El código debe tener la forma AUT-2026-014.'));
+    }
+    // El año sale del propio codigo: si se teclea AUT-2025-003 en 2026 es
+    // porque es del curso anterior, y la fila tiene que decir eso.
+    var anio = parseInt(codigo.slice(4, 8), 10);
+    return cliente.from('autorizaciones')
+      .insert({ codigo: codigo, anio: anio, nota: vacio(nota) })
+      .then(function (r) { if (r.error) throw r.error; return codigo; });
+  };
+
+  /* Revocar NO borra la fila. Una autorizacion retirada sigue teniendo que
+     poder responder «esta foto salio con este respaldo, y se retiro tal dia»
+     meses despues. Borrarla dejaria sin explicacion a los aportes que la
+     citan, y por eso la clave ajena es on delete restrict. */
+  CIEHSData.revocarAutorizacion = function (codigo, revocar) {
+    var cambio = revocar
+      ? { vigente: false, revocada: new Date().toISOString().slice(0, 10) }
+      : { vigente: true,  revocada: null };
+    return cliente.from('autorizaciones').update(cambio).eq('codigo', codigo)
+      .then(function (r) { if (r.error) throw r.error; return true; });
+  };
+
+  /* La lista de moderacion necesita ver consent_ref; la publica no.
+
+     Y consent_ref NO entra en COLS_APORTE_BASE a proposito: esa lista la usa
+     tambien la consulta de la tanda principal del portal, y una columna que
+     todavia no existe -db/19 sin aplicar- tumbaria el portal entero al
+     respaldo estatico. Aqui se pide aparte y se cae a la lista de siempre. */
+  CIEHSData.listarAportesAdmin = function () {
+    if (!codigoAdmin) return CIEHSData.listarAportes();
+    return cliente.from('aportes').select(CIEHSData.colsAporte() + ', consent_ref')
+      .order('created_at', { ascending: false }).limit(200)
+      .then(function (r) { if (r.error) throw r.error; return r.data || []; })
+      .catch(function (e) {
+        if (!faltaTablaAutorizaciones(e) && !faltanColumnasDeAutoria(e)) throw e;
+        CIEHSData.autorizacionesDisponible = false;
+        return CIEHSData.listarAportes();
+      });
+  };
+
+  /* Aprobar un aporte puede llevar el codigo que respalda publicar el nombre
+     completo. Va junto con published en la MISMA sentencia: si fueran dos, un
+     fallo entre medias dejaria el aporte publicado sin su respaldo, que es
+     justo el estado que no debe existir. */
+  CIEHSData.aprobarAporte = function (id, publicado, consentRef) {
+    var cambio = { published: !!publicado };
+    if (consentRef !== undefined) cambio.consent_ref = vacio(consentRef);
+    return cliente.from('aportes').update(cambio).eq('id', id)
       .then(function (r) { if (r.error) throw r.error; return true; });
   };
   // Borra el objeto ANTES que la ficha: sin la ficha, la politica de lectura ya
