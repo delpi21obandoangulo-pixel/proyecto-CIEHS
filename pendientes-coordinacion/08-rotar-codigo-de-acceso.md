@@ -2,10 +2,33 @@
 title: 8 · Rotar el código de acceso al panel — URGENTE
 tags: [ciehs, pendiente-coordinacion, seguridad, credenciales, urgente]
 depende-de: decidir el código nuevo y dónde se guarda
-actualizado: 2026-09-10
+actualizado: 2026-09-13
 ---
 
 # 8 · Rotar el código de acceso al panel
+
+> [!danger] Confirmado el 2026-09-13: **sigue sin rotarse**
+> Comprobado con `git log -S` sobre el repositorio: **el código que hoy está**
+> **en uso es exactamente el que se publicó**, y aparece en el historial en los
+> commits `ed46c57` y `e6ec83d`. Han pasado tres días desde que se escribió
+> este aviso y el código no ha cambiado.
+>
+> Ese mismo día se escribió además en una conversación de chat, para poder
+> probar el guardado real contra `ciehs.textos`. Es un segundo camino de
+> exposición, independiente del primero.
+>
+> La ficha está preparada en la bóveda: `.boveda\ciehs-codigo-acceso\FICHA.md`.
+> Sólo falta generar el código nuevo, aplicarlo y pegar el valor.
+
+> [!check] Lo que sí se hizo el 2026-09-13
+> `db/17_endurecimiento_acceso.sql` **ya está aplicada** (hasta ese día estaba
+> en el repositorio pero no en la base). Pone un freno de **10 intentos
+> fallidos cada 15 minutos**, que contra fuerza bruta basta y sobra: 10⁸
+> combinaciones a 960 intentos diarios son siglos.
+>
+> **Pero aquí no hay que adivinar nada.** El código está escrito en un
+> repositorio público; el freno no protege de leer. La rotación sigue siendo
+> la única corrección real.
 
 > [!danger] El código de administración está publicado en internet
 > Hasta el 2026-09-10, el archivo `db/10_acceso_codigo.sql` contenía el código
