@@ -56,20 +56,58 @@ alter table ciehs.aportes drop constraint if exists aportes_colab_lista;
 alter table ciehs.aportes add  constraint aportes_colab_lista
   check (jsonb_typeof(colaboradores) = 'array' and jsonb_array_length(colaboradores) <= 10);
 
--- Cada colaborador: { "n": nombre, "i": inicial, "g": grado }. Se valida la
--- forma aquí y no solo en el cliente, porque el cliente es del visitante.
+-- ============================================================================
+-- Cada colaborador: { "n": nombre, "i": inicial, "g": grado }.
+--
+-- POR QUE ESTO ES UNA FUNCION Y NO UN CHECK A SECAS
+-- ------------------------------------------------
+-- Validar la lista exige mirar CADA elemento, y recorrer un jsonb obliga a
+-- desplegarlo con jsonb_array_elements, que es una consulta. Un CHECK no admite
+-- subconsultas: PostgreSQL corta con «0A000: cannot use subquery in check
+-- constraint». Una llamada a función sí se admite, así que el recorrido vive
+-- aquí dentro y el CHECK solo pregunta sí o no.
+--
+-- La función es IMMUTABLE de verdad: depende únicamente de su argumento, no lee
+-- ninguna tabla ni el reloj. Esa es la condición para que valga en un CHECK.
+--
+-- Va con search_path vacío y todo calificado con pg_catalog. En una instancia
+-- compartida —Aura en public, Safari en safary_kids— dejar que el search_path
+-- del que llama decida qué `jsonb_typeof` se ejecuta sería precisamente el tipo
+-- de acoplamiento que este esquema existe para evitar.
+-- ============================================================================
+create or replace function ciehs.colaboradores_validos(lista jsonb)
+returns boolean
+language sql
+immutable
+parallel safe
+set search_path = ''
+as $fn$
+  select case
+    when lista is null then true
+    when pg_catalog.jsonb_typeof(lista) <> 'array' then false
+    else coalesce((
+      select pg_catalog.bool_and(
+             pg_catalog.jsonb_typeof(c) = 'object'
+         and coalesce(pg_catalog.length(c ->> 'n'), 0) between 2 and 80
+         and coalesce(pg_catalog.length(c ->> 'i'), 0) <= 2
+         and coalesce(pg_catalog.length(c ->> 'g'), 0) <= 40
+      )
+      from pg_catalog.jsonb_array_elements(lista) as c
+    ), true)   -- lista vacía: bool_and sobre cero filas da NULL, y eso es válido
+  end;
+$fn$;
+
+comment on function ciehs.colaboradores_validos(jsonb) is
+  'Valida la lista de colaboradores de ciehs.aportes. Existe porque un CHECK no admite subconsultas y recorrer un jsonb obliga a una.';
+
+-- La ejecuta quien inserta, que es el visitante anónimo del formulario.
+grant execute on function ciehs.colaboradores_validos(jsonb) to anon, authenticated;
+
+-- Se valida la forma en la base y no solo en el cliente, porque el cliente es
+-- del visitante.
 alter table ciehs.aportes drop constraint if exists aportes_colab_forma;
 alter table ciehs.aportes add  constraint aportes_colab_forma
-  check (
-    not exists (
-      select 1
-        from jsonb_array_elements(colaboradores) as c
-       where jsonb_typeof(c) <> 'object'
-          or coalesce(char_length(c ->> 'n'), 0) not between 2 and 80
-          or coalesce(char_length(c ->> 'i'), 0) > 2
-          or coalesce(char_length(c ->> 'g'), 0) > 40
-    )
-  );
+  check (ciehs.colaboradores_validos(colaboradores));
 
 comment on column ciehs.aportes.autor_nombre  is
   'Docente: nombre y apellidos. Estudiante: SOLO el nombre de pila (ver /privacidad).';
