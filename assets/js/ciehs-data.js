@@ -743,6 +743,9 @@
 
   function faltanColumnasDeAutoria(e) {
     var m = (e && e.message) || '';
+    // Misma cautela que en faltaTablaAutorizaciones: un permiso denegado no
+    // es una migracion que falta, y tratarlo como tal lo esconderia.
+    if (String((e && e.code) || '') === '42501' || /permission denied/i.test(m)) return false;
     return /autor_nombre|autor_inicial|colaboradores/i.test(m)
         || /PGRST204|PGRST200|column .* does not exist/i.test(m);
   }
@@ -781,10 +784,25 @@
   // Se baja a false si db/19 no esta aplicada, igual que autoriaDisponible.
   CIEHSData.autorizacionesDisponible = true;
 
+  /* Distinguir «la migracion no esta aplicada» de «no tienes permiso» importa
+     mas de lo que parece. La primera version de esto daba por migracion
+     ausente CUALQUIER error que mencionara la tabla, y «permission denied for
+     table autorizaciones» la menciona. Al estrenar db/19 -que se subio sin
+     los GRANT- el registro se leia vacio y en silencio, como si la migracion
+     no estuviera: el fallo quedaba escondido detras de su propia red de
+     seguridad. Una degradacion que tapa un error de permisos es peor que no
+     tener degradacion.
+
+     42P01 tabla inexistente · 42703 columna inexistente · PGRST205 no esta en
+     el cache del esquema. 42501 es permiso denegado y se deja pasar como
+     error de verdad. */
   function faltaTablaAutorizaciones(e) {
+    var c = String((e && e.code) || '');
     var m = (e && e.message) || '';
-    return /autorizaciones|consent_ref/i.test(m)
-        || /PGRST20[0-9]|does not exist/i.test(m);
+    if (c === '42501' || /permission denied/i.test(m)) return false;
+    return c === '42P01' || c === '42703'
+        || /PGRST205/i.test(c + ' ' + m)
+        || /does not exist/i.test(m);
   }
 
   CIEHSData.listarAutorizaciones = function () {

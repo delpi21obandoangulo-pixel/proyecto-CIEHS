@@ -71,10 +71,23 @@ alter table ciehs.autorizaciones add  constraint autorizaciones_nota_corta
 -- permitiría tantear códigos: no hay ninguna razón para que el visitante lo vea.
 alter table ciehs.autorizaciones enable row level security;
 
+-- La política alcanza también al rol `anon`, y los GRANT también. Parece
+-- contradictorio y no lo es: el portal administra con la clave publicable, o
+-- sea como `anon`, llevando la cabecera X-CIEHS-Code. Es el patrón que fijó
+-- db/11 para las otras diecisiete tablas — grants amplios y RLS como control
+-- real. Sin la cabecera con el código correcto, is_admin() devuelve false y no
+-- se lee ni se escribe nada, tenga el GRANT que tenga.
+--
+-- La primera versión de este archivo puso la política solo `to authenticated` y
+-- se olvidó de los GRANT. Resultado: el registro se leía vacío y cualquier alta
+-- moría con «permission denied for table autorizaciones». Una política sin
+-- privilegio de tabla no hace nada, y un privilegio sin política tampoco.
 drop policy if exists "autorizaciones_admin_todo" on ciehs.autorizaciones;
 create policy "autorizaciones_admin_todo"
-  on ciehs.autorizaciones for all to authenticated
+  on ciehs.autorizaciones for all to anon, authenticated
   using (ciehs.is_admin()) with check (ciehs.is_admin());
+
+grant select, insert, update, delete on ciehs.autorizaciones to anon, authenticated;
 
 -- ============================================================================
 -- El enlace con los aportes.
