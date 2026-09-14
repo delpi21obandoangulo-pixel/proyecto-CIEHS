@@ -142,8 +142,13 @@
   var COLS_CAJA    = 'id, occurred_on, period, concept, kind, amount_pen, note, categoria, published';
   var COLS_EVIDENCIA = 'id, storage_path, title, eyebrow, body, alt, width, height, ' +
                        'consent_ref, position, published';
-  var COLS_APORTE    = 'id, kind, title, description, equipo, grado, storage_path, ' +
-                       'mime, size_bytes, rol, published, created_at';
+  var COLS_APORTE_BASE = 'id, kind, title, description, equipo, grado, storage_path, ' +
+                         'mime, size_bytes, rol, published, created_at';
+  // La autoria llega con db/18. Mientras esa migracion no este aplicada, pedir
+  // estas columnas rompe la lectura ENTERA de aportes, asi que hay una lista
+  // corta a la que caer: ver autoriaDisponible mas abajo.
+  var COLS_APORTE_AUTORIA = COLS_APORTE_BASE + ', autor_nombre, autor_inicial, colaboradores';
+  var COLS_APORTE    = COLS_APORTE_AUTORIA;
   var COLS_PRODUCTO  = 'id, nombre, cientifico, descripcion, unidad, precio_pen, estado, ' +
                        'disponible_desde, stock_estimado, foto_path, position, published';
   var COLS_RESULTADO = 'id, investigation_code, tratamiento, medido_en, variable, valor, ' +
@@ -182,7 +187,11 @@
       cliente.from('evidencias').select(COLS_EVIDENCIA).order('position', { ascending: true }),
       cliente.from('registros_campo').select(COLS_REGISTRO)
              .order('medido_en', { ascending: true }).limit(600),
-      cliente.from('aportes').select(COLS_APORTE)
+      // Lista CORTA a proposito: esta consulta va en la tanda principal del
+      // portal y, si db/18 no esta aplicada, una columna desconocida tumbaria
+      // el portal entero al respaldo estatico. La firma se pinta desde lo que
+      // devuelve listarAportes, que si sabe degradarse.
+      cliente.from('aportes').select(COLS_APORTE_BASE)
              .order('created_at', { ascending: false }).limit(60),
       cliente.from('resultados').select(COLS_RESULTADO)
              .order('medido_en', { ascending: true }).limit(800),
@@ -687,10 +696,33 @@
       size_bytes: a.sizeBytes == null ? null : Number(a.sizeBytes)
       // published no se envia: la RLS solo admite el alta en cuarentena.
     };
+    /* La autoria va aparte a proposito. Si db/18 no esta aplicada, PostgREST
+       rechaza el INSERT ENTERO por columna desconocida y el aporte se
+       perderia: el estudiante habria subido el archivo para nada. Asi que se
+       intenta con firma y, solo si el servidor dice que esas columnas no
+       existen, se reintenta sin ella. El trabajo se guarda igual; lo unico
+       que falta es el credito, y eso es mejor que perder el trabajo. */
+    var firma = {
+      autor_nombre:  vacio(a.autorNombre),
+      autor_inicial: vacio(a.autorInicial),
+      colaboradores: Array.isArray(a.colaboradores) ? a.colaboradores : []
+    };
+    var hayFirma = !!(firma.autor_nombre || firma.colaboradores.length);
+
     // Sin .select(), por lo mismo que en registros_campo: el RETURNING evalua
     // la politica de lectura sobre una fila que aun no es legible.
-    return cliente.from('aportes').insert(fila)
-      .then(function (r) { if (r.error) throw r.error; return fila; });
+    function meter(f) {
+      return cliente.from('aportes').insert(f)
+        .then(function (r) { if (r.error) throw r.error; return f; });
+    }
+
+    if (!hayFirma) return meter(fila);
+
+    return meter(Object.assign({}, fila, firma)).catch(function (e) {
+      if (!faltanColumnasDeAutoria(e)) throw e;
+      CIEHSData.autoriaDisponible = false;
+      return meter(fila);
+    });
   };
 
   // El bucket es privado: no hay URL publica, se firma una temporal. Solo
@@ -700,10 +732,36 @@
       .then(function (r) { if (r.error) throw r.error; return r.data.signedUrl; });
   };
 
+  /* Si db/18 no esta aplicada, la primera lectura falla por columna
+     desconocida. En vez de dejar la seccion de aportes rota —que es lo que
+     pasaria— se baja la bandera y se reintenta con la lista corta. A partir de
+     ahi el portal funciona igual, solo que sin firmas.
+
+     Se corrige sola: al aplicar la migracion y recargar, vuelve a pedirse la
+     lista larga porque la bandera nace en true en cada carga. */
+  CIEHSData.autoriaDisponible = true;
+
+  function faltanColumnasDeAutoria(e) {
+    var m = (e && e.message) || '';
+    return /autor_nombre|autor_inicial|colaboradores/i.test(m)
+        || /PGRST204|PGRST200|column .* does not exist/i.test(m);
+  }
+
+  CIEHSData.colsAporte = function () {
+    return CIEHSData.autoriaDisponible ? COLS_APORTE_AUTORIA : COLS_APORTE_BASE;
+  };
+
   CIEHSData.listarAportes = function () {
-    return cliente.from('aportes').select(COLS_APORTE)
-      .order('created_at', { ascending: false }).limit(200)
-      .then(function (r) { if (r.error) throw r.error; return r.data || []; });
+    function pedir(cols) {
+      return cliente.from('aportes').select(cols)
+        .order('created_at', { ascending: false }).limit(200)
+        .then(function (r) { if (r.error) throw r.error; return r.data || []; });
+    }
+    return pedir(CIEHSData.colsAporte()).catch(function (e) {
+      if (!faltanColumnasDeAutoria(e)) throw e;
+      CIEHSData.autoriaDisponible = false;
+      return pedir(COLS_APORTE_BASE);
+    });
   };
   CIEHSData.aprobarAporte = function (id, publicado) {
     return cliente.from('aportes').update({ published: !!publicado }).eq('id', id)

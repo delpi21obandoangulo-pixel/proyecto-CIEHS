@@ -4378,6 +4378,116 @@
   var elPubs   = document.getElementById('aportePublicados');
   var elCerrar = document.getElementById('aporteCerrar');
 
+  /* ==================== QUIEN FIRMA EL APORTE ====================
+     Un aporte se firmaba con equipo y grado: quien hizo el trabajo no
+     aparecia. En un portal que publica investigacion escolar el credito es
+     parte de lo que se enseña, asi que ahora se firma.
+
+     LA REGLA QUE MANDA AQUI, y no es de estilo: /privacidad promete que nunca
+     se publican apellidos completos de menores. Por eso el estudiante escribe
+     su apellido en un campo APARTE de un solo caracter — no se puede meter el
+     apellido entero ni queriendo— y el docente, que es adulto, firma con su
+     nombre completo en un solo campo. Lo decide el selector «¿Quien sube?».
+
+     La misma restriccion vive en la base (db/18, aportes_inicial_corta): un
+     formulario se salta, una restriccion de la base no. */
+
+  var elRol      = document.getElementById('aporteRol');
+  var elAutor    = document.getElementById('aporteAutor');
+  var elInicial  = document.getElementById('aporteInicial');
+  var elAutorLab = document.getElementById('aporteAutorLabel');
+  var elIniCampo = document.getElementById('aporteInicialCampo');
+  var elIniAyuda = document.getElementById('aporteInicialAyuda');
+  var elColabLista = document.getElementById('aporteColabLista');
+  var elColabAdd   = document.getElementById('aporteColabAdd');
+
+  function esDocente() { return elRol && elRol.value === 'docente'; }
+
+  // La forma del formulario cambia con el rol. Se llama al abrir y al
+  // cambiarlo, y tambien reetiqueta las filas de colaboradores ya añadidas.
+  function pintarFormaAutoria() {
+    var doc_ = esDocente();
+    if (elAutorLab) elAutorLab.textContent = doc_ ? 'Nombre y apellidos' : 'Nombre';
+    if (elAutor)    elAutor.placeholder    = doc_ ? 'María Quispe Torres' : 'María';
+    if (elIniCampo) elIniCampo.hidden      = doc_;
+    if (elIniAyuda) elIniAyuda.hidden      = doc_;
+    // Al pasar a docente, lo escrito en la inicial deja de tener sentido.
+    if (doc_ && elInicial) elInicial.value = '';
+    $$('.autoria-item').forEach(function (fila) { pintarFilaColab(fila, doc_); });
+  }
+
+  function $$(sel) { return [].slice.call(document.querySelectorAll(sel)); }
+
+  function pintarFilaColab(fila, doc_) {
+    var ini = fila.querySelector('.colab-inicial');
+    var nom = fila.querySelector('.colab-nombre');
+    if (ini) ini.hidden = doc_;
+    if (doc_ && ini) ini.value = '';
+    if (nom) nom.placeholder = doc_ ? 'José Mendoza' : 'José';
+  }
+
+  function añadirColab() {
+    if (!elColabLista) return;
+    // Diez es el tope que impone db/18. Se corta aqui tambien para que el
+    // aviso llegue antes de subir el archivo, no despues.
+    if (elColabLista.children.length >= 10) {
+      aviso('Como máximo diez colaboradores.', true);
+      return;
+    }
+    var li = document.createElement('li');
+    li.className = 'autoria-item';
+
+    var nom = document.createElement('input');
+    nom.type = 'text'; nom.className = 'colab-nombre'; nom.maxLength = 80;
+    nom.setAttribute('aria-label', 'Nombre de quien colaboró');
+
+    var ini = document.createElement('input');
+    ini.type = 'text'; ini.className = 'colab-inicial'; ini.maxLength = 1;
+    ini.placeholder = 'M';
+    ini.setAttribute('aria-label', 'Inicial del apellido de quien colaboró');
+
+    var gra = document.createElement('input');
+    gra.type = 'text'; gra.className = 'colab-grado'; gra.maxLength = 40;
+    gra.placeholder = '4.° A';
+    gra.setAttribute('aria-label', 'Grado y sección de quien colaboró');
+
+    var quita = document.createElement('button');
+    quita.type = 'button'; quita.className = 'colab-quitar';
+    quita.textContent = '×';
+    quita.setAttribute('aria-label', 'Quitar a esta persona de la lista');
+    quita.addEventListener('click', function () {
+      li.remove();
+      if (elColabAdd) elColabAdd.focus();   // el foco no se queda en el vacio
+    });
+
+    li.appendChild(nom); li.appendChild(ini); li.appendChild(gra); li.appendChild(quita);
+    elColabLista.appendChild(li);
+    pintarFilaColab(li, esDocente());
+    nom.focus();
+  }
+
+  /* Lo que se envia. Se limpia aqui y no solo se confia en maxlength, porque
+     maxlength no impide pegar con el raton en algunos navegadores. */
+  function leerAutoria() {
+    var doc_ = esDocente();
+    var nombre = (elAutor && elAutor.value || '').trim().slice(0, 80);
+    var inicial = doc_ ? '' : (elInicial && elInicial.value || '').trim().slice(0, 1);
+
+    var colaboradores = $$('.autoria-item').map(function (fila) {
+      var n = (fila.querySelector('.colab-nombre').value || '').trim().slice(0, 80);
+      var i = doc_ ? '' : (fila.querySelector('.colab-inicial').value || '').trim().slice(0, 1);
+      var g = (fila.querySelector('.colab-grado').value || '').trim().slice(0, 40);
+      return { n: n, i: i, g: g };
+    }).filter(function (c) { return c.n.length >= 2; });
+
+    return { nombre: nombre, inicial: inicial, colaboradores: colaboradores };
+  }
+
+  if (elRol) elRol.addEventListener('change', pintarFormaAutoria);
+  if (elColabAdd) elColabAdd.addEventListener('click', añadirColab);
+  pintarFormaAutoria();
+
+
   var TIPOS = {
     foto:          { etiqueta:'Fotografía',            accept:'image/jpeg,image/png,image/webp', mb:6  },
     video:         { etiqueta:'Vídeo',                 accept:'video/mp4,video/webm',            mb:25 },
@@ -4552,16 +4662,29 @@
       return D.subirAporte(archivo, ruta);
     }).then(function(){
       aviso('Guardando la ficha…');
+      var firma = leerAutoria();
       return D.registrarAporte({
         kind: tipoActivo, title: titulo.trim(),
         description: (document.getElementById('aporteDesc')   || {}).value || '',
         equipo:      (document.getElementById('aporteEquipo') || {}).value || '',
         grado:       (document.getElementById('aporteGrado')  || {}).value || '',
         rol:         (document.getElementById('aporteRol')    || {}).value || '',
+        autorNombre:   firma.nombre,
+        autorInicial:  firma.inicial,
+        colaboradores: firma.colaboradores,
         storagePath: ruta, mime: archivo.type, sizeBytes: archivo.size
       });
     }).then(function(){
-      aviso('Subido. Tu aporte queda a la espera de que el equipo coordinador lo revise; hasta entonces no es visible para nadie más.');
+      var base = 'Subido. Tu aporte queda a la espera de que el equipo coordinador lo revise; '
+               + 'hasta entonces no es visible para nadie más.';
+      // Si la base todavia no tiene las columnas de autoria, el aporte se
+      // guardo pero SIN firma. Callarlo seria dejar creer que el credito
+      // quedo puesto.
+      if (D.autoriaDisponible === false && leerAutoria().nombre) {
+        aviso(base + ' Aviso: la firma no se pudo guardar todavía — falta aplicar db/18 en la base.', true);
+      } else {
+        aviso(base);
+      }
       form.reset();
       if(elArch) elArch.setAttribute('accept', t.accept);
       if(zonaRostros) zonaRostros.hidden = true;
@@ -4608,6 +4731,41 @@
       return;
     }
 
+    /* La firma. Se arma aqui y no en el HTML porque hay que respetar la
+       regla de /privacidad al pintar, no solo al guardar: del apellido de un
+       estudiante solo sale la inicial, y se le pone el punto. Si la fila
+       viene de antes de db/18 no habra autor y se cae al equipo y el grado,
+       que es como se firmaba hasta ahora.
+
+       Todo pasa por esc(): son nombres que escribio alguien desde el
+       formulario publico. */
+    function nombreFirmado(n, i) {
+      if (!n) return '';
+      var ini = (i || '').trim();
+      return ini ? n + ' ' + ini.charAt(0).toUpperCase() + '.' : n;
+    }
+
+    function firmaDe(a) {
+      var autor = nombreFirmado(a.autor_nombre, a.autor_inicial);
+      var colabs = (Array.isArray(a.colaboradores) ? a.colaboradores : [])
+        .map(function (c) { return nombreFirmado(c && c.n, c && c.i); })
+        .filter(Boolean);
+      if (!autor && !colabs.length) return '';
+
+      var html = '<p class="aporte-firma">';
+      if (autor) {
+        html += '<span class="firma-autor"><span class="firma-et">Autoría</span> '
+             +  esc(autor) + (a.grado ? ' <span class="firma-grado">· ' + esc(a.grado) + '</span>' : '')
+             +  '</span>';
+      }
+      if (colabs.length) {
+        html += '<span class="firma-colabs"><span class="firma-et">'
+             +  (colabs.length === 1 ? 'Colabora' : 'Colaboran') + '</span> '
+             +  colabs.map(esc).join(', ') + '</span>';
+      }
+      return html + '</p>';
+    }
+
     elPubs.innerHTML = '<h4 class="aporte-pub-titulo">Aportes publicados</h4>'
       + '<ul class="aporte-lista">' + filas.map(function(a){
       var quien = [a.equipo, a.grado].filter(Boolean).join(' · ');
@@ -4617,6 +4775,7 @@
         + '<div class="aporte-txt">'
         +   '<b>' + esc(a.title) + '</b>'
         +   (a.description ? '<span>' + esc(a.description) + '</span>' : '')
+        +   firmaDe(a)
         +   '<span class="aporte-meta mono">' + esc(quien || 'CIEHS')
         +     (a.size_bytes ? ' · ' + pesoLegible(a.size_bytes) : '') + '</span>'
         + '</div>'

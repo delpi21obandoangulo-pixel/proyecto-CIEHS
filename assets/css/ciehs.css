@@ -4750,6 +4750,69 @@ html:not([data-js]) .hm-nav{ display:none !important; }
 @media print{ .aviso-sinjs{ display:none !important; } }
 
 /* ==========================================================================
+   QUIEN FIRMA UN APORTE
+
+   La forma de estos campos la dicta /privacidad, no el diseño: del apellido
+   de un estudiante solo se publica la inicial, asi que va en un campo propio
+   y estrecho —de un solo caracter— en vez de dentro del nombre. Un docente es
+   adulto y firma entero, y entonces ese campo se oculta.
+   ========================================================================== */
+.aporte-autoria{
+  margin-top:18px; padding:16px 16px 14px; border:1px solid var(--line);
+  border-radius:var(--radius-m); background:var(--glass);
+}
+.aporte-autoria legend{
+  padding:0 8px; font-family:var(--font-mono); font-size:11px;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--ink-mute);
+}
+.autoria-fila{ display:grid; grid-template-columns:1fr 132px; gap:12px; align-items:end; }
+/* La inicial cabe en un caracter: un campo ancho invitaria a escribir el
+   apellido entero, que es justo lo que no se publica. */
+.autoria-inicial input{ text-align:center; text-transform:uppercase; }
+@media (max-width:520px){ .autoria-fila{ grid-template-columns:1fr; } }
+.autoria-ayuda{
+  margin-top:8px; font-size:12.5px; line-height:1.55; color:var(--ink-soft);
+}
+
+.autoria-colabs{ margin-top:16px; padding-top:14px; border-top:1px solid var(--line); }
+.autoria-sub{ font-size:13px; font-weight:600; color:var(--ink); margin:0 0 10px; }
+.autoria-lista{ list-style:none; padding:0; margin:0 0 10px; display:grid; gap:8px; }
+.autoria-item{ display:grid; grid-template-columns:1fr 56px 96px 34px; gap:8px; align-items:center; }
+@media (max-width:520px){
+  .autoria-item{ grid-template-columns:1fr 52px 34px; }
+  .autoria-item .colab-grado{ grid-column:1 / -1; }
+}
+.autoria-item input{
+  width:100%; padding:9px 11px; border-radius:var(--radius-s);
+  border:1px solid var(--line-strong); background:var(--surface);
+  color:var(--ink); font-family:inherit; font-size:13.5px;
+}
+.autoria-item .colab-inicial{ text-align:center; text-transform:uppercase; }
+.colab-quitar{
+  width:34px; height:34px; border-radius:50%; cursor:pointer; line-height:1;
+  border:1px solid var(--line-strong); background:transparent;
+  color:var(--status-danger); font-size:17px; font-family:inherit;
+}
+.colab-quitar:hover{ background:rgba(220,38,38,.08); border-color:currentColor; }
+.autoria-add{ font-size:12.5px; padding:8px 14px; }
+
+/* ------------------------------ la firma, ya publicada ------------------ */
+.aporte-firma{
+  display:flex; flex-direction:column; gap:3px;
+  margin:6px 0 2px; font-size:13px; line-height:1.5; color:var(--ink-soft);
+}
+.firma-autor{ color:var(--ink); font-weight:600; }
+/* La etiqueta es el rotulo, no el dato: se aparta con mayusculas pequeñas y
+   color apagado para que el nombre sea lo que se lee. */
+.firma-et{
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink-mute); font-weight:500;
+  margin-right:4px;
+}
+.firma-grado{ font-weight:400; color:var(--ink-soft); }
+.firma-colabs{ font-size:12.5px; }
+
+/* ==========================================================================
    EDICION IN-PLACE (modo administrador)
 
    Regla que gobierna todo este bloque: FUERA DEL MODO EDICION NO EXISTE. El

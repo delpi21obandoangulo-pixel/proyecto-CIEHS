@@ -1408,6 +1408,48 @@
               </label>
             </div>
 
+            <!-- ============ QUIÉN FIRMA ============
+                 Un aporte se firmaba con el equipo y el grado, y quien hizo el
+                 trabajo no aparecía. En un portal que publica investigación
+                 escolar eso sobra explicarlo: el crédito es parte de lo que se
+                 enseña.
+
+                 Los DOS campos del estudiante no son un capricho de diseño. La
+                 página de privacidad promete que nunca se publican apellidos
+                 completos de menores, así que la inicial va en su propio campo
+                 con maxlength="1": así no se puede escribir el apellido entero
+                 aunque se intente. La restricción vive también en la base
+                 (db/18), porque un formulario se salta y una restricción no.
+
+                 Un docente es adulto y firma con su nombre completo: su campo
+                 se muestra entero y sin inicial aparte. Lo decide el selector
+                 «¿Quién sube?» que ya existía. ============ -->
+            <fieldset class="aporte-autoria" id="aporteAutoria">
+              <legend data-edit="investigaciones.aporte-autoria.quien-firma">Quién firma</legend>
+
+              <div class="autoria-fila">
+                <label class="form-field autoria-nombre">
+                  <span id="aporteAutorLabel">Nombre</span>
+                  <input type="text" id="aporteAutor" maxlength="80"
+                         autocomplete="off" placeholder="María">
+                </label>
+                <label class="form-field autoria-inicial" id="aporteInicialCampo">
+                  <span>Inicial del apellido</span>
+                  <input type="text" id="aporteInicial" maxlength="1"
+                         autocomplete="off" placeholder="Q"
+                         aria-describedby="aporteInicialAyuda">
+                </label>
+              </div>
+              <p class="autoria-ayuda" id="aporteInicialAyuda"
+                 data-edit="investigaciones.aporte-autoria.ayuda-inicial">Del apellido solo se publica la inicial. Así el trabajo lleva tu nombre sin que el portal difunda quién eres.</p>
+
+              <div class="autoria-colabs" id="aporteColabs">
+                <p class="autoria-sub" data-edit="investigaciones.aporte-autoria.colaboran">¿Alguien más colaboró?</p>
+                <ul class="autoria-lista" id="aporteColabLista"></ul>
+                <button type="button" class="btn btn-ghost autoria-add" id="aporteColabAdd">+ Añadir quien colaboró</button>
+              </div>
+            </fieldset>
+
             <p class="aporte-privacidad">
               <b>Las caras se tapan aquí, en tu propio dispositivo.</b> El archivo original nunca se envía: lo que sube es la imagen ya pixelada. Una foto sin rostro identificable deja de ser un dato personal, y por eso puede publicarse sin permisos añadidos. En <b>vídeo el tapado automático no está disponible</b>: graba manos, planos generales o de espalda.
             </p>
@@ -1433,7 +1475,7 @@
             <li data-edit="investigaciones.carpeta.equipo-docente-revisa-verifica-rig" data-edit-aviso="Habla del tratamiento de imágenes de menores. Compruébalo con la coordinación antes de cambiarlo."><b>El equipo docente la revisa.</b> Se verifica el rigor del contenido y que ninguna imagen o dato incumpla el protocolo de imagen de menores.</li>
             <li data-edit="investigaciones.carpeta.coordinacion-publica-panel-adminis"><b>La coordinación la publica</b> desde el panel de administración del portal, y queda visible para cualquiera que abra esta página.</li>
           </ol>
-          <p data-edit="investigaciones.carpeta.entradas-firman-equipo-grado-nunca" class="carpeta-nota">Las entradas se firman con el <b>equipo y el grado</b>, nunca con el nombre completo de un estudiante. Ver la <button type="button" class="link-inline" data-route="privacidad">política de privacidad y uso de imagen</button>.</p>
+          <p data-edit="investigaciones.carpeta.entradas-firman-equipo-grado-nunca" class="carpeta-nota">Las entradas se firman con el <b>nombre y la inicial del apellido</b> de quien las hace —nunca con el apellido completo de un estudiante— junto al equipo y el grado. Ver la <button type="button" class="link-inline" data-route="privacidad">política de privacidad y uso de imagen</button>.</p>
         </div>
       </div>
     </div>
@@ -3083,12 +3125,13 @@
 
       <div class="priv-bloque">
         <h3 data-edit="privacidad.priv-bloque.protocolo-imagen-datos-menores" data-edit-aviso="Esta página describe el protocolo de imagen de menores. Cambiarla altera un compromiso con las familias.">2. Protocolo de imagen y datos de menores</h3>
-        <p data-edit="privacidad.priv-bloque.regla-fondo-portal-difunde-trabajo" data-edit-aviso="Esta página describe el protocolo de imagen de menores. Cambiarla altera un compromiso con las familias.">Regla de fondo: el portal difunde <b>el trabajo científico</b>, no la identidad de quien lo hace. Un logro se atribuye al equipo y al grado, nunca a un menor identificable.</p>
+        <p data-edit="privacidad.priv-bloque.regla-fondo-portal-difunde-trabajo" data-edit-aviso="Esta página describe el protocolo de imagen de menores. Cambiarla altera un compromiso con las familias.">Regla de fondo: el portal difunde <b>el trabajo científico</b> y reconoce a quien lo hizo, sin hacerlo identificable. Un estudiante firma con su <b>nombre y la inicial de su apellido</b> junto al equipo y el grado; un docente, adulto, firma con su nombre completo.</p>
         <div class="priv-reglas">
           <div class="priv-regla si">
             <h4 data-edit="privacidad.priv-regla.si-publica" data-edit-aviso="Esta página describe el protocolo de imagen de menores. Cambiarla altera un compromiso con las familias.">Sí se publica</h4>
             <ul>
               <li data-edit="privacidad.priv-regla.nombre-equipo-investigacion-grado" data-edit-aviso="Esta página describe el protocolo de imagen de menores. Cambiarla altera un compromiso con las familias.">Nombre del equipo de investigación y grado o sección.</li>
+              <li data-edit="privacidad.priv-regla.firma-nombre-inicial-apellido" data-edit-aviso="Esta página describe el protocolo de imagen de menores. Cambiarla altera un compromiso con las familias.">La firma de quien publica: <b>nombre de pila y la inicial del apellido</b> en el caso de un estudiante («María Q.»), y nombre completo en el de un docente. Lo mismo vale para quienes figuren como colaboradores.</li>
               <li data-edit="privacidad.priv-regla.fotografias-modulos-cultivos-instr" data-edit-aviso="Esta página describe el protocolo de imagen de menores. Cambiarla altera un compromiso con las familias.">Fotografías de módulos, cultivos, instrumentos y del mural.</li>
               <li data-edit="privacidad.priv-regla.fotografias-manos-trabajando-plano" data-edit-aviso="Esta página describe el protocolo de imagen de menores. Cambiarla altera un compromiso con las familias.">Fotografías de manos trabajando, planos generales de espalda o imágenes donde no se distinga el rostro.</li>
               <li data-edit="privacidad.priv-regla.datos-graficos-bitacoras-informes" data-edit-aviso="Esta página describe el protocolo de imagen de menores. Cambiarla altera un compromiso con las familias.">Datos, gráficos, bitácoras e informes de investigación.</li>
