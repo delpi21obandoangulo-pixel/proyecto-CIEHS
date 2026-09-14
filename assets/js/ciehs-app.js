@@ -4491,11 +4491,19 @@
   var TIPOS = {
     foto:          { etiqueta:'Fotografía',            accept:'image/jpeg,image/png,image/webp', mb:6  },
     video:         { etiqueta:'Vídeo',                 accept:'video/mp4,video/webm',            mb:25 },
-    articulo:      { etiqueta:'Artículo científico',   accept:'application/pdf',                 mb:15 },
+    /* `enFrase` existe porque esta etiqueta se mete dentro de frases con
+       .toLowerCase(), y eso dejaria «proyecto ciehs»: un nombre propio no se
+       escribe en minuscula porque le toque ir a mitad de oracion. */
+    articulo:      { etiqueta:'Proyecto CIEHS',        accept:'application/pdf',                 mb:15,
+                     enFrase:'un proyecto CIEHS' },
     investigacion: { etiqueta:'Trabajo de investigación', accept:'application/pdf',              mb:15 },
     audio:         { etiqueta:'Audio',                 accept:'audio/mpeg,audio/mp4,audio/ogg',  mb:15 }
   };
   var tipoActivo = 'foto';
+
+  // Como se lee un tipo dentro de una oracion. Por defecto basta con bajarlo
+  // a minuscula; los que llevan nombre propio traen su propia forma.
+  function enFrase(t) { return t.enFrase || t.etiqueta.toLowerCase(); }
 
   function esc(s){
     return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
@@ -4619,7 +4627,7 @@
     if(titulo.trim().length < 3){ aviso('Ponle un título de al menos tres letras.', true); return; }
     if(archivo.size > t.mb * 1024 * 1024){
       aviso('El archivo pesa ' + pesoLegible(archivo.size) + ' y el máximo para ' +
-            t.etiqueta.toLowerCase() + ' es ' + t.mb + ' MB.', true);
+            enFrase(t) + ' es ' + t.mb + ' MB.', true);
       return;
     }
 
@@ -4692,7 +4700,7 @@
     }).catch(function(e){
       var m = (e && e.message) || 'error desconocido';
       // El error crudo del bucket no le dice nada a un estudiante de 2.°.
-      if(/mime|content type/i.test(m)) m = 'Ese tipo de archivo no se admite para ' + t.etiqueta.toLowerCase() + '.';
+      if(/mime|content type/i.test(m)) m = 'Ese tipo de archivo no se admite para ' + enFrase(t) + '.';
       else if(/exceeded|too large|maximum/i.test(m)) m = 'El archivo supera el tamaño permitido.';
       else if(/duplicate|already exists/i.test(m)) m = 'Ya hay un archivo con ese nombre. Vuelve a intentarlo.';
       aviso('No se pudo subir: ' + m, true);
