@@ -4,7 +4,7 @@ aliases: [Privacidad CIEHS, Protocolo de imagen, Ley 29733 CIEHS]
 tags: [ciehs, privacidad, menores, legal, ley-29733]
 estado: publicado · rostros tapados en origen · sin aprobacion de direccion
 publicado-en: https://ciehs.vercel.app/#/privacidad
-actualizado: 2026-09-10
+actualizado: 2026-09-13
 ---
 
 # CIEHS · Privacidad y uso de imagen de menores
@@ -56,10 +56,20 @@ motiva está registrado en [[CIEHS-Auditoria-Seguridad-Auth]].
 
 ## 1. Principio de fondo
 
-> El portal difunde **el trabajo científico**, no la identidad de quien lo hace.
+> El portal difunde **el trabajo científico** y reconoce a quien lo hizo, sin
+> hacerlo identificable.
 
-Un logro se atribuye al equipo y al grado, nunca a un menor identificable. Todo
-lo demás son consecuencias de esta regla.
+Todo lo demás son consecuencias de esta regla.
+
+> [!warning] Este principio cambió el 2026-09-13
+> Hasta esa fecha decía: «Un logro se atribuye al equipo y al grado, **nunca a
+> un menor identificable**». Era exacto mientras un aporte se firmaba solo con
+> el equipo y el grado. Desde que las publicaciones llevan firma, ya no lo era:
+> se publica el nombre de pila y una inicial. Se cambió el principio en lugar de
+> dejarlo diciendo algo que el portal ya no cumplía → §2 ter.
+>
+> Lo que **no** cambió es la promesa que sostiene todo: un apellido completo de
+> un menor sigue sin publicarse nunca.
 
 ---
 
@@ -67,6 +77,9 @@ lo demás son consecuencias de esta regla.
 
 ### Sí se publica
 - Nombre del equipo de investigación y grado o sección.
+- **La firma de quien publica**: nombre de pila y la inicial del apellido si es
+  estudiante («María Q.»), nombre completo si es docente. Igual para quienes
+  figuren como colaboradores → §2 ter.
 - Fotografías de módulos, cultivos, instrumentos y del mural.
 - Fotografías de manos trabajando, planos generales de espalda o imágenes donde
   no se distinga el rostro.
@@ -85,6 +98,59 @@ lo demás son consecuencias de esta regla.
 - **Metadatos de las fotografías** — se retiran antes de subirlas. Una foto de
   móvil puede llevar coordenadas GPS del laboratorio y del propio domicilio.
 
+
+---
+
+## 2 ter. La firma de un aporte
+
+Desde el **2026-09-13** las publicaciones de la carpeta de campo llevan firma.
+Antes se firmaban con `equipo` y `grado` y nada más: quien hacía el trabajo no
+aparecía por ningún lado. En un portal que publica investigación escolar eso es
+un problema real — el crédito es parte de lo que se enseña.
+
+El problema es que el crédito choca de frente con el §1. La forma de los campos
+es lo que resuelve el choque, y **no la decide el diseño, la decide esta nota**:
+
+| Quién firma | Qué se publica | Por qué |
+|---|---|---|
+| **Estudiante** | Nombre de pila + inicial del apellido → «María Q. · 4.° A» | El §2 prohíbe apellidos completos de menores. No prohíbe el nombre de pila |
+| **Docente** | Nombre y apellidos completos | Es un adulto que firma su propio trabajo. Esta nota nunca dijo nada de los docentes |
+
+Los colaboradores siguen exactamente la misma regla que el autor.
+
+### La inicial va en un campo aparte, y eso es deliberado
+
+En el formulario, el estudiante **no** escribe «nombre y apellido» en una caja.
+Escribe el nombre en una y la inicial en otra **de un solo carácter**. Un campo
+ancho invitaría a teclear el apellido entero, que es justo lo que no se publica.
+
+Al elegir «docente» en el selector de rol, el campo de inicial desaparece y la
+etiqueta pasa a «Nombre y apellidos» — y se **borra** lo que hubiera dentro,
+para que no viaje un dato que ya no corresponde.
+
+### Pero un formulario se salta
+
+Esconder un campo no es una garantía: cualquiera abre la consola del navegador y
+envía lo que quiera. Por eso la regla vive también **en la base de datos**, donde
+no se puede esquivar — `ciehs.aportes`, restricción `aportes_inicial_corta`:
+
+```sql
+check (autor_inicial is null or char_length(autor_inicial) <= 2)
+```
+
+Esa línea es lo que convierte la promesa de esta nota en algo que se cumple **por
+construcción y no por confianza**. Si alguien intenta meter «Quispe» ahí, la
+fila se rechaza. Comprobado contra la base real el 2026-09-13, junto con las
+restricciones hermanas que limitan la lista de colaboradores →
+[[CIEHS-Backend-Supabase]] §10.
+
+### Lo que esto no arregla
+
+En un colegio, «María Q. · 4.° A» identifica a una persona concreta para
+cualquiera que esté dentro del colegio. La firma protege frente a un buscador o
+un desconocido, **no frente a la comunidad escolar**, y no pretende hacerlo: la
+autoría es justamente lo contrario del anonimato. Conviene tenerlo escrito para
+que nadie lea el §1 como una promesa de anonimato que nunca fue.
 
 ---
 
@@ -224,6 +290,15 @@ obstáculo.
 - [x] Procedimiento para **retirar metadatos** de las fotografías antes de
       subirlas. Hecho: hay un limpiador propio que descarta todos los segmentos
       APPn y de comentario de cada JPEG. Se aplicó a las cuatro publicadas.
+- [ ] **El campo del nombre no impide un apellido.** La base garantiza que no
+      entre un apellido en `autor_inicial` (§2 ter), pero nada impide que un
+      estudiante teclee «María Quispe Torres» en el campo del *nombre*. Hoy el
+      único filtro es que el coordinador lo vea antes de publicar, y eso es un
+      control humano, no una garantía. Opciones a valorar: rechazar en el
+      formulario un nombre con espacios cuando el rol es «estudiante», o
+      recortarlo a la primera palabra al guardar. Ninguna es gratis — hay
+      nombres compuestos legítimos («María José»), así que no se decidió a la
+      ligera y queda abierto.
 - [ ] Decidir sobre las tipografías propias para eliminar la llamada a Google.
 - [ ] Revisar la contradicción de licencia del repositorio. La contradicción ya
       se retiró; falta la decisión, y afecta directamente a esta nota: una

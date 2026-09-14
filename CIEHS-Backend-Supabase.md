@@ -6,7 +6,7 @@ instancia: kumxtheybmqbfixatnok (compartida)
 esquema: ciehs
 bucket: ciehs-evidencias
 estado: en produccion
-actualizado: 2026-09-09
+actualizado: 2026-09-13
 ---
 
 # CIEHS · Backend Supabase
@@ -69,6 +69,13 @@ instancia afecta a los tres proyectos a la vez.
 | `admins` | Quién puede escribir | **no** |
 
 12 tablas · RLS activo en las 12.
+
+> [!warning] Este inventario está incompleto
+> La tabla lista 13 filas y dice «12 tablas», y además **faltan** las que
+> llegaron después del 2026-09-09: `aportes` (→ §10), y las de `db/16` y `db/17`
+> — `textos`, `imagenes`, `arena_preguntas`, `acceso_intentos`, `acceso_config`.
+> No lo corrijo a ojo: rehacer el inventario pide contarlo contra la base, y eso
+> queda como pendiente en §6.
 
 ### Escritura abierta al público: las dos excepciones
 
@@ -201,6 +208,10 @@ on conflict (user_id) do nothing;
       de la carpeta de campo, un archivo por módulo → §8.
 - [x] Autoría (`recorded_by`, `updated_by`) la pone el servidor, no el cliente
       → [[CIEHS-Auditoria-Seguridad-Auth]].
+- [x] Firma de quien publica un aporte. Hecho el 2026-09-13, `db/18` → §10.
+- [ ] **Rehacer el inventario de tablas del §2 contra la base.** Está desfasado:
+      dice «12 tablas» sobre una lista de 13 y le faltan al menos seis de
+      `db/16`, `db/17` y `db/18`. Pide contarlo, no completarlo de memoria.
 
 ## 7. Galería de evidencias: imágenes fuera de git
 
@@ -371,8 +382,106 @@ en dos.
 
 ---
 
+## 10. La autoría de los aportes, y un CHECK que no se podía escribir
+
+`db/18_autoria_aportes.sql`, aplicada el **2026-09-13**. Añade a `ciehs.aportes`
+la firma de quien publica. El porqué pedagógico y la regla de privacidad que da
+forma a las columnas están en [[CIEHS-Privacidad-Menores]] §2 ter; aquí queda lo
+que hace falta para entender el esquema.
+
+| Columna | Tipo | Para qué |
+|---|---|---|
+| `autor_nombre` | `text` | Docente: nombre y apellidos. Estudiante: **solo el nombre de pila** |
+| `autor_inicial` | `text` | Inicial del apellido del estudiante. Máx. 2 caracteres |
+| `colaboradores` | `jsonb not null default '[]'` | Lista `[{n,i,g}]`, misma regla que el autor |
+
+Los colaboradores van en `jsonb` y no en texto porque son **una lista de
+personas**, no una frase: guardar «José M., Lucía T.» obligaría a parsear nombres
+después para pintarlos, y parsear nombres no le sale bien a nadie.
+
+### Las cuatro restricciones
+
+| Restricción | Qué impide |
+|---|---|
+| `aportes_autor_corto` | Nombre fuera de 2–80 caracteres |
+| `aportes_inicial_corta` | **La que sostiene la política de menores**: `char_length(autor_inicial) <= 2` |
+| `aportes_colab_lista` | Que no sea un array, o que pase de 10 elementos |
+| `aportes_colab_forma` | Un colaborador mal formado: sin nombre útil, con apellido entero, con grado larguisimo |
+
+### El error que obligó a reescribirlo: `0A000`
+
+La primera versión de `aportes_colab_forma` recorría la lista así:
+
+```sql
+check (not exists (select 1 from jsonb_array_elements(colaboradores) as c where ...))
+```
+
+Y el script entero falló al aplicarlo:
+
+> `ERROR: 0A000: cannot use subquery in check constraint`
+
+**Un CHECK no admite subconsultas.** Y desplegar un `jsonb` para mirar elemento
+por elemento obliga a `jsonb_array_elements`, que es exactamente eso. Como el
+script va en una sola tanda, no se aplicó **nada**: ni las tres columnas ni las
+otras tres restricciones, que sí eran válidas.
+
+La salida es que una **llamada a función** sí se admite dentro de un CHECK. El
+recorrido se mudó a `ciehs.colaboradores_validos(jsonb)` y el CHECK se quedó
+preguntando sí o no:
+
+```sql
+create or replace function ciehs.colaboradores_validos(lista jsonb)
+returns boolean language sql immutable parallel safe set search_path = ''
+```
+
+Tres decisiones de esa firma que no son adorno:
+
+- **`immutable`** es la condición para poder usarla en un CHECK, y aquí es cierto
+  de verdad: depende solo de su argumento, no lee ninguna tabla ni el reloj.
+- **`set search_path = ''`** con todo calificado como `pg_catalog.…`. En una
+  instancia compartida con Aura (`public`) y Safari (`safary_kids`), dejar que el
+  `search_path` de quien llama decida qué `jsonb_typeof` se ejecuta sería
+  justamente el acoplamiento que el esquema propio existe para evitar (§1).
+- **`pg_catalog.length` y no `char_length`**, para no depender de cómo resuelve
+  un alias del estándar SQL con el `search_path` cerrado.
+
+> [!tip] La lección, más allá de esta tabla
+> Si una restricción necesita **recorrer** algo —un array, un jsonb— no cabe en
+> un CHECK tal cual. Saca el recorrido a una función `immutable` y deja el CHECK
+> como una pregunta de sí o no.
+
+### Comprobado, no supuesto
+
+El 2026-09-13, contra la base real: cuatro intentos de violar la política,
+rechazados por la restricción que tocaba y sin dejar fila — apellido entero en
+`autor_inicial`, colaborador con apellido entero, once colaboradores, y
+colaborador con nombre de una letra. Los dos de `aportes_colab_forma` son la
+prueba de que la función se ejecuta bien **como rol `anon`** con el `search_path`
+cerrado. Y un alta válida con firma completa volvió de la base idéntica a como se
+envió.
+
+### Degradación mientras una migración no está aplicada
+
+El patrón que usó `ciehs-data.js` aquí vale para cualquier columna nueva:
+
+- La lectura pide las columnas nuevas y, si el servidor responde que no existen,
+  **reintenta con la lista corta**. La sección funciona igual, sin firmas.
+- La consulta de la tanda principal del portal usa la lista **corta a
+  propósito**: ahí una columna desconocida tumbaría el portal entero al respaldo
+  estático por una firma.
+- El INSERT intenta con firma y, si falla por eso, reintenta sin ella. **El
+  trabajo se guarda; se pierde el crédito, no el archivo.** Y se avisa por
+  pantalla, porque callarlo dejaría creer que el crédito quedó puesto.
+
+No se tocaron las políticas RLS: las columnas viajan en el mismo INSERT en
+cuarentena que ya existía y se leen con la misma política de las filas aprobadas.
+Añadir columnas no cambia quién escribe ni quién lee.
+
+---
+
 ## Enlaces
 
+- [[CIEHS-Privacidad-Menores]] — la regla que da forma a las columnas de autoría.
 - [[CIEHS-Portal-Educativo]] — arquitectura del portal y alojamiento.
 - [[CIEHS-Auditoria-Seguridad-Auth]] — autenticación y hallazgos de seguridad.
 - [[CIEHS-Metodologia-Pedagogica]] — qué contenido pedagógico consume estos datos.

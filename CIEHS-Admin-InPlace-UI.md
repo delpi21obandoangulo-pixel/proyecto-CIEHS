@@ -6,6 +6,7 @@ estado: en produccion
 publicado-en: https://ciehs.vercel.app/
 actualizado: 2026-09-13
 revision: 3 — el modal desaparece; los formularios van a su sección
+revisado: 2026-09-13 — el motor no cambia con la autoría de los aportes
 ---
 
 # CIEHS · Edición in-place (Admin UI)
@@ -285,6 +286,18 @@ formulario de ESA fila, ya relleno.
 **El lápiz sólo aparece si el tipo tiene editor** (`CIEHS.puedeEditarFicha`).
 `comentario`, `aporte` e `investigacion` se quedan con papelera: enseñar un
 lápiz que no lleva a ninguna parte es peor que no enseñarlo.
+
+> [!note] Un aporte ahora llega firmado — 2026-09-13
+> Desde `db/18`, un aporte trae **el nombre de quien lo hizo** y su lista de
+> colaboradores, y la tarjeta los pinta. **El motor de edición no cambia en
+> nada**: la firma la escribe el estudiante en el formulario público, no el
+> administrador aquí, y `aporte` sigue sin lápiz.
+>
+> Lo que sí cambia es **qué hay que mirar al moderar**. Antes se revisaba el
+> archivo y el texto; ahora también un nombre de persona. Si alguien escribió su
+> apellido entero en el campo del nombre —la base solo impide el apellido en el
+> campo de la *inicial*— el único filtro es el ojo del coordinador antes de
+> publicar. Ver [[CIEHS-Privacidad-Menores]] §2 ter.
 
 Cuando los formularios se muden del modal a su sección, **el mapa sigue valiendo
 tal cual**: lo que cambia es dónde vive el form, no quién lo abre.
