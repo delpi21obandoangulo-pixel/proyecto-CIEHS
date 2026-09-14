@@ -60,7 +60,7 @@ está cada cosa.
 | Identidad | Escudo institucional + **logo propio del CIEHS** derivado del mural · blanco por capas |
 | Portada | Hero con **fondo animado de brisa** + galería «El CIEHS en acción», administrable desde el panel |
 | Infraestructura | **15 módulos DWC activos sin bomba de aire**; NFT y vertical solo como proyección |
-| Privacidad | **Rostros tapados en origen**: toda imagen se pixela en el navegador antes de subirse |
+| Privacidad | **Rostros tapados en origen**: toda imagen se pixela en el navegador antes de subirse · registro de autorizaciones en producción, **vacío hasta que haya fichas firmadas** |
 | Seguridad | CSP sin `unsafe-inline` (scripts ni estilos) · pentest sin hallazgos explotables en el CIEHS |
 | Investigación | Carpeta de campo digital, aportes en cuarentena **firmados por su autor y colaboradores**, y resultados por tratamiento con gráfica automática |
 | Tienda | **6 especies publicadas** con estado de lote · carrito, reserva y transparencia en porcentaje · respaldo estático sin conexión |
@@ -71,7 +71,12 @@ está cada cosa.
 
 ## Lo que falta, por orden de importancia
 
-1. **Subir las quince fotografías con estudiantes** desde el panel, tapando
+1. **Confirmar la custodia de las autorizaciones y repartir las fichas.** Es un
+   trámite físico, no de software: el registro de códigos ya está en producción
+   y validado, pero vacío, y un registro vacío no autoriza nada. Hasta que haya
+   fichas firmadas **no se publica ningún rostro sin tapar**
+   → [[pendientes-coordinacion/02-autorizacion-de-imagen|02 · Autorización de imagen]]
+2. **Subir las quince fotografías con estudiantes** desde el panel, tapando
    las caras con el editor. Están clasificadas y sin metadatos
    → [[CIEHS-Privacidad-Menores]]
 2. **Archivos descargables**: la carpeta de campo y el espacio docente ya tienen

@@ -298,6 +298,13 @@ obstáculo.
       **falta que el coordinador la confirme**.
       Hasta entonces `consent_ref` no tiene destino verificable y no debe
       publicarse ninguna fotografía con rostro sin tapar.
+      **El software ya no es el cuello de botella**: desde el 2026-09-13 el
+      registro de códigos está en producción y validado →
+      [[CIEHS-Backend-Supabase]] §11. Lo único que falta es físico — la firma de
+      custodia y el reparto de las fichas.
+- [ ] **Repartir las fichas** a las familias. El documento está listo para
+      imprimir desde hace días; sin fichas firmadas el registro sigue vacío, y
+      un registro vacío no autoriza nada.
 - [x] Procedimiento para **retirar metadatos** de las fotografías antes de
       subirlas. Hecho: hay un limpiador propio que descarta todos los segmentos
       APPn y de comentario de cada JPEG. Se aplicó a las cuatro publicadas.

@@ -209,6 +209,10 @@ on conflict (user_id) do nothing;
 - [x] Autoría (`recorded_by`, `updated_by`) la pone el servidor, no el cliente
       → [[CIEHS-Auditoria-Seguridad-Auth]].
 - [x] Firma de quien publica un aporte. Hecho el 2026-09-13, `db/18` → §10.
+- [x] Registro de autorizaciones de imagen. Hecho el 2026-09-13, `db/19` → §11.
+      **En producción y validado contra la base real**, pero la tabla está
+      vacía: no autoriza nada hasta que existan fichas firmadas
+      → [[pendientes-coordinacion/02-autorizacion-de-imagen|02 · Autorización de imagen]].
 - [ ] **Rehacer el inventario de tablas del §2 contra la base.** Está desfasado:
       dice «12 tablas» sobre una lista de 13 y le faltan al menos seis de
       `db/16`, `db/17` y `db/18`. Pide contarlo, no completarlo de memoria.
@@ -476,6 +480,103 @@ El patrón que usó `ciehs-data.js` aquí vale para cualquier columna nueva:
 No se tocaron las políticas RLS: las columnas viajan en el mismo INSERT en
 cuarentena que ya existía y se leen con la misma política de las filas aprobadas.
 Añadir columnas no cambia quién escribe ni quién lee.
+
+---
+
+## 11. Autorizaciones de imagen, y una política que no servía para nada
+
+`db/19_autorizaciones.sql`, aplicada el **2026-09-13**. Es la pieza que permite
+la alternativa al pixelado universal: un estudiante con autorización firmada por
+su apoderado puede aparecer con cara y nombre completo, y el portal distingue
+quién la tiene de quién no. El porqué y el procedimiento en papel están en
+[[CIEHS-Privacidad-Menores]] §2 ter y en
+[[pendientes-coordinacion/02-autorizacion-de-imagen|02 · Autorización de imagen]].
+
+### Lo que esta tabla no guarda
+
+Ni nombres, ni apellidos, ni DNI, ni el escaneo del papel. **Nada que identifique
+a nadie.** No es una omisión, es el punto entero: el original vive en papel bajo
+llave y el índice código → estudiante en una hoja de cálculo local del
+coordinador, que no entra ni en el repositorio —es público y el historial de git
+es permanente— ni en la base —es una instancia compartida—.
+
+| Columna | Qué |
+|---|---|
+| `codigo` | `AUT-2026-014`, validado con expresión regular |
+| `anio`, `vigente`, `alta`, `revocada` | fechas y estado |
+| `nota` | operativa, máx. 120 caracteres. **Nunca el nombre** |
+
+Subir el papel escaneado habría sido la peor pieza del sistema: un almacén con el
+nombre y el DNI del apoderado, su firma y los datos del menor. Por eso el panel
+no tiene ningún campo de archivo, y no es un descuido.
+
+Además `ciehs.aportes` gana `consent_ref` **con clave ajena**. Eso es lo que
+convierte el campo en una comprobación de verdad: hasta ahora `consent_ref`
+existía en `evidencias` como texto libre, y un campo que acepta cualquier cosa es
+decorativo.
+
+### El código lo pone el coordinador, nunca quien sube
+
+El formulario de aportes es público. Con el campo ahí, cualquiera podría tantear
+códigos —`AUT-2026-014` es adivinable— hasta acertar uno y firmar con apellido
+completo amparándose en la autorización de otra persona. Va en la fila de
+moderación, al lado del botón de aprobar, porque el código y la aprobación son el
+mismo gesto.
+
+> [!warning] Dos fallos encadenados al estrenarla, y cómo se vieron
+> **1. Política RLS sin `GRANT`, y apuntada al rol equivocado.** La primera
+> versión creó las políticas pero no los privilegios de tabla, y apuntó la
+> política solo a `authenticated`. El portal administra con la clave publicable
+> —o sea como `anon`, con la cabecera `X-CIEHS-Code`—, que es el patrón que fijó
+> `db/11` para las otras diecisiete tablas. Resultado: el registro se leía vacío
+> y cualquier alta moría con «permission denied». **Una política sin privilegio
+> de tabla no hace nada, y un privilegio sin política tampoco.**
+>
+> Lo que despistó: el `SELECT` sí funcionaba, porque `db/01` dejó puesto un
+> `alter default privileges ... grant select on tables`. La tabla nació con
+> lectura y sin escritura, y parecía medio bien.
+>
+> **2. La degradación tapaba el fallo.** El detector daba por «migración no
+> aplicada» cualquier error que mencionara la tabla, y «permission denied for
+> table autorizaciones» la menciona. El panel decía en silencio «falta aplicar
+> db/19» cuando db/19 estaba aplicada. Ahora se distingue por código: `42P01` y
+> `42703` son migración ausente, `42501` es un error de verdad y se deja ver.
+>
+> **La lección:** una red de seguridad que convierte un error en silencio es peor
+> que no tenerla. Y los dos fallos solo aparecieron porque la verificación
+> **escribía** en vez de limitarse a leer — con lecturas se habría dado todo por
+> bueno.
+
+### Validado contra la base real (2026-09-13)
+
+Con limpieza comprobada después: cero autorizaciones y cero aportes con
+`consent_ref`.
+
+| Prueba | Resultado |
+|---|---|
+| Alta sin código de administración | 401 · *violates row-level security policy* |
+| Código duplicado | rechazado por la clave primaria |
+| `vigente=false` sin fecha | rechazado por `autorizaciones_revocacion_coherente` |
+| `consent_ref` inexistente | rechazado por la clave ajena |
+| ¿El aporte se publicó igualmente? | **No** — misma sentencia |
+| Atado y releído de la base | persiste |
+| Borrar una autorización citada | rechazado (`on delete restrict`) |
+| Revocar | la fila sigue, con su fecha |
+
+### Lo que no resuelve
+
+La base garantiza que un código existe y está vigente. **No** puede saber si
+«María Quispe Torres» es un nombre de pila o lleva los apellidos. Por eso la fila
+de moderación enseña la firma antes de aprobar y marca en rojo un nombre de más
+de dos palabras sin respaldo detrás. No lo bloquea —hay nombres compuestos
+legítimos y un docente firma entero con todo el derecho—: decidir es del
+coordinador, avisar es del portal.
+
+Y **la tabla vacía no autoriza nada**. Faltan los dos pasos humanos de
+[[pendientes-coordinacion/02-autorizacion-de-imagen|02 · Autorización de imagen]]:
+confirmar quién custodia los originales y repartir las fichas. Hasta entonces no
+se publica ningún rostro sin tapar, y el panel lo dice cuando el registro está
+vacío.
 
 ---
 
