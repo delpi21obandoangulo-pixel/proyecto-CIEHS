@@ -251,6 +251,63 @@ llevaba `data-edit-img`. No habia 15 pendientes.
 
 ---
 
+## 3 quater. Las fichas se editan, no solo se borran
+
+El motor sabía **retirar** una publicación desde su propia tarjeta, pero no
+cambiarla: para corregir el precio de un producto o la fecha de un lote había
+que ir al panel y buscar la fila en una lista — justo el camino que la edición
+in-place vino a quitar.
+
+Ahora cada ficha con formulario lleva **lápiz y papelera**. El lápiz abre el
+formulario de ESA fila, ya relleno.
+
+> [!important] No se reescribió ningún formulario
+> `crearEditor(cfg)` ya servía a seis secciones y sólo dependía de ids del DOM.
+> Se le añadió `editar(clave)` —que carga la lista si hace falta, porque con la
+> caché vacía `abrir()` no encontraría la fila y abriría **un alta en blanco**,
+> que es el error más difícil de detectar— y `app.js` publica el puente
+> `CIEHS.editarFicha(tipo, clave)`. El lápiz sólo llama.
+
+| Tipo | Editor | Pestaña |
+|---|---|---|
+| `lote` | `edBitacora` | Bitácora |
+| `nota` | `edCarpeta` | Carpeta |
+| `recurso` | `edRecursos` | Recursos |
+| `movimiento` | `edCaja` | Comunidad |
+| `evidencia` | `edEvidencias` | Evidencias |
+| `producto` | `edProductos` | Catálogo |
+
+**El lápiz sólo aparece si el tipo tiene editor** (`CIEHS.puedeEditarFicha`).
+`comentario`, `aporte` e `investigacion` se quedan con papelera: enseñar un
+lápiz que no lleva a ninguna parte es peor que no enseñarlo.
+
+Cuando los formularios se muden del modal a su sección, **el mapa sigue valiendo
+tal cual**: lo que cambia es dónde vive el form, no quién lo abre.
+
+### Dos rotulados que faltaban
+
+- **`fichaInvestigacion`** llevaba `data-inv-code` —que usa el respaldo estático
+  para leerse a sí mismo— pero no el par del motor. Además `investigacion` no
+  estaba en el mapa `BORRABLES`, así que el atributo por sí solo no habría hecho
+  nada: `montarBorrable` sale sin montar cuando el tipo no está en la tabla.
+  Se retira **por `code`**, no por id, y el aviso dice que **arrastra los
+  resultados**, porque `resultados` cuelga de la investigación.
+- **La rejilla de recursos destacados** se quedó sin rotular; la normal sí lo
+  estaba. Misma tabla, mismo borrado.
+
+> [!caution] Lo destacado no se pudo probar en vivo
+> `ciehs.resources` está **vacía**, así que no hay ninguna tarjeta destacada que
+> mirar. El atributo está puesto y es idéntico al de la rejilla normal, que sí
+> funciona — pero conviene comprobarlo el día que se cargue el primer recurso.
+
+> [!check] Comprobado con el código real, contra la base
+> Entrando con el código de administración: 21 fichas de 7 tipos en el portal.
+> Lápiz **sólo** en los 4 tipos con editor que había en pantalla (evidencia,
+> nota, lote, producto) y papelera en los 7. El lápiz de «Lechuga crespa» abrió
+> el formulario de Catálogo con su nombre y su precio ya puestos.
+
+---
+
 ## 4. Accesibilidad
 
 - `role="button"` y `tabindex` se ponen y se **quitan** con el modo edición. Si

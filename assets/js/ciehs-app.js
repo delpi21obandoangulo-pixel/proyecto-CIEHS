@@ -1278,7 +1278,11 @@
       return '<span class="chip' + (n ? ' mono' : '') + '">' + enfasis(t) + '</span>';
     }).join('');
 
-    return '<article class="card research-card" data-inv-code="' + esc(i.code) + '">'
+    // data-inv-code se queda: lo usa el respaldo estatico para leerse a si
+    // mismo. data-ciehs-tipo/id son para la edicion in-place, que asi puede
+    // retirar la ficha desde la propia tarjeta sin pasar por el panel.
+    return '<article class="card research-card" data-inv-code="' + esc(i.code) + '"'
+      + ' data-ciehs-tipo="investigacion" data-ciehs-id="' + esc(i.code) + '">'
       + '<div class="top-row"><span class="code mono">' + esc(i.code) + '</span>'
       + '<span class="chip status-curso">' + esc(i.status) + '</span></div>'
       + '<h3>' + enfasis(i.title) + '</h3>'
@@ -1650,7 +1654,8 @@
               + 'Tu navegador no puede reproducir este audio. '
               + '<a href="' + esc(r.file_url) + '">Descárgalo aquí</a>.</audio>'
             : '<div class="destacado-player">' + botonRecurso(r) + '</div>';
-          return '<article class="card destacado-card">'
+          return '<article class="card destacado-card"'
+            + ' data-ciehs-tipo="recurso" data-ciehs-id="' + esc(r.id) + '">'
             + '<div class="destacado-top">'
             +   '<span class="destacado-kind">' + esc(FORMATO_ETIQUETA[r.file_kind] || r.kind || 'Recurso') + '</span>'
             +   '<span class="destacado-dur mono">' + esc(r.duration || NIVEL_ETIQUETA[r.level] || '') + '</span>'
@@ -2303,7 +2308,7 @@
         ? e.esqueleto(3, 'fila')
         : '<p class="inv-vacia">Cargando…</p>';
 
-      cfg.listar().then(function(filas){
+      return cfg.listar().then(function(filas){
         cache = filas;
         if(!filas.length){
           lista.innerHTML = e
@@ -2397,7 +2402,16 @@
       });
     }
 
-    return { cargar: cargar };
+    /* Abrir una fila concreta desde fuera del panel: lo usa el lapiz que
+       la edicion in-place pone sobre la propia tarjeta del portal. Si la
+       cache esta vacia se carga primero, o abrir() no encontraria la fila. */
+    function editarFila(clave){
+      if(cache.length) { abrir(clave); return Promise.resolve(true); }
+      return cargar().then(function(){ abrir(clave); return true; })
+                     .catch(function(){ return false; });
+    }
+
+    return { cargar: cargar, editar: editarFila };
   }
 
   /* ----------------------------- bitácora ----------------------------- */
@@ -3096,6 +3110,39 @@
     if(nombre === 'evidencias') edEvidencias.cargar();
     if(nombre === 'registros') cargarRegistros();
     if(nombre === 'comunidad'){ cargarPedidos(); cargarComentariosAdmin(); edCaja.cargar(); }
+  };
+
+  /* ------------------- editar una ficha desde el portal ------------------
+     La edicion in-place ya sabia BORRAR una publicacion desde su propia
+     tarjeta, pero no editarla: para cambiar el precio de un producto o la
+     fecha de un lote habia que ir al panel y buscarlo en una lista.
+
+     Los formularios no se reescriben. Cada tipo dice a que editor pertenece y
+     con que clave se busca la fila, y el lapiz de la tarjeta abre ESE
+     formulario ya relleno. Es el mismo camino que usa el boton «Editar» de la
+     lista del panel — solo cambia desde donde se entra.
+
+     Cuando los formularios se muden del modal a su seccion, este mapa sigue
+     valiendo tal cual: lo que cambia es donde vive el form, no quien lo abre. */
+  var FICHAS = {
+    lote:       { pestana: 'bitacora',   editor: function(){ return edBitacora;   } },
+    nota:       { pestana: 'carpeta',    editor: function(){ return edCarpeta;    } },
+    recurso:    { pestana: 'recursos',   editor: function(){ return edRecursos;   } },
+    movimiento: { pestana: 'comunidad',  editor: function(){ return edCaja;       } },
+    evidencia:  { pestana: 'evidencias', editor: function(){ return edEvidencias; } },
+    producto:   { pestana: 'catalogo',   editor: function(){ return edProductos;  } }
+  };
+
+  window.CIEHS.puedeEditarFicha = function(tipo){ return !!FICHAS[tipo]; };
+
+  window.CIEHS.editarFicha = function(tipo, clave){
+    var def = FICHAS[tipo];
+    if(!def) return Promise.resolve(false);
+    // El formulario vive dentro del modal, asi que hay que abrirlo y llevarlo a
+    // su pestaña antes de rellenarlo; si no, se rellenaria un form invisible.
+    if(window.CIEHS.abrirFormularios) window.CIEHS.abrirFormularios();
+    abrirPestana(def.pestana);
+    return def.editor().editar(clave);
   };
   /* ------------------------------ arranque ---------------------------- */
 

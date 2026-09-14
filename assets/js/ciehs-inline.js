@@ -674,7 +674,11 @@
     nota:       { que: 'esta nota de campo', fn: function (n) { return D.eliminarNota(n.id); } },
     lote:       { que: 'este lote',          fn: function (n) { return D.eliminarLote(n.id); } },
     producto:   { que: 'este producto',      fn: function (n) { return D.eliminarProducto(n.id); } },
-    movimiento: { que: 'este movimiento',    fn: function (n) { return D.eliminarMovimiento(n.id); } }
+    movimiento: { que: 'este movimiento',    fn: function (n) { return D.eliminarMovimiento(n.id); } },
+    // Se retira por CODIGO, no por id numerico: code es la clave de
+    // investigations. Y se avisa de que arrastra los resultados, porque
+    // resultados cuelga de la investigacion y desaparece con ella.
+    investigacion: { que: 'esta investigación y sus resultados', fn: function (n) { return D.eliminarInvestigacion(n.id); } }
   };
 
   function montarBorrable(nodo) {
@@ -696,6 +700,33 @@
     }
     if (getComputedStyle(anfitrion).position === 'static') anfitrion.classList.add('ed-anclaje');
     anfitrion.appendChild(b);
+
+    /* Borrar no era suficiente. Para cambiar el precio de un producto o la
+       fecha de un lote habia que ir al panel y buscar la fila en una lista,
+       que es exactamente el camino que la edicion in-place vino a quitar.
+
+       El lapiz abre el formulario de ESA fila, ya relleno. No se reescribe
+       ningun formulario: se reutiliza el que ya existe, igual que hace el
+       boton «Editar» de la lista del panel. Solo aparece si app.js dice que
+       ese tipo tiene editor, asi que un tipo sin formulario no enseña un
+       lapiz que no lleva a ninguna parte. */
+    if (global.CIEHS && global.CIEHS.puedeEditarFicha && global.CIEHS.puedeEditarFicha(tipo)) {
+      var lapiz = boton('ed-lapiz ed-lapiz--ficha', 'Editar ' + def.que, '✎');
+      anfitrion.appendChild(lapiz);
+      lapiz.addEventListener('click', function (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        var clave = nodo.getAttribute('data-ciehs-id');
+        lapiz.disabled = true;
+        global.CIEHS.editarFicha(tipo, clave).then(function (ok) {
+          lapiz.disabled = false;
+          if (!ok) anunciar('No se pudo abrir el formulario de esta ficha.', true);
+        }).catch(function (e) {
+          lapiz.disabled = false;
+          anunciar('No se pudo abrir: ' + fallo(e), true);
+        });
+      });
+    }
 
     b.addEventListener('click', function (ev) {
       ev.preventDefault();
