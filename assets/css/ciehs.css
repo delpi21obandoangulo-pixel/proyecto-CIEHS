@@ -4907,40 +4907,87 @@ body.ciehs-admin:not(.ciehs-editando) .ed-admin-pista{ display:none; }
 .ed-pregon.is-visible{ opacity:1; transform:translate(-50%, 0); }
 .ed-pregon.is-error{ background:#7f1d1d; }
 
+/* ============================ EL BLOQUE ABIERTO ==========================
+   Todo lo que marca contenido editable cuelga de .ed-bloque--abierto, nunca
+   de body.ciehs-editando a secas. Es la diferencia entre administrar un
+   portal y mirar su plano de despiece: con 583 textos rotulados, marcarlos
+   todos a la vez hacia imposible juzgar como queda una pagina.
+   ======================================================================== */
+
+/* El lapiz que abre un bloque. Discreto hasta que se le acerca el raton o el
+   teclado: en reposo es una marca de agua, no un boton reclamando atencion. */
+.ed-lapiz-bloque{ display:none; }
+body.ciehs-editando .ed-lapiz-bloque{
+  display:grid; place-items:center; position:absolute; z-index:7;
+  top:10px; right:10px; width:34px; height:34px; padding:0;
+  border-radius:50%; cursor:pointer; line-height:1; font-size:15px;
+  border:1px solid var(--line-strong); background:rgba(255,255,255,.9);
+  color:var(--ink-soft); opacity:.42;
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  transition:opacity .2s var(--ease-soft), transform .2s var(--ease-soft),
+             background-color .2s var(--ease-soft), color .2s var(--ease-soft);
+}
+body.ciehs-editando .ed-bloque:hover > .ed-lapiz-bloque,
+body.ciehs-editando .ed-bloque:focus-within > .ed-lapiz-bloque{ opacity:1; }
+body.ciehs-editando .ed-lapiz-bloque:hover{
+  background:#047857; border-color:transparent; color:#fff;
+  opacity:1; transform:scale(1.08);
+}
+body.ciehs-editando .ed-lapiz-bloque:active{ transform:scale(.94); }
+body.ciehs-editando .ed-lapiz-bloque:focus-visible{
+  opacity:1; outline:2px solid var(--leaf-500); outline-offset:2px;
+}
+/* Abierto, el lapiz pasa a ser el boton de cerrar y deja de ser discreto:
+   es la unica salida visible del bloque, junto con Escape. */
+body.ciehs-editando .ed-bloque--abierto > .ed-lapiz-bloque{
+  opacity:1; background:#047857; border-color:transparent; color:#fff;
+}
+
+/* El bloque abierto se acota con un halo suave: dice donde empieza y acaba lo
+   que se esta editando sin encerrarlo en una caja dura. */
+body.ciehs-editando .ed-bloque--abierto{
+  outline:2px solid rgba(5,150,105,.34); outline-offset:4px;
+  border-radius:var(--radius-m);
+}
+@media (prefers-reduced-motion:reduce){
+  body.ciehs-editando .ed-lapiz-bloque{ transition:none; }
+  body.ciehs-editando .ed-lapiz-bloque:hover{ transform:none; }
+}
+
 /* ------------------------------------------------ señales sobre el texto --- */
 /* El contorno es discontinuo a proposito: dice que eso se puede tocar sin
-   parecer un campo de formulario ya abierto. */
-body.ciehs-editando .ed-texto{
+   parecer un campo de formulario ya abierto. Solo dentro del bloque abierto. */
+body.ciehs-editando .ed-bloque--abierto .ed-texto{
   outline:1px dashed rgba(5,150,105,0.45);
   outline-offset:3px; border-radius:4px; cursor:text;
   transition:outline-color .25s var(--ease-soft), background-color .25s var(--ease-soft);
 }
-body.ciehs-editando .ed-texto:hover,
-body.ciehs-editando .ed-texto:focus-visible{
+body.ciehs-editando .ed-bloque--abierto .ed-texto:hover,
+body.ciehs-editando .ed-bloque--abierto .ed-texto:focus-visible{
   outline-color:var(--leaf-500);
   background:rgba(5,150,105,0.06);
 }
-body.ciehs-editando .ed-texto.is-editando{
+body.ciehs-editando .ed-bloque--abierto .ed-texto.is-editando{
   outline:2px solid var(--leaf-500); background:rgba(5,150,105,0.05);
 }
 
 /* --------------------------------------------------------- barras y fichas - */
 .ed-barra{ display:none; }
-body.ciehs-editando .ed-barra{
+body.ciehs-editando .ed-bloque--abierto .ed-barra{
   display:inline-flex; align-items:center; gap:7px; flex-wrap:wrap;
   margin-top:8px; padding:7px 9px; border-radius:var(--radius-s);
   background:rgba(255,255,255,0.93);
   -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
   border:1px solid var(--line-strong); box-shadow:var(--shadow-2);
 }
-body.ciehs-editando .ed-barra--img{
+body.ciehs-editando .ed-bloque--abierto .ed-barra--img{
   position:absolute; right:10px; bottom:10px; z-index:6; margin-top:0;
 }
 /* El fondo de una seccion no es una foto pequeña: su contenedor puede ocupar
    la pantalla entera -el hero la ocupa-, y abajo a la derecha la barra caia
    fuera de la vista. Aqui va arriba, y por encima de las capas del hero: el
    velo y el titulo se pintan sobre el fondo y se la tragaban. */
-body.ciehs-editando .ed-barra--fondo{
+body.ciehs-editando .ed-bloque--abierto .ed-barra--fondo{
   top:14px; right:14px; bottom:auto; z-index:12;
 }
 .ed-anclaje{ position:relative; }

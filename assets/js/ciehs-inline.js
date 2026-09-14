@@ -1077,9 +1077,12 @@
 
   /* ------------------------------------------------------ montaje global - */
 
-  // Los atributos de interaccion viven solo mientras dura el modo edicion.
-  function marcarEditables(activo) {
-    $$('.ed-texto').forEach(function (nodo) {
+  /* Los atributos de interaccion viven solo mientras dura el modo edicion, y
+     desde 2026-09-13 solo dentro del bloque abierto: ver 3 bis. Poner
+     tabindex en los 583 textos del portal convertia la tabulacion en un
+     campo de minas y llenaba la pantalla de contornos. */
+  function marcarEditables(activo, raiz) {
+    $$('.ed-texto', raiz || doc).forEach(function (nodo) {
       if (activo) {
         nodo.setAttribute('tabindex', '0');
         nodo.setAttribute('role', 'button');
@@ -1124,6 +1127,132 @@
     });
   }
 
+  /* =======================================================================
+     3 BIS. EL BLOQUE ABIERTO - administrar no es ver el portal desarmado
+
+     Hasta ahora, entrar en administracion pintaba un contorno discontinuo
+     sobre CADA texto rotulado. Con 27 rotulos aquello se leia; con 583 el
+     portal se convertia en un plano de despiece y no habia manera de juzgar
+     como queda una pagina mientras se edita.
+
+     Ahora el modo administracion no marca nada por si solo. Cada bloque
+     -una seccion, una tarjeta, el pie- lleva UN lapiz, y solo al pulsarlo se
+     abre ese bloque: dentro aparecen los contornos y las paradas de
+     tabulacion, y fuera el portal sigue viendose como lo ve un visitante.
+     Solo hay un bloque abierto a la vez.
+     ======================================================================= */
+
+  /* QUE CUENTA COMO BLOQUE
+
+     Primero se probo con una lista de contenedores -section, article, .card-.
+     Medido sobre el portal, fallaba: en /investigaciones el unico bloque era
+     la seccion entera, 7260 px y 24 editables, con su lapiz perdido arriba
+     del todo. Eso no es un bloque, es la pagina.
+
+     Tampoco vale una lista de las clases reales -.carpeta-block, .aportes,
+     .ciencia-block...-: hay una distinta por pagina y la lista se quedaria
+     corta a la primera seccion nueva.
+
+     La regla es estructural y no mide alturas, porque las rutas ocultas miden
+     cero y el montaje ocurre sobre el documento entero:
+
+       1. Si el texto vive dentro de una tarjeta, la tarjeta ES el bloque.
+       2. Si no, se sube hasta el elemento que sea hijo directo del
+          contenedor de la seccion: el .wrap de una pagina tiene por hijos
+          justo los bloques de contenido de esa pagina.
+
+     Medido: 583 editables en 147 bloques, mediana de 3 por bloque, el mayor
+     con 27 y ninguno suelto. Ademas NINGUN data-edit vive dentro de una ficha
+     -[data-ciehs-tipo], [data-modulo], [data-arena-id]-, asi que el lapiz de
+     bloque y el de ficha nunca se pisan: son cosas distintas en sitios
+     distintos. */
+  var SEL_TARJETA   = 'article, .card, .priv-bloque';
+  var SEL_CONTENEDOR = 'section, main, footer, [data-page], .wrap, .menu-panel';
+  var bloqueAbierto = null;
+
+  function bloqueDe(nodo) {
+    var tarjeta = nodo.closest(SEL_TARJETA);
+    if (tarjeta) return tarjeta;
+    var n = nodo.parentElement;
+    while (n && n !== doc.body) {
+      var padre = n.parentElement;
+      if (!padre) break;
+      if (padre.matches(SEL_CONTENEDOR)) return n;
+      n = padre;
+    }
+    return nodo.closest('section, footer') || nodo.parentElement;
+  }
+
+  function lapizDe(bloque) {
+    if (!bloque) return null;
+    var hijos = bloque.children;
+    for (var i = 0; i < hijos.length; i++) {
+      if (hijos[i].classList.contains('ed-lapiz-bloque')) return hijos[i];
+    }
+    return null;
+  }
+
+  function montarBloque(bloque) {
+    if (bloque._edBloque) return;
+    bloque._edBloque = true;
+    bloque.classList.add('ed-bloque');
+    if (getComputedStyle(bloque).position === 'static') bloque.classList.add('ed-anclaje');
+
+    var lapiz = boton('ed-lapiz-bloque', 'Editar este bloque', '\u270E');
+    lapiz.setAttribute('aria-expanded', 'false');
+    // El lapiz va absoluto: dentro de un grid o un flex, un hijo mas en el
+    // flujo correria la maquetacion del bloque que dice venir a editar.
+    lapiz.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      abrirBloque(bloque === bloqueAbierto ? null : bloque);
+    });
+    bloque.appendChild(lapiz);
+  }
+
+  function pintarLapiz(bloque, abierto) {
+    var lapiz = lapizDe(bloque);
+    if (!lapiz) return;
+    lapiz.textContent = abierto ? '\u2713' : '\u270E';
+    var et = abierto ? 'Cerrar este bloque' : 'Editar este bloque';
+    lapiz.setAttribute('aria-label', et);
+    lapiz.title = et;
+    lapiz.setAttribute('aria-expanded', abierto ? 'true' : 'false');
+  }
+
+  function abrirBloque(bloque) {
+    if (bloqueAbierto) {
+      bloqueAbierto.classList.remove('ed-bloque--abierto');
+      marcarEditables(false, bloqueAbierto);
+      pintarLapiz(bloqueAbierto, false);
+    }
+    bloqueAbierto = bloque || null;
+    if (!bloqueAbierto) { anunciar('Bloque cerrado.'); return; }
+    bloqueAbierto.classList.add('ed-bloque--abierto');
+    marcarEditables(true, bloqueAbierto);
+    pintarLapiz(bloqueAbierto, true);
+    anunciar('Bloque abierto: ya puedes pulsar sobre sus textos e imagenes. Escape lo cierra.');
+  }
+
+  /* Escape cierra el bloque, pero NO si acaba de cerrar un editor de texto o
+     un aviso: esos ya llaman a preventDefault, y cerrar las dos cosas de una
+     tecla haria perder el sitio donde se estaba trabajando. */
+  doc.addEventListener('keydown', function (ev) {
+    if (ev.key !== 'Escape' || ev.defaultPrevented || !bloqueAbierto) return;
+    var lapiz = lapizDe(bloqueAbierto);
+    abrirBloque(null);
+    if (lapiz) lapiz.focus();   // el foco vuelve a donde se abrio, no al vacio
+  });
+
+  function montarBloques() {
+    var vistos = [];
+    $$('[data-edit], [data-edit-img], [data-edit-fondo]').forEach(function (nodo) {
+      var b = bloqueDe(nodo);
+      if (b && vistos.indexOf(b) < 0) vistos.push(b);
+    });
+    vistos.forEach(montarBloque);
+  }
+
   function montarTodo() {
     $$('[data-alta]').forEach(montarAlta);
     $$('[data-edit]').forEach(montarTexto);
@@ -1132,7 +1261,13 @@
     $$('[data-ciehs-tipo][data-ciehs-id], [data-ciehs-tipo][data-ruta]').forEach(montarBorrable);
     $$('[data-modulo]').forEach(montarModulo);
     $$('[data-arena-id]').forEach(montarArena);
-    marcarEditables(estado.editando);
+    montarBloques();
+    /* Ya NO se marca el portal entero: lo marca abrirBloque, y solo el bloque
+       que se abra. Si habia uno abierto y un repintado lo ha sustituido, se
+       pierde la referencia y se cierra: mejor eso que dejar medio bloque
+       marcado sobre nodos que ya no estan en el documento. */
+    if (bloqueAbierto && !doc.contains(bloqueAbierto)) abrirBloque(null);
+    else if (bloqueAbierto) marcarEditables(true, bloqueAbierto);
   }
 
   /* =========================================================================
@@ -1199,10 +1334,10 @@
     estado.editando = forzar === undefined ? !estado.editando : !!forzar;
     doc.body.classList.toggle('ciehs-editando', estado.editando);
     if (estado.editando) montarTodo();
-    else marcarEditables(false);
+    else { abrirBloque(null); marcarEditables(false); }
     pintarBarra();
     anunciar(estado.editando
-      ? 'Modo edición activo: pulsa sobre cualquier texto o fotografía marcada para cambiarla.'
+      ? 'Modo administración activo: cada bloque tiene un lápiz; púlsalo para abrirlo y editarlo.'
       : 'Controles ocultos: el portal se ve como lo ve un visitante.');
   }
 
@@ -1226,7 +1361,10 @@
     texto.textContent = 'Modo administración';
     var pista = doc.createElement('span');
     pista.className = 'ed-admin-pista';
-    pista.textContent = 'Pulsa sobre cualquier texto o fotografía para cambiarla.';
+    // Tiene que decir el primer paso REAL. Antes decia «pulsa sobre cualquier
+    // texto», que era cierto cuando el portal entero salia marcado; ahora hay
+    // que abrir el bloque primero y, sin esta pista, no hay forma de adivinarlo.
+    pista.textContent = 'Pulsa el lápiz de un bloque para abrirlo y editarlo.';
     var cuenta = doc.createElement('span');
     cuenta.className = 'ed-admin-cuenta';
     cuenta.hidden = true;
