@@ -235,6 +235,55 @@
     return m;
   }
 
+  /* ------------------------------------------------- foco en un dialogo ---
+
+     Declarar aria-modal="true" es una PROMESA: dice al lector de pantalla que
+     mientras esto este abierto no hay nada mas en la pagina. Si el tabulador
+     se sale igualmente, la promesa se incumple y es peor que no haberla hecho:
+     quien navega con teclado acaba recorriendo el portal de detras sin saber
+     que el dialogo sigue abierto, y sin forma de volver.
+
+     Auditado el 2026-09-13: el cajon y la ficha de venia declaraban aria-modal
+     y dejaban 41 elementos tabulables fuera. Esto lo cierra.
+
+     Devuelve la funcion que lo suelta todo y DEVUELVE EL FOCO a donde estaba.
+     Sin eso, al cerrar el foco se queda en un boton que ya no existe y el
+     teclado vuelve al principio del documento: quien pulso «+ Nuevo lote» en
+     Trazabilidad aparecia al inicio de la pagina. */
+  var FOCOABLES = 'a[href], button:not([disabled]), input:not([disabled]), ' +
+                  'select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+  function atraparFoco(caja) {
+    var devolverA = doc.activeElement;
+
+    function visibles() {
+      return $$(FOCOABLES, caja).filter(function (n) { return n.offsetParent !== null; });
+    }
+
+    function alTabular(ev) {
+      if (ev.key !== 'Tab') return;
+      var lista = visibles();
+      if (!lista.length) { ev.preventDefault(); return; }
+      var primero = lista[0], ultimo = lista[lista.length - 1];
+      // Si el foco se escapo del dialogo -por un clic fuera, por ejemplo- se
+      // trae de vuelta en cuanto se tabula.
+      if (!caja.contains(doc.activeElement)) { ev.preventDefault(); primero.focus(); return; }
+      if (ev.shiftKey && doc.activeElement === primero) { ev.preventDefault(); ultimo.focus(); }
+      else if (!ev.shiftKey && doc.activeElement === ultimo) { ev.preventDefault(); primero.focus(); }
+    }
+
+    doc.addEventListener('keydown', alTabular, true);
+
+    return function soltar() {
+      doc.removeEventListener('keydown', alTabular, true);
+      // Solo se devuelve el foco si aquel elemento sigue en la pagina y se
+      // puede enfocar; si no, se deja donde este en vez de tirarlo al body.
+      if (devolverA && doc.contains(devolverA) && typeof devolverA.focus === 'function') {
+        try { devolverA.focus(); } catch (e) { /* elemento ya inservible */ }
+      }
+    };
+  }
+
   function boton(clase, etiqueta, texto) {
     var b = doc.createElement('button');
     b.type = 'button';
@@ -420,18 +469,21 @@
       ficha.appendChild(pie);
       doc.body.appendChild(velo);
       doc.body.appendChild(ficha);
+      var soltarFoco = atraparFoco(ficha);
       no.focus();
 
       function cerrarVenia() {
         if (ficha.parentNode) ficha.parentNode.removeChild(ficha);
         if (velo.parentNode) velo.parentNode.removeChild(velo);
         doc.removeEventListener('keydown', escapar, true);
+        soltarFoco();
       }
-      function escapar(ev) { if (ev.key === 'Escape') { ev.preventDefault(); cerrarVenia(); nodo.focus(); } }
+      function escapar(ev) { if (ev.key === 'Escape') { ev.preventDefault(); cerrarVenia(); } }
       doc.addEventListener('keydown', escapar, true);
 
-      velo.addEventListener('click', function () { cerrarVenia(); nodo.focus(); });
-      no.addEventListener('click', function () { cerrarVenia(); nodo.focus(); });
+      // cerrarVenia() ya devuelve el foco a donde estaba (atraparFoco).
+      velo.addEventListener('click', cerrarVenia);
+      no.addEventListener('click', cerrarVenia);
       si.addEventListener('click', function () {
         cerrarVenia();
         // Una vez dada la venia, no se vuelve a pedir para ESTE nodo hasta
@@ -1302,6 +1354,9 @@
 
   global.CIEHS = global.CIEHS || {};
   global.CIEHS.inline = {
+    // El cajon de formularios vive en app.js y declara aria-modal igual que
+    // los dialogos de aqui: comparte la trampa en vez de tener otra propia.
+    atraparFoco: atraparFoco,
     recargar: cargar,
     revisar: revisarSesion,
     editando: function () { return estado.editando; }

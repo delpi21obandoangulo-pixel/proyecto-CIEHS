@@ -32,6 +32,7 @@ está cada cosa.
 | [[CIEHS-Portal-Educativo]] | Cómo está construido: rutas, QR, alojamiento, cacheo, mejora progresiva |
 | [[CIEHS-Backend-Supabase]] | Dónde viven los datos: esquema `ciehs`, tablas, RLS, capa de datos |
 | [[CIEHS-Auditoria-Seguridad-Auth]] | Qué se rompió, qué se arregló y qué sigue abierto |
+| [[CIEHS-Auditoria-2026-09-13]] | Auditoría medida: RLS, XSS, foco, contraste — y lo que quedó abierto |
 | [[CIEHS-Admin-InPlace-UI]] | Cómo se edita el portal desde el propio portal, y por qué no hay panel aparte |
 | [[pendientes-coordinacion/LEEME|pendientes-coordinacion/]] | Los seis encargos que no se pueden resolver desde el código |
 | [[CIEHS-Metodologia-Pedagogica]] | Enfoque rector (CNEB · DUA) con HPOS transversal, los dos ejes movilizadores y la ruta de 9 pasos |

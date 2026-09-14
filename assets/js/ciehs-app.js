@@ -1919,6 +1919,8 @@
     catalogo:        'Catálogo de la tienda'
   };
 
+  var soltarFocoCajon = null;
+
   function abrirCajon(nombre){
     if(!cajon) return;
     cajon.hidden = false;
@@ -1926,8 +1928,15 @@
     if(cajonTitulo) cajonTitulo.textContent = TITULOS_CAJON[nombre] || 'Formulario';
     abrirPestana(nombre);
     if(nombre === 'portada') rellenarFormulario();
-    // El foco entra en el cajon: si se quedara detras, el teclado seguiria
-    // recorriendo el portal que hay debajo.
+    /* El cajon declara aria-modal="true", y eso es una promesa: mientras este
+       abierto no hay nada mas en la pagina. Sin atrapar el foco, el tabulador
+       se salia a los 41 elementos del portal de detras y quien navega con
+       teclado acababa ahi sin saber que el cajon seguia abierto.
+       La trampa la presta ciehs-inline.js: es la misma que usan sus dialogos. */
+    if(soltarFocoCajon) soltarFocoCajon();
+    soltarFocoCajon = (window.CIEHS && window.CIEHS.inline && window.CIEHS.inline.atraparFoco)
+      ? window.CIEHS.inline.atraparFoco(cajon)
+      : null;
     var primero = cajon.querySelector('input, select, textarea, button');
     if(primero) primero.focus();
   }
@@ -1936,6 +1945,11 @@
     if(!cajon) return;
     cajon.hidden = true;
     document.body.classList.remove('ciehs-cajon-abierto');
+    // Devuelve el foco al boton que lo abrio. Sin esto se quedaba en el
+    // boton de cerrar, que acaba de ocultarse, y el teclado volvia al
+    // principio del documento: quien pulso «+ Nuevo lote» en Trazabilidad
+    // aparecia al inicio de la pagina.
+    if(soltarFocoCajon){ soltarFocoCajon(); soltarFocoCajon = null; }
   }
 
   if(el('edCajonCerrar')) el('edCajonCerrar').addEventListener('click', cerrarCajon);

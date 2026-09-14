@@ -21,6 +21,7 @@ se puede importar. Si tocas allí <code>ETIQUETAS_RICAS</code>,
 <code>ETIQUETAS_MUDAS</code> o <code>copiarSaneado</code>, trae el cambio aquí o
 esta prueba estará midiendo código que ya no existe.</p>
 <p>Ejecuciones detectadas: <b id="cuenta">0</b> · Esperado: <b>0</b></p>
+<p id="sincronia">Comprobando si esta copia sigue al día con <code>ciehs-inline.js</code>…</p>
 <table id="t"><tr><th>Caso</th><th>Entrada</th><th>Resultado</th><th>Esperado</th><th></th></tr></table>
 <div id="vivo" hidden></div>
 
@@ -122,4 +123,42 @@ casos.forEach(function(c){
   t.appendChild(fila);
 });
 console.log('[PRUEBA] ejecuciones=' + window.__ejec);
+
+/* ---- ¿sigue esta copia al día con el original? ----
+   El aviso de arriba pide acordarse de traer los cambios a mano, y un aviso que
+   depende de la memoria acaba incumpliéndose. Esto lo comprueba solo: lee el
+   módulo real y compara las dos listas por sus CLAVES, no por el texto — el
+   espaciado no importa y una comparación literal daría falsas alarmas. */
+(function(){
+  var caja = document.getElementById('sincronia');
+  function claves(txt, marca){
+    var i = txt.indexOf(marca);
+    if (i < 0) return null;
+    var bloque = txt.slice(i, txt.indexOf('};', i));
+    return (bloque.match(/\b[A-Z]+(?=\s*:)/g) || []).sort().join(',');
+  }
+  fetch('/assets/js/ciehs-inline.js').then(function(r){ return r.text(); }).then(function(real){
+    var mio = document.documentElement.outerHTML;
+    var problemas = [];
+    [['ETIQUETAS_RICAS','var ETIQUETAS_RICAS'], ['ETIQUETAS_MUDAS','var ETIQUETAS_MUDAS']]
+      .forEach(function(par){
+        var a = claves(real, par[1]), b = claves(mio, par[1]);
+        if (a === null) { problemas.push(par[0] + ': no se encontró en el módulo real'); return; }
+        if (a !== b) problemas.push(par[0] + ' DIFIERE — real: [' + a + '] · aquí: [' + b + ']');
+      });
+    var pr = (real.match(/PROFUNDIDAD_MAX\s*=\s*(\d+)/) || [])[1];
+    var pm = (mio.match(/PROFUNDIDAD_MAX\s*=\s*(\d+)/) || [])[1];
+    if (pr !== pm) problemas.push('PROFUNDIDAD_MAX difiere — real: ' + pr + ' · aquí: ' + pm);
+
+    if (problemas.length) {
+      caja.className = 'mal';
+      caja.textContent = '⚠ Esta copia NO está al día con ciehs-inline.js: ' + problemas.join(' | ');
+    } else {
+      caja.className = 'ok';
+      caja.textContent = '✓ Esta copia coincide con ciehs-inline.js (listas y profundidad).';
+    }
+  }).catch(function(){
+    caja.textContent = 'No se pudo leer ciehs-inline.js para comparar (¿se abrió el archivo sin servidor?).';
+  });
+})();
 </script>

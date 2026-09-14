@@ -4792,10 +4792,16 @@ body.ciehs-admin header.site{ top:var(--ed-admin-alto, 42px); }
 .ed-admin-estado{ font-weight:700; letter-spacing:.01em; }
 /* La pista y el contador se retiran antes que el estado al estrechar: lo que
    no puede faltar nunca es saber QUE modo esta activo. */
-.ed-admin-pista{ color:rgba(255,255,255,.82); }
+/* .82 daba 4.25:1 sobre el tramo mas claro del gradiente (#047857) y el minimo
+   AA para texto normal es 4.5. Medido en la auditoria del 2026-09-13; a .9 son
+   4.78:1. No se sube a blanco puro para que siga leyendose como secundaria. */
+.ed-admin-pista{ color:rgba(255,255,255,.9); }
+/* El velo era BLANCO al 17 %: aclaraba el verde y dejaba el texto blanco en
+   3.96:1. Con un velo negro al 22 % el fondo se oscurece en vez de aclararse y
+   sube a 7.81:1, que ademas destaca mas el contador. */
 .ed-admin-cuenta{
   padding:3px 10px; border-radius:999px; font-weight:600;
-  background:rgba(255,255,255,.17); color:#fff;
+  background:rgba(0,0,0,.22); color:#fff;
 }
 /* En pausa el verde mentiria: el portal se esta viendo como lo ve cualquiera. */
 body.ciehs-admin:not(.ciehs-editando) .ed-admin{
@@ -4967,11 +4973,12 @@ body.ciehs-editando .ed-ficha--ancha{ width:min(420px, calc(100vw - 32px)); }
 }
 
 @media (prefers-reduced-motion:reduce){
-  .ed-admin-btn, .ed-admin-dot, .ed-btn, .ed-borrar, .ed-lapiz, .ed-pregon, .ed-borrado{
+  .ed-admin-btn, .ed-admin-dot, .ed-btn, .ed-borrar, .ed-lapiz, .ed-pregon,
+  .ed-borrado, .ed-alta, .ed-cajon-panel{
     transition-duration:.01ms !important; animation:none !important;
   }
   .ed-admin-btn:hover, .ed-btn:hover:not(:disabled),
-  .ed-borrar:hover, .ed-lapiz:hover{ transform:none; }
+  .ed-borrar:hover, .ed-lapiz:hover, .ed-alta:hover{ transform:none; }
 }
 
 /* ------------------------------------------------ los botones de alta --- */
