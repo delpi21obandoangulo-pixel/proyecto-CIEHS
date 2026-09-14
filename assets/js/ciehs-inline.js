@@ -12,10 +12,11 @@
    Aqui el administrador ve EL PORTAL, igual que un estudiante. Al activar el
    modo edicion aparecen controles superpuestos sobre lo que de verdad se puede
    cambiar: el texto se edita donde esta, la fotografia se reemplaza sobre la
-   fotografia, y la publicacion se borra desde su propia tarjeta. El panel
-   modal sigue existiendo para lo que es genuinamente un formulario (dar de
-   alta una investigacion, registrar una lectura), no para editar lo que ya se
-   esta viendo.
+   fotografia, y la publicacion se edita y se borra desde su propia tarjeta.
+
+   El modal de doce pestañas YA NO EXISTE (2026-09-13). De el queda la puerta:
+   teclear el codigo. Los formularios de alta viven en el cajon -.ed-cajon- y
+   cada uno se abre desde la seccion a la que pertenece, con su data-alta.
 
    COMO FUNCIONA
    -------------
@@ -23,8 +24,10 @@
    aqui dentro. Un pintor que quiera ser editable solo tiene que rotular:
 
      data-edit="clave"                 texto editable, guardado en ciehs.textos
+     data-edit-aviso="..."             pide la venia antes de abrir ese texto
      data-edit-img="clave"             imagen reemplazable, en ciehs.imagenes
-     data-ciehs-tipo + data-ciehs-id   fila borrable de su tabla
+     data-ciehs-tipo + data-ciehs-id   ficha con lapiz y papelera
+     data-alta="bitacora"              boton que abre ese formulario en el cajon
      data-modulo="MOD-DWC-01"          modulo con cultivo y rangos editables
      data-arena-id="ar-ini-10"         reto de la arena corregible
 
@@ -962,7 +965,32 @@
     });
   }
 
+  /* -------------------------------------------- los botones de alta ----- */
+
+  /* Cada seccion trae en el HTML el boton que abre SU formulario
+     (data-alta="bitacora" junto a la bitacora, y asi). Aqui solo se enchufan:
+     el sitio donde aparecen lo decide el documento, como el resto de rotulos.
+
+     Antes esto era una barra de doce pestañas dentro de un modal: para dar de
+     alta un lote habia que abrir el panel, encontrar «Bitacora» entre doce
+     nombres y pulsar «+ Nuevo lote». Ahora el boton esta al lado de la bitacora
+     y no hay nada que elegir. */
+  function montarAlta(nodo) {
+    if (nodo._edMontado) return;
+    nodo._edMontado = true;
+    var panel = nodo.getAttribute('data-alta');
+    nodo.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      if (!global.CIEHS || typeof global.CIEHS.abrirCajon !== 'function') {
+        anunciar('El formulario todavía no está disponible.', true);
+        return;
+      }
+      global.CIEHS.abrirCajon(panel);
+    });
+  }
+
   function montarTodo() {
+    $$('[data-alta]').forEach(montarAlta);
     $$('[data-edit]').forEach(montarTexto);
     $$('[data-edit-img]').forEach(montarImagen);
     $$('[data-ciehs-tipo][data-ciehs-id], [data-ciehs-tipo][data-ruta]').forEach(montarBorrable);
@@ -1075,15 +1103,14 @@
     der.className = 'ed-admin-der';
     var ver = boton('ed-admin-btn ed-admin-ver', 'Ocultar los controles y ver el portal como un visitante', 'Ver como visitante');
     ver.setAttribute('aria-pressed', 'false');
-    // Provisional, y se ve que lo es. Los formularios de alta -registrar una
-    // lectura, dar de alta una investigacion- todavia viven en el modal viejo;
-    // hasta que cada uno este en su seccion hace falta poder volver alli sin
-    // teclear el codigo otra vez. El dia que se trasladen, este boton se cae
-    // solo: solo aparece si app.js publica el puente.
-    if (global.CIEHS && typeof global.CIEHS.abrirFormularios === 'function') {
-      var formularios = boton('ed-admin-btn', 'Abrir los formularios de alta que todavía viven en el panel', 'Formularios');
-      formularios.addEventListener('click', function () { global.CIEHS.abrirFormularios(); });
-      der.appendChild(formularios);
+    // El boton «Formularios» era provisional y ya cumplio: cada formulario se
+    // abre desde su seccion. Queda solo la portada, que no tiene una seccion
+    // propia donde poner un boton -es el hero, y no hay donde anclarlo sin
+    // taparlo-.
+    if (global.CIEHS && typeof global.CIEHS.abrirPortada === 'function') {
+      var portada = boton('ed-admin-btn', 'Editar el título, el lema y los indicadores de la portada', 'Portada');
+      portada.addEventListener('click', function () { global.CIEHS.abrirPortada(); });
+      der.appendChild(portada);
     }
     var salir = boton('ed-admin-btn ed-admin-btn--salir', 'Cerrar la sesión de administración', 'Salir');
     der.appendChild(ver);

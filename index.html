@@ -617,6 +617,10 @@
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M13.5 4.5L7 11l6.5 6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
 
+          <!-- Solo visible en modo administración (ver .ed-alta en el CSS). -->
+          <div class="ed-altas">
+            <button type="button" class="ed-alta" data-alta="evidencias">+ Nueva fotografía</button>
+          </div>
           <ul class="galeria-pista" id="galeriaPista">
             <li class="galeria-lam is-activa">
               <img src="/assets/img/evidencias/invernadero-dwc.jpg" width="900" height="1600"
@@ -1136,6 +1140,11 @@
       </div>
 
       <p class="inv-origen" id="invOrigen" role="status" aria-live="polite"></p>
+      <!-- Solo visible en modo administración (ver .ed-alta en el CSS). -->
+      <div class="ed-altas">
+        <button type="button" class="ed-alta" data-alta="investigaciones">+ Nueva investigación</button>
+        <button type="button" class="ed-alta" data-alta="resultados">+ Resultados de una investigación</button>
+      </div>
       <div class="grid cols-2" id="invGrid">
         <article class="card research-card" data-inv-code="INV-2026-01">
           <div class="top-row"><span class="code mono">INV-2026-01</span><span class="chip status-curso">Proyecto Eureka 2026</span></div>
@@ -1280,6 +1289,10 @@
         </div>
 
         <div class="carpeta-estado" id="carpetaEstado" role="status" aria-live="polite" hidden></div>
+        <!-- Solo visible en modo administración (ver .ed-alta en el CSS). -->
+        <div class="ed-altas">
+          <button type="button" class="ed-alta" data-alta="carpeta">+ Nueva entrada de campo</button>
+        </div>
         <div class="carpeta-grid" id="carpetaGrid"><div class="skeleton skeleton-tarjeta"></div><div class="skeleton skeleton-tarjeta"></div><div class="skeleton skeleton-tarjeta"></div></div>
 
 
@@ -1402,6 +1415,10 @@
             <p class="form-status" id="aporteStatus" role="status" aria-live="polite"></p>
           </form>
 
+          <!-- Solo visible en modo administración (ver .ed-alta en el CSS). -->
+          <div class="ed-altas">
+            <button type="button" class="ed-alta" data-alta="aportes">Moderar los aportes recibidos</button>
+          </div>
           <div class="aporte-publicados" id="aportePublicados"></div>
         </div>
 
@@ -1987,6 +2004,10 @@
                 <th scope="col">Cosecha</th>
               </tr>
             </thead>
+            <!-- Solo visible en modo administración (ver .ed-alta en el CSS). -->
+            <div class="ed-altas">
+              <button type="button" class="ed-alta" data-alta="bitacora">+ Nuevo lote</button>
+            </div>
             <tbody id="bitacoraCuerpo"><tr><td colspan="9"><div class="skeleton skeleton-fila"></div><div class="skeleton skeleton-fila"></div><div class="skeleton skeleton-fila"></div></td></tr></tbody>
           </table>
         </div>
@@ -2296,6 +2317,11 @@
             <!-- El esqueleto viene ya en el HTML y no lo pone el JS: si el
                  script tarda o falla, esta zona debe verse "esperando" y no como
                  un hueco vacio. Al primer repintado lo sustituye pintarTelemetria(). -->
+            <!-- Solo visible en modo administración (ver .ed-alta en el CSS). -->
+            <div class="ed-altas">
+              <button type="button" class="ed-alta" data-alta="lecturas">+ Registrar lectura de pH y CE</button>
+              <button type="button" class="ed-alta" data-alta="registros">Validar mediciones del equipo</button>
+            </div>
             <div id="telemetriaLista"><div class="skeleton skeleton-tele"></div><div class="skeleton skeleton-tele"></div><div class="skeleton skeleton-tele"></div></div>
           </div>
 
@@ -2703,6 +2729,10 @@
 
       <p data-edit="docentes.wrap.12-recursos" class="res-count" id="resCount">12 recursos</p>
 
+      <!-- Solo visible en modo administración (ver .ed-alta en el CSS). -->
+      <div class="ed-altas">
+        <button type="button" class="ed-alta" data-alta="recursos">+ Nuevo recurso</button>
+      </div>
       <div class="grid cols-3" id="resGrid">
         <article class="card res-card" data-nivel="inicial" data-area="cyt" data-tipo="ficha">
           <div class="top-row"><span class="chip">Ficha de indagación</span></div>
@@ -3167,6 +3197,10 @@
           <div class="tienda-estado" id="tiendaEstado" role="status" aria-live="polite"><div class="estado-caja estado-caja--cargando"><span class="estado-ico" aria-hidden="true"><span class="estado-pulso"></span></span><div class="estado-txt"><p>Consultando el catálogo de la semana…</p></div></div></div>
           <!-- El contenido de abajo es el RESPALDO: lo sustituye la base en
                cuanto responde. Si no responde, esto es lo que se ve. -->
+          <!-- Solo visible en modo administración (ver .ed-alta en el CSS). -->
+          <div class="ed-altas">
+            <button type="button" class="ed-alta" data-alta="catalogo">+ Nuevo producto</button>
+          </div>
           <div class="tienda-grid" id="tiendaGrid">
             <article class="prod">
               <div class="prod-foto">
@@ -3367,6 +3401,10 @@
 
           <div class="comentarios-lista-wrap">
             <div class="comentarios-estado" id="comentariosEstado" role="status" aria-live="polite" hidden></div>
+            <!-- Solo visible en modo administración (ver .ed-alta en el CSS). -->
+            <div class="ed-altas">
+              <button type="button" class="ed-alta" data-alta="comunidad">Pedidos, comentarios y caja</button>
+            </div>
             <div class="comentarios-lista" id="comentariosLista"><div class="skeleton skeleton-fila"></div><div class="skeleton skeleton-fila"></div></div>
           </div>
         </div>
@@ -3412,26 +3450,33 @@
       <p class="admin-conn" id="adminConn">Comprobando conexión con la base del CIEHS…</p>
     </div>
 
-    <div id="adminFormStep" hidden>
-      <p class="eyebrow">Panel administrativo</p>
-      <h3 class="u-margin-top-10px u-font-size-20px">Editar el portal</h3>
+  </div>
+</div>
 
-      <div class="admin-tabs" role="tablist" aria-label="Secciones del panel">
-        <button type="button" role="tab" class="is-active" data-tab="portada" aria-selected="true" aria-controls="tab-portada">Portada</button>
-        <button type="button" role="tab" data-tab="lecturas" aria-selected="false" aria-controls="tab-lecturas">Lecturas</button>
-        <button type="button" role="tab" data-tab="investigaciones" aria-selected="false" aria-controls="tab-investigaciones">Investigaciones</button>
-        <button type="button" role="tab" data-tab="bitacora" aria-selected="false" aria-controls="tab-bitacora">Bitácora</button>
-        <button type="button" role="tab" data-tab="carpeta" aria-selected="false" aria-controls="tab-carpeta">Carpeta</button>
-        <button type="button" role="tab" data-tab="recursos" aria-selected="false" aria-controls="tab-recursos">Recursos</button>
-        <button type="button" role="tab" data-tab="comunidad" aria-selected="false" aria-controls="tab-comunidad">Comunidad</button>
-        <button type="button" role="tab" data-tab="evidencias" aria-selected="false" aria-controls="tab-evidencias">Evidencias</button>
-        <button type="button" role="tab" data-tab="registros" aria-selected="false" aria-controls="tab-registros">Registros</button>
-        <button type="button" role="tab" data-tab="aportes" aria-selected="false" aria-controls="tab-aportes">Aportes</button>
-        <button type="button" role="tab" data-tab="resultados" aria-selected="false" aria-controls="tab-resultados">Resultados</button>
-        <button type="button" role="tab" data-tab="catalogo" aria-selected="false" aria-controls="tab-catalogo">Catálogo</button>
+<!-- ============ CAJON DE ADMINISTRACION ============
+     Aqui vivian doce pestañas dentro de un modal. El modal se quedo con lo
+     unico que es suyo —la puerta, teclear el codigo— y los formularios
+     pasaron a este cajon, que se abre DESDE la seccion a la que pertenecen:
+     «+ Nuevo lote» esta en Trazabilidad, «+ Nueva lectura» en Datos, y asi.
+
+     Por que un cajon y no doce formularios repartidos por el HTML: los
+     formularios los gobierna crearEditor(cfg) por ID, y moverlos de sitio
+     habria obligado a reescribirlos. Aqui conservan su id y su forma; lo que
+     cambia es quien los abre y desde donde.
+
+     La barra de pestañas se fue: si entras desde «+ Nuevo lote» no tienes
+     que elegir la pestaña Bitacora, ya estas en ella. ============ -->
+<div class="ed-cajon" id="edCajon" hidden>
+  <div class="ed-cajon-velo" id="edCajonVelo"></div>
+  <aside class="ed-cajon-panel" role="dialog" aria-modal="true" aria-labelledby="edCajonTitulo">
+    <header class="ed-cajon-cab">
+      <div>
+        <p class="eyebrow">Administración</p>
+        <h3 id="edCajonTitulo">Formulario</h3>
       </div>
-
-      <!-- ---------- Catálogo de la tienda ---------- -->
+      <button type="button" class="ed-cajon-cerrar" id="edCajonCerrar" aria-label="Cerrar el formulario">×</button>
+    </header>
+    <div class="ed-cajon-cuerpo">
       <div id="tab-catalogo" role="tabpanel" data-tabpanel="catalogo" hidden>
         <div class="inv-lista-head">
           <p class="admin-divider u-margin-0 u-border-top-none u-padding-top-0">Lo que se ofrece</p>
@@ -3969,12 +4014,8 @@
         </form>
       </div>
 
-      <div class="admin-session">
-        <span id="adminWho"></span>
-        <button type="button" id="adminLogoutBtn">Cerrar sesión</button>
-      </div>
     </div>
-  </div>
+  </aside>
 </div>
 
 <footer>

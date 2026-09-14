@@ -1839,12 +1839,13 @@
   var adminClose   = el('adminCloseBtn');
   var adminBack    = el('adminBackdrop');
   var loginStep    = el('adminPinStep');
-  var formStep     = el('adminFormStep');
+  var cajon        = el('edCajon');
+  var cajonTitulo  = el('edCajonTitulo');
   var loginBtn     = el('adminPinSubmit');
   var loginError   = el('adminPinError');
   var connBox      = el('adminConn');
-  var whoBox       = el('adminWho');
-  var logoutBtn    = el('adminLogoutBtn');
+  // adminWho y adminLogoutBtn se fueron con las pestañas: quien lleva la
+  // cuenta de la sesion y la cierra es ahora la barra de administracion.
   var saveBtn      = el('adminSaveBtn');
   var saveStatus   = el('adminSaveStatus');
   var teleSaveBtn  = el('teleSaveBtn');
@@ -1876,19 +1877,15 @@
 
   function abrirPanel(){
     if(!adminModal) return;
+    // El modal es AHORA SOLO LA PUERTA. Si ya se entró en esta pestaña no
+    // tiene nada que enseñar: el portal ya está en modo administración y
+    // los formularios viven en su sección. Abrirlo igualmente seria pedir
+    // un codigo que ya se dio.
+    if(D.codigoActivo && D.codigoActivo()) return;
     adminModal.hidden = false;
     document.body.style.overflow = 'hidden';
     mostrarConexion();
     if(loginError){ loginError.hidden = true; }
-    // Si ya se entró con código en esta pestaña, directo al formulario.
-    if(D.codigoActivo && D.codigoActivo()){ mostrarFormulario(); return; }
-    // Camino histórico: sesión autenticada listada como admin.
-    D.sesion().then(function(ses){
-      if(!ses) return false;
-      return D.esAdmin();
-    }).then(function(ok){
-      if(ok){ mostrarFormulario(); } else { mostrarLogin(); }
-    }).catch(function(){ mostrarLogin(); });
   }
 
   function cerrarPanel(){
@@ -1897,18 +1894,59 @@
     document.body.style.overflow = '';
   }
 
-  function mostrarLogin(){
-    if(loginStep) loginStep.hidden = false;
-    if(formStep) formStep.hidden = true;
+  /* ------------------------- el cajon de formularios -------------------
+     Las doce pestañas salieron del modal. Ahora cada formulario se abre
+     DESDE la seccion a la que pertenece —«+ Nuevo lote» esta en
+     Trazabilidad— y aparece en un cajon lateral sobre el portal, no sobre
+     un panel que tapa el portal entero.
+
+     No hay barra de pestañas: si entras desde «+ Nuevo lote» ya estas en
+     Bitacora, y elegir pestaña seria volver a preguntar lo que acabas de
+     decir al pulsar. */
+
+  var TITULOS_CAJON = {
+    portada:         'Portada del portal',
+    lecturas:        'Registrar una lectura de pH y CE',
+    investigaciones: 'Investigaciones',
+    bitacora:        'Bitácora agronómica',
+    carpeta:         'Carpeta de campo',
+    recursos:        'Recursos docentes',
+    comunidad:       'Pedidos, comentarios y caja',
+    evidencias:      'Fotografías del laboratorio',
+    registros:       'Mediciones por validar',
+    aportes:         'Aportes por moderar',
+    resultados:      'Resultados de investigación',
+    catalogo:        'Catálogo de la tienda'
+  };
+
+  function abrirCajon(nombre){
+    if(!cajon) return;
+    cajon.hidden = false;
+    document.body.classList.add('ciehs-cajon-abierto');
+    if(cajonTitulo) cajonTitulo.textContent = TITULOS_CAJON[nombre] || 'Formulario';
+    abrirPestana(nombre);
+    if(nombre === 'portada') rellenarFormulario();
+    // El foco entra en el cajon: si se quedara detras, el teclado seguiria
+    // recorriendo el portal que hay debajo.
+    var primero = cajon.querySelector('input, select, textarea, button');
+    if(primero) primero.focus();
   }
 
-  function mostrarFormulario(){
-    if(loginStep) loginStep.hidden = true;
-    if(formStep) formStep.hidden = false;
-    abrirPestana('portada');
-    rellenarFormulario();
-    if(whoBox) whoBox.textContent = 'Sesión de administración activa';
+  function cerrarCajon(){
+    if(!cajon) return;
+    cajon.hidden = true;
+    document.body.classList.remove('ciehs-cajon-abierto');
   }
+
+  if(el('edCajonCerrar')) el('edCajonCerrar').addEventListener('click', cerrarCajon);
+  if(el('edCajonVelo'))   el('edCajonVelo').addEventListener('click', cerrarCajon);
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && cajon && !cajon.hidden) cerrarCajon();
+  });
+
+  window.CIEHS = window.CIEHS || {};
+  window.CIEHS.abrirCajon = abrirCajon;
+  window.CIEHS.cerrarCajon = cerrarCajon;
 
   function rellenarFormulario(){
     var c = (datos && datos.config) || {};
@@ -1927,16 +1965,12 @@
     b.addEventListener('click', abrirPanel);
   });
 
-  /* Puente para la barra de administración (ciehs-inline.js). Mientras los
-     formularios de alta sigan viviendo en el modal, hace falta una forma de
-     volver a ellos sin pasar otra vez por el código. Cuando cada alta esté en
-     su sección, este puente y el modal entero se van juntos. */
+  /* Ya no hay «abrir los formularios» a secas: cada formulario se abre desde
+     su seccion. Lo unico que queda global es la portada, que no tiene una
+     seccion propia donde poner un boton —es el hero— y se alcanza desde la
+     barra de administracion. */
   window.CIEHS = window.CIEHS || {};
-  window.CIEHS.abrirFormularios = function(){
-    if(!adminModal) return;
-    abrirPanel();
-    if(D.codigoActivo && D.codigoActivo()) mostrarFormulario();
-  };
+  window.CIEHS.abrirPortada = function(){ abrirCajon('portada'); };
   if(adminClose) adminClose.addEventListener('click', cerrarPanel);
   if(adminBack)  adminBack.addEventListener('click', cerrarPanel);
   document.addEventListener('keydown', function(e){
@@ -1956,12 +1990,9 @@
       loginBtn.disabled = false;
       if(el('adminCodigo')) el('adminCodigo').value = '';
       return refrescar().then(function(){
-        // El codigo correcto ya no abre un menu: cierra la puerta y deja el
-        // PORTAL en modo administracion. El modal se queda preparado por
-        // detras -mostrarFormulario() sigue corriendo- porque los formularios
-        // de alta todavia viven ahi y se llega a ellos desde la barra; cuando
-        // se trasladen a su seccion, esta llamada se cae sola.
-        mostrarFormulario();
+        // El codigo correcto cierra la puerta y deja el PORTAL en modo
+        // administracion. No hay nada mas que abrir: cada formulario se
+        // alcanza desde su propia seccion.
         cerrarPanel();
         if(window.CIEHS && window.CIEHS.inline) window.CIEHS.inline.revisar();
       });
@@ -1984,11 +2015,6 @@
     });
   });
 
-  if(logoutBtn){
-    logoutBtn.addEventListener('click', function(){
-      D.salir().then(function(){ mostrarLogin(); });
-    });
-  }
 
   if(saveBtn){
     saveBtn.addEventListener('click', function(){
@@ -2047,27 +2073,21 @@
   }
 
 
-  /* ==================== PESTAÑAS DEL PANEL ==================== */
+  /* ============ QUE PANEL ENSEÑA EL CAJON ============
+     Esto era una barra de doce pestañas. Ya no: el cajon enseña UN panel, el
+     de la seccion desde la que se abrio, y esta funcion es la que lo elige y
+     le pide sus datos. Se conservan los data-tabpanel porque son el nombre
+     por el que cada seccion pide el suyo. */
 
-  var tabBtns = document.querySelectorAll('.admin-tabs [data-tab]');
   var tabPanes = document.querySelectorAll('[data-tabpanel]');
 
   function abrirPestana(nombre){
-    tabBtns.forEach(function(b){
-      var activo = b.getAttribute('data-tab') === nombre;
-      b.classList.toggle('is-active', activo);
-      b.setAttribute('aria-selected', String(activo));
-    });
     tabPanes.forEach(function(p){
       p.hidden = p.getAttribute('data-tabpanel') !== nombre;
     });
     if(nombre === 'investigaciones') cargarListaInvestigaciones();
     if(window.CIEHS && window.CIEHS.cargarPestanaAdmin) window.CIEHS.cargarPestanaAdmin(nombre);
   }
-
-  tabBtns.forEach(function(b){
-    b.addEventListener('click', function(){ abrirPestana(b.getAttribute('data-tab')); });
-  });
 
   /* ---- los tres estados de cualquier listado del panel ----
      Seis listados de aqui (investigaciones, pedidos, comentarios, registros,
@@ -3138,10 +3158,9 @@
   window.CIEHS.editarFicha = function(tipo, clave){
     var def = FICHAS[tipo];
     if(!def) return Promise.resolve(false);
-    // El formulario vive dentro del modal, asi que hay que abrirlo y llevarlo a
-    // su pestaña antes de rellenarlo; si no, se rellenaria un form invisible.
-    if(window.CIEHS.abrirFormularios) window.CIEHS.abrirFormularios();
-    abrirPestana(def.pestana);
+    // Hay que abrir el cajon por su panel antes de rellenar: si no, se
+    // rellenaria un formulario que nadie esta viendo.
+    abrirCajon(def.pestana);
     return def.editor().editar(clave);
   };
   /* ------------------------------ arranque ---------------------------- */

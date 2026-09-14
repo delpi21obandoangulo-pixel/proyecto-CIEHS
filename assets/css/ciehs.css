@@ -1675,31 +1675,17 @@
     font-family:var(--font-mono); font-size:10.5px; letter-spacing:.12em;
     text-transform:uppercase; color:var(--ink-mute);
   }
-  .admin-session{
-    display:flex; justify-content:space-between; align-items:center; gap:12px;
-    font-family:var(--font-mono); font-size:11px; color:var(--ink-mute); margin-top:4px;
-  }
-  .admin-session button{ cursor:pointer; color:var(--azure-300); text-decoration:underline; font-size:11px; }
+  /* .admin-session se retiro con el panel de pestañas: quien dice que hay
+     sesion y permite cerrarla es la barra de administracion (.ed-admin). */
   .admin-grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
   @media (max-width:480px){ .admin-grid-2{ grid-template-columns:1fr; } }
 
-  /* ---- pestañas del panel ----
-     El panel crecio a tres areas y en un modal de 88vh el desplazamiento
-     vertical hacia que se perdiera el hilo. Con pestañas cada tarea cabe
-     entera en pantalla. */
-  .admin-tabs{
-    display:flex; flex-wrap:wrap; gap:5px 6px; margin-top:18px; padding-bottom:6px;
-    border-bottom:1px solid var(--line);
-  }
-  .admin-tabs button{
-    flex:0 1 auto; white-space:nowrap; cursor:pointer; padding:8px 11px; border:none; background:none;
-    font-family:var(--font-mono); font-size:11px; letter-spacing:.05em;
-    color:var(--ink-mute); border-bottom:2px solid transparent;
-    transition:color .2s ease, border-color .2s ease;
-  }
-  .admin-tabs button:hover{ color:var(--ink-soft); }
-  .admin-tabs button.is-active{ color:var(--leaf-300); border-bottom-color:var(--leaf-500); }
-  [data-tabpanel]{ margin-top:18px; }
+  /* Las doce pestañas se retiraron. Su motivo escrito era que «el panel
+     crecio a tres areas y en un modal de 88vh se perdia el hilo»; la salida
+     no era organizar mejor el panel, era no tener panel: cada formulario se
+     abre desde su seccion, en el cajon (.ed-cajon). Los [data-tabpanel]
+     siguen, porque son el nombre por el que cada seccion pide el suyo. */
+  [data-tabpanel]{ margin-top:4px; }
 
   /* ---- editor de investigaciones ---- */
   .inv-lista-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
@@ -4981,9 +4967,69 @@ body.ciehs-editando .ed-ficha--ancha{ width:min(420px, calc(100vw - 32px)); }
   .ed-borrar:hover, .ed-lapiz:hover{ transform:none; }
 }
 
+/* ------------------------------------------------ los botones de alta --- */
+/* Cada seccion trae el suyo, junto a la lista a la que da de alta. Fuera del
+   modo administracion no existen, como todo lo demas de este bloque. */
+.ed-altas{ display:none; }
+body.ciehs-editando .ed-altas{
+  display:flex; flex-wrap:wrap; gap:9px; margin:0 0 16px;
+}
+.ed-alta{
+  padding:8px 15px; border-radius:999px; cursor:pointer;
+  border:1px dashed rgba(5,150,105,.55); background:rgba(5,150,105,.07);
+  color:#047857; font-family:inherit; font-size:12.5px; font-weight:600;
+  transition:transform .25s var(--ease-spring), background-color .2s var(--ease-soft),
+             border-color .2s var(--ease-soft);
+}
+.ed-alta:hover{ background:rgba(5,150,105,.14); border-style:solid; transform:translateY(-1px); }
+.ed-alta:active{ transform:scale(.97); }
+
+/* ----------------------------------------------------------- el cajon --- */
+/* Aqui vivian doce pestañas dentro de un modal que tapaba el portal entero.
+   Ahora es un cajon lateral: se abre desde la seccion a la que pertenece el
+   formulario y deja ver el portal al lado, que es lo que se esta editando.
+   No lleva barra de pestañas — si entraste por «+ Nuevo lote» ya estas en la
+   bitacora, y volver a preguntarlo seria no haber escuchado el clic. */
+.ed-cajon{ position:fixed; inset:0; z-index:90; }
+.ed-cajon[hidden]{ display:none; }
+.ed-cajon-velo{
+  position:absolute; inset:0; background:rgba(4,20,15,.42);
+  -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px);
+}
+.ed-cajon-panel{
+  position:absolute; top:0; right:0; bottom:0;
+  width:min(560px, 100vw); display:flex; flex-direction:column;
+  background:var(--surface); border-left:1px solid var(--line-strong);
+  box-shadow:-18px 0 48px -24px rgba(4,20,15,.55);
+}
+@media (prefers-reduced-motion:no-preference){
+  .ed-cajon:not([hidden]) .ed-cajon-panel{ animation:ed-cajon-entra .32s var(--ease-out); }
+}
+@keyframes ed-cajon-entra{ from{ transform:translateX(26px); opacity:0; } to{ transform:none; opacity:1; } }
+.ed-cajon-cab{
+  display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
+  padding:20px 22px 14px; border-bottom:1px solid var(--line); flex:none;
+}
+.ed-cajon-cab h3{ margin-top:6px; font-size:18px; color:var(--ink); }
+.ed-cajon-cerrar{
+  flex:none; width:34px; height:34px; border-radius:50%; cursor:pointer;
+  border:1px solid var(--line-strong); background:transparent; color:var(--ink);
+  font-size:19px; line-height:1; font-family:inherit;
+}
+.ed-cajon-cerrar:hover{ background:var(--glass); }
+/* El cuerpo scrollea solo: la cabecera y el boton de cerrar tienen que seguir
+   a la vista aunque el formulario sea largo — el de un recurso lo es. */
+.ed-cajon-cuerpo{ flex:1; overflow-y:auto; padding:18px 22px 26px; }
+@media (max-width:620px){
+  .ed-cajon-panel{ width:100vw; border-left:none; }
+}
+/* Con el cajon abierto el portal no se desplaza detras. */
+body.ciehs-cajon-abierto{ overflow:hidden; }
+
 /* Nada de esto se imprime: es interfaz de trabajo, no contenido. */
 @media print{
-  .ed-admin, .ed-pregon, .ed-barra, .ed-borrar, .ed-lapiz, .ed-ficha, .ed-venia-velo{
+  .ed-admin, .ed-pregon, .ed-barra, .ed-borrar, .ed-lapiz, .ed-ficha, .ed-venia-velo,
+  .ed-cajon, .ed-altas{
     display:none !important;
   }
 }

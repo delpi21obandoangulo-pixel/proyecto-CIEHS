@@ -5,7 +5,7 @@ tags: [ciehs, administracion, cms, arquitectura, seguridad, accesibilidad]
 estado: en produccion
 publicado-en: https://ciehs.vercel.app/
 actualizado: 2026-09-13
-revision: 2 — texto con formato y barra de administración
+revision: 3 — el modal desaparece; los formularios van a su sección
 ---
 
 # CIEHS · Edición in-place (Admin UI)
@@ -20,15 +20,19 @@ y políticas están en [[CIEHS-Backend-Supabase]] y el modelo de acceso en
 > verdad se puede cambiar. Apagado, no queda ni un píxel de interfaz de
 > administración: esa es la condición, no un detalle estético.
 
-> [!tip] Revisión 2 — 2026-09-13
-> Dos cambios que esta nota ya recoge:
+> [!tip] Revisión 3 — 2026-09-13
+> **El modal de doce pestañas ya no existe.** Lo que queda de él es la puerta:
+> teclear el código. Todo lo demás se hace sobre el portal.
 >
-> 1. **El texto editable conserva negrita y cursiva.** Antes se aplanaba.
-> 2. **El código de acceso ya es el estado, no un menú.** Entrar deja el portal
->    entero en administración, con una barra fija arriba; la palanca flotante
->    que había que pulsar aparte desapareció.
+> | | Antes | Ahora |
+> |---|---|---|
+> | Corregir una frase | abrir panel → adivinar pestaña → guardar → cerrar para ver | pulsar la frase |
+> | Dar de alta un lote | abrir panel → pestaña Bitácora → «+ Nuevo lote» | «+ Nuevo lote», que está junto a la bitácora |
+> | Cambiar el precio | abrir panel → pestaña Catálogo → buscar en la lista → Editar | el lápiz de la tarjeta |
+> | Ver cómo queda | cerrar el panel | ya lo estás viendo |
 >
-> Las dos se explican en § 3 bis.
+> Antes: **577 textos editables, 35 con aviso, fichas con lápiz y papelera, y
+> el texto conserva negrita y cursiva** (revisiones 1 y 2, §§ 3 bis a 3 quater).
 
 ---
 
@@ -47,13 +51,13 @@ enlaces → uno) y con los estados de datos (seis cajas → un inventario). Aqu�
 respuesta es la misma: **un solo sitio donde vive cada cosa**, y ese sitio es
 la página.
 
-El modal **está en retirada**. Conserva dos cosas y las dos son temporales:
-la **puerta** —teclear el código— y los formularios de **alta** que todavía no
-se han trasladado a su sección (registrar una lectura de pH, dar de alta una
-investigación, moderar la cola de aportes). Mientras duren ahí se llega a
-ellos desde el botón **Formularios** de la barra, que existe sólo si `app.js`
-publica el puente `CIEHS.abrirFormularios` — el día que cada alta esté en su
-sitio, el botón se cae solo y el modal se queda únicamente con el código.
+**El modal ya no existe como panel.** De sus ~620 líneas queda el paso del
+código: un cuadro con un campo y un botón. Las doce pestañas se retiraron el
+2026-09-13 y sus formularios viven ahora en el **cajón** (§ 3 quinquies).
+
+Con sesión activa, la píldora «Administración» **ya no abre nada**: pedir otra
+vez un código que acabas de dar sería el mismo error de siempre, un paso de
+más entre la intención y el cambio.
 
 
 
@@ -69,7 +73,9 @@ tocar el módulo.
 |---|---|---|
 | `data-edit="clave"` | texto editable en contexto | `ciehs.textos` |
 | `data-edit-img="clave"` | imagen reemplazable | `ciehs.imagenes` + bucket |
-| `data-ciehs-tipo` + `data-ciehs-id` | borrar esa publicación de un clic | su propia tabla |
+| `data-ciehs-tipo` + `data-ciehs-id` | **lápiz y papelera** en esa ficha | su propia tabla |
+| `data-edit-aviso="…"` | pide la venia antes de abrir, y pinta el halo ámbar | — |
+| `data-alta="bitacora"` | botón que abre ese formulario en el cajón | — |
 | `data-modulo="MOD-DWC-01"` | cultivo y rangos de pH/CE | `ciehs.modules` |
 | `data-arena-id="ar-ini-10"` | corregir enunciado y explicación | `ciehs.arena_preguntas` |
 
@@ -305,6 +311,56 @@ tal cual**: lo que cambia es dónde vive el form, no quién lo abre.
 > Lápiz **sólo** en los 4 tipos con editor que había en pantalla (evidencia,
 > nota, lote, producto) y papelera en los 7. El lápiz de «Lechuga crespa» abrió
 > el formulario de Catálogo con su nombre y su precio ya puestos.
+
+---
+
+## 3 quinquies. El cajón: cada formulario, en su sección
+
+Las doce pestañas no se reorganizaron: **se retiraron**. Su propio comentario
+en el CSS decía que existían porque «el panel creció a tres áreas y en un modal
+de 88vh se perdía el hilo». La salida no era organizar mejor el panel — era no
+tener panel.
+
+Ahora cada sección trae el botón que abre **su** formulario, y el formulario se
+abre en un **cajón lateral** que deja ver el portal al lado, que es lo que se
+está editando.
+
+| Sección del portal | Botón |
+|---|---|
+| Inicio (galería) | + Nueva fotografía |
+| Investigaciones | + Nueva investigación · + Resultados · + Nueva entrada de campo |
+| Investigaciones (aportes) | Moderar los aportes recibidos |
+| Trazabilidad | + Nuevo lote |
+| Datos | + Registrar lectura de pH y CE · Validar mediciones |
+| Espacio docente | + Nuevo recurso |
+| Comunidad | + Nuevo producto · Pedidos, comentarios y caja |
+| *(la portada)* | desde la barra: no tiene sección propia donde anclar un botón — es el hero |
+
+**El cajón no lleva barra de pestañas.** Si has entrado por «+ Nuevo lote» ya
+estás en la bitácora; volver a preguntártelo sería no haber escuchado el clic.
+
+> [!important] Los formularios no se reescribieron
+> Se **movieron** tal cual, con sus ids intactos, de dentro del modal al cajón.
+> `crearEditor(cfg)` los gobierna por id, así que reescribirlos habría sido
+> trabajo gratis y una fuente de regresiones. Lo que cambió es **quién los abre
+> y desde dónde**, no lo que son.
+
+### Lo que se fue con las pestañas
+
+- La barra `.admin-tabs` y su CSS.
+- `.admin-session` — quién dice que hay sesión y permite cerrarla es la barra.
+- El puente provisional `CIEHS.abrirFormularios` y su botón «Formularios», que
+  ya avisaba en su comentario de que se caería solo. Su sitio en la barra lo
+  ocupa ahora **«Portada»**.
+
+> [!check] Comprobado con el código real, contra la base
+> Los 11 botones existen y **solo se ve el de la sección en la que estás**: en
+> Trazabilidad, «+ Nuevo lote» y ninguno más. Abre el cajón con el panel de
+> Bitácora, el título correcto, el foco dentro y el portal sin desplazarse
+> detrás. Escape cierra. El lápiz de una ficha abre el **cajón**, no el modal.
+> Un envío real del formulario de producto respondió «Guardado y publicado» y
+> los 6 productos siguieron intactos. Sin sesión: cero botones visibles, cajón
+> oculto, cero halos, y la puerta abre con el campo del código y sin pestañas.
 
 ---
 
