@@ -548,7 +548,11 @@
       </svg>
     </div>
 
-    <div class="hm-bg" aria-hidden="true"></div>
+    <!-- El fondo del hero es un background-image del CSS, no una etiqueta
+         <img>: por eso lleva data-edit-fondo y no data-edit-img. Es la
+         primera imagen que ve cualquiera que entra, y era la ultima pieza
+         del portal que no se podia cambiar sin tocar el repositorio. -->
+    <div class="hm-bg" aria-hidden="true" data-edit-fondo="hero.fondo"></div>
     <div class="hm-veil" aria-hidden="true"></div>
 
     <h1 class="hm-title" data-page-title="inicio">CIEHS</h1>

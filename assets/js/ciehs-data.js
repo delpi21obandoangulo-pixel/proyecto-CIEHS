@@ -864,7 +864,43 @@
       .then(function (r) { if (r.error) throw r.error; return r.data; });
   };
 
-  CIEHSData.borrarImagen = function (clave) { return eliminar('imagenes', 'clave', clave); };
+  /* Borra la fila Y el archivo, como ya hacia eliminarEvidencia. Antes solo
+     borraba la fila: el objeto se quedaba en el bucket para siempre, y como
+     cada reemplazo sube uno nuevo con marca de tiempo, cambiar el mural tres
+     veces dejaba tres archivos abandonados. En un plan gratuito eso es cuota
+     que no vuelve.
+
+     La ruta es opcional: quien llama puede no tenerla a mano, y entonces esto
+     se comporta como antes en vez de fallar. Si el borrado del objeto falla
+     -porque ya no estaba- la fila se borra igual: lo que no puede quedar es
+     una fila apuntando a un archivo inexistente. */
+  /* Solo el archivo, sin tocar ninguna fila: lo usa el reemplazo para
+     retirar la version anterior una vez guardada la nueva.
+
+     Devuelve TRUE solo si el objeto se borro de verdad. storage.remove()
+     responde 200 con una lista VACIA tanto cuando la politica no deja borrar
+     como cuando el objeto ya no estaba: sin error y sin distinguir los dos
+     casos. Mirar la lista es la unica forma de saber que paso.
+
+     Comprobado contra la base real el 2026-09-13: el borrado SI funciona con
+     el codigo de administracion puesto. Conviene dejar escrito como se
+     comprobo, porque por el camino parecio lo contrario: el objeto seguia
+     respondiendo 200 en su URL publica despues de borrarlo. Era la CACHE del
+     CDN. Con ?t=<algo> en la URL responde 400, que es lo que hay que mirar. */
+  CIEHSData.borrarArchivoEvidencia = function (ruta) {
+    if (!ruta) return Promise.resolve(false);
+    return cliente.storage.from(BUCKET_EVIDENCIAS).remove([ruta])
+      .then(function (r) { return !!(r && r.data && r.data.length); })
+      .catch(function () { return false; });
+  };
+
+  CIEHSData.borrarImagen = function (clave, ruta) {
+    return eliminar('imagenes', 'clave', clave).then(function (r) {
+      if (!ruta) return { fila: r, archivo: null };
+      return CIEHSData.borrarArchivoEvidencia(ruta)
+        .then(function (ok) { return { fila: r, archivo: ok }; });
+    });
+  };
 
   CIEHSData.guardarArenaPregunta = function (id, payload, oculta) {
     if (!/^[a-z0-9][a-z0-9._-]{1,60}$/.test(String(id || ''))) {

@@ -4867,6 +4867,13 @@ body.ciehs-editando .ed-barra{
 body.ciehs-editando .ed-barra--img{
   position:absolute; right:10px; bottom:10px; z-index:6; margin-top:0;
 }
+/* El fondo de una seccion no es una foto pequeña: su contenedor puede ocupar
+   la pantalla entera -el hero la ocupa-, y abajo a la derecha la barra caia
+   fuera de la vista. Aqui va arriba, y por encima de las capas del hero: el
+   velo y el titulo se pintan sobre el fondo y se la tragaban. */
+body.ciehs-editando .ed-barra--fondo{
+  top:14px; right:14px; bottom:auto; z-index:12;
+}
 .ed-anclaje{ position:relative; }
 
 .ed-btn{

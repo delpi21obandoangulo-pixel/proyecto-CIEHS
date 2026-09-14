@@ -73,6 +73,7 @@ tocar el módulo.
 |---|---|---|
 | `data-edit="clave"` | texto editable en contexto | `ciehs.textos` |
 | `data-edit-img="clave"` | imagen reemplazable | `ciehs.imagenes` + bucket |
+| `data-edit-fondo="clave"` | fondo CSS reemplazable | `ciehs.imagenes` + bucket |
 | `data-ciehs-tipo` + `data-ciehs-id` | **lápiz y papelera** en esa ficha | su propia tabla |
 | `data-edit-aviso="…"` | pide la venia antes de abrir, y pinta el halo ámbar | — |
 | `data-alta="bitacora"` | botón que abre ese formulario en el cajón | — |
@@ -247,13 +248,11 @@ identidad dice que el dibujo no cambia— y **4 son el respaldo estatico de la
 galeria**, que se repinta. La unica imagen de hueco fijo es el mural, y ya
 llevaba `data-edit-img`. No habia 15 pendientes.
 
-> [!todo] Lo que si falta: el fondo del hero
-> Es una imagen fija en CSS (`.hm-bg`, `invernadero-dwc.jpg`), no una etiqueta
-> `<img>`, asi que `data-edit-img` no le sirve. Y no basta con asignar
-> `style.backgroundImage`: la CSP lleva `style-src-attr 'none'` y eso crea un
-> atributo `style`. Habria que insertar la regla por CSSOM, como ya hace
-> `ciehs-app.js` con la mascara del hero. Va con la portada, en la fase que
-> traiga `site_config` al portal.
+> [!done] El fondo del hero ya se edita (§ 3 sexies)
+> Era la última pieza del portal que no se podía cambiar sin tocar el
+> repositorio. **La suposición de este aviso era errónea** y conviene dejarlo
+> dicho: `style.backgroundImage` **sí** funciona bajo esta CSP; lo que no
+> funciona es lo contrario, insertar una hoja por JS. Comprobado, no supuesto.
 
 ---
 
@@ -361,6 +360,67 @@ estás en la bitácora; volver a preguntártelo sería no haber escuchado el cli
 > Un envío real del formulario de producto respondió «Guardado y publicado» y
 > los 6 productos siguieron intactos. Sin sesión: cero botones visibles, cajón
 > oculto, cero halos, y la puerta abre con el campo del código y sin pestañas.
+
+---
+
+## 3 sexies. El fondo del hero
+
+La primera imagen que ve cualquiera que entra, y la última que seguía atada al
+repositorio. No es una etiqueta `<img>`: es un `background-image` del CSS
+(`.hm-bg`), así que `data-edit-img` no le servía.
+
+Lleva ahora `data-edit-fondo="hero.fondo"` y se guarda en la misma tabla que
+las demás —`ciehs.imagenes`, que existe justo para los huecos de imagen fijos—.
+
+> [!important] Lo que la CSP permite, comprobado y no supuesto
+> La política de producción lleva `style-src-attr 'none'` y `style-src 'self'`.
+> Se montó una página de prueba **con esa misma política** para medirlo:
+>
+> | Vía | Resultado |
+> |---|---|
+> | `element.style.backgroundImage = …` | **funciona** |
+> | `style.setProperty(…)` | **funciona** |
+> | `<style>` creado por JS + `insertRule` | **falla** — `sheet` sale `null` |
+>
+> Es justo al revés de lo que parece: `style-src-attr` gobierna el atributo
+> `style=` del marcado, no la propiedad del CSSOM. Lo que la CSP no admite es
+> una hoja en línea sin nonce. La URL apunta al bucket de Supabase, que
+> `img-src` ya permitía.
+
+`montarImagen` sirve a los dos casos —`<img>` y fondo— en vez de duplicarse:
+cambian tres cosas (de dónde sale la clave, si hay `alt` que tocar, y dónde se
+cuelga la barra) y el resto es idéntico. Duplicarla habría significado arreglar
+dos veces cada fallo de la subida.
+
+La barra va **arriba** y con `z-index` alto, no abajo como la de una foto: el
+hero ocupa la pantalla entera y abajo a la derecha caía fuera de la vista, y el
+velo y el título se pintan sobre el fondo y se la tragaban.
+
+### Un defecto viejo que salió al hacer esto
+
+`borrarImagen` borraba la fila **y dejaba el archivo en el bucket**. Como cada
+reemplazo sube uno nuevo con marca de tiempo, cambiar el mural tres veces
+dejaba tres archivos abandonados para siempre. En un plan gratuito eso es cuota
+que no vuelve. Ahora el borrado se lleva el archivo, y el reemplazo retira el
+anterior en cuanto la fila nueva está guardada.
+
+`borrarArchivoEvidencia` devuelve **si borró de verdad**, y «Quitar» lo dice
+cuando no pudo. `storage.remove()` responde 200 con lista vacía tanto si la
+política no deja como si el objeto ya no estaba: callarlo daría por limpio algo
+que sigue ocupando sitio.
+
+> [!warning] Para comprobar un borrado en Storage, rompe la caché
+> Durante esta prueba el objeto siguió respondiendo **200 en su URL pública
+> después de borrarlo**, y eso llevó a un diagnóstico equivocado —que la
+> política de `storage.objects` no dejaba borrar—. Era la **caché del CDN**.
+> Con `?t=<algo>` en la URL responde 400, que es lo que hay que mirar.
+
+> [!check] Comprobado con el código real, contra la base
+> Subida → la fila aparece en `ciehs.imagenes` y el fondo apunta al bucket.
+> Recarga **sin sesión** → el visitante ve el fondo nuevo. «Quitar» → la fila
+> desaparece y el fondo vuelve al del CSS **sin recargar** (basta con soltar la
+> propiedad; con un `<img>` no se puede, porque su `src` ya se pisó). Tras dos
+> subidas y un quitar, **cero archivos huérfanos** y `ciehs.imagenes` vacía.
 
 ---
 

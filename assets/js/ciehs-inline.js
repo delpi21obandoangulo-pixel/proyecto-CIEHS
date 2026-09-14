@@ -26,6 +26,7 @@
      data-edit="clave"                 texto editable, guardado en ciehs.textos
      data-edit-aviso="..."             pide la venia antes de abrir ese texto
      data-edit-img="clave"             imagen reemplazable, en ciehs.imagenes
+     data-edit-fondo="clave"           fondo CSS reemplazable, en ciehs.imagenes
      data-ciehs-tipo + data-ciehs-id   ficha con lapiz y papelera
      data-alta="bitacora"              boton que abre ese formulario en el cajon
      data-modulo="MOD-DWC-01"          modulo con cultivo y rangos editables
@@ -283,6 +284,48 @@
       // sueltan las dimensiones fijas o el navegador la deformaria.
       img.removeAttribute('width');
       img.removeAttribute('height');
+    });
+    aplicarFondos();
+  }
+
+  /* ------------------------------------------------------------- fondos --
+     El fondo del hero no es una etiqueta <img>: es un background-image que
+     vive en el CSS. Era la ultima pieza del portal que no se podia cambiar sin
+     tocar el repositorio, y encima es la primera imagen que ve cualquiera.
+
+     Se guarda en la misma tabla que las demas (ciehs.imagenes): es un hueco de
+     imagen fijo, que es exactamente para lo que se creo.
+
+     SOBRE LA CSP, que aqui es lo que decide como se hace esto
+     --------------------------------------------------------
+     La politica de produccion lleva `style-src-attr 'none'` y `style-src
+     'self'`. Comprobado con esa misma politica, no de memoria:
+
+       · element.style.backgroundImage = ...   FUNCIONA. style-src-attr gobierna
+         el atributo style= del marcado, no la propiedad del CSSOM.
+       · <style> creado por JS + sheet.insertRule()   NO FUNCIONA: la hoja ni
+         llega a crearse -sheet sale null- porque style-src 'self' no admite una
+         hoja en linea sin nonce.
+
+     Es justo al reves de lo que parece a primera vista, y por eso se comprobo.
+     La URL de la imagen apunta al bucket de Supabase, que img-src ya permite. */
+
+  function aplicarFondos() {
+    $$('[data-edit-fondo]').forEach(function (nodo) {
+      var clave = nodo.getAttribute('data-edit-fondo');
+      if (!claveValida(clave)) return;
+      var fila = estado.imagenes[clave];
+      if (!fila || !fila.storage_path) {
+        // Sin fila guardada se suelta lo que hubiera puesto una sesion anterior
+        // y vuelve a mandar el CSS, que es el respaldo.
+        nodo.style.backgroundImage = '';
+        return;
+      }
+      var url = D.urlEvidencia(fila.storage_path);
+      if (!url) return;
+      // Las comillas importan: una ruta con parentesis o espacios rompe el
+      // url() sin ellas, y lo que llega de Storage no se controla desde aqui.
+      nodo.style.backgroundImage = 'url("' + url.replace(/"/g, '%22') + '")';
     });
   }
 
@@ -590,18 +633,30 @@
     return 'inline/' + clave + '-' + Date.now() + '.' + ext;
   }
 
+  /* Sirve a los dos casos: una etiqueta <img> y un fondo CSS. Cambian tres
+     cosas —de donde sale la clave, si hay <img> al que tocarle el alt, y donde
+     se cuelga la barra— y el resto (validar el archivo, subirlo, guardar la
+     fila, quitarla) es identico. Duplicar la funcion habria significado
+     arreglar dos veces cada fallo que apareciera en la subida. */
   function montarImagen(nodo) {
     if (nodo._edMontado) return;
     nodo._edMontado = true;
-    var clave = nodo.getAttribute('data-edit-img');
-    var img = nodo.tagName === 'IMG' ? nodo : $('img', nodo);
-    if (!img) return;
 
-    var caja = nodo.tagName === 'IMG' ? nodo.parentNode : nodo;
+    var esFondo = nodo.hasAttribute('data-edit-fondo');
+    var clave = nodo.getAttribute(esFondo ? 'data-edit-fondo' : 'data-edit-img');
+    var img = esFondo ? null : (nodo.tagName === 'IMG' ? nodo : $('img', nodo));
+    if (!esFondo && !img) return;
+
+    // El hero ocupa la pantalla entera y su fondo esta detras de varias capas:
+    // una barra anclada a el quedaria debajo del velo y del titulo. Se cuelga
+    // del contenedor que el propio nodo señale, o de la seccion que lo aloja.
+    var caja = esFondo
+      ? (nodo.closest('[data-page]') || nodo.parentNode)
+      : (nodo.tagName === 'IMG' ? nodo.parentNode : nodo);
     if (caja && getComputedStyle(caja).position === 'static') caja.classList.add('ed-anclaje');
 
     var barra = doc.createElement('div');
-    barra.className = 'ed-barra ed-barra--img';
+    barra.className = 'ed-barra ed-barra--img' + (esFondo ? ' ed-barra--fondo' : '');
 
     var entrada = doc.createElement('input');
     entrada.type = 'file';
@@ -615,8 +670,9 @@
     entrada.tabIndex = -1;
     entrada.setAttribute('aria-label', 'Archivo de imagen para reemplazar (' + clave + ')');
 
-    var reemplazar = boton('ed-btn ed-btn--ok', 'Reemplazar esta fotografía', 'Reemplazar');
-    var quitar = boton('ed-btn ed-btn--peligro', 'Quitar esta fotografía y volver a la del portal', 'Quitar');
+    var que = esFondo ? 'el fondo de esta sección' : 'esta fotografía';
+    var reemplazar = boton('ed-btn ed-btn--ok', 'Reemplazar ' + que, 'Reemplazar');
+    var quitar = boton('ed-btn ed-btn--peligro', 'Quitar ' + que + ' y volver a la que trae el portal', 'Quitar');
 
     barra.appendChild(entrada);
     barra.appendChild(reemplazar);
@@ -632,13 +688,25 @@
       reemplazar.disabled = true;
       reemplazar.textContent = 'Subiendo…';
       var ruta = rutaPara(clave, archivo);
+      // Lo que hubiera antes queda huerfano en cuanto se guarde la fila
+      // nueva: se anota ahora para poder retirarlo despues.
+      var rutaAnterior = (estado.imagenes[clave] || {}).storage_path;
       D.subirEvidencia(archivo, ruta)
-        .then(function () { return D.guardarImagen(clave, ruta, img.alt || null); })
+        .then(function () { return D.guardarImagen(clave, ruta, img ? (img.alt || null) : null); })
         .then(function (fila) {
           estado.imagenes[clave] = fila;
           aplicarImagenes();
           apuntarCambio();
-          anunciar('Fotografía reemplazada en todo el portal.');
+          anunciar(esFondo
+            ? 'Fondo cambiado en todo el portal.'
+            : 'Fotografía reemplazada en todo el portal.');
+          // Ya esta guardada la nueva: la anterior sobra. Se retira sin
+          // esperar ni avisar — si falla, lo unico que queda es un archivo
+          // de mas, y eso no es motivo para asustar a quien acaba de
+          // publicar correctamente.
+          if (rutaAnterior && rutaAnterior !== ruta) {
+            D.borrarArchivoEvidencia(rutaAnterior);
+          }
         })
         .catch(function (e) { anunciar('No se pudo subir: ' + fallo(e), true); })
         .then(function () {
@@ -649,12 +717,27 @@
     });
 
     quitar.addEventListener('click', function () {
-      if (!global.confirm('¿Quitar esta fotografía? El portal volverá a mostrar la imagen que trae por defecto.')) return;
+      if (!global.confirm('¿Quitar ' + que + '? El portal volverá a mostrar la imagen que trae por defecto.')) return;
       quitar.disabled = true;
-      D.borrarImagen(clave).then(function () {
+      // Se pasa la ruta para que se borre tambien el archivo del bucket.
+      var rutaVieja = (estado.imagenes[clave] || {}).storage_path;
+      D.borrarImagen(clave, rutaVieja).then(function (r) {
         delete estado.imagenes[clave];
         apuntarCambio();
-          anunciar('Fotografía retirada. Recarga para ver la imagen por defecto.');
+        // El fondo vuelve solo: se suelta la propiedad y manda otra vez el
+        // CSS. Con un <img> no se puede -su src ya se piso- y por eso ahi
+        // hay que pedir una recarga.
+        var base = esFondo
+          ? 'Fondo devuelto al del portal.'
+          : 'Fotografía retirada. Recarga para ver la imagen por defecto.';
+        if (esFondo) aplicarFondos();
+        // Si el archivo no se pudo retirar del bucket se DICE. Callarlo daria
+        // por limpio algo que sigue ocupando cuota, y nadie volveria a mirar.
+        if (rutaVieja && r && r.archivo === false) {
+          anunciar(base + ' El archivo sigue en el almacén: hay que retirarlo a mano.', true);
+        } else {
+          anunciar(base);
+        }
       }).catch(function (e) {
         anunciar('No se pudo quitar: ' + fallo(e), true);
       }).then(function () { quitar.disabled = false; });
@@ -993,6 +1076,7 @@
     $$('[data-alta]').forEach(montarAlta);
     $$('[data-edit]').forEach(montarTexto);
     $$('[data-edit-img]').forEach(montarImagen);
+    $$('[data-edit-fondo]').forEach(montarImagen);
     $$('[data-ciehs-tipo][data-ciehs-id], [data-ciehs-tipo][data-ruta]').forEach(montarBorrable);
     $$('[data-modulo]').forEach(montarModulo);
     $$('[data-arena-id]').forEach(montarArena);
