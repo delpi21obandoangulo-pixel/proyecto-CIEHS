@@ -7,7 +7,16 @@ actualizado: 2026-09-13
 
 # 8 · Rotar el código de acceso al panel
 
-> [!danger] Confirmado el 2026-09-13: **sigue sin rotarse**
+> [!tip] 2026-09-13 · El código nuevo ya está generado
+> Está en la bóveda (`.bovedaciehs-codigo-accesoalor-codigo.txt`): **24
+> caracteres, 140 bits de entropía**, generado con `crypto.randomBytes`. La
+> `FICHA.md` de esa carpeta lleva **la sentencia SQL exacta** para aplicarlo,
+> con el hash ya calculado — así el código en claro no pasa por el historial del
+> SQL Editor.
+>
+> **Mientras no se ejecute esa sentencia, el código viejo sigue siendo válido.**
+
+> [!danger] Confirmado el 2026-09-13: **aún sin rotar en la base**
 > Comprobado con `git log -S` sobre el repositorio: **el código que hoy está**
 > **en uso es exactamente el que se publicó**, y aparece en el historial en los
 > commits `ed46c57` y `e6ec83d`. Han pasado tres días desde que se escribió
