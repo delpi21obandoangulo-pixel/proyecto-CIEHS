@@ -22,7 +22,7 @@
 // Al subir esta version se descartan todas las cachas anteriores. Se sube cada
 // vez que cambian el CSS, los iconos o el plano ambiental: si no, quien ya
 // visito el portal sigue viendo la version vieja.
-var VERSION = 'ciehs-v22';
+var VERSION = 'ciehs-v23';
 var SHELL = VERSION + '-shell';
 var MEDIA = VERSION + '-media';
 
@@ -49,6 +49,7 @@ var PRECARGA = [
   '/assets/img/emblema-ciehs.svg',
   // El plano ambiental: sin el, sin red, vuelve el fondo blanco plano.
   '/assets/img/evidencias/mesas-dwc.jpg',
+  '/assets/img/evidencias/invernadero-dwc-600.webp',
   '/manifest.json'
 ];
 

@@ -34,6 +34,14 @@
   var raiz = document.documentElement;
   raiz.setAttribute('data-js', 'cargando');
 
+  // Rendimiento (2026-09-28): las fuentes de Google se piden desde aquí para que
+  // no bloqueen el primer pintado (una hoja insertada por script no lo bloquea).
+  // Mientras llegan se ve la fuente del sistema (display=swap).
+  var fuentes = document.createElement('link');
+  fuentes.rel = 'stylesheet';
+  fuentes.href = 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Cinzel:wght@500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap';
+  document.head.appendChild(fuentes);
+
   // Margen amplio a propósito: en la conexión del laboratorio la primera carga
   // puede tardar. Vale más esperar de sobra que acusar de rota una página que
   // solo iba lenta.

@@ -2908,7 +2908,7 @@
   footer .fcontact span{ display:inline-flex; align-items:flex-start; gap:7px; min-width:0; max-width:100%; }
   footer .fcontact svg{ margin-top:2px; }
   footer .fcontact svg{ width:13px; height:13px; flex:none; opacity:0.75; }
-  footer p.copyright{ font-size:12px; margin-top:16px; color:var(--on-ocean-soft); opacity:0.6; }
+  footer p.copyright{ font-size:12px; margin-top:16px; color:var(--on-ocean-soft); opacity:0.85; }
 
   /* ============ AVISO BANNER ============ */
   .aviso-banner{ background:linear-gradient(90deg, #fcd34d, #fbbf24); color:#3b2503; position:relative; z-index:41; }
@@ -4020,6 +4020,11 @@
 .hm-bg{
   position:absolute; inset:0; z-index:1;
   background:#070b0a url('/assets/img/evidencias/invernadero-dwc.jpg') center/cover no-repeat;
+  /* WebP del tamaño justo (el JPG queda de respaldo). */
+  background-image:url('/assets/img/evidencias/invernadero-dwc-900.webp');
+}
+@media (max-width:700px){
+  .hm-bg{ background-image:url('/assets/img/evidencias/invernadero-dwc-600.webp'); }
 }
 .hm-veil{
   position:absolute; inset:0; z-index:2;

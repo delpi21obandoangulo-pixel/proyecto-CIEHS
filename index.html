@@ -66,8 +66,14 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Cinzel:wght@500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
+<!-- Rendimiento (2026-09-28): las fuentes de Google ya no bloquean el primer
+     pintado; las inyecta assets/js/arranque.js (display=swap). Sin JS, este
+     <noscript> las carga igual. -->
+<noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Cinzel:wght@500;600&amp;family=Instrument+Serif:ital@0;1&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"></noscript>
+<!-- Foto de fondo de la portada: se pide ya, antes que el CSS (es lo primero que
+     se ve y lo que mide Google como «contenido principal»). -->
+<link rel="preload" as="image" href="/assets/img/evidencias/invernadero-dwc-600.webp" type="image/webp" media="(max-width: 700px)" fetchpriority="high">
+<link rel="preload" as="image" href="/assets/img/evidencias/invernadero-dwc-900.webp" type="image/webp" media="(min-width: 701px)" fetchpriority="high">
 <!-- Red de seguridad del arranque. Va PRIMERO, sincrono y en <head>: marca
      <html data-js> antes del primer pintado. Si la aplicacion no llega a
      arrancar, el CSS revela las secciones y el portal se lee como una sola
@@ -478,7 +484,7 @@
       <button type="button" class="nav-admin liquid-glass js-abrir-admin" aria-label="Administración del portal">
         <span class="nav-admin-dot" aria-hidden="true"></span>Administración
       </button>
-      <button class="navtoggle" id="navToggle" aria-expanded="false" aria-controls="menuPanel">
+      <button class="navtoggle" id="navToggle" aria-expanded="false" aria-controls="menuPanel" aria-label="Abrir el menú">
         <span class="navtoggle-rayas" aria-hidden="true"><i></i><i></i><i></i></span>
         <span class="navtoggle-texto">Menú</span>
       </button>
@@ -4117,20 +4123,22 @@
   </div>
 </footer>
 
-<script src="/assets/js/supabase.js"></script>
-<script src="/assets/js/ciehs-data.js"></script>
-<script src="/assets/js/ciehs-preguntas.js"></script>
-<script src="/assets/js/ciehs-arena-preguntas.js"></script>
-<script src="/assets/js/ciehs-arena.js"></script>
-<script src="/assets/js/qrcode.js"></script>
-<!-- Toda la logica del portal vive en un archivo propio para que la CSP
+<script defer src="/assets/js/supabase.js"></script>
+<script defer src="/assets/js/ciehs-data.js"></script>
+<script defer src="/assets/js/ciehs-preguntas.js"></script>
+<script defer src="/assets/js/ciehs-arena-preguntas.js"></script>
+<script defer src="/assets/js/ciehs-arena.js"></script>
+<script defer src="/assets/js/qrcode.js"></script>
+<!-- Rendimiento (2026-09-28): todos con defer. Se ejecutan en este mismo orden al
+     terminar de leer el HTML, sin frenar el pintado.
+     Toda la logica del portal vive en un archivo propio para que la CSP
      pueda prohibir el JavaScript en linea. Ver assets/js/ciehs-app.js -->
-<script src="/assets/js/ciehs-app.js"></script>
+<script defer src="/assets/js/ciehs-app.js"></script>
 <!-- Va el ultimo a proposito: necesita window.CIEHS y window.CIEHSData ya
      montados, y ademas debe aplicar el contenido guardado DESPUES de que los
      pintores hayan puesto lo suyo, o su texto se perderia en el siguiente
      repintado. -->
-<script src="/assets/js/ciehs-inline.js"></script>
+<script defer src="/assets/js/ciehs-inline.js"></script>
 
 
 
