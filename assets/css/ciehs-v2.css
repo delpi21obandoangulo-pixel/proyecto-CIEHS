@@ -605,6 +605,12 @@ header.site .nav, header.site.is-scrolled .nav{
   transition:background var(--dur-2) ease;
 }
 .aviso-banner button:hover{ background:rgba(255,255,255,.2); }
+@media (max-width:640px){
+  .aviso-banner{ left:12px; right:12px; width:auto; bottom:12px; }
+  .aviso-banner .aviso-inner{ padding:10px 10px 10px 12px; gap:10px; }
+  .aviso-banner p{ font-size:12.5px; line-height:1.45; }
+  .aviso-banner .aviso-icon{ font-size:15px; }
+}
 @keyframes avisoEntra{
   from{ opacity:0; transform:translate3d(0, 24px, 0) scale(.96); }
   to  { opacity:1; transform:none; }

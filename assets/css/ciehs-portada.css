@@ -4,9 +4,22 @@
    ========================================================================== */
 
 /* ------------------------------------------------------------------- hero */
+/* El título iba fijado al 13 % de la altura y el bloque de texto crecía desde
+   abajo: en pantallas bajas (móvil) se montaban. Ahora los dos van en el flujo,
+   uno debajo del otro, y el espacio libre se reparte arriba y abajo. */
+.hero-m{ justify-content:flex-start; padding:clamp(28px, 6vh, 72px) 0 0; }
+.hm-title{ position:relative; top:auto; left:auto; right:auto; margin:auto 0 clamp(18px, 3vh, 34px); padding:0 12px; }
+.hm-kpis{ margin-top:auto; }
+.hm-content{ padding-bottom:8px; }
+@media (max-width:640px){
+  .hm-title{ font-size:clamp(3.4rem, 24vw, 6.5rem); }
+  .hm-profiles{ display:none; }
+  .hm-acciones{ flex-direction:column; align-items:stretch; max-width:340px; margin-left:auto; margin-right:auto; }
+  .hm-respaldo{ padding:0 8px; }
+}
 .hm-burbujas{ position:absolute; inset:0; width:100%; height:100%; z-index:3; pointer-events:none; }
 .hm-acciones{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:26px; }
-.hm-cta{ padding:14px 24px; font-size:15.5px; }
+.hm-cta{ padding:14px 24px; font-size:15.5px; justify-content:center; }
 .hm-content .btn-primary.hm-cta{ background:#fff; color:var(--ink); box-shadow:0 14px 34px -12px rgba(0,0,0,.55); }
 .hm-content .btn-primary.hm-cta:hover{ background:#eafff4; }
 .hm-content .btn-primary.hm-cta::after{ background:radial-gradient(120px circle at var(--bx, 50%) var(--by, 50%), rgba(52,211,153,.35), transparent 70%); }
@@ -47,64 +60,48 @@
 /* Sin JS solo se ve el primero, y los pasos se leen todos. */
 html:not(.historia-viva) .historia-visual .hv-capa:not([data-capa="1"]){ display:none; }
 
-/* capa 1 — el problema */
-.hv-capa[data-capa="1"]{ background:linear-gradient(180deg, #fff4dc 0%, #fde7c2 60%, #f6d9a8 100%); }
-.hv-sol{ fill:#f59e0b; }
-.hv-rayos path{ stroke:#f59e0b; stroke-width:4; stroke-linecap:round; fill:none; }
-.hv-suelo{ fill:#b08457; }
-.hv-grietas path{ stroke:#6b4a2b; stroke-width:3; fill:none; stroke-linecap:round; stroke-linejoin:round; }
-.hv-sal rect{ fill:#fff; opacity:.9; }
-.hv-gota{ fill:#7cc4ea; opacity:.55; stroke:#0b7fb8; stroke-width:2; }
-.hv-menos{ stroke:#b91c1c; stroke-width:5; stroke-linecap:round; }
-@media (prefers-reduced-motion:no-preference){
-  .hv-capa.is-activa .hv-rayos{ animation:rayosGira 14s linear infinite; transform-origin:320px 70px; transform-box:view-box; }
-  .hv-capa.is-activa .hv-sal rect{ animation:salBrilla 2.4s ease-in-out infinite alternate; }
+/* Capas del visual: fotos reales, un panel tipográfico y un gráfico sobrio.
+   (Antes eran ilustraciones — sol, gota, plantitas — y se veían infantiles.) */
+.hv-texto{
+  display:flex; flex-direction:column; justify-content:space-between; padding:clamp(22px, 4vw, 40px);
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(217,119,6,.22), transparent 55%),
+    linear-gradient(160deg, #1c2a22, #0b120e);
+  color:#eef6f1;
 }
-@keyframes rayosGira{ to{ transform:rotate(360deg); } }
-@keyframes salBrilla{ from{ opacity:.4; } to{ opacity:1; } }
+.hvt-cap{ font-size:13px; font-weight:600; letter-spacing:.04em; color:rgba(238,246,241,.62); }
+.hvt-frase{ font-family:var(--font-serif); font-style:italic; font-size:clamp(30px, 3.4vw, 48px); line-height:1.08; letter-spacing:-0.01em; }
+.hvt-pie{ font-size:13.5px; color:rgba(238,246,241,.7); padding-top:14px; border-top:1px solid rgba(238,246,241,.18); }
 
-/* capa 2 — raíz flotante */
-.hv-capa[data-capa="2"]{ background:linear-gradient(180deg, #eef8f2, #dff0e7); }
-.hv-tanque{ fill:#e7eef0; stroke:#9fb3ad; stroke-width:2; }
-.hv-agua{ fill:#7cc4ea; opacity:.75; }
-.hv-balsa{ fill:#ffffff; stroke:#cbd5d1; stroke-width:1.5; }
-.hv-hoja{ fill:#22a06b; }
-.hv-hoja + .hv-hoja{ fill:#2fbf7f; }
-.hv-raiz{ stroke:#f5f1e3; stroke-width:2.4; fill:none; stroke-linecap:round; }
-.hv-rot{ font-family:var(--font-body); font-size:13px; font-weight:600; fill:var(--ink-soft); }
-.hv-rot-claro{ fill:#fff; }
-@media (prefers-reduced-motion:no-preference){
-  .hv-capa.is-activa .hv-planta{ animation:plantaMece 4s ease-in-out infinite alternate; transform-box:fill-box; transform-origin:50% 100%; }
-  .hv-capa.is-activa .hv-plantas > g:nth-child(2) .hv-planta{ animation-delay:-1.3s; }
-  .hv-capa.is-activa .hv-plantas > g:nth-child(3) .hv-planta{ animation-delay:-2.6s; }
+.hv-foto{ margin:0; background:#0b120e; }
+.hv-foto img{ width:100%; height:100%; object-fit:cover; display:block; }
+.hv-foto::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, transparent 55%, rgba(8,14,11,.72)); }
+.hv-foto figcaption{
+  position:absolute; left:20px; right:20px; bottom:16px; z-index:1;
+  font-size:14px; font-weight:500; color:#fff;
 }
-@keyframes plantaMece{ from{ transform:rotate(-2.5deg); } to{ transform:rotate(2.5deg); } }
-
-/* capa 3 — la evidencia */
-.hv-capa[data-capa="3"]{ background:linear-gradient(180deg, #f5f8fb, #e8f1f7); }
-.hv-eje{ stroke:var(--line-strong); stroke-width:2; }
-.hv-barra{ transform-box:fill-box; transform-origin:50% 100%; }
-.hv-barra-suelo{ fill:#b08457; }
-.hv-barra-dwc{ fill:var(--leaf-500); }
-.hv-num{ font-family:var(--font-display); font-weight:700; font-size:28px; fill:var(--ink); }
-.hv-num-verde{ fill:var(--leaf-300); }
-.hv-capa[data-capa="3"] .hv-rot{ font-size:14px; }
+.hv-foto figcaption b{ font-size:20px; font-weight:700; }
 @media (prefers-reduced-motion:no-preference){
-  .hv-capa[data-capa="3"] .hv-barra{ transform:scaleY(0); transition:transform 1.1s var(--spring-soft) .15s; }
-  .hv-capa[data-capa="3"] .hv-barra-dwc{ transition-delay:.45s; }
-  .hv-capa[data-capa="3"].is-activa .hv-barra{ transform:none; }
+  .hv-foto img{ transform:scale(1.06); transition:transform 1.6s var(--ease-out); }
+  .hv-foto.is-activa img{ transform:none; }
 }
 
-/* capa 4 — las personas */
-.hv-gente{
-  display:grid; grid-template-columns:repeat(20, 1fr); gap:5px; align-content:center;
-  padding:8%; background:linear-gradient(180deg, #f7f5ff, #eef3fb);
-}
-.hv-gente i{ display:block; aspect-ratio:1; border-radius:50%; background:var(--c); }
+.hv-grafico{ display:flex; flex-direction:column; justify-content:center; gap:14px; padding:clamp(22px, 4vw, 40px); background:var(--surface); }
+.hvg-tit{ font-size:20px; font-weight:600; letter-spacing:-0.02em; }
+.hvg-sub{ font-size:13.5px; color:var(--ink-mute); margin-top:-8px; margin-bottom:6px; }
+.hvg-fila{ display:grid; grid-template-columns:minmax(0, 150px) 1fr 44px; align-items:center; gap:12px; font-size:14px; color:var(--ink-soft); }
+.hvg-fila b{ text-align:right; font-variant-numeric:tabular-nums; color:var(--ink); }
+.hvg-barra{ height:22px; border-radius:6px; background:var(--surface-2); overflow:hidden; }
+.hvg-barra i{ display:block; height:100%; border-radius:6px; transform-origin:0 50%; }
+.hvg-suelo{ width:100%; background:#8a7560; }
+.hvg-dwc{ width:10%; background:var(--leaf-500); }
+.hvg-fuente{ font-size:12.5px; color:var(--ink-mute); padding-top:12px; border-top:1px solid var(--line); margin-top:6px; }
 @media (prefers-reduced-motion:no-preference){
-  .hv-gente i{ transform:scale(0); transition:transform .5s var(--spring); transition-delay:var(--d); }
-  .hv-gente.is-activa i{ transform:none; }
+  .hv-grafico .hvg-barra i{ transform:scaleX(0); transition:transform 1s var(--spring-soft) .15s; }
+  .hv-grafico .hvg-dwc{ transition-delay:.4s; }
+  .hv-grafico.is-activa .hvg-barra i{ transform:none; }
 }
+@media (max-width:520px){ .hvg-fila{ grid-template-columns:minmax(0, 110px) 1fr 40px; font-size:13px; } }
 
 .historia-pasos{ list-style:none; margin:0; padding:0; }
 .historia-paso{

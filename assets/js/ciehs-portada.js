@@ -128,21 +128,6 @@
     arrancar();
   }
 
-  /* ------------------------------------------------------------ 3. la gente */
-  var gente = document.querySelector('.hv-gente');
-  if(gente){
-    var COLORES = ['#0f9f6e','#0b7fb8','#d97706','#7c3aed','#e11d48','#65a30d','#0891b2','#c2410c','#4f46e5','#0e1a14'];
-    var frag = document.createDocumentFragment();
-    for(var i = 0; i < 280; i++){
-      var p = document.createElement('i');
-      var eq = Math.floor(i / 28);
-      p.style.setProperty('--c', COLORES[eq]);
-      p.style.setProperty('--d', ((i % 20) * 12 + Math.floor(i / 20) * 18) + 'ms');
-      frag.appendChild(p);
-    }
-    gente.appendChild(frag);
-  }
-
   /* ------------------------------------------------------------ 2. el relato */
   var pasos = [].slice.call(document.querySelectorAll('.historia-paso'));
   var capas = [].slice.call(document.querySelectorAll('.historia-visual .hv-capa'));
