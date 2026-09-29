@@ -1,0 +1,136 @@
+/* ============================================================================
+   CIEHS · Secciones v2 — Fase 4 del rediseño (2026-09-29)
+   Plano del invernadero, descargas de datos y la misma gramática visual para
+   el resto de secciones. Lógica: assets/js/ciehs-secciones.js
+   ========================================================================== */
+
+/* ================================================= plano del invernadero */
+.mod-v2 .modulos-lista{ display:none; }
+body.ciehs-admin .mod-v2 .modulos-lista{ display:grid; }
+
+.plano{ margin:28px 0 24px; padding:clamp(18px, 3vw, 28px); border-radius:var(--radius-xl); background:var(--surface); box-shadow:var(--shadow-2); }
+.plano-cab{ display:flex; justify-content:space-between; align-items:flex-end; gap:18px; flex-wrap:wrap; margin-bottom:22px; }
+.plano-tit{ font-size:22px; font-weight:600; letter-spacing:-0.025em; }
+.plano-sub{ font-size:14.5px; color:var(--ink-mute); margin-top:4px; }
+.plano-filtros{ display:flex; flex-wrap:wrap; gap:6px; }
+.plano-filtro{
+  display:inline-flex; align-items:center; gap:7px; padding:7px 13px; border-radius:999px;
+  font-size:13px; font-weight:500; color:var(--ink-soft); background:var(--surface-2);
+  transition:background var(--dur-2) ease, color var(--dur-2) ease, transform var(--dur-3) var(--spring);
+}
+.plano-filtro i{ width:9px; height:9px; border-radius:50%; background:var(--c); }
+.plano-filtro:hover{ color:var(--ink); }
+.plano-filtro:active{ transform:scale(.95); }
+.plano-filtro.is-on{ background:var(--ink); color:#fff; }
+
+.plano-cuerpo{ display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:22px; align-items:start; }
+@media (max-width:900px){ .plano-cuerpo{ grid-template-columns:1fr; } }
+.plano-mapa{
+  padding:18px; border-radius:var(--radius-l);
+  background:
+    repeating-linear-gradient(90deg, rgba(14,26,20,.035) 0 1px, transparent 1px 28px),
+    repeating-linear-gradient(0deg, rgba(14,26,20,.035) 0 1px, transparent 1px 28px),
+    linear-gradient(180deg, #f1f6ef, #e8f0e6);
+  box-shadow:inset 0 0 0 1px rgba(14,26,20,.06);
+}
+.plano-grupo + .plano-grupo{ margin-top:18px; }
+.plano-grupo-tit{ font-size:12.5px; font-weight:600; color:var(--ink-mute); margin:0 0 10px 2px; }
+.plano-rejilla{ display:grid; grid-template-columns:repeat(auto-fill, minmax(118px, 1fr)); gap:10px; }
+.es-botellas .plano-rejilla{ grid-template-columns:repeat(auto-fill, minmax(96px, 1fr)); }
+
+.plano-mod{
+  position:relative; display:flex; flex-direction:column; align-items:flex-start; gap:2px;
+  padding:12px 12px 11px; min-height:104px; text-align:left;
+  border-radius:16px; background:var(--surface);
+  box-shadow:0 1px 2px rgba(14,26,20,.06), inset 0 4px 0 var(--c);
+  transition:transform .5s var(--spring), box-shadow var(--dur-2) ease, opacity var(--dur-3) ease, filter var(--dur-3) ease;
+}
+.es-botellas .plano-mod{ border-radius:999px 999px 20px 20px; align-items:center; text-align:center; padding-top:16px; }
+.plano-mod:hover{ transform:translateY(-3px); box-shadow:var(--shadow-2), inset 0 4px 0 var(--c); }
+.plano-mod:active{ transform:scale(.96); }
+.plano-mod.is-sel{ box-shadow:0 0 0 2.5px var(--c), var(--shadow-3), inset 0 4px 0 var(--c); transform:translateY(-3px); }
+.plano-mod.is-apagado{ opacity:.28; filter:saturate(.2); }
+.plano-hojas{ display:flex; gap:3px; margin-bottom:6px; }
+.plano-hojas i{
+  width:12px; height:12px; border-radius:12px 0 12px 0; background:var(--c); opacity:.85;
+  transform-origin:0 100%;
+}
+.plano-hojas i:nth-child(even){ border-radius:0 12px 0 12px; opacity:.6; }
+@media (prefers-reduced-motion:no-preference){
+  .plano-mod:hover .plano-hojas i{ animation:hojaMece .9s var(--ease-soft) infinite alternate; }
+  .plano-mod:hover .plano-hojas i:nth-child(2n){ animation-delay:-.45s; }
+}
+@keyframes hojaMece{ from{ transform:rotate(-8deg); } to{ transform:rotate(8deg); } }
+.plano-num{ font-family:var(--font-display); font-weight:700; font-size:24px; letter-spacing:-0.03em; line-height:1; color:var(--ink); }
+.plano-cul{ font-size:12.5px; color:var(--ink-mute); line-height:1.3; }
+
+.plano-ficha{
+  position:sticky; top:calc(var(--header-h) + 20px);
+  padding:22px; border-radius:var(--radius-l); background:var(--veil);
+  box-shadow:inset 0 0 0 1px var(--line), inset 0 5px 0 var(--c, var(--leaf-500));
+}
+.plano-ficha.is-entra{ animation:panelEntra .5s var(--ease-out) both; }
+.pf-top{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
+.pf-code{ font-size:12.5px; color:var(--ink-mute); }
+.pf-forma{ font-size:12px; font-weight:600; padding:4px 10px; border-radius:999px; background:var(--surface); color:var(--ink-soft); }
+.pf-cul{ font-size:28px; letter-spacing:-0.03em; margin:10px 0 16px; }
+.pf-escala + .pf-escala{ margin-top:16px; }
+.pf-et{ font-size:13px; font-weight:600; color:var(--ink-soft); margin-bottom:8px; }
+.pf-barra{ position:relative; height:12px; border-radius:999px; background:var(--surface-3); overflow:hidden; }
+.pf-barra i{
+  position:absolute; top:0; bottom:0; left:var(--a, 0%); width:calc(var(--b, 0%) - var(--a, 0%));
+  border-radius:inherit; background:var(--c, var(--leaf-500));
+  transform-origin:0 50%; animation:tramoCrece .8s var(--spring-soft) both;
+}
+@keyframes tramoCrece{ from{ transform:scaleX(0); } to{ transform:none; } }
+.pf-ejes{ display:flex; justify-content:space-between; margin-top:6px; font-size:12px; color:var(--ink-mute); font-variant-numeric:tabular-nums; }
+.pf-ejes b{ color:var(--ink); font-size:13.5px; }
+.pf-nota{ margin-top:14px; font-size:13.5px; color:var(--ink-soft); line-height:1.5; }
+.pf-acc{ display:flex; flex-direction:column; gap:8px; margin-top:20px; }
+.pf-acc .btn{ justify-content:center; }
+
+/* ======================================================= datos: descargas */
+.datos-descargas{ display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-top:22px; }
+.dd-et{ font-size:14px; font-weight:600; color:var(--ink-soft); margin-right:4px; }
+.dd-btn{ padding:9px 16px; font-size:14px; }
+.dd-lic{ flex-basis:100%; font-size:12.5px; color:var(--ink-mute); }
+
+/* ====================================== misma gramática en el resto del portal
+   Piezas del CSS viejo que aún hablaban otro idioma visual. */
+.hub-card, .stat-tile, .viz-card, .badge-card, .team-card, .module-card, .qr-card,
+.cneb-card, .contact-card, .problema-card, .hpos-card, .mvp-card, .comunidad-card,
+.destacado-card, .res-card, .prod-card, .factor-card, .peai-card, .steam-card{
+  border:none; border-radius:var(--radius-m);
+  background-color:var(--surface); box-shadow:var(--shadow-2);
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+}
+.dwc-aviso{ border:none; border-radius:var(--radius-l); background:var(--sun-50); box-shadow:inset 0 0 0 1px rgba(217,119,6,.16); }
+
+/* Pestañas de nivel, filtros y chips de recursos: píldoras limpias. */
+.level-tab, .nivel-tab, .res-chip, .quiz-ronda-btn, .btn-reset, .bitacora-filtro button{
+  border:none; border-radius:999px; background:var(--surface); box-shadow:var(--shadow-1);
+  font-weight:500; letter-spacing:0; text-transform:none; color:var(--ink-soft);
+  transition:transform var(--dur-3) var(--spring), background var(--dur-2) ease, color var(--dur-2) ease;
+}
+.level-tab:hover, .nivel-tab:hover, .res-chip:hover, .quiz-ronda-btn:hover, .btn-reset:hover{ color:var(--ink); transform:translateY(-1px); }
+.level-tab.is-active, .nivel-tab.is-active, .res-chip.is-active,
+.level-tab[aria-selected="true"], .nivel-tab[aria-selected="true"]{ background:var(--ink); color:#fff; }
+.level-tab::before, .nivel-tab::before, .res-chip::before{ display:none; }
+
+/* Arena: el botón de entrada, en una sola línea y con muelle. */
+.arena-cta{ border:none; border-radius:var(--radius-xl); box-shadow:var(--shadow-3); }
+.arena-cta-btn{ white-space:nowrap; letter-spacing:0; font-weight:600; transition:transform .5s var(--spring), box-shadow var(--dur-2) ease; }
+.arena-cta-btn:hover{ transform:translateY(-2px) scale(1.02); }
+.arena-formatos span{ letter-spacing:.02em; text-transform:none; font-weight:500; }
+
+/* Tablas: cabecera sin mayúsculas de máquina. */
+.bitacora-tabla th, .transp-tabla th, .priv-tabla th, .ciencia-tabla thead th{
+  font-family:var(--font-body); text-transform:none; letter-spacing:0; font-size:13px; font-weight:600; color:var(--ink-soft);
+}
+
+/* Galería de la portada: más aire y esquinas del sistema. */
+.galeria-lam img{ border-radius:var(--radius-l); }
+
+@media (prefers-reduced-motion: reduce){
+  .pf-barra i, .plano-ficha.is-entra{ animation:none; }
+}

@@ -19,3 +19,14 @@ fotos y videos inicio/
 
 # Guion de locucion: material de trabajo, no forma parte del sitio.
 guion-voz.*
+
+# Configuracion local de Claude Code: no forma parte del sitio.
+.claude
+
+# Pruebas automaticas: no forman parte del sitio.
+tests/
+playwright.config.js
+test-results/
+playwright-report/
+package.json
+package-lock.json

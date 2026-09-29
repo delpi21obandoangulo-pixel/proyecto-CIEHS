@@ -22,7 +22,7 @@
 // Al subir esta version se descartan todas las cachas anteriores. Se sube cada
 // vez que cambian el CSS, los iconos o el plano ambiental: si no, quien ya
 // visito el portal sigue viendo la version vieja.
-var VERSION = 'ciehs-v23';
+var VERSION = 'ciehs-v27';
 var SHELL = VERSION + '-shell';
 var MEDIA = VERSION + '-media';
 
@@ -31,6 +31,10 @@ var PRECARGA = [
   '/',
   '/index.html',
   '/assets/css/ciehs.css',
+  '/assets/css/ciehs-v2.css',
+  '/assets/css/ciehs-investigaciones.css',
+  '/assets/css/ciehs-portada.css',
+  '/assets/css/ciehs-secciones.css',
   // Primero de todos: es la red de seguridad del arranque y sin el, si el resto
   // falla, el portal se queda mudo con catorce secciones ocultas.
   '/assets/js/arranque.js',
@@ -42,13 +46,17 @@ var PRECARGA = [
   '/assets/js/qrcode.js',
   '/assets/js/ciehs-app.js',
   '/assets/js/ciehs-inline.js',
+  '/assets/js/ciehs-nav.js',
+  '/assets/js/ciehs-investigaciones.js',
+  '/assets/js/ciehs-portada.js',
+  '/assets/js/ciehs-secciones.js',
   '/assets/img/logo-ciehs.svg',
   // El isotipo es la marca del portal (cabecera y pie): sin el, sin red, la
   // cabecera queda sin marca. Sustituye al escudo de la I.E., que ya no se usa.
   '/assets/img/isotipo-ciehs.svg',
   '/assets/img/emblema-ciehs.svg',
   // El plano ambiental: sin el, sin red, vuelve el fondo blanco plano.
-  '/assets/img/evidencias/mesas-dwc.jpg',
+  '/assets/img/evidencias/mesas-dwc-1600.webp',
   '/assets/img/evidencias/invernadero-dwc-600.webp',
   '/manifest.json'
 ];

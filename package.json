@@ -1,5 +1,12 @@
 {
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0"
-  }
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
+  },
+  "scripts": {
+    "test": "playwright test"
+  },
+  "private": true
 }

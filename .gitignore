@@ -9,3 +9,10 @@ node_modules
 # Lo que puede publicarse se copia a mano, ya clasificado y sin metadatos, a
 # assets/img/evidencias/. Ver CIEHS-Privacidad-Menores.md.
 /fotos y videos inicio/
+
+# Resultados de las pruebas (Playwright)
+test-results/
+playwright-report/
+
+# Configuracion local de Claude Code
+.claude/

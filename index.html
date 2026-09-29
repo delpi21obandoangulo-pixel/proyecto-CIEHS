@@ -69,7 +69,7 @@
 <!-- Rendimiento (2026-09-28): las fuentes de Google ya no bloquean el primer
      pintado; las inyecta assets/js/arranque.js (display=swap). Sin JS, este
      <noscript> las carga igual. -->
-<noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Cinzel:wght@500;600&amp;family=Instrument+Serif:ital@0;1&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"></noscript>
+<noscript><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500;600&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet"></noscript>
 <!-- Foto de fondo de la portada: se pide ya, antes que el CSS (es lo primero que
      se ve y lo que mide Google como «contenido principal»). -->
 <link rel="preload" as="image" href="/assets/img/evidencias/invernadero-dwc-600.webp" type="image/webp" media="(max-width: 700px)" fetchpriority="high">
@@ -81,6 +81,12 @@
 <script src="/assets/js/arranque.js"></script>
 
 <link rel="stylesheet" href="/assets/css/ciehs.css">
+<!-- Rediseño 2026-09-29 (fase 1): sistema de diseño v2. Va despues y gana por
+     orden. Ver CIEHS-Plan-Rediseno.md -->
+<link rel="stylesheet" href="/assets/css/ciehs-v2.css">
+<link rel="stylesheet" href="/assets/css/ciehs-investigaciones.css">
+<link rel="stylesheet" href="/assets/css/ciehs-portada.css">
+<link rel="stylesheet" href="/assets/css/ciehs-secciones.css">
 
 </head>
 
@@ -561,6 +567,12 @@
     <div class="hm-bg" aria-hidden="true" data-edit-fondo="hero.fondo"></div>
     <div class="hm-veil" aria-hidden="true"></div>
 
+    <!-- Fase 3 (2026-09-29): burbujas de oxigeno que suben por la solucion y
+         se apartan del cursor. Los modulos funcionan HOY sin bomba de aire: las
+         burbujas son la pregunta abierta del laboratorio. Lo pinta
+         assets/js/ciehs-portada.js; sin JS o con movimiento reducido, no hay. -->
+    <canvas class="hm-burbujas" id="hmBurbujas" aria-hidden="true"></canvas>
+
     <h1 class="hm-title" data-page-title="inicio">CIEHS</h1>
 
     <!-- Vitrina hidropónica revelada por el foco del cursor (módulo DWC). -->
@@ -575,6 +587,10 @@
         <img class="hm-escudo" src="/assets/img/isotipo-ciehs.svg" width="64" height="64"
              alt="Isotipo del CIEHS: brote con raíces sumergidas sobre ondas de agua" decoding="async">
         <span>Un proyecto de la I.E. N.° 80033 “José Olaya Balandra” · Huanchaco</span>
+      </div>
+      <div class="hm-acciones">
+        <button type="button" class="btn btn-primary hm-cta" data-route="investigaciones">Ver las investigaciones</button>
+        <button type="button" class="btn hm-cta hm-cta-glass" data-aportar="">Aportar mi trabajo</button>
       </div>
       <div class="hm-profiles">
         <span class="hm-profiles-label">Ingresa como</span>
@@ -607,6 +623,132 @@
 
     <canvas id="hmMask" class="hm-mask-canvas" aria-hidden="true"></canvas>
   </section>
+
+  <!-- ============ PORTADA · LA HISTORIA (fase 3, 2026-09-29) ============
+       Relato con scroll: a la izquierda un visual fijo que cambia; a la
+       derecha, cuatro pasos. assets/js/ciehs-portada.js marca el paso activo.
+       Sin JS se leen los cuatro pasos seguidos y se ve el primer visual. Los
+       datos son los del README y del propio portal: nada inventado. -->
+  <section id="historia" class="historia" data-page="inicio" aria-labelledby="historiaTit">
+    <div class="wrap">
+      <div class="section-head">
+        <p data-edit="inicio.historia.eyebrow" class="eyebrow">La historia</p>
+        <h2 id="historiaTit" data-edit="inicio.historia.titulo">Del <i>problema</i> a la <i>solución</i></h2>
+      </div>
+
+      <div class="historia-grid">
+        <div class="historia-visual" aria-hidden="true">
+          <div class="hv-marco">
+            <!-- 1 · el problema: suelo salino y poco agua -->
+            <svg class="hv-capa is-activa" data-capa="1" viewBox="0 0 400 300">
+              <circle class="hv-sol" cx="320" cy="70" r="34"/>
+              <g class="hv-rayos"><path d="M320 18v-10M320 132v10M268 70h-10M372 70h10M283 33l-7-7M357 107l7 7M357 33l7-7M283 107l-7 7"/></g>
+              <path class="hv-suelo" d="M0 200 Q100 185 200 198 T400 192 V300 H0Z"/>
+              <g class="hv-grietas"><path d="M60 215l18 22-8 20M140 208l-6 26 14 18M232 212l12 20-10 24M320 206l-16 24 10 22"/></g>
+              <g class="hv-sal"><rect x="90" y="232" width="7" height="7" transform="rotate(45 93 235)"/><rect x="176" y="250" width="6" height="6" transform="rotate(45 179 253)"/><rect x="262" y="238" width="8" height="8" transform="rotate(45 266 242)"/><rect x="350" y="258" width="6" height="6" transform="rotate(45 353 261)"/><rect x="36" y="266" width="6" height="6" transform="rotate(45 39 269)"/><rect x="210" y="276" width="7" height="7" transform="rotate(45 213 279)"/></g>
+              <path class="hv-gota" d="M120 60c14 20 22 32 22 44a22 22 0 0 1-44 0c0-12 8-24 22-44z"/>
+              <path class="hv-menos" d="M110 108h20"/>
+            </svg>
+            <!-- 2 · la respuesta: modulo de raiz flotante -->
+            <svg class="hv-capa" data-capa="2" viewBox="0 0 400 300">
+              <rect class="hv-tanque" x="40" y="150" width="320" height="110" rx="14"/>
+              <path class="hv-agua" d="M40 176 Q80 168 120 176 T200 176 T280 176 T360 176 V246 a14 14 0 0 1-14 14 H54 a14 14 0 0 1-14-14Z"/>
+              <rect class="hv-balsa" x="52" y="160" width="296" height="18" rx="6"/>
+              <g class="hv-plantas">
+                <g transform="translate(100 160)"><g class="hv-planta"><path class="hv-hoja" d="M0 0C-26-10-30-44-8-58 4-40 8-18 0 0Z"/><path class="hv-hoja" d="M0 0C24-12 34-40 16-60 2-42-4-20 0 0Z"/><path class="hv-raiz" d="M0 18v58M0 40l-10 26M0 48l12 22"/></g></g>
+                <g transform="translate(200 160)"><g class="hv-planta"><path class="hv-hoja" d="M0 0C-26-10-30-44-8-58 4-40 8-18 0 0Z"/><path class="hv-hoja" d="M0 0C24-12 34-40 16-60 2-42-4-20 0 0Z"/><path class="hv-raiz" d="M0 18v62M0 38l-12 28M0 50l10 24"/></g></g>
+                <g transform="translate(300 160)"><g class="hv-planta"><path class="hv-hoja" d="M0 0C-26-10-30-44-8-58 4-40 8-18 0 0Z"/><path class="hv-hoja" d="M0 0C24-12 34-40 16-60 2-42-4-20 0 0Z"/><path class="hv-raiz" d="M0 18v56M0 36l-10 24M0 46l12 22"/></g></g>
+              </g>
+              <text class="hv-rot" x="44" y="284">Balsa flotante</text>
+              <text class="hv-rot" x="356" y="284" text-anchor="end">Raíces en la solución nutritiva</text>
+            </svg>
+            <!-- 3 · la evidencia: agua usada, suelo frente a raiz flotante -->
+            <svg class="hv-capa" data-capa="3" viewBox="0 0 400 300">
+              <line class="hv-eje" x1="60" y1="250" x2="360" y2="250"/>
+              <rect class="hv-barra hv-barra-suelo" x="100" y="60" width="80" height="190" rx="10"/>
+              <rect class="hv-barra hv-barra-dwc" x="230" y="231" width="80" height="19" rx="6"/>
+              <text class="hv-num" x="140" y="48" text-anchor="middle">100</text>
+              <text class="hv-num hv-num-verde" x="270" y="219" text-anchor="middle">~10</text>
+              <text class="hv-rot" x="140" y="276" text-anchor="middle">Cultivo en suelo</text>
+              <text class="hv-rot" x="270" y="276" text-anchor="middle">Raíz flotante</text>
+            </svg>
+            <!-- 4 · las personas: 280 puntos, diez equipos (los pone el JS) -->
+            <div class="hv-capa hv-gente" data-capa="4"></div>
+          </div>
+        </div>
+
+        <ol class="historia-pasos">
+          <li class="historia-paso is-activo" data-paso="1">
+            <p class="hp-num">01 · El problema</p>
+            <h3 data-edit="inicio.historia.p1.titulo">Suelo salino y poca agua dulce</h3>
+            <p data-edit="inicio.historia.p1.texto">Huanchaco está en la franja costera del norte peruano. La cercanía al mar y el riego con aguas subterráneas salinizan el suelo, y el agua dulce escasea cada vez más con el cambio climático. En tierra, muchos cultivos simplemente no prosperan.</p>
+          </li>
+          <li class="historia-paso" data-paso="2">
+            <p class="hp-num">02 · La respuesta</p>
+            <h3 data-edit="inicio.historia.p2.titulo">Cultivar sin suelo, en raíz flotante</h3>
+            <p data-edit="inicio.historia.p2.texto">Las plantas crecen sobre una balsa y sus raíces toman los nutrientes directamente de la solución. Sin suelo, la salinidad deja de ser el límite, y el agua se reutiliza en lugar de perderse. El CIEHS tiene quince módulos así, que hoy funcionan sin bomba de aire.</p>
+            <button type="button" class="hp-link" data-route="modulos">Ver los quince módulos →</button>
+          </li>
+          <li class="historia-paso" data-paso="3">
+            <p class="hp-num">03 · La evidencia</p>
+            <h3 data-edit="inicio.historia.p3.titulo">Datos que cualquiera puede comprobar</h3>
+            <p data-edit="inicio.historia.p3.texto">Los equipos miden pH, conductividad eléctrica, altura y biomasa, y lo publican. Frente al cultivo en suelo, el laboratorio estima un ahorro de alrededor del 90 % de agua. Cada medición se publica con su fecha, su tratamiento y el equipo que la tomó, y se puede descargar.</p>
+            <button type="button" class="hp-link" data-route="datos">Ver los datos →</button>
+          </li>
+          <li class="historia-paso" data-paso="4">
+            <p class="hp-num">04 · Las personas</p>
+            <h3 data-edit="inicio.historia.p4.titulo">280 estudiantes, diez equipos</h3>
+            <p data-edit="inicio.historia.p4.texto">De 1.° a 5.° de secundaria, organizados en diez equipos de gestión: indagación, cultivo, monitoreo, cosecha, comunicación, ventas, tesorería, inventario, impacto ambiental y coordinación. Cada punto de la imagen es una persona.</p>
+            <button type="button" class="hp-link" data-route="equipos">Conocer los equipos →</button>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PORTADA · EXPLORA (fase 3) ============ -->
+  <section id="explora" class="explora" data-page="inicio" aria-labelledby="exploraTit">
+    <div class="wrap">
+      <div class="section-head">
+        <p data-edit="inicio.explora.eyebrow" class="eyebrow">Explora</p>
+        <h2 id="exploraTit" data-edit="inicio.explora.titulo">Por dónde empezar</h2>
+      </div>
+      <div class="explora-grid">
+        <button type="button" class="explora-card ec-verde" data-route="investigaciones">
+          <span class="ec-num" data-edit="inicio.explora.c1.num">Eureka 2026</span>
+          <b data-edit="inicio.explora.c1.titulo">Investigaciones</b>
+          <span data-edit="inicio.explora.c1.texto">Preguntas, hipótesis y resultados de los proyectos del laboratorio.</span>
+          <i class="ec-flecha" aria-hidden="true">→</i>
+        </button>
+        <button type="button" class="explora-card ec-azul" data-route="modulos">
+          <span class="ec-num" data-edit="inicio.explora.c2.num">15 módulos</span>
+          <b data-edit="inicio.explora.c2.titulo">El invernadero</b>
+          <span data-edit="inicio.explora.c2.texto">Módulo por módulo: qué se cultiva y en qué rango de pH y CE.</span>
+          <i class="ec-flecha" aria-hidden="true">→</i>
+        </button>
+        <button type="button" class="explora-card ec-sol" data-route="juega">
+          <span class="ec-num" data-edit="inicio.explora.c3.num">72 retos</span>
+          <b data-edit="inicio.explora.c3.titulo">Juega y aprende</b>
+          <span data-edit="inicio.explora.c3.texto">Retos, la Arena y el Pasaporte del investigador.</span>
+          <i class="ec-flecha" aria-hidden="true">→</i>
+        </button>
+        <button type="button" class="explora-card ec-tinta" data-route="comunidad">
+          <span class="ec-num" data-edit="inicio.explora.c4.num">Cosecha local</span>
+          <b data-edit="inicio.explora.c4.titulo">Comunidad y pedidos</b>
+          <span data-edit="inicio.explora.c4.texto">Reserva cosecha y mira en qué se invierte cada sol.</span>
+          <i class="ec-flecha" aria-hidden="true">→</i>
+        </button>
+      </div>
+
+      <div class="explora-aportar">
+        <div>
+          <p class="ea-tit" data-edit="inicio.explora.aportar.titulo">¿Eres parte del CIEHS?</p>
+          <p data-edit="inicio.explora.aportar.texto">Sube tu medición, tu foto o tu informe. Lo revisa tu docente y se publica con tu nombre.</p>
+        </div>
+        <button type="button" class="btn btn-primary" data-aportar="">Aportar</button>
+      </div>
+    </div>
+  </section>
   <!-- ============ INICIO: EL CIEHS EN ACCIÓN ============
        Fotografías reales del laboratorio. Solo entran aquí las que cumplen el
        protocolo de imagen de menores: infraestructura y cultivo, sin ningún
@@ -633,7 +775,7 @@
           </div>
           <ul class="galeria-pista" id="galeriaPista">
             <li class="galeria-lam is-activa">
-              <img src="/assets/img/evidencias/invernadero-dwc.jpg" width="900" height="1600"
+              <img src="/assets/img/evidencias/invernadero-dwc-900.webp" srcset="/assets/img/evidencias/invernadero-dwc-600.webp 600w, /assets/img/evidencias/invernadero-dwc-900.webp 900w" sizes="(max-width: 760px) 100vw, 720px" width="900" height="1600"
                    decoding="async" fetchpriority="high"
                    alt="Interior del invernadero del CIEHS: paredes de madera, techo de malla raschel verde y varias mesas escalonadas de raíz flotante con lechuga crespa en plena cosecha.">
               <div class="galeria-pie">
@@ -643,7 +785,7 @@
               </div>
             </li>
             <li class="galeria-lam">
-              <img src="/assets/img/evidencias/mesas-dwc.jpg" width="1600" height="900"
+              <img src="/assets/img/evidencias/mesas-dwc-900.webp" srcset="/assets/img/evidencias/mesas-dwc-900.webp 900w, /assets/img/evidencias/mesas-dwc-1600.webp 1600w" sizes="(max-width: 760px) 100vw, 720px" width="1600" height="900"
                    loading="lazy" decoding="async"
                    alt="Batería de mesas de raíz flotante del CIEHS vistas en fila, con planchas de tecnopor perforadas y lechugas en distintos estados de crecimiento.">
               <div class="galeria-pie">
@@ -653,7 +795,7 @@
               </div>
             </li>
             <li class="galeria-lam">
-              <img src="/assets/img/evidencias/almacigo-trasplante.jpg" width="1200" height="1600"
+              <img src="/assets/img/evidencias/almacigo-trasplante-600.webp" srcset="/assets/img/evidencias/almacigo-trasplante-600.webp 600w, /assets/img/evidencias/almacigo-trasplante-1200.webp 1200w" sizes="(max-width: 760px) 100vw, 720px" width="1200" height="1600"
                    loading="lazy" decoding="async"
                    alt="Mesa de raíz flotante recién trasplantada: plántulas pequeñas de lechuga distribuidas con separación regular sobre la plancha blanca de tecnopor.">
               <div class="galeria-pie">
@@ -663,7 +805,7 @@
               </div>
             </li>
             <li class="galeria-lam">
-              <img src="/assets/img/evidencias/cosecha-empaque.jpg" width="1600" height="900"
+              <img src="/assets/img/evidencias/cosecha-empaque-900.webp" srcset="/assets/img/evidencias/cosecha-empaque-900.webp 900w, /assets/img/evidencias/cosecha-empaque-1600.webp 1600w" sizes="(max-width: 760px) 100vw, 720px" width="1600" height="900"
                    loading="lazy" decoding="async"
                    alt="Lechugas cosechadas del CIEHS ya embolsadas y ordenadas sobre una mesa de madera, junto a los módulos de cultivo todavía en producción.">
               <div class="galeria-pie">
@@ -2963,7 +3105,7 @@
                necesitan un contenedor con la proporcion exacta del dibujo. La
                celda de la rejilla no sirve, porque se estira con el texto. -->
           <div class="mural-lienzo">
-            <img class="mural-img" data-edit-img="mural" src="/assets/img/mural-ciehs.jpg" width="1536" height="1024"
+            <img class="mural-img" data-edit-img="mural" src="/assets/img/mural-ciehs-1536.webp" width="1536" height="1024"
                  alt="Mural del CIEHS sobre la playa de Huanchaco: arriba a la izquierda, el escudo de la I.E. N.° 80033 José Olaya Balandra con la cinta «Dios, Patria y Cultura»; arriba al centro, la cinta del reto «Acción por el Clima»; a la izquierda, el panel «¿Qué problemas buscamos abordar?» con los cuatro retos —suelos infértiles, escasez y desperdicio de agua, alimentación poco saludable y disposición inadecuada de residuos sólidos—, junto al caballito de totora y el pelícano peruano; al centro, el logo del CIEHS; a la derecha, las fichas de los Objetivos de Desarrollo Sostenible 13, 6, 3, 12 y 17; abajo al centro, un módulo hidropónico de raíz flotante con lechugas y sus raíces a la vista, dos estudiantes trabajando en él, y el panel «¿Qué buscamos con este proyecto?»."
                  loading="lazy" decoding="async">
 
@@ -4139,6 +4281,14 @@
      pintores hayan puesto lo suyo, o su texto se perderia en el siguiente
      repintado. -->
 <script defer src="/assets/js/ciehs-inline.js"></script>
+<!-- Navegacion v2: mega-menu, buscador y detalles vivos. Necesita el router
+     (window.CIEHS.navigate) ya montado. -->
+<script defer src="/assets/js/ciehs-nav.js"></script>
+<!-- Fase 2: investigaciones como proyectos y asistente «Aportar». -->
+<script defer src="/assets/js/ciehs-investigaciones.js"></script>
+<!-- Fases 3 y 4: portada viva, plano del invernadero y descargas de datos. -->
+<script defer src="/assets/js/ciehs-portada.js"></script>
+<script defer src="/assets/js/ciehs-secciones.js"></script>
 
 
 

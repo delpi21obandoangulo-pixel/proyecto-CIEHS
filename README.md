@@ -87,22 +87,30 @@ Lechuga crespa · Lechuga americana · Espinaca · Cebolla china · Albahaca · 
 - **📱 Trazabilidad QR** — ocho estaciones QR reales, generadas en el navegador, con explicación ampliada de qué encontrará quien las escanee (mural, hidroponía, investigaciones, comunidad…). Descargables en SVG e imprimibles en hoja.
 - **💧 Calculadora hídrica** — estima el consumo y ahorro de agua frente al cultivo convencional en suelo.
 - **🎮 Pasaporte CIEHS** — banco de preguntas barajado en cada ronda que prioriza lo aún no acertado, con cuatro insignias que funcionan como mapa de comprensión, no como premio.
-- **🔐 Panel CMS (administración)** — siete pestañas: portada, lecturas, investigaciones, bitácora, carpeta de campo, recursos y comunidad.
-  > **Acceso:** solicitar las credenciales al coordinador del CIEHS. No se publican en este repositorio.
+- **🔐 Administración en la propia página** — con el código de coordinación, cada texto, ficha e imagen del portal se edita en su sitio.
+  > **Acceso:** solicitar el código al coordinador del CIEHS. No se publica en este repositorio.
   >
-  > ⚠️ **Limitación conocida.** El panel valida el acceso en el navegador y guarda en `localStorage`, así que
-  > los cambios **solo son visibles en el equipo donde se editan** y el control de acceso no es una barrera
-  > real. Ambas cosas se resuelven al conectar un backend con autenticación; hasta entonces, no debe tratarse
-  > como un CMS publicado ni usarse para información sensible.
+  > El código se valida **en el servidor** (Supabase, esquema propio `ciehs`): se compara por hash, con
+  > límite de intentos y longitud mínima obligatoria, y todas las escrituras están protegidas por RLS.
+  > Los cambios se guardan en la base y los ve todo el mundo. Detalle en `db/README.md` y `db/17_endurecimiento_acceso.sql`.
+- **➕ Aportar** — un único botón abre un asistente de tres pasos (qué traes → de qué investigación → complétalo)
+  para mediciones, registros de módulo, fotos, vídeos, informes y audio. Todo entra en cuarentena hasta que un
+  docente lo aprueba, y las caras se pixelan en el propio dispositivo antes de subir.
 
 ### Stack
 
 ```
-HTML5  +  CSS3  +  JavaScript (vanilla)
+HTML5  +  CSS3  +  JavaScript (vanilla, sin paso de compilación)
+Datos: Supabase (PostgreSQL con RLS, esquema propio `ciehs`, Storage privado para aportes)
+Diseño v2 (rediseño 2026-09): assets/css/ciehs-v2.css + módulos por fase
+  (ciehs-investigaciones, ciehs-portada, ciehs-secciones) y sus JS homónimos
+Tipografía: Geist, Geist Mono e Instrument Serif (Google Fonts)
 Generación de códigos QR: qrcode-generator (MIT), servida desde el propio dominio
-Persistencia local vía localStorage (panel CMS)
-Despliegue estático en Vercel, con cabeceras de seguridad en vercel.json
+Despliegue estático en Vercel, con cabeceras de seguridad y CSP estricta en vercel.json
+Pruebas: Playwright (npm test) — nunca tocan la base real: cortan las llamadas a Supabase
 ```
+
+Plan del rediseño y referentes: `CIEHS-Plan-Rediseno.md`.
 
 ---
 
