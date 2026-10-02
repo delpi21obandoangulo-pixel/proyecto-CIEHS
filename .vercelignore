@@ -30,3 +30,6 @@ test-results/
 playwright-report/
 package.json
 package-lock.json
+
+# Proyecto del video promocional (Remotion): fuente de trabajo, no es parte del sitio.
+video-lechuga/
