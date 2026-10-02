@@ -22,7 +22,7 @@
 // Al subir esta version se descartan todas las cachas anteriores. Se sube cada
 // vez que cambian el CSS, los iconos o el plano ambiental: si no, quien ya
 // visito el portal sigue viendo la version vieja.
-var VERSION = 'ciehs-v28';
+var VERSION = 'ciehs-v29';
 var SHELL = VERSION + '-shell';
 var MEDIA = VERSION + '-media';
 
@@ -35,6 +35,7 @@ var PRECARGA = [
   '/assets/css/ciehs-investigaciones.css',
   '/assets/css/ciehs-portada.css',
   '/assets/css/ciehs-secciones.css',
+  '/assets/css/ciehs-venta.css',
   // Primero de todos: es la red de seguridad del arranque y sin el, si el resto
   // falla, el portal se queda mudo con catorce secciones ocultas.
   '/assets/js/arranque.js',
@@ -50,6 +51,7 @@ var PRECARGA = [
   '/assets/js/ciehs-investigaciones.js',
   '/assets/js/ciehs-portada.js',
   '/assets/js/ciehs-secciones.js',
+  '/assets/js/ciehs-venta.js',
   '/assets/img/logo-ciehs.svg',
   // El isotipo es la marca del portal (cabecera y pie): sin el, sin red, la
   // cabecera queda sin marca. Sustituye al escudo de la I.E., que ya no se usa.

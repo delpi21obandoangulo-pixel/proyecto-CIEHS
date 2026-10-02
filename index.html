@@ -89,6 +89,7 @@
 <link rel="stylesheet" href="/assets/css/ciehs-investigaciones.css">
 <link rel="stylesheet" href="/assets/css/ciehs-portada.css">
 <link rel="stylesheet" href="/assets/css/ciehs-secciones.css">
+<link rel="stylesheet" href="/assets/css/ciehs-venta.css">
 
 </head>
 
@@ -575,6 +576,13 @@
          assets/js/ciehs-portada.js; sin JS o con movimiento reducido, no hay. -->
     <canvas class="hm-burbujas" id="hmBurbujas" aria-hidden="true"></canvas>
 
+    <!-- La novedad, visible desde el primer segundo. -->
+    <button type="button" class="hm-novedad" data-reservar="">
+      <span class="hm-novedad-tag">Nuevo</span>
+      <span data-edit="inicio.hero.novedad">Ya puedes reservar la lechuga del CIEHS</span>
+      <span aria-hidden="true">→</span>
+    </button>
+
     <h1 class="hm-title" data-page-title="inicio">CIEHS</h1>
 
     <!-- Vitrina hidropónica revelada por el foco del cursor (módulo DWC). -->
@@ -591,8 +599,8 @@
         <span>Un proyecto de la I.E. N.° 80033 “José Olaya Balandra” · Huanchaco</span>
       </div>
       <div class="hm-acciones">
-        <button type="button" class="btn btn-primary hm-cta" data-route="investigaciones">Ver las investigaciones</button>
-        <button type="button" class="btn hm-cta hm-cta-glass" data-aportar="">Aportar mi trabajo</button>
+        <button type="button" class="btn btn-primary hm-cta" data-reservar="">Reservar lechugas</button>
+        <button type="button" class="btn hm-cta hm-cta-glass" data-route="investigaciones">Ver las investigaciones</button>
       </div>
       <div class="hm-profiles">
         <span class="hm-profiles-label">Ingresa como</span>
@@ -624,6 +632,60 @@
     </nav>
 
     <canvas id="hmMask" class="hm-mask-canvas" aria-hidden="true"></canvas>
+  </section>
+
+  <!-- ============ PORTADA · VENTA DE LECHUGA (2026-10-02) ============
+       La novedad: primera venta de la cosecha. A la izquierda, el VIDEO
+       PROMOCIONAL en grande: basta con subir el archivo a
+       /assets/video/venta-lechuga.mp4 (y su portada a
+       /assets/video/venta-lechuga.jpg); mientras no exista se ve la foto de la
+       cosecha con el rotulo «muy pronto». Precios y productos salen de la base.
+       Logica: assets/js/ciehs-venta.js -->
+  <section id="venta" class="venta" data-page="inicio" aria-labelledby="ventaTit">
+    <div class="wrap">
+      <div class="venta-grid">
+        <div class="venta-video">
+          <video controls playsinline preload="none" poster="/assets/img/evidencias/cosecha-empaque-1600.webp"
+                 aria-label="Video promocional de la venta de lechuga del CIEHS"></video>
+          <div class="venta-pronto" aria-hidden="true">
+            <span class="venta-pronto-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg></span>
+            <span data-edit="inicio.venta.video-pronto">Video promocional · muy pronto</span>
+          </div>
+        </div>
+
+        <div class="venta-info">
+          <p class="venta-badge"><span class="venta-pulso" aria-hidden="true"></span><span data-edit="inicio.venta.badge">Novedad · Venta abierta</span></p>
+          <h2 id="ventaTit" data-edit="inicio.venta.titulo">Lechuga hidropónica del CIEHS</h2>
+          <p class="venta-lede" data-edit="inicio.venta.texto">Cultivada por nuestros estudiantes en raíz flotante, sin suelo y con mucha menos agua. Fresca, del invernadero a tu mesa. Resérvala en un minuto y te avisamos para recogerla.</p>
+
+          <div class="venta-productos" id="ventaProductos" aria-live="polite"></div>
+
+          <dl class="venta-datos">
+            <div><dt>Dónde</dt><dd data-edit="inicio.venta.donde">En el CIEHS · I.E. N.° 80033 «José Olaya Balandra», Huanchaco</dd></div>
+            <div><dt>Cómo</dt><dd data-edit="inicio.venta.como">Reservas aquí, te confirmamos por teléfono y la recoges en el colegio.</dd></div>
+          </dl>
+
+          <div class="venta-acciones">
+            <button type="button" class="btn btn-primary venta-cta" data-reservar="">Reservar lechugas</button>
+            <button type="button" class="btn btn-ghost" data-route="comunidad">Ver toda la tienda</button>
+          </div>
+          <p class="venta-mias" id="ventaMias" hidden></p>
+        </div>
+      </div>
+
+      <!-- Solo coordinacion: reservas y estadisticas en vivo (lo rellena el JS
+           cuando se entra con el codigo de administracion). -->
+      <div class="venta-panel" id="ventaPanel" hidden>
+        <div class="vp-cab">
+          <div>
+            <p class="vp-tit">Panel de la venta</p>
+            <p class="vp-nota">Solo lo ves tú porque entraste como administración. Los datos de contacto nunca se publican.</p>
+          </div>
+          <button type="button" class="btn btn-ghost" data-vp-recargar>Actualizar ahora</button>
+        </div>
+        <div class="vp-cuerpo"><p class="vp-vacio">Cargando reservas…</p></div>
+      </div>
+    </div>
   </section>
 
   <!-- ============ PORTADA · LA HISTORIA (fase 3, 2026-09-29) ============
@@ -3382,6 +3444,10 @@
           <h3 data-edit="comunidad.card.reserva-cosecha-semana">Reserva la cosecha de la semana</h3>
           <p data-edit="comunidad.card.elige-quieras-cuantas-unidades-tot" class="comunidad-lede">Elige lo que quieras y cuántas unidades: el total se va sumando solo. El equipo de Ventas te confirma el día de entrega, y la cosecha se corta el mismo día en que se entrega.</p>
 
+          <div class="tienda-rapida">
+            <div><b data-edit="comunidad.rapida.titulo">¿Solo quieres lechuga?</b><span data-edit="comunidad.rapida.texto">Resérvala en un minuto, sin carrito.</span></div>
+            <button type="button" class="btn btn-primary" data-reservar="">Reserva rápida</button>
+          </div>
           <div class="tienda-estado" id="tiendaEstado" role="status" aria-live="polite"><div class="estado-caja estado-caja--cargando"><span class="estado-ico" aria-hidden="true"><span class="estado-pulso"></span></span><div class="estado-txt"><p>Consultando el catálogo de la semana…</p></div></div></div>
           <!-- El contenido de abajo es el RESPALDO: lo sustituye la base en
                cuanto responde. Si no responde, esto es lo que se ve. -->
@@ -4282,6 +4348,8 @@
 <!-- Fases 3 y 4: portada viva, plano del invernadero y descargas de datos. -->
 <script defer src="/assets/js/ciehs-portada.js"></script>
 <script defer src="/assets/js/ciehs-secciones.js"></script>
+<!-- Venta de lechuga: video, reserva rapida, fotos de producto y panel. -->
+<script defer src="/assets/js/ciehs-venta.js"></script>
 
 
 

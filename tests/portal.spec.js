@@ -124,7 +124,7 @@ test('asistente Aportar: foto ligada a una investigación (envío simulado)', as
   await expect(page.locator('.apt-ok')).toBeVisible();
   const desc = await page.evaluate(() => window.__registro && window.__registro.description);
   expect(desc).toMatch(/^\[INV-2026-01\] Resumen corto\.$/);
-  await page.locator('.apt-cerrar').click();
+  await page.locator('.apt:not(.vr) .apt-cerrar').click();
   // El formulario vuelve a su sitio y el envío queda en «Tus envíos».
   await expect(page.locator('#aportes #aporteForm')).toHaveCount(1);
   await expect(page.locator('.inv-envio')).toContainText('Informe de prueba');
@@ -142,4 +142,36 @@ test('el saneador de HTML no deja ejecutar nada', async ({ page }) => {
   await page.goto('/tools/prueba-saneador.html');
   await page.waitForTimeout(1500);
   await expect(page.locator('#cuenta')).toHaveText('0');
+});
+
+test('reserva rápida de lechuga (guardado simulado, con reintento por el freno)', async ({ page }) => {
+  await page.goto('/#/inicio');
+  await expect(page.locator('html')).toHaveAttribute('data-js', 'listo');
+  // Sin base (cortamos Supabase): se simulan dos productos y el guardado.
+  await page.evaluate(() => {
+    const D = window.CIEHSData; D.listo = true;
+    const s = window.CIEHS.snapshot() || {};
+    s.productos = [
+      { id: 'p1', nombre: 'Lechuga crespa', estado: 'disponible', precio_pen: 3, unidad: 'unidad', published: true },
+      { id: 'p2', nombre: 'Lechuga americana', estado: 'disponible', precio_pen: 2.5, unidad: 'unidad', published: true }
+    ];
+    window.CIEHS.snapshot = () => s;
+    let n = 0; window.__ped = null;
+    D.crearPedido = (p) => { n++; if (n === 1) return Promise.reject(new Error('Demasiadas solicitudes en poco tiempo.')); window.__ped = p; return Promise.resolve('abcdef12-0000-4000-8000-000000000000'); };
+  });
+  await page.locator('.hm-cta[data-reservar]').click();
+  const pasos = page.locator('.vr-paso');
+  await pasos.nth(0).locator('button').last().click();
+  await pasos.nth(0).locator('button').last().click();
+  await page.locator('.vr-rol', { hasText: 'Estudiante' }).click();
+  await page.fill('.vr-form [name="nombre"]', 'Ana Prueba');
+  await page.fill('.vr-form [name="contacto"]', '987654321');
+  await page.fill('.vr-form [name="grado"]', '2.° C');
+  await expect(page.locator('.vr-enviar .btn')).toHaveText('Reservar 2 unidades · S/ 6.00');
+  await page.locator('.vr-enviar .btn').click();
+  await expect(page.locator('.vr-estado')).toContainText('Reintentamos solos');
+  await expect(page.locator('.vr-codigo b')).toHaveText('ABCDEF', { timeout: 20000 });
+  const ped = await page.evaluate(() => window.__ped);
+  expect(ped.nota).toBe('[Venta] Rol: Estudiante · Grado: 2.° C');
+  expect(ped.lineas).toEqual([{ id: 'p1', nombre: 'Lechuga crespa', unidad: 'unidad', precio: 3, cantidad: 2 }]);
 });
