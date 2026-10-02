@@ -22,7 +22,7 @@
 // Al subir esta version se descartan todas las cachas anteriores. Se sube cada
 // vez que cambian el CSS, los iconos o el plano ambiental: si no, quien ya
 // visito el portal sigue viendo la version vieja.
-var VERSION = 'ciehs-v29';
+var VERSION = 'ciehs-v30';
 var SHELL = VERSION + '-shell';
 var MEDIA = VERSION + '-media';
 
@@ -99,6 +99,12 @@ self.addEventListener('fetch', function (e) {
   // Terceros (Supabase, PhET, Google Fonts): que el navegador los gestione.
   // No se cachea la API: un pedido o un precio cacheado sería un fantasma.
   if (url.origin !== self.location.origin) return;
+
+  // Video (y cualquier peticion por rangos): directo a la red. El navegador
+  // pide un video a trozos (206) y la Cache API no admite respuestas
+  // parciales; ademas, en iPhone un video servido por el SW sin rangos no
+  // arranca. Tampoco tiene sentido guardar 15 MB en el telefono de nadie.
+  if (req.headers.has('range') || /\.(mp4|webm|mov)$/i.test(url.pathname)) return;
 
   // Media propia: caché primero, y se rellena la caché al vuelo.
   if (esMedia(url)) {
