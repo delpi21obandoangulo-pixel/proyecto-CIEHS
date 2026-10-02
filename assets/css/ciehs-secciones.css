@@ -134,3 +134,12 @@ body.ciehs-admin .mod-v2 .modulos-lista{ display:grid; }
 @media (prefers-reduced-motion: reduce){
   .pf-barra i, .plano-ficha.is-entra{ animation:none; }
 }
+
+/* Galeria de Modulos: fotos reales en lugar de los antiguos espacios reservados. */
+.galeria-mod{ display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:12px; }
+@media (max-width:900px){ .galeria-mod{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
+.galeria-mod figure{ margin:0; position:relative; border-radius:var(--radius-m); overflow:hidden; aspect-ratio:4 / 3; background:var(--surface-2); box-shadow:var(--shadow-2); }
+.galeria-mod img{ width:100%; height:100%; object-fit:cover; display:block; transition:transform .8s var(--ease-out); }
+.galeria-mod figure:hover img{ transform:scale(1.05); }
+.galeria-mod figure::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, transparent 55%, rgba(8,14,11,.7)); pointer-events:none; }
+.galeria-mod figcaption{ position:absolute; left:12px; right:12px; bottom:10px; z-index:1; color:#fff; font-size:13.5px; font-weight:600; line-height:1.3; }
