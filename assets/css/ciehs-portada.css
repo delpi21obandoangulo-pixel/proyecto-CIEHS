@@ -14,7 +14,8 @@
 @media (max-width:640px){
   .hm-title{ font-size:clamp(3.4rem, 24vw, 6.5rem); }
   .hm-profiles{ display:none; }
-  .hm-acciones{ flex-direction:column; align-items:stretch; max-width:340px; margin-left:auto; margin-right:auto; }
+  .hm-acciones{ flex-direction:column; align-items:stretch; max-width:340px; margin-left:auto; margin-right:auto; gap:8px; }
+  .hm-cta{ padding:12px 20px; }
   .hm-respaldo{ padding:0 8px; }
 }
 .hm-burbujas{ position:absolute; inset:0; width:100%; height:100%; z-index:3; pointer-events:none; }

@@ -159,7 +159,7 @@ test('reserva rápida de lechuga (guardado simulado, con reintento por el freno)
     let n = 0; window.__ped = null;
     D.crearPedido = (p) => { n++; if (n === 1) return Promise.reject(new Error('Demasiadas solicitudes en poco tiempo.')); window.__ped = p; return Promise.resolve('abcdef12-0000-4000-8000-000000000000'); };
   });
-  await page.locator('.hm-cta[data-reservar]').click();
+  await page.locator('.venta-cta').click();
   const pasos = page.locator('.vr-paso');
   await pasos.nth(0).locator('button').last().click();
   await pasos.nth(0).locator('button').last().click();

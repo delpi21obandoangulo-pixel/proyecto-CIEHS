@@ -16,7 +16,6 @@
 }
 .hm-novedad:hover{ background:rgba(255,255,255,.22); transform:translateY(-2px); }
 .hm-novedad-tag{ flex:none; padding:4px 10px; border-radius:999px; background:#34d399; color:#062c1f; font-size:12px; font-weight:700; }
-.hm-title{ margin-top:0; }
 @media (max-width:640px){ .hm-novedad{ font-size:13px; } }
 
 /* ------------------------------------------------------ sección de la venta */
